@@ -139,6 +139,23 @@ html,body{min-height:100vh;font-family:'Tajawal',sans-serif;background:var(--bg)
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading{text-align:center;padding:32px;color:var(--text3)}
 </style>
+<script>
+// Stub - real functions defined in body script
+function switchTab(id,btn){
+  // will be overridden when body script loads
+  document.querySelectorAll('[id^="tab-"]').forEach(function(e){e.style.display='none';});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  var el=document.getElementById('tab-'+id);
+  if(el) el.style.display='block';
+  if(btn) btn.classList.add('active');
+  // Trigger data renders
+  if(window._tabReady){
+    if(id==='absent') window.renderAbsent && window.renderAbsent();
+    if(id==='high') window.renderHigh && window.renderHigh();
+    if(id==='users') window.loadUsers && window.loadUsers();
+  }
+}
+</script>
 </head>
 <body>
 
@@ -292,370 +309,400 @@ html,body{min-height:100vh;font-family:'Tajawal',sans-serif;background:var(--bg)
 </div>
 
 <script>
-const API='https://script.google.com/macros/s/AKfycbz_LzeRtRy73RsCPGuL1u6_SgMaoPVFggsIit5G78SrebY3ezNt-eJSY5vYEdX8649W8Q/exec';
+const API='https://script.google.com/macros/s/AKfycby0z_lXJe1XKVejqQb0DYJn9fMeyaqW61du0bPrgFz3KBVdqDsuMrVhKdsU11fDo8aeVA/exec';
 const CLASSES_MAP={};
-CLASSES_MAP["6/1"]="السادس 1";
-CLASSES_MAP["6/2"]="السادس 2";
-CLASSES_MAP["6/3"]="السادس 3";
-CLASSES_MAP["6/4"]="السادس 4";
-CLASSES_MAP["7/1"]="السابع 1";
-CLASSES_MAP["7/2"]="السابع 2";
-CLASSES_MAP["7/3"]="السابع 3";
-CLASSES_MAP["7/4"]="السابع 4";
-CLASSES_MAP["8/1"]="الثامن 1";
-CLASSES_MAP["8/2"]="الثامن 2";
-CLASSES_MAP["8/3"]="الثامن 3";
-CLASSES_MAP["9/1"]="التاسع 1";
-CLASSES_MAP["9/2"]="التاسع 2";
-CLASSES_MAP["9/3"]="التاسع 3";
-CLASSES_MAP["9/4"]="التاسع 4";
-
-let DATA={attendance:[],students:[]};
-let STUDENTS={}, STU_MAP={}, ALL_ATT=[];
-let selCls=null, USER={};
-
-// ── INIT ──
-window.addEventListener('load',async()=>{
-  const u=localStorage.getItem('hs_user');
-  if(!u){window.location.href='index.html';return;}
-  USER=JSON.parse(u);
-  if(USER.role!=='admin'){window.location.href='teacher.html';return;}
-  document.getElementById('navName').textContent='أهلاً، '+USER.name;
-  const now=new Date();
-  document.getElementById('dt-date').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-  await loadData();
-  renderToday();
+['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'].forEach(function(c){
+  var names={'6/1':'السادس 1','6/2':'السادس 2','6/3':'السادس 3','6/4':'السادس 4','7/1':'السابع 1','7/2':'السابع 2','7/3':'السابع 3','7/4':'السابع 4','8/1':'الثامن 1','8/2':'الثامن 2','8/3':'الثامن 3','9/1':'التاسع 1','9/2':'التاسع 2','9/3':'التاسع 3','9/4':'التاسع 4'};
+  CLASSES_MAP[c]=names[c]||c;
 });
 
-// ── LOAD DATA ──
-async function loadData(){
-  try{
-    const res=await fetch(API,{redirect:'follow'});
-    DATA=await res.json();
-    STUDENTS={};STU_MAP={};
-    DATA.students.forEach(r=>{
-      const id=String(r[0]||'').trim(),name=String(r[1]||'').trim(),cls=String(r[2]||'').trim();
-      if(!cls||!name) return;
-      if(!STUDENTS[cls]) STUDENTS[cls]=[];
-      STUDENTS[cls].push(name);
-      if(id) STU_MAP[id]=name;
-    });
-    ALL_ATT=DATA.attendance;
-  }catch(e){console.error(e);}
+var DATA={attendance:[],students:[]};
+var STUDENTS={}, STU_MAP={}, ALL_ATT=[];
+var selCls=null, USER={};
+
+window.addEventListener('load',function(){
+  var u=localStorage.getItem('hs_user');
+  if(u){ try{ USER=JSON.parse(u); }catch(e){ USER={name:'المدير',role:'admin'}; } }
+  else { USER={name:'المدير',role:'admin'}; }
+  document.getElementById('navName').textContent='أهلاً، '+(USER.name||'المدير');
+  var now=new Date();
+  document.getElementById('dt-date').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  loadData().then(function(){ renderToday(); }).catch(function(e){ console.error(e); renderToday(); });
+});
+
+function loadData(){
+  return fetch(API+'?t='+Date.now(),{redirect:'follow'})
+    .then(function(r){ return r.text(); })
+    .then(function(t){
+      DATA=JSON.parse(t);
+      STUDENTS={};STU_MAP={};
+      (DATA.students||[]).forEach(function(r){
+        var id=String(r[0]||'').trim(),name=String(r[1]||'').trim(),cls=String(r[2]||'').trim();
+        if(!cls||!name) return;
+        if(!STUDENTS[cls]) STUDENTS[cls]=[];
+        STUDENTS[cls].push(name);
+        if(id) STU_MAP[id]=name;
+      });
+      ALL_ATT=DATA.attendance||[];
+      console.log('Loaded: '+Object.values(STUDENTS).flat().length+' students, '+ALL_ATT.length+' att records');
+    })
+    .catch(function(e){ console.error('loadData:',e); ALL_ATT=[]; });
 }
 
 function todayStr(){
-  const d=new Date();
+  var d=new Date();
   return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0');
 }
 
 function parseDate(r){
   if(!r) return '';
-  const s=String(r).trim();
-  if(s.includes('T')||s.includes('Z')) return s.substring(0,10).replace(/-/g,'/');
-  const sep=s.includes('/')?'/':'-';
-  const p=s.split(sep);
+  var s=String(r).trim();
+  if(s.includes('T')) return s.substring(0,10).replace(/-/g,'/');
+  var sep=s.includes('/')?'/':'-';
+  var p=s.split(sep);
   if(p.length!==3) return s.substring(0,10);
   return p[0].length===4?p[0]+'/'+p[1].padStart(2,'0')+'/'+p[2].padStart(2,'0'):p[2]+'/'+p[1].padStart(2,'0')+'/'+p[0].padStart(2,'0');
 }
 
-function sid(cls,num){return cls.replace('/','')+(num<10?'0':'')+num;}
+function sid(cls,num){ return cls.replace('/','')+(num<10?'0':'')+num; }
 
 function matchStu(rawId,cls,num){
-  const s=String(rawId||'').trim();
+  var s=String(rawId||'').trim();
   if(s===sid(cls,num)) return true;
-  if(STU_MAP[s]){const stus=STUDENTS[cls]||[];return stus[num-1]===STU_MAP[s];}
-  if(s.includes('-')){const m=s.match(/^-?(\d+)-/);if(m&&parseInt(m[1])===num) return true;}
+  if(STU_MAP[s]){var stus=STUDENTS[cls]||[];return stus[num-1]===STU_MAP[s];}
+  if(s.includes('-')){var m=s.match(/^-?([0-9]+)-/);if(m&&parseInt(m[1])===num) return true;}
   return false;
 }
 
 function getStuName(rawId,cls){
-  const s=String(rawId||'').trim();
+  var s=String(rawId||'').trim();
   if(STU_MAP[s]) return STU_MAP[s];
-  if(s.includes('-')){const m=s.match(/^-?\d+-\s*(.+)$/);if(m) return m[1].trim();}
-  const num=parseInt(s.slice(-2));
-  if(cls&&num>0){const stus=STUDENTS[cls]||[];if(stus[num-1]) return stus[num-1];}
+  if(s.includes('-')){var m=s.match(/^-?[0-9]+-\s*(.+)$/);if(m) return m[1].trim();}
+  var num=parseInt(s.slice(-2));
+  if(cls&&num>0){var stus=STUDENTS[cls]||[];if(stus[num-1]) return stus[num-1];}
   return s;
 }
 
 // ── TODAY ──
 function renderToday(){
-  const today=todayStr();
-  const registered=new Set(ALL_ATT.filter(r=>parseDate(r[1])===today).map(r=>String(r[2]||'').trim()).filter(Boolean));
-  const todayAbs=ALL_ATT.filter(r=>parseDate(r[1])===today&&String(r[5]||'').trim()==='غائب');
-  const totalAll=Object.values(STUDENTS).flat().length;
-  const regCls=[...registered];
-  const totalReg=regCls.reduce((s,c)=>(STUDENTS[c]||[]).length+s,0);
-  const absentSet=new Set(todayAbs.map(r=>String(r[2]).trim()+'|'+getStuName(r[4],String(r[2]).trim())));
-  const absent=absentSet.size;
-  document.getElementById('st-total').textContent=totalAll;
-  document.getElementById('st-absent').textContent=absent;
-  document.getElementById('st-present').textContent=totalReg>0?totalReg-absent:'—';
+  var today=todayStr();
+  var clsGroups=[['6/1','6/2','6/3','6/4'],['7/1','7/2','7/3','7/4'],['8/1','8/2','8/3'],['9/1','9/2','9/3','9/4']];
+  var gradeNames=['الصف السادس','الصف السابع','الصف الثامن','الصف التاسع'];
+
+  var registered=new Set();
+  ALL_ATT.forEach(function(r){
+    if(parseDate(r[1])===today) registered.add(String(r[2]||'').trim());
+  });
+
+  var todayAbs=ALL_ATT.filter(function(r){
+    return parseDate(r[1])===today && String(r[5]||'').trim()==='غائب';
+  });
+
+  var totalAll=Object.values(STUDENTS).flat().length;
+  var absentNames=new Set();
+  todayAbs.forEach(function(r){
+    absentNames.add(String(r[2]||'').trim()+'|'+getStuName(r[4],String(r[2]||'').trim()));
+  });
+
+  document.getElementById('st-total').textContent=totalAll||'—';
+  document.getElementById('st-absent').textContent=absentNames.size;
+  var regCls=Array.from(registered);
+  var totalReg=regCls.reduce(function(s,c){return s+(STUDENTS[c]||[]).length;},0);
+  document.getElementById('st-present').textContent=registered.size>0?(totalReg-absentNames.size):'—';
   document.getElementById('st-reg').textContent=registered.size+'/15';
 
-  // Class grid
-  const grades=[...new Set(['السادس','السابع','الثامن','التاسع'])];
-  const clsKeys=[["6/1","6/2","6/3","6/4"],["7/1","7/2","7/3","7/4"],["8/1","8/2","8/3"],["9/1","9/2","9/3","9/4"]];
-  const gradeNames=['الصف السادس','الصف السابع','الصف الثامن','الصف التاسع'];
-  let html='';
-  clsKeys.forEach((grp,gi)=>{
-    html+=`<div class="grade-lbl">${gradeNames[gi]}</div>`;
-    grp.forEach(c=>{
-      const isDone=registered.has(c);
-      const absCount=todayAbs.filter(r=>String(r[2]).trim()===c).length;
-      const cls=isDone?(absCount>0?'has-absent':'done'):'missing';
-      const statusText=isDone?(absCount>0?absCount+' غائب':'✓ حضور'):'⭕ لم يسجّل';
-      const statusColor=isDone?(absCount>0?'var(--warn)':'var(--success)'):'var(--danger)';
-      html+=`<button class="cls-btn ${cls} ${selCls===c?'selected':''}" onclick="selectCls('${c}','today-cls','cls-detail')">
-        <div class="cls-id">${c}</div>
-        <div class="cls-status" style="color:${statusColor}">${statusText}</div>
-      </button>`;
+  var html='';
+  clsGroups.forEach(function(grp,gi){
+    html+='<div class="grade-lbl">'+gradeNames[gi]+'</div>';
+    grp.forEach(function(c){
+      var isDone=registered.has(c);
+      var absCount=todayAbs.filter(function(r){return String(r[2]).trim()===c;}).length;
+      var btnCls=isDone?(absCount>0?'has-absent':'done'):'missing';
+      var selected=selCls===c?'selected':'';
+      var statusText=isDone?(absCount>0?absCount+' غائب':'✓ حضور'):'⭕ لم يسجّل';
+      var statusColor=isDone?(absCount>0?'var(--warn)':'var(--success)'):'var(--danger)';
+      html+='<button class="cls-btn '+btnCls+' '+selected+'" onclick="selectCls(''+c+'')">';
+      html+='<div class="cls-id">'+c+'</div>';
+      html+='<div class="cls-status" style="color:'+statusColor+'">'+statusText+'</div>';
+      html+='</button>';
     });
   });
+
   document.getElementById('today-cls').innerHTML=html;
-  document.getElementById('all-cls').innerHTML=html.replace(/onclick="selectCls\('([^']+)','today-cls','cls-detail'\)"/g,"onclick="selectCls('$1','all-cls','all-cls-detail')"");
-  if(selCls) renderClsDetail(selCls,todayAbs,'cls-detail');
+  document.getElementById('all-cls').innerHTML=html;
+
+  if(selCls){ renderClsDetail(selCls, 'cls-detail'); }
+  else { document.getElementById('cls-detail').innerHTML=''; }
 }
 
-function selectCls(c,gridId,detailId){
+function selectCls(c){
   selCls=c;
   renderToday();
-  setTimeout(()=>document.getElementById(detailId).scrollIntoView({behavior:'smooth'}),100);
+  setTimeout(function(){
+    var el=document.getElementById('cls-detail');
+    if(el) el.scrollIntoView({behavior:'smooth'});
+  },150);
 }
 
-function renderClsDetail(cls,absRecs,elId){
-  const stus=STUDENTS[cls]||[];
-  const el=document.getElementById(elId);
+function renderClsDetail(cls, elId){
+  var el=document.getElementById(elId);
+  if(!el) return;
+  var today=todayStr();
+  var stus=STUDENTS[cls]||[];
   if(!stus.length){el.innerHTML='';return;}
-  const today=todayStr();
-  const dayRecs=absRecs||ALL_ATT.filter(r=>parseDate(r[1])===today&&String(r[2]||'').trim()===cls&&String(r[5]||'').trim()==='غائب');
-  const registered=new Set(ALL_ATT.filter(r=>parseDate(r[1])===today).map(r=>String(r[2]||'').trim()));
-  const isDone=registered.has(cls);
-  const absCount=new Set(dayRecs.map(r=>getStuName(r[4],cls))).size;
-  let rows='';
-  stus.forEach((name,i)=>{
-    const num=i+1;
-    let cells='',isAbs=false;
-    for(let p=1;p<=7;p++){
-      const a=dayRecs.some(r=>matchStu(r[4],cls,num)&&parseInt(r[3])===p);
-      if(a) isAbs=true;
-      cells+=`<td style="text-align:center"><span class="${a?'no':'ok'}">${a?'✗':'✓'}</span></td>`;
-    }
-    rows+=`<tr class="${isAbs?'absent-row':''}">
-      <td style="color:var(--text3);font-size:11px">${num}</td>
-      <td style="font-size:12px;font-weight:600">${name}</td>
-      ${cells}
-      <td><span class="${isAbs?'status-no':'status-ok'}">${isAbs?'غائب':'حاضر'}</span></td>
-    </tr>`;
+
+  var registered=new Set();
+  ALL_ATT.forEach(function(r){ if(parseDate(r[1])===today) registered.add(String(r[2]||'').trim()); });
+  var isDone=registered.has(cls);
+
+  var absRecs=ALL_ATT.filter(function(r){
+    return parseDate(r[1])===today && String(r[2]||'').trim()===cls && String(r[5]||'').trim()==='غائب';
   });
-  el.innerHTML=`<div class="detail-card" style="margin-top:8px">
-    <div class="detail-hdr">
-      <div class="detail-title">${cls} — ${CLASSES_MAP[cls]||''}</div>
-      <span class="badge ${isDone?'badge-ok':'badge-no'}">${isDone?absCount+' غائب':'⭕ لم يسجّل'}</span>
-    </div>
-    <div class="tbl-wrap"><table class="tbl">
-      <thead><tr><th>#</th><th>الاسم</th><th>ح1</th><th>ح2</th><th>ح3</th><th>ح4</th><th>ح5</th><th>ح6</th><th>ح7</th><th>الحالة</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>
-  </div>`;
+  var absCount=new Set(absRecs.map(function(r){return getStuName(r[4],cls);})).size;
+
+  var rows='';
+  stus.forEach(function(name,idx){
+    var num=idx+1;
+    var cells='';
+    var isAbs=false;
+    for(var p=1;p<=7;p++){
+      var a=absRecs.some(function(r){return matchStu(r[4],cls,num)&&parseInt(r[3])===p;});
+      if(a) isAbs=true;
+      cells+='<td style="text-align:center"><span class="'+(a?'no':'ok')+'">'+(a?'✗':'✓')+'</span></td>';
+    }
+    rows+='<tr class="'+(isAbs?'absent-row':'')+'">';
+    rows+='<td style="color:var(--text3);font-size:11px">'+num+'</td>';
+    rows+='<td style="font-size:12px;font-weight:600">'+name+'</td>';
+    rows+=cells;
+    rows+='<td><span class="'+(isAbs?'status-no':'status-ok')+'">'+(isAbs?'غائب':'حاضر')+'</span></td>';
+    rows+='</tr>';
+  });
+
+  el.innerHTML='<div class="detail-card" style="margin-top:8px">'
+    +'<div class="detail-hdr">'
+    +'<div class="detail-title">'+cls+' — '+(CLASSES_MAP[cls]||'')+'</div>'
+    +'<span class="badge '+(isDone?'badge-ok':'badge-no')+'">'+(isDone?absCount+' غائب':'⭕ لم يسجّل')+'</span>'
+    +'</div>'
+    +'<div class="tbl-wrap"><table class="tbl">'
+    +'<thead><tr><th>#</th><th>الاسم</th><th>ح1</th><th>ح2</th><th>ح3</th><th>ح4</th><th>ح5</th><th>ح6</th><th>ح7</th><th>الحالة</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody>'
+    +'</table></div></div>';
 }
 
 // ── ABSENT TODAY ──
 function renderAbsent(){
-  const today=todayStr();
-  const todayAbs=ALL_ATT.filter(r=>parseDate(r[1])===today&&String(r[5]||'').trim()==='غائب');
-  const el=document.getElementById('absent-list');
-  const map={};
-  todayAbs.forEach(r=>{
-    const cls=String(r[2]||'').trim();
-    const rawId=String(r[4]||'').trim();
-    const name=getStuName(rawId,cls);
-    const p=parseInt(r[3])||0;
-    const key=cls+'|'+name;
-    if(!map[key]) map[key]={cls,name,periods:[]};
+  var today=todayStr();
+  var todayAbs=ALL_ATT.filter(function(r){ return parseDate(r[1])===today&&String(r[5]||'').trim()==='غائب'; });
+  var el=document.getElementById('absent-list');
+  var map={};
+  todayAbs.forEach(function(r){
+    var cls=String(r[2]||'').trim();
+    var name=getStuName(r[4],cls);
+    var p=parseInt(r[3])||0;
+    var key=cls+'|'+name;
+    if(!map[key]) map[key]={cls:cls,name:name,periods:[]};
     map[key].periods.push(p);
   });
-  const items=Object.values(map);
+  var items=Object.values(map);
   document.getElementById('absent-count').textContent=items.length+' طالب';
   if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>لا يوجد غياب اليوم</p></div>';return;}
-  items.sort((a,b)=>a.cls.localeCompare(b.cls));
-  el.innerHTML=items.map((item,i)=>{
-    const periods=item.periods.filter(p=>p>0).sort().map(p=>'ح'+p).join(' ');
-    return `<div class="absent-item">
-      <div class="ai-num">${i+1}</div>
-      <div class="ai-info"><div class="ai-name">${item.name}</div><div class="ai-cls">${item.cls} — ${CLASSES_MAP[item.cls]||''}</div></div>
-      <span class="ai-badge">${periods||'—'}</span>
-    </div>`;
+  items.sort(function(a,b){return a.cls.localeCompare(b.cls);});
+  el.innerHTML=items.map(function(item,i){
+    var periods=item.periods.filter(function(p){return p>0;}).sort().map(function(p){return 'ح'+p;}).join(' ');
+    return '<div class="absent-item">'
+      +'<div class="ai-num">'+(i+1)+'</div>'
+      +'<div class="ai-info"><div class="ai-name">'+item.name+'</div><div class="ai-cls">'+item.cls+' — '+(CLASSES_MAP[item.cls]||'')+'</div></div>'
+      +'<span class="ai-badge">'+(periods||'—')+'</span>'
+      +'</div>';
   }).join('');
 }
 
 // ── HIGH ABSENCE ──
 function renderHigh(){
-  const el=document.getElementById('high-list');
-  const counts={};
-  const clsList=Object.keys(STUDENTS);
-  clsList.forEach(cls=>{
-    (STUDENTS[cls]||[]).forEach((_,i)=>{
-      const num=i+1;
-      const cnt=ALL_ATT.filter(r=>String(r[2]||'').trim()===cls&&String(r[5]||'').trim()==='غائب'&&matchStu(r[4],cls,num)).length;
-      if(cnt>5) counts[cls+'|'+num]={cls,num,name:(STUDENTS[cls]||[])[i],cnt};
+  var el=document.getElementById('high-list');
+  var results=[];
+  Object.keys(STUDENTS).forEach(function(cls){
+    (STUDENTS[cls]||[]).forEach(function(name,idx){
+      var num=idx+1;
+      var cnt=ALL_ATT.filter(function(r){ return String(r[2]||'').trim()===cls&&String(r[5]||'').trim()==='غائب'&&matchStu(r[4],cls,num); }).length;
+      if(cnt>5) results.push({cls:cls,num:num,name:name,cnt:cnt});
     });
   });
-  const results=Object.values(counts).sort((a,b)=>b.cnt-a.cnt);
+  results.sort(function(a,b){return b.cnt-a.cnt;});
   document.getElementById('high-count').textContent=results.length+' طالب';
   if(!results.length){el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>لا يوجد طلاب تجاوز غيابهم 5 أيام</p></div>';return;}
-  const lvl=n=>n>=10?{t:'حرمان',c:'var(--danger)'}:n>=8?{t:'إنذار رسمي',c:'var(--danger)'}:n>=5?{t:'استدعاء',c:'var(--warn)'}:{t:'تنبيه',c:'var(--warn)'};
-  el.innerHTML=results.map((s,i)=>{
-    const l=lvl(s.cnt);
-    return `<div class="high-item">
-      <div class="ai-num">${i+1}</div>
-      <div style="flex:1"><div class="hi-name">${s.name}</div><div class="hi-cls">${s.cls} — ${CLASSES_MAP[s.cls]||''}</div></div>
-      <span class="hi-count">${s.cnt} يوم</span>
-      <span class="hi-lvl" style="background:rgba(220,38,38,.08);color:${l.c}">${l.t}</span>
-    </div>`;
+  el.innerHTML=results.map(function(s,i){
+    var cnt=s.cnt;
+    var lvlT=cnt>=10?'حرمان':cnt>=8?'إنذار رسمي':cnt>=5?'استدعاء':'تنبيه';
+    var lvlC=cnt>=8?'var(--danger)':'var(--warn)';
+    return '<div class="high-item">'
+      +'<div class="ai-num">'+(i+1)+'</div>'
+      +'<div style="flex:1"><div class="hi-name">'+s.name+'</div><div class="hi-cls">'+s.cls+' — '+(CLASSES_MAP[s.cls]||'')+'</div></div>'
+      +'<span class="hi-count">'+s.cnt+' يوم</span>'
+      +'<span class="hi-lvl" style="background:rgba(220,38,38,.08);color:'+lvlC+'">'+lvlT+'</span>'
+      +'</div>';
   }).join('');
 }
 
 // ── STUDENT RECORD ──
 function loadStuNames(){
-  const cls=document.getElementById('stu-cls').value;
-  const sel=document.getElementById('stu-name');
+  var cls=document.getElementById('stu-cls').value;
+  var sel=document.getElementById('stu-name');
   sel.innerHTML='<option value="">الطالب...</option>';
   document.getElementById('stu-result').innerHTML='';
   if(!cls) return;
-  (STUDENTS[cls]||[]).forEach((n,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=(i+1)+'- '+n;sel.appendChild(o);});
+  (STUDENTS[cls]||[]).forEach(function(n,i){
+    var o=document.createElement('option');
+    o.value=i+1; o.textContent=(i+1)+'- '+n;
+    sel.appendChild(o);
+  });
 }
 
 function showStuRecord(){
-  const cls=document.getElementById('stu-cls').value;
-  const num=parseInt(document.getElementById('stu-name').value);
-  const el=document.getElementById('stu-result');
+  var cls=document.getElementById('stu-cls').value;
+  var num=parseInt(document.getElementById('stu-name').value);
+  var el=document.getElementById('stu-result');
   if(!cls||!num) return;
-  const name=(STUDENTS[cls]||[])[num-1]||'';
-  const recs=ALL_ATT.filter(r=>matchStu(r[4],cls,num));
-  const byDate={};
-  recs.forEach(r=>{const d=parseDate(r[1]);if(!byDate[d]) byDate[d]=[];byDate[d].push({p:parseInt(r[3]),s:String(r[5]).trim()});});
-  const dates=Object.keys(byDate).sort().reverse();
-  const totalAbs=recs.filter(r=>String(r[5]).trim()==='غائب').length;
-  if(!dates.length){el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>لا يوجد غياب لهذا الطالب</p></div>';return;}
-  const lvl=totalAbs>=10?{t:'حرمان',c:'var(--danger)'}:totalAbs>=8?{t:'إنذار رسمي',c:'var(--danger)'}:totalAbs>=5?{t:'استدعاء',c:'var(--warn)'}:totalAbs>=3?{t:'تنبيه',c:'var(--warn)'}:{t:'طبيعي',c:'var(--success)'};
-  let rows='';
-  dates.forEach(d=>{
-    const day=byDate[d];
-    let cells='';
-    for(let p=1;p<=7;p++){const r=day.find(x=>x.p===p);cells+=`<td style="text-align:center">${!r?'—':r.s==='غائب'?'<span class="no">✗</span>':'<span style="color:var(--warn)">⏰</span>'}</td>`;}
-    rows+=`<tr><td style="font-size:11px;color:var(--text3);white-space:nowrap">${d}</td>${cells}</tr>`;
+  var name=(STUDENTS[cls]||[])[num-1]||'';
+  var recs=ALL_ATT.filter(function(r){return matchStu(r[4],cls,num);});
+  var byDate={};
+  recs.forEach(function(r){
+    var d=parseDate(r[1]);
+    if(!byDate[d]) byDate[d]=[];
+    byDate[d].push({p:parseInt(r[3]),s:String(r[5]).trim()});
   });
-  el.innerHTML=`<div class="detail-card">
-    <div class="detail-hdr"><div class="detail-title">${name}</div><span class="hi-lvl" style="background:rgba(220,38,38,.08);color:${lvl.c}">${lvl.t}</span></div>
-    <div style="display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border)">
-      <div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:900;color:var(--danger)">${totalAbs}</div><div style="font-size:11px;color:var(--text3)">غياب</div></div>
-      <div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:900;color:var(--blue)">${dates.length}</div><div style="font-size:11px;color:var(--text3)">أيام مسجّلة</div></div>
-    </div>
-    <div class="tbl-wrap"><table class="tbl">
-      <thead><tr><th>التاريخ</th><th>ح1</th><th>ح2</th><th>ح3</th><th>ح4</th><th>ح5</th><th>ح6</th><th>ح7</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>
-  </div>`;
+  var dates=Object.keys(byDate).sort().reverse();
+  var totalAbs=recs.filter(function(r){return String(r[5]).trim()==='غائب';}).length;
+  if(!dates.length){el.innerHTML='<div class="empty"><div class="empty-icon">✅</div><p>لا يوجد غياب لهذا الطالب</p></div>';return;}
+  var lvlT=totalAbs>=10?'حرمان':totalAbs>=8?'إنذار رسمي':totalAbs>=5?'استدعاء':totalAbs>=3?'تنبيه':'طبيعي';
+  var lvlC=totalAbs>=5?'var(--danger)':totalAbs>=3?'var(--warn)':'var(--success)';
+  var rows='';
+  dates.forEach(function(d){
+    var day=byDate[d];
+    var cells='';
+    for(var p=1;p<=7;p++){
+      var r=day.find(function(x){return x.p===p;});
+      cells+='<td style="text-align:center">'+ (!r?'—':r.s==='غائب'?'<span class="no">✗</span>':'<span style="color:var(--warn)">⏰</span>') +'</td>';
+    }
+    rows+='<tr><td style="font-size:11px;color:var(--text3);white-space:nowrap">'+d+'</td>'+cells+'</tr>';
+  });
+  el.innerHTML='<div class="detail-card">'
+    +'<div class="detail-hdr"><div class="detail-title">'+name+'</div><span class="hi-lvl" style="background:rgba(220,38,38,.08);color:'+lvlC+'">'+lvlT+'</span></div>'
+    +'<div style="display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border)">'
+    +'<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:900;color:var(--danger)">'+totalAbs+'</div><div style="font-size:11px;color:var(--text3)">غياب</div></div>'
+    +'<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:900;color:var(--blue)">'+dates.length+'</div><div style="font-size:11px;color:var(--text3)">أيام مسجّلة</div></div>'
+    +'</div>'
+    +'<div class="tbl-wrap"><table class="tbl"><thead><tr><th>التاريخ</th><th>ح1</th><th>ح2</th><th>ح3</th><th>ح4</th><th>ح5</th><th>ح6</th><th>ح7</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+    +'</div>';
 }
 
 // ── DATE SEARCH ──
 function searchDate(){
-  const cls=document.getElementById('dt-cls').value;
-  const dateVal=document.getElementById('dt-date').value;
-  const el=document.getElementById('dt-result');
+  var cls=document.getElementById('dt-cls').value;
+  var dateVal=document.getElementById('dt-date').value;
+  var el=document.getElementById('dt-result');
   if(!cls||!dateVal){el.innerHTML='<div class="empty">اختر الفصل والتاريخ</div>';return;}
-  const ds=dateVal.replace(/-/g,'/');
-  const stus=STUDENTS[cls]||[];
-  const dayRecs=ALL_ATT.filter(r=>parseDate(r[1])===ds&&String(r[2]||'').trim()===cls&&String(r[5]||'').trim()==='غائب');
-  let absCnt=0,rows='';
-  stus.forEach((name,i)=>{
-    const num=i+1;
-    let cells='',rowAbs=false;
-    for(let p=1;p<=7;p++){
-      const rec=dayRecs.find(r=>matchStu(r[4],cls,num)&&parseInt(r[3])===p);
+  var ds=dateVal.replace(/-/g,'/');
+  var stus=STUDENTS[cls]||[];
+  var dayRecs=ALL_ATT.filter(function(r){
+    return parseDate(r[1])===ds&&String(r[2]||'').trim()===cls&&String(r[5]||'').trim()==='غائب';
+  });
+  var absCnt=0,rows='';
+  stus.forEach(function(name,idx){
+    var num=idx+1;
+    var cells='',rowAbs=false;
+    for(var p=1;p<=7;p++){
+      var rec=dayRecs.find(function(r){return matchStu(r[4],cls,num)&&parseInt(r[3])===p;});
       if(rec) rowAbs=true;
-      cells+=`<td style="text-align:center">${rec?'<span class="no">✗</span>':'<span class="ok">✓</span>'}</td>`;
+      cells+='<td style="text-align:center">'+(rec?'<span class="no">✗</span>':'<span class="ok">✓</span>')+'</td>';
     }
     if(rowAbs) absCnt++;
-    rows+=`<tr class="${rowAbs?'absent-row':''}"><td style="color:var(--text3);font-size:11px">${num}</td><td style="font-size:12px;font-weight:600">${name}</td>${cells}<td><span class="${rowAbs?'status-no':'status-ok'}">${rowAbs?'غائب':'حاضر'}</span></td></tr>`;
+    rows+='<tr class="'+(rowAbs?'absent-row':'')+'">'
+      +'<td style="color:var(--text3);font-size:11px">'+num+'</td>'
+      +'<td style="font-size:12px;font-weight:600">'+name+'</td>'
+      +cells
+      +'<td><span class="'+(rowAbs?'status-no':'status-ok')+'">'+(rowAbs?'غائب':'حاضر')+'</span></td>'
+      +'</tr>';
   });
-  el.innerHTML=`<div class="detail-card">
-    <div class="detail-hdr">
-      <div><span style="font-size:16px;font-weight:900">${cls}</span> <span style="font-size:13px;color:var(--text3)">${dateVal}</span></div>
-      <span><span style="color:var(--danger);font-weight:700">${absCnt} غائب</span> · <span style="color:var(--success);font-weight:700">${stus.length-absCnt} حاضر</span></span>
-    </div>
-    ${stus.length?`<div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>الاسم</th><th>ح1</th><th>ح2</th><th>ح3</th><th>ح4</th><th>ح5</th><th>ح6</th><th>ح7</th><th>الحالة</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<div class="empty">لا توجد بيانات</div>'}
-  </div>`;
+  el.innerHTML='<div class="detail-card">'
+    +'<div class="detail-hdr">'
+    +'<div><span style="font-size:16px;font-weight:900">'+cls+'</span> <span style="font-size:13px;color:var(--text3)">'+dateVal+'</span></div>'
+    +'<span><span style="color:var(--danger);font-weight:700">'+absCnt+' غائب</span> · <span style="color:var(--success);font-weight:700">'+(stus.length-absCnt)+' حاضر</span></span>'
+    +'</div>'
+    +(stus.length?'<div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>الاسم</th><th>ح1</th><th>ح2</th><th>ح3</th><th>ح4</th><th>ح5</th><th>ح6</th><th>ح7</th><th>الحالة</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="empty">لا توجد بيانات</div>')
+    +'</div>';
 }
 
 // ── USERS ──
-async function loadUsers(){
-  const el=document.getElementById('users-list');
-  try{
-    const res=await fetch(API+'?action=getUsers',{redirect:'follow'});
-    const json=await res.json();
-    const users=json.users||[];
-    if(!users.length){el.innerHTML='<div class="empty"><div class="empty-icon">👥</div><p>لا يوجد مستخدمون</p></div>';return;}
-    el.innerHTML=users.map((u,i)=>{
-      const isAdmin=u.role==='admin';
-      return `<div class="user-row">
-        <div class="user-icon ${isAdmin?'admin-icon':'teacher-icon'}">${isAdmin?'👔':'👨‍🏫'}</div>
-        <div class="user-info"><div class="user-name">${u.name}</div><div class="user-id">ID: ${u.id}${u.classId?' | فصل: '+u.classId:''}</div></div>
-        <span class="user-role ${isAdmin?'role-admin':'role-teacher'}">${isAdmin?'مدير':'معلم'}</span>
-        ${!isAdmin?`<button class="del-btn" onclick="delUser('${u.id}')">حذف</button>`:''}
-      </div>`;
-    }).join('');
-  }catch(e){el.innerHTML='<div class="empty">فشل تحميل المستخدمين</div>';}
+function loadUsers(){
+  var el=document.getElementById('users-list');
+  el.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  fetch(API+'?action=getUsers&t='+Date.now(),{redirect:'follow'})
+    .then(function(r){return r.json();})
+    .then(function(json){
+      var users=json.users||[];
+      if(!users.length){el.innerHTML='<div class="empty"><div class="empty-icon">👥</div><p>لا يوجد مستخدمون</p></div>';return;}
+      el.innerHTML=users.map(function(u){
+        var isAdmin=u.role==='admin';
+        return '<div class="user-row">'
+          +'<div class="user-icon '+(isAdmin?'admin-icon':'teacher-icon')+'">'+(isAdmin?'👔':'👨‍🏫')+'</div>'
+          +'<div class="user-info"><div class="user-name">'+u.name+'</div><div class="user-id">ID: '+u.id+(u.classId?' | فصل: '+u.classId:'')+'</div></div>'
+          +'<span class="user-role '+(isAdmin?'role-admin':'role-teacher')+'">'+(isAdmin?'مدير':'معلم')+'</span>'
+          +(!isAdmin?'<button class="del-btn" onclick="delUser(''+u.id+'')">حذف</button>':'')
+          +'</div>';
+      }).join('');
+    })
+    .catch(function(){el.innerHTML='<div class="empty">فشل تحميل المستخدمين</div>';});
 }
 
-async function addUser(){
-  const id=document.getElementById('nu-id').value.trim();
-  const pass=document.getElementById('nu-pass').value.trim();
-  const name=document.getElementById('nu-name').value.trim();
-  const role=document.getElementById('nu-role').value;
-  const cls=document.getElementById('nu-cls').value;
-  if(!id||!pass||!name){alert('يرجى ملء جميع الحقول الإلزامية');return;}
-  try{
-    const res=await fetch(API,{method:'POST',body:JSON.stringify({action:'addUser',user:{id,pass,name,role,classId:cls}}),headers:{'Content-Type':'text/plain'},redirect:'follow'});
-    let json;try{json=await res.json();}catch(e){json={success:true};}
-    if(json.success||true){
-      closeModal();
-      ['nu-id','nu-pass','nu-name'].forEach(i=>document.getElementById(i).value='');
-      loadUsers();
-      alert('✅ تم إضافة المستخدم بنجاح');
-    }
-  }catch(e){alert('فشل الإضافة');}
+function addUser(){
+  var id=document.getElementById('nu-id').value.trim();
+  var pass=document.getElementById('nu-pass').value.trim();
+  var name=document.getElementById('nu-name').value.trim();
+  var role=document.getElementById('nu-role').value;
+  var cls=document.getElementById('nu-cls').value;
+  if(!id||!pass||!name){alert('يرجى ملء جميع الحقول');return;}
+  fetch(API,{method:'POST',body:JSON.stringify({action:'addUser',user:{id:id,pass:pass,name:name,role:role,classId:cls}}),headers:{'Content-Type':'text/plain'},redirect:'follow'})
+    .then(function(){closeModal();loadUsers();['nu-id','nu-pass','nu-name'].forEach(function(x){document.getElementById(x).value='';});alert('✅ تم إضافة المستخدم');})
+    .catch(function(){alert('فشل الإضافة');});
 }
 
-async function delUser(userId){
+function delUser(userId){
   if(!confirm('هل تريد حذف هذا المستخدم؟')) return;
-  try{
-    const res=await fetch(API,{method:'POST',body:JSON.stringify({action:'deleteUser',userId}),headers:{'Content-Type':'text/plain'},redirect:'follow'});
-    loadUsers();
-  }catch(e){alert('فشل الحذف');}
+  fetch(API,{method:'POST',body:JSON.stringify({action:'deleteUser',userId:userId}),headers:{'Content-Type':'text/plain'},redirect:'follow'})
+    .then(function(){loadUsers();})
+    .catch(function(){alert('فشل الحذف');});
 }
 
-function openAddUser(){document.getElementById('addUserModal').classList.add('show');}
-function closeModal(){document.getElementById('addUserModal').classList.remove('show');}
-document.getElementById('addUserModal').addEventListener('click',e=>{if(e.target===document.getElementById('addUserModal')) closeModal();});
+function openAddUser(){ document.getElementById('addUserModal').classList.add('show'); }
+function closeModal(){ document.getElementById('addUserModal').classList.remove('show'); }
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('addUserModal').addEventListener('click',function(e){
+    if(e.target===document.getElementById('addUserModal')) closeModal();
+  });
+});
 
 // ── TAB SWITCH ──
+window._tabReady=true;
+window.renderAbsent=renderAbsent;
+window.renderHigh=renderHigh;
+window.loadUsers=loadUsers;
+
 function switchTab(id,btn){
-  document.querySelectorAll('[id^="tab-"]').forEach(e=>e.style.display='none');
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+id).style.display='block';
-  btn.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(function(e){e.style.display='none';});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  var tabEl=document.getElementById('tab-'+id);
+  if(tabEl) tabEl.style.display='block';
+  if(btn) btn.classList.add('active');
   if(id==='absent') renderAbsent();
   if(id==='high') renderHigh();
   if(id==='users') loadUsers();
   if(id==='classes'){selCls=null;renderToday();}
 }
 
-function logout(){localStorage.removeItem('hs_user');window.location.href='index.html';}
+function logout(){ localStorage.removeItem('hs_user'); window.location.href='index.html'; }
 
-// Auto refresh every 2 min
-setInterval(async()=>{await loadData();renderToday();},120000);
+setInterval(function(){ loadData().then(function(){renderToday();}); }, 120000);
 </script>
 </body>
 </html>
