@@ -252,7 +252,7 @@ function renderToday(){
       var selected=selCls===c?'selected':'';
       var statusText=isDone?(absCount>0?absCount+' غائب':'✓ حضور'):'⭕ لم يسجّل';
       var statusColor=isDone?(absCount>0?'var(--warn)':'var(--success)'):'var(--danger)';
-      html+='<button class="cls-btn '+btnCls+' '+selected+'" onclick="selectCls(''+c+'')">';
+      html+='<button class="cls-btn '+btnCls+' '+selected+'" data-cls="'+c+'">';
       html+='<div class="cls-id">'+c+'</div>';
       html+='<div class="cls-status" style="color:'+statusColor+'">'+statusText+'</div>';
       html+='</button>';
@@ -261,6 +261,17 @@ function renderToday(){
 
   document.getElementById('today-cls').innerHTML=html;
   document.getElementById('all-cls').innerHTML=html;
+
+  // Event delegation for class buttons
+  ['today-cls','all-cls'].forEach(function(gridId){
+    var grid=document.getElementById(gridId);
+    if(grid){
+      grid.onclick=function(e){
+        var btn=e.target.closest('.cls-btn');
+        if(btn){selectCls(btn.getAttribute('data-cls'));}
+      };
+    }
+  });
 
   if(selCls){ renderClsDetail(selCls, 'cls-detail'); }
   else { document.getElementById('cls-detail').innerHTML=''; }
@@ -479,9 +490,19 @@ function loadUsers(){
           +'<div class="user-icon '+(isAdmin?'admin-icon':'teacher-icon')+'">'+(isAdmin?'👔':'👨‍🏫')+'</div>'
           +'<div class="user-info"><div class="user-name">'+u.name+'</div><div class="user-id">ID: '+u.id+(u.classId?' | فصل: '+u.classId:'')+'</div></div>'
           +'<span class="user-role '+(isAdmin?'role-admin':'role-teacher')+'">'+(isAdmin?'مدير':'معلم')+'</span>'
-          +(!isAdmin?'<button class="del-btn" onclick="delUser(''+u.id+'')">حذف</button>':'')
+          +(!isAdmin?'<button class="del-btn" data-uid="'+u.id+'" onclick="delUser(this.getAttribute(&quot;data-uid&quot;))">حذف</button>':'')
           +'</div>';
       }).join('');
+    })
+    .then(function(){
+      // event delegation for delete buttons
+      var el2=document.getElementById('users-list');
+      if(el2){
+        el2.onclick=function(e){
+          var btn=e.target.closest('[data-uid]');
+          if(btn) delUser(btn.getAttribute('data-uid'));
+        };
+      }
     })
     .catch(function(){el.innerHTML='<div class="empty">فشل تحميل المستخدمين</div>';});
 }
