@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>إعداد النظام</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Tajawal',sans-serif;background:#0a1628;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;width:100%;max-width:400px}
+h1{font-size:20px;font-weight:800;margin-bottom:6px}
+p{font-size:13px;color:#94a3b8;margin-bottom:24px}
+.field{margin-bottom:14px}
+label{font-size:12px;color:#94a3b8;display:block;margin-bottom:5px;font-weight:700}
+input{width:100%;padding:11px 14px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;color:white;font-family:'Tajawal',sans-serif;font-size:14px;outline:none}
+input:focus{border-color:#1a56db}
+button{width:100%;padding:13px;background:linear-gradient(135deg,#1a56db,#1e40af);border:none;border-radius:12px;color:white;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px}
+.msg{padding:12px;border-radius:10px;font-size:13px;font-weight:700;margin-top:14px;display:none;text-align:center}
+.msg.ok{background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.3);color:#6ee7b7;display:block}
+.msg.err{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);color:#fca5a5;display:block}
+.warn{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px;font-size:12px;color:#fcd34d;margin-bottom:20px}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>⚙️ إعداد المدير</h1>
+  <p>أنشئ حساب المدير الأول للنظام</p>
+  
+  <div class="warn">⚠️ هذه الصفحة للإعداد الأولي فقط — احذفها بعد الانتهاء</div>
+
+  <div class="field">
+    <label>رقم المستخدم (سيكون اسم المستخدم)</label>
+    <input type="text" id="userId" placeholder="مثال: 6464" value="6464">
+  </div>
+  <div class="field">
+    <label>الاسم</label>
+    <input type="text" id="name" placeholder="الاسم الكامل" value="حسين">
+  </div>
+  <div class="field">
+    <label>كلمة المرور</label>
+    <input type="text" id="pass" placeholder="كلمة المرور" value="310">
+  </div>
+
+  <button id="createBtn">✅ إنشاء حساب المدير</button>
+  <div id="msg" class="msg"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, collection, addDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const app = initializeApp({
+  apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
+  authDomain: "hosainan-school.firebaseapp.com",
+  projectId: "hosainan-school",
+  storageBucket: "hosainan-school.firebasestorage.app",
+  messagingSenderId: "264264994076",
+  appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+async function createAdmin(){
+  const userId = document.getElementById('userId').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const pass = document.getElementById('pass').value.trim();
+  const msg = document.getElementById('msg');
+  
+  if(!userId||!name||!pass){
+    msg.className='msg err'; msg.textContent='يرجى ملء جميع الحقول'; return;
+  }
+
+  try{
+    const email = userId + '@hosainan.edu';
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    
+    await setDoc(doc(db,'users',cred.user.uid),{
+      userId, name, role:'admin', email,
+      createdAt: new Date().toISOString(),
+      classId: ''
+    });
+
+    msg.className='msg ok';
+    msg.textContent='✅ تم إنشاء حساب المدير! رقم: '+userId+' | كلمة المرور: '+pass;
+    
+    setTimeout(function(){ window.location.href='index.html'; }, 3000);
+  }catch(e){
+    msg.className='msg err';
+    if(e.code==='auth/email-already-in-use'){
+      msg.textContent='هذا الرقم مسجّل بالفعل!';
+    } else {
+      msg.textContent='خطأ: '+e.message;
+    }
+  }
+};
+  document.getElementById('createBtn').addEventListener('click', createAdmin);
+</script>
+</body>
+</html>
