@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0a1628">
 <meta name="mobile-web-app-capable" content="yes">
 <title>متوسطة سالم الحسينان</title>
-<link rel="manifest" href="manifest.json">
+
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -162,7 +162,7 @@ html,body{min-height:100vh;font-family:'Tajawal',sans-serif;background:var(--nav
         <label for="rem">تذكرني</label>
       </div>
 
-      <button class="login-btn" id="loginBtn" id="loginBtnEl">
+      <button class="login-btn" id="loginBtn">
         <div class="btn-inner">
           <div class="sp"></div>
           <span id="btnTxt">تسجيل الدخول</span>
@@ -341,7 +341,7 @@ document.getElementById('eyeToggle').addEventListener('click', function(){
   b.textContent=i.type==='password'?'👁️':'🙈';
 });
 
-document.getElementById('loginBtnEl').addEventListener('click', doLogin);
+document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('userId').addEventListener('keyup',function(e){if(e.key==='Enter') document.getElementById('pass').focus();});
 document.getElementById('pass').addEventListener('keyup',function(e){if(e.key==='Enter') doLogin();});
 </script>
