@@ -333,6 +333,36 @@ html,body{min-height:100vh;font-family:'Tajawal',sans-serif;background:var(--bg)
 
 </div><!-- /main -->
 
+<!-- EDIT USER MODAL -->
+<div class="modal-ov" id="edit-user-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">✏️ تعديل بيانات المستخدم</div>
+      <button class="modal-close" id="close-edit-user-modal">✕</button>
+    </div>
+    <div class="form-field"><label class="form-lbl">الاسم الكامل</label><input type="text" class="form-inp" id="eu-name" placeholder="الاسم الكامل"></div>
+    <div class="form-field"><label class="form-lbl">رقم المستخدم</label><input type="text" class="form-inp" id="eu-id" placeholder="رقم المستخدم" inputmode="numeric"></div>
+    <div class="form-field"><label class="form-lbl">كلمة المرور الجديدة (اتركها فارغة إن لم تريد تغييرها)</label><input type="text" class="form-inp" id="eu-pass" placeholder="كلمة المرور الجديدة"></div>
+    <div class="form-field"><label class="form-lbl">الدور</label>
+      <select class="form-sel" id="eu-role">
+        <option value="teacher">معلم</option>
+        <option value="admin">مدير</option>
+      </select>
+    </div>
+    <div class="form-field"><label class="form-lbl">الفصل</label>
+      <select class="form-sel" id="eu-cls">
+        <option value="">— اختياري —</option>
+        <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
+        <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
+        <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option>
+        <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
+      </select>
+    </div>
+    <div id="edit-user-msg" style="display:none;padding:10px;border-radius:10px;font-size:13px;font-weight:700;margin-top:8px;text-align:center"></div>
+    <button class="submit-btn" id="save-edit-user-btn">✅ حفظ التعديلات</button>
+  </div>
+</div>
+
 <!-- ADD USER MODAL -->
 <div class="modal-ov" id="user-modal">
   <div class="modal">
@@ -421,7 +451,7 @@ html,body{min-height:100vh;font-family:'Tajawal',sans-serif;background:var(--bg)
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, deleteDoc, query, where, orderBy, onSnapshot, Timestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB = {
   apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
@@ -817,10 +847,12 @@ async function loadDeptVisits(dept){
   const el=document.getElementById('visits-items');
   el.innerHTML='<div class="loading"><div class="spinner"></div></div>';
   try{
-    const q=query(collection(db,'visits'),where('dept','==',dept),orderBy('date','desc'));
+    const q=query(collection(db,'visits'),where('dept','==',dept));
     const snap=await getDocs(q);
     if(snap.empty){ el.innerHTML='<div class="empty"><div class="empty-icon">📋</div><p>لا توجد زيارات لهذا القسم</p></div>'; return; }
-    el.innerHTML=snap.docs.map(function(d){
+    // Sort by date client-side to avoid Firestore index requirement
+    const sortedDocs=snap.docs.slice().sort(function(a,b){ return (b.data().date||'').localeCompare(a.data().date||''); });
+    el.innerHTML=sortedDocs.map(function(d){
       const v=d.data();
       const score=calcScore(v.ratings);
       const scoreCls=score>=85?'score-ex':score>=70?'score-gd':score>=55?'score-ok':'score-wk';
@@ -834,6 +866,7 @@ async function loadDeptVisits(dept){
     }).join('');
 
     // Delete buttons
+    // sortedDocs already defined above
     el.querySelectorAll('.del-btn').forEach(function(btn){
       btn.addEventListener('click', async function(e){
         e.stopPropagation();
@@ -936,12 +969,23 @@ async function loadUsers(){
     if(snap.empty){ el.innerHTML='<div class="empty"><div class="empty-icon">👥</div><p>لا يوجد مستخدمون</p></div>'; return; }
     el.innerHTML=snap.docs.map(function(d){
       const u=d.data(); const isAdmin=u.role==='admin';
-      return '<div class="user-row">'
+      // Store password in Firestore for admin visibility
+      const passDisplay = u.plainPass || '——';
+      return '<div class="user-row" style="flex-wrap:wrap;gap:6px">'
         +'<div class="user-icon '+(isAdmin?'admin-icon':'teacher-icon')+'">'+(isAdmin?'👔':'👨‍🏫')+'</div>'
-        +'<div class="user-info"><div class="user-name">'+u.name+'</div>'
-        +'<div class="user-id">ID: '+u.userId+(u.classId?' | فصل: '+u.classId:'')+'</div></div>'
+        +'<div class="user-info" style="min-width:150px">'
+        +'<div class="user-name">'+u.name+'</div>'
+        +'<div class="user-id">🪪 '+u.userId+(u.classId?' | 🏫 '+u.classId:'')+'</div>'
+        +'<div class="user-id" style="color:var(--warn)">🔑 '
+        +'<span class="pass-span" data-pass="'+passDisplay+'">••••••</span> '
+        +'<button class="show-pass-btn" style="font-size:10px;padding:1px 6px;border-radius:6px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-family:Tajawal,sans-serif">👁️ إظهار</button>'
+        +'</div></div>'
         +'<span class="role-badge '+(isAdmin?'role-admin':'role-teacher')+'">'+(isAdmin?'مدير':'معلم')+'</span>'
-        +(!isAdmin?'<button class="del-btn" data-uid="'+d.id+'" data-email="'+u.email+'">حذف</button>':'')
+        +'<div style="display:flex;gap:4px;flex-wrap:wrap">'
+        +'<button class="edit-user-btn" style="padding:5px 10px;border-radius:8px;border:none;background:var(--blue);color:white;font-family:Tajawal,sans-serif;font-size:12px;font-weight:700;cursor:pointer" '
+        +'data-uid="'+d.id+'" data-name="'+u.name+'" data-userid="'+u.userId+'" data-role="'+u.role+'" data-cls="'+(u.classId||'')+'">✏️ تعديل</button>'
+        +(!isAdmin?'<button class="del-btn" data-uid="'+d.id+'">🗑️ حذف</button>':'')
+        +'</div>'
         +'</div>';
     }).join('');
 
@@ -950,6 +994,40 @@ async function loadUsers(){
         if(!confirm('هل تريد حذف هذا المستخدم؟')) return;
         await deleteDoc(doc(db,'users',this.getAttribute('data-uid')));
         loadUsers();
+      });
+    });
+
+    // Show/hide password
+    el.querySelectorAll('.show-pass-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        const span=this.previousElementSibling;
+        if(this.textContent.includes('إظهار')){
+          span.textContent=span.getAttribute('data-pass');
+          this.textContent='🙈 إخفاء';
+        } else {
+          span.textContent='••••••';
+          this.textContent='👁️ إظهار';
+        }
+      });
+    });
+
+    // Edit user button
+    el.querySelectorAll('.edit-user-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        const uid=this.getAttribute('data-uid');
+        const name=this.getAttribute('data-name');
+        const userId=this.getAttribute('data-userid');
+        const role=this.getAttribute('data-role');
+        const cls=this.getAttribute('data-cls');
+        // Fill edit form
+        document.getElementById('eu-name').value=name;
+        document.getElementById('eu-id').value=userId;
+        document.getElementById('eu-pass').value='';
+        document.getElementById('eu-role').value=role;
+        document.getElementById('eu-cls').value=cls||'';
+        // Store uid for save
+        document.getElementById('save-edit-user-btn').setAttribute('data-uid',uid);
+        openModal('edit-user-modal');
       });
     });
   }catch(e){ el.innerHTML='<div class="empty">فشل تحميل المستخدمين</div>'; }
@@ -974,6 +1052,7 @@ document.getElementById('save-user-btn').addEventListener('click', async functio
     const cred=await createUserWithEmailAndPassword(auth,email,pass);
     await setDoc(doc(db,'users',cred.user.uid),{
       userId,name,role,email,classId:cls,
+      plainPass:pass,
       createdAt:new Date().toISOString()
     });
     showMsg(msg,'✅ تم إضافة المستخدم بنجاح!','ok');
@@ -1019,6 +1098,30 @@ function setupEvents(){
   // Modals
   document.getElementById('add-user-btn').addEventListener('click',function(){ openModal('user-modal'); });
   document.getElementById('close-user-modal').addEventListener('click',function(){ closeModal('user-modal'); });
+  document.getElementById('close-edit-user-modal').addEventListener('click',function(){ closeModal('edit-user-modal'); });
+  document.getElementById('edit-user-modal').addEventListener('click',function(e){ if(e.target===this) closeModal('edit-user-modal'); });
+
+  // Save edit user
+  document.getElementById('save-edit-user-btn').addEventListener('click', async function(){
+    const uid=this.getAttribute('data-uid');
+    const name=document.getElementById('eu-name').value.trim();
+    const userId=document.getElementById('eu-id').value.trim();
+    const pass=document.getElementById('eu-pass').value.trim();
+    const role=document.getElementById('eu-role').value;
+    const cls=document.getElementById('eu-cls').value;
+    const msg=document.getElementById('edit-user-msg');
+    if(!name||!userId){ showMsg(msg,'يرجى ملء الاسم ورقم المستخدم','err'); return; }
+    if(pass && pass.length<6){ showMsg(msg,'كلمة المرور يجب أن تكون 6 أحرف على الأقل','err'); return; }
+    this.disabled=true; this.textContent='⏳ جارٍ الحفظ...';
+    try{
+      const updateData={name,userId,role,classId:cls};
+      if(pass) updateData.plainPass=pass;
+      await setDoc(doc(db,'users',uid),updateData,{merge:true});
+      showMsg(msg,'✅ تم حفظ التعديلات!','ok');
+      setTimeout(function(){ closeModal('edit-user-modal'); loadUsers(); },1200);
+    }catch(e){ showMsg(msg,'خطأ: '+e.message,'err'); }
+    this.disabled=false; this.textContent='✅ حفظ التعديلات';
+  });
   document.getElementById('new-visit-btn').addEventListener('click',function(){
     buildRatingTable(document.getElementById('v-dept').value);
     openModal('visit-modal');
