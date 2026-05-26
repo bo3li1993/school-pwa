@@ -293,16 +293,13 @@ table td{padding:12px;border-bottom:1px solid #eee}
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import {getAuth,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import {getFirestore,collection,doc,getDoc,getDocs,addDoc,query,where,orderBy,deleteDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const firebaseConfig={apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9",measurementId:"G-FG9NLDJZQN"};
 const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
 const db=getFirestore(app);
 
 window.db = db;
-window.auth = auth;
 window.collection = collection;
 window.doc = doc;
 window.getDoc = getDoc;
@@ -316,21 +313,22 @@ window.serverTimestamp = serverTimestamp;
 
 let currentUser=null;
 
-onAuthStateChanged(auth,async user=>{
-  if(!user){window.location.href='index.html';return}
-  const userDoc=await getDoc(doc(db,'users',user.uid));
-  if(!userDoc.exists()||userDoc.data().role!=='admin'){
-    await signOut(auth);
-    window.location.href='index.html';
-    return;
-  }
-  currentUser=userDoc.data();
-  document.getElementById('user-name').textContent=currentUser.name||'المدير';
-  loadDashboard();
-});
+// تحقق من تسجيل الدخول عبر localStorage
+var savedUser=localStorage.getItem('hs_user');
+if(!savedUser){window.location.href='index.html'}
+else{
+  try{
+    currentUser=JSON.parse(savedUser);
+    if(currentUser.role!=='admin'){window.location.href='index.html'}
+    else{
+      document.getElementById('user-name').textContent=currentUser.name||'المدير';
+      loadDashboard();
+    }
+  }catch(e){window.location.href='index.html'}
+}
 
-window.logout=async()=>{
-  await signOut(auth);
+window.logout=function(){
+  localStorage.removeItem('hs_user');
   window.location.href='index.html';
 };
 
@@ -723,10 +721,10 @@ window.printVisit=async id=>{
   let critRows='';
   criteria.forEach((c,i)=>{
     const score=v.scores?.[i]||0;
-    critRows+=`<tr><td style="padding:8px;border:1px solid #ddd">${c}</td><td style="padding:8px;border:1px solid #ddd;text-align:center">${scoreLabels[score]||'-'}</td></tr>`;
+    critRows+=`<tr><td style="padding:8px;border:1px solid #999">${c}</td><td style="padding:8px;border:1px solid #999;text-align:center">${scoreLabels[score]||'-'}</td><td style="padding:8px;border:1px solid #999"></td></tr>`;
   });
   
-  const printContent=`<html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة - ${v.teacherName}</title><style>@page{size:A4;margin:1cm}body{font-family:Arial,sans-serif;padding:0.5cm;font-size:11px}h2{text-align:center;margin-bottom:0.5cm;font-size:14px}table{width:100%;border-collapse:collapse;margin:0.3cm 0}th{background:#f5f5f5;padding:4px 6px;border:1px solid #ddd;font-size:10px}td{padding:4px 6px;border:1px solid #ddd;font-size:10px}.info{margin:0.3cm 0;display:grid;grid-template-columns:1fr 1fr;gap:4px}.info div{margin:2px 0;font-size:11px}.signatures{margin-top:0.8cm;display:flex;justify-content:space-between}.sig-box{text-align:center;font-size:11px}.notes{border:1px solid #ddd;padding:0.3cm;margin:0.3cm 0;font-size:10px}</style></head><body><h2>نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2><div class="info"><div><strong>اسم المعلم:</strong> ${v.teacherName}</div><div><strong>القسم الدراسي:</strong> ${v.dept}</div><div><strong>المادة:</strong> ${v.subject||v.dept}</div><div><strong>الصف الدراسي:</strong> ${v.className}</div><div><strong>الحصة:</strong> الحصة ${v.period}</div><div><strong>تاريخ الزيارة:</strong> ${v.date}</div></div><table><thead><tr><th style="width:60%">البند التقني والمعيار المحدد</th><th>التقييم</th></tr></thead><tbody>${critRows}</tbody></table>${v.notes?`<div class="notes"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:4px 0">${v.notes}</p></div>`:''}<div class="signatures"><div class="sig-box"><div>التوقيع: _____________</div><div>المدير</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>رئيس القسم</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>المعلم</div></div></div></body></html>`;
+  const printContent=`<html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة - ${v.teacherName}</title><style>@page{size:A4;margin:0.8cm}*{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%}body{font-family:Arial,sans-serif;padding:0.8cm;font-size:13px;display:flex;flex-direction:column;min-height:100vh}h2{text-align:center;margin-bottom:0.6cm;font-size:16px;font-weight:bold}table{width:100%;border-collapse:collapse;flex:1}th{background:#f0f0f0;padding:8px;border:1px solid #999;font-size:12px;font-weight:bold}td{padding:8px;border:1px solid #999;font-size:12px}.info{margin:0.5cm 0;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px}.info div{padding:4px 0}.header-line{text-align:center;font-size:11px;margin-bottom:4px;color:#555}.signatures{margin-top:auto;padding-top:1.5cm;display:flex;justify-content:space-between}.sig-box{text-align:center;font-size:12px}.sig-box div:first-child{margin-bottom:8px}.notes{border:1px solid #999;padding:0.5cm;margin:0.4cm 0;font-size:12px;min-height:2cm}</style></head><body><div class="header-line">نموذج زيارة • ${v.dept} • ${v.date}</div><h2>نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2><div class="info"><div><strong>اسم المعلم:</strong> ${v.teacherName}</div><div><strong>القسم الدراسي:</strong> ${v.dept}</div><div><strong>المادة:</strong> ${v.subject||v.dept}</div><div><strong>الصف الدراسي:</strong> ${v.className}</div><div><strong>الحصة:</strong> الحصة ${v.period}</div><div><strong>تاريخ الزيارة:</strong> ${v.date}</div></div><table><thead><tr><th style="width:55%">البند التقني والمعيار المحدد</th><th style="width:15%">التقييم</th><th style="width:30%">ملاحظات</th></tr></thead><tbody>${critRows}</tbody></table>${v.notes?`<div class="notes"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:6px 0">${v.notes}</p></div>`:''}<div class="signatures"><div class="sig-box"><div>التوقيع: _____________</div><div>المدير</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>رئيس القسم</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>المعلم</div></div></div></body></html>`;
   
   const printWin=window.open('','','width=800,height=600');
   printWin.document.write(printContent);
