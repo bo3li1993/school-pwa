@@ -94,9 +94,9 @@ select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
     <div class="card">
       <h2>✏️ تسجيل الغياب</h2>
       <div class="form-row">
-        <div><label class="field-label">الفصل</label><select id="reg-class"><option value="">اختر الفصل</option></select></div>
-        <div><label class="field-label">الحصة</label><select id="reg-period"><option value="">اختر</option><option value="1">الأولى</option><option value="2">الثانية</option><option value="3">الثالثة</option><option value="4">الرابعة</option><option value="5">الخامسة</option><option value="6">السادسة</option><option value="7">السابعة</option></select></div>
-        <div><label class="field-label">التاريخ</label><input type="date" id="reg-date"></div>
+        <div><label class="field-label" for="reg-class">الفصل</label><select id="reg-class"><option value="">اختر الفصل</option></select></div>
+        <div><label class="field-label" for="reg-period">الحصة</label><select id="reg-period"><option value="">اختر</option><option value="1">الأولى</option><option value="2">الثانية</option><option value="3">الثالثة</option><option value="4">الرابعة</option><option value="5">الخامسة</option><option value="6">السادسة</option><option value="7">السابعة</option></select></div>
+        <div><label class="field-label" for="reg-date">التاريخ</label><input type="date" id="reg-date"></div>
       </div>
     </div>
     <div id="summary-section" class="hidden">
@@ -121,8 +121,8 @@ select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
     <div class="card">
       <h2>📋 سجلات الغياب</h2>
       <div class="form-row" style="grid-template-columns:1fr 1fr">
-        <div><label class="field-label">الفصل</label><select id="rec-class"><option value="">اختر</option></select></div>
-        <div><label class="field-label">التاريخ</label><input type="date" id="rec-date"></div>
+        <div><label class="field-label" for="rec-class">الفصل</label><select id="rec-class"><option value="">اختر</option></select></div>
+        <div><label class="field-label" for="rec-date">التاريخ</label><input type="date" id="rec-date"></div>
       </div>
       <div id="records-list"></div>
     </div>
@@ -132,7 +132,7 @@ select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
   <div id="tab-classstudents" class="hidden">
     <div class="card">
       <h2>👥 قائمة الطلاب</h2>
-      <label class="field-label">الفصل</label>
+      <label class="field-label" for="view-class">الفصل</label>
       <select id="view-class" style="margin-bottom:1rem"><option value="">اختر</option></select>
       <div id="view-students-list"></div>
     </div>
@@ -143,11 +143,11 @@ select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
 <div id="pass-modal" class="modal">
   <div class="modal-content">
     <h3>🔑 تغيير كلمة المرور</h3>
-    <label class="field-label">كلمة المرور الحالية</label>
+    <label class="field-label" for="old-pass">كلمة المرور الحالية</label>
     <input type="password" id="old-pass" placeholder="أدخل كلمة المرور الحالية" style="margin-bottom:12px">
-    <label class="field-label">كلمة المرور الجديدة</label>
+    <label class="field-label" for="new-pass">كلمة المرور الجديدة</label>
     <input type="password" id="new-pass" placeholder="أدخل كلمة المرور الجديدة" style="margin-bottom:12px">
-    <label class="field-label">تأكيد كلمة المرور الجديدة</label>
+    <label class="field-label" for="confirm-pass">تأكيد كلمة المرور الجديدة</label>
     <input type="password" id="confirm-pass" placeholder="أعد إدخال كلمة المرور الجديدة" style="margin-bottom:1.5rem">
     <div id="pass-error" style="color:#dc3545;font-size:13px;margin-bottom:12px;display:none"></div>
     <div id="pass-success" style="color:#28a745;font-size:13px;margin-bottom:12px;display:none"></div>
