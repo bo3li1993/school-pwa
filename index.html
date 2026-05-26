@@ -157,8 +157,11 @@ window.loginStaff=async function(){
     
     snap.forEach(function(doc){
       var d=doc.data();
-      if(String(d.userId).trim()===userId && String(d.plainPass||'').trim()===pass){
-        found={id:doc.id,name:d.name,role:d.role,classId:d.classId||'',userId:d.userId};
+      var uid=String(d.userId||'').trim();
+      var pwd=String(d.plainPass||'').trim();
+      if(uid===userId && pwd===pass){
+        found={id:doc.id,name:d.name||'',role:String(d.role||'').trim().toLowerCase(),classId:d.classId||'',userId:d.userId};
+        console.log('Login match found:',found);
       }
     });
     
@@ -186,13 +189,14 @@ window.loginStaff=async function(){
     successEl.style.display='block';
     
     // توجيه حسب الصلاحية
+    console.log('Redirecting user role:',found.role);
     setTimeout(function(){
       if(found.role==='admin'){
-        window.location.href='admin.html';
+        window.location.replace('admin.html');
       }else{
-        window.location.href='teacher.html';
+        window.location.replace('teacher.html');
       }
-    },1000);
+    },1200);
     
   }catch(e){
     errorEl.textContent='⚠️ خطأ في الاتصال: '+e.message;
