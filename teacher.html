@@ -169,9 +169,44 @@ import {getFirestore,collection,doc,getDocs,addDoc,updateDoc,query,where,serverT
 
 const app=initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
 const db=getFirestore(app);
-var currentUser=null,allStudents=[],studentStatuses={};
 
-// التحقق من بيانات الدخول بدون طرد
+// تعريف المتغيرات والمصفوفات أولاً لتفادي خطأ undefined
+var currentUser=null,allStudents=[],studentStatuses={};
+var allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
+
+var today=new Date(),dd=String(today.getDate()).padStart(2,'0'),mm=String(today.getMonth()+1).padStart(2,'0'),yyyy=today.getFullYear();
+document.getElementById('current-date').textContent=today.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('reg-date').value=yyyy+'-'+mm+'-'+dd;
+document.getElementById('rec-date').value=yyyy+'-'+mm+'-'+dd;
+
+function populateDropdowns(){
+  ['reg-class','rec-class','view-class'].forEach(function(id){
+    var s=document.getElementById(id);
+    if(s) {
+      s.innerHTML = '<option value="">اختر</option>'; // تفادي التكرار
+      allClasses.forEach(function(c){
+        var o=document.createElement('option');
+        o.value=c;o.textContent=c;s.appendChild(o);
+      });
+    }
+  });
+}
+
+// دالة التشغيل الأساسية بعد اكتمال قراءة المتغيرات
+function init(){
+  populateDropdowns();
+  if(currentUser && currentUser.classId){
+    setTimeout(function(){
+      var regClsEl = document.getElementById('reg-class');
+      if(regClsEl) {
+        regClsEl.value=currentUser.classId;
+        loadClassStudents();
+      }
+    },200);
+  }
+}
+
+// التحقق من الجلسة وبدء التطبيق
 var saved=localStorage.getItem('hs_user');
 if(!saved){
   document.getElementById('error-screen').style.display='block';
@@ -189,32 +224,6 @@ if(!saved){
     document.getElementById('error-screen').style.display='block';
     document.getElementById('error-msg').textContent='توجد مشكلة في قراءة بياناتك: ' + e.message;
   }
-}
-
-var today=new Date(),dd=String(today.getDate()).padStart(2,'0'),mm=String(today.getMonth()+1).padStart(2,'0'),yyyy=today.getFullYear();
-document.getElementById('current-date').textContent=today.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-document.getElementById('reg-date').value=yyyy+'-'+mm+'-'+dd;
-document.getElementById('rec-date').value=yyyy+'-'+mm+'-'+dd;
-var allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
-
-function init(){
-  populateDropdowns();
-  if(currentUser.classId){
-    setTimeout(function(){
-      document.getElementById('reg-class').value=currentUser.classId;
-      loadClassStudents();
-    },100);
-  }
-}
-
-function populateDropdowns(){
-  ['reg-class','rec-class','view-class'].forEach(function(id){
-    var s=document.getElementById(id);
-    allClasses.forEach(function(c){
-      var o=document.createElement('option');
-      o.value=c;o.textContent=c;s.appendChild(o);
-    });
-  });
 }
 
 // Tabs
