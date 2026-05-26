@@ -60,86 +60,91 @@ select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:999;align-items:center;justify-content:center}
 .modal-content{background:#fff;border-radius:12px;padding:2rem;max-width:400px;width:90%}
 .modal-content h3{margin-bottom:1.5rem;font-size:18px}
+#error-screen{display:none;padding:2rem;text-align:center;background:#fff;margin:2rem;border-radius:12px;border:2px solid #dc3545;}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <div>
-      <h1>مرحباً، <span id="teacher-name">المعلم</span></h1>
-      <div class="header-sub">متوسطة سالم الحسينان</div>
-    </div>
-    <div class="header-btns">
-      <button id="btn-change-pass">🔑 كلمة المرور</button>
-      <button id="btn-logout">خروج</button>
-    </div>
-  </div>
+<div id="error-screen">
+  <h2 style="color:#dc3545;margin-bottom:10px">⚠️ خطأ في تحميل الجلسة</h2>
+  <p id="error-msg" style="color:#666;margin-bottom:20px"></p>
+  <button class="btn" onclick="window.location.href='index.html'">العودة لصفحة الدخول</button>
 </div>
 
-<div class="welcome-bar">
-  <span id="teacher-class-info"></span>
-  <span class="date" id="current-date"></span>
-</div>
-
-<div class="tabs" id="tabs-bar">
-  <button class="tab active" data-tab="register">✏️ تسجيل غياب</button>
-  <button class="tab" data-tab="myrecords">📋 سجلاتي</button>
-  <button class="tab" data-tab="classstudents">👥 الطلاب</button>
-</div>
-
-<div class="content">
-  <!-- تسجيل الغياب -->
-  <div id="tab-register">
-    <div class="card">
-      <h2>✏️ تسجيل الغياب</h2>
-      <div class="form-row">
-        <div><label class="field-label" for="reg-class">الفصل</label><select id="reg-class"><option value="">اختر الفصل</option></select></div>
-        <div><label class="field-label" for="reg-period">الحصة</label><select id="reg-period"><option value="">اختر</option><option value="1">الأولى</option><option value="2">الثانية</option><option value="3">الثالثة</option><option value="4">الرابعة</option><option value="5">الخامسة</option><option value="6">السادسة</option><option value="7">السابعة</option></select></div>
-        <div><label class="field-label" for="reg-date">التاريخ</label><input type="date" id="reg-date"></div>
+<div id="main-app" style="display:none">
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1>مرحباً، <span id="teacher-name">المعلم</span></h1>
+        <div class="header-sub">متوسطة سالم الحسينان</div>
       </div>
-    </div>
-    <div id="summary-section" class="hidden">
-      <div class="summary-bar">
-        <div class="summary-item"><div class="num" id="total-count" style="color:#1a1a2e">0</div><div class="lbl">الإجمالي</div></div>
-        <div class="summary-item"><div class="num" id="present-count" style="color:#28a745">0</div><div class="lbl">حاضر</div></div>
-        <div class="summary-item"><div class="num" id="absent-count" style="color:#dc3545">0</div><div class="lbl">غائب</div></div>
-        <div class="summary-item"><div class="num" id="late-count" style="color:#f0ad4e">0</div><div class="lbl">متأخر</div></div>
-      </div>
-    </div>
-    <div id="students-container"></div>
-    <div id="save-section" class="hidden">
-      <div class="save-bar">
-        <button id="btn-all-present" style="background:#1a1a2e">✅ حضور كامل</button>
-        <button id="btn-save" style="background:#28a745">💾 حفظ الغياب</button>
+      <div class="header-btns">
+        <button id="btn-change-pass">🔑 كلمة المرور</button>
+        <button id="btn-logout">خروج</button>
       </div>
     </div>
   </div>
 
-  <!-- سجلاتي -->
-  <div id="tab-myrecords" class="hidden">
-    <div class="card">
-      <h2>📋 سجلات الغياب</h2>
-      <div class="form-row" style="grid-template-columns:1fr 1fr">
-        <div><label class="field-label" for="rec-class">الفصل</label><select id="rec-class"><option value="">اختر</option></select></div>
-        <div><label class="field-label" for="rec-date">التاريخ</label><input type="date" id="rec-date"></div>
-      </div>
-      <div id="records-list"></div>
-    </div>
+  <div class="welcome-bar">
+    <span id="teacher-class-info"></span>
+    <span class="date" id="current-date"></span>
   </div>
 
-  <!-- طلاب الفصل -->
-  <div id="tab-classstudents" class="hidden">
-    <div class="card">
-      <h2>👥 قائمة الطلاب</h2>
-      <label class="field-label" for="view-class">الفصل</label>
-      <select id="view-class" style="margin-bottom:1rem"><option value="">اختر</option></select>
-      <div id="view-students-list"></div>
+  <div class="tabs" id="tabs-bar">
+    <button class="tab active" data-tab="register">✏️ تسجيل غياب</button>
+    <button class="tab" data-tab="myrecords">📋 سجلاتي</button>
+    <button class="tab" data-tab="classstudents">👥 الطلاب</button>
+  </div>
+
+  <div class="content">
+    <div id="tab-register">
+      <div class="card">
+        <h2>✏️ تسجيل الغياب</h2>
+        <div class="form-row">
+          <div><label class="field-label" for="reg-class">الفصل</label><select id="reg-class"><option value="">اختر الفصل</option></select></div>
+          <div><label class="field-label" for="reg-period">الحصة</label><select id="reg-period"><option value="">اختر</option><option value="1">الأولى</option><option value="2">الثانية</option><option value="3">الثالثة</option><option value="4">الرابعة</option><option value="5">الخامسة</option><option value="6">السادسة</option><option value="7">السابعة</option></select></div>
+          <div><label class="field-label" for="reg-date">التاريخ</label><input type="date" id="reg-date"></div>
+        </div>
+      </div>
+      <div id="summary-section" class="hidden">
+        <div class="summary-bar">
+          <div class="summary-item"><div class="num" id="total-count" style="color:#1a1a2e">0</div><div class="lbl">الإجمالي</div></div>
+          <div class="summary-item"><div class="num" id="present-count" style="color:#28a745">0</div><div class="lbl">حاضر</div></div>
+          <div class="summary-item"><div class="num" id="absent-count" style="color:#dc3545">0</div><div class="lbl">غائب</div></div>
+          <div class="summary-item"><div class="num" id="late-count" style="color:#f0ad4e">0</div><div class="lbl">متأخر</div></div>
+        </div>
+      </div>
+      <div id="students-container"></div>
+      <div id="save-section" class="hidden">
+        <div class="save-bar">
+          <button id="btn-all-present" style="background:#1a1a2e">✅ حضور كامل</button>
+          <button id="btn-save" style="background:#28a745">💾 حفظ الغياب</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-myrecords" class="hidden">
+      <div class="card">
+        <h2>📋 سجلات الغياب</h2>
+        <div class="form-row" style="grid-template-columns:1fr 1fr">
+          <div><label class="field-label" for="rec-class">الفصل</label><select id="rec-class"><option value="">اختر</option></select></div>
+          <div><label class="field-label" for="rec-date">التاريخ</label><input type="date" id="rec-date"></div>
+        </div>
+        <div id="records-list"></div>
+      </div>
+    </div>
+
+    <div id="tab-classstudents" class="hidden">
+      <div class="card">
+        <h2>👥 قائمة الطلاب</h2>
+        <label class="field-label" for="view-class">الفصل</label>
+        <select id="view-class" style="margin-bottom:1rem"><option value="">اختر</option></select>
+        <div id="view-students-list"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- تغيير كلمة المرور -->
 <div id="pass-modal" class="modal">
   <div class="modal-content">
     <h3>🔑 تغيير كلمة المرور</h3>
@@ -165,36 +170,61 @@ import {getFirestore,collection,doc,getDocs,addDoc,updateDoc,query,where,serverT
 const app=initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
 const db=getFirestore(app);
 var currentUser=null,allStudents=[],studentStatuses={};
+
+// التحقق من بيانات الدخول بدون طرد
 var saved=localStorage.getItem('hs_user');
 if(!saved){
-  window.location.href='index.html';
+  document.getElementById('error-screen').style.display='block';
+  document.getElementById('error-msg').textContent='لم يتم العثور على بيانات تسجيل الدخول في جهازك.';
 }else{
   try{
     currentUser=JSON.parse(saved);
+    if(currentUser){
+      document.getElementById('main-app').style.display='block';
+      document.getElementById('teacher-name').textContent=currentUser.name||'المعلم';
+      document.getElementById('teacher-class-info').textContent=currentUser.classId?'الفصل: '+currentUser.classId:'جميع الفصول';
+      init();
+    }
   }catch(e){
-    console.log('JSON parse error:',e);
-    localStorage.removeItem('hs_user');
-    window.location.href='index.html';
-  }
-  if(currentUser){
-    document.getElementById('teacher-name').textContent=currentUser.name||'المعلم';
-    document.getElementById('teacher-class-info').textContent=currentUser.classId?'الفصل: '+currentUser.classId:'جميع الفصول';
-    try{init()}catch(e){console.log('Init error:',e)}
+    document.getElementById('error-screen').style.display='block';
+    document.getElementById('error-msg').textContent='توجد مشكلة في قراءة بياناتك: ' + e.message;
   }
 }
+
 var today=new Date(),dd=String(today.getDate()).padStart(2,'0'),mm=String(today.getMonth()+1).padStart(2,'0'),yyyy=today.getFullYear();
 document.getElementById('current-date').textContent=today.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 document.getElementById('reg-date').value=yyyy+'-'+mm+'-'+dd;
 document.getElementById('rec-date').value=yyyy+'-'+mm+'-'+dd;
 var allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
-function init(){populateDropdowns();if(currentUser.classId){setTimeout(function(){document.getElementById('reg-class').value=currentUser.classId;loadClassStudents()},100)}}
-function populateDropdowns(){['reg-class','rec-class','view-class'].forEach(function(id){var s=document.getElementById(id);allClasses.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;s.appendChild(o)})})}
+
+function init(){
+  populateDropdowns();
+  if(currentUser.classId){
+    setTimeout(function(){
+      document.getElementById('reg-class').value=currentUser.classId;
+      loadClassStudents();
+    },100);
+  }
+}
+
+function populateDropdowns(){
+  ['reg-class','rec-class','view-class'].forEach(function(id){
+    var s=document.getElementById(id);
+    allClasses.forEach(function(c){
+      var o=document.createElement('option');
+      o.value=c;o.textContent=c;s.appendChild(o);
+    });
+  });
+}
 
 // Tabs
 document.getElementById('tabs-bar').addEventListener('click',function(e){var b=e.target.closest('.tab');if(!b)return;document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});b.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden')});document.getElementById('tab-'+b.getAttribute('data-tab')).classList.remove('hidden')});
 
 // Logout
-document.getElementById('btn-logout').addEventListener('click',function(){localStorage.removeItem('hs_user');window.location.href='index.html'});
+document.getElementById('btn-logout').addEventListener('click',function(){
+  localStorage.removeItem('hs_user');
+  window.location.href='index.html';
+});
 
 // Change password modal
 document.getElementById('btn-change-pass').addEventListener('click',function(){document.getElementById('pass-modal').style.display='flex';document.getElementById('old-pass').value='';document.getElementById('new-pass').value='';document.getElementById('confirm-pass').value='';document.getElementById('pass-error').style.display='none';document.getElementById('pass-success').style.display='none'});
