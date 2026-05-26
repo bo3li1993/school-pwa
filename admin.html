@@ -344,8 +344,135 @@ window.switchTab=t=>{
 };
 
 async function loadDashboard(){
-  await Promise.all([loadStats(),loadUsers(),loadVisitCounts()]);
+  await Promise.all([loadStats(),loadUsers(),loadVisitCounts(),populateClassDropdowns(),loadClassButtons()]);
 }
+
+function populateClassDropdowns(){
+  const allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
+  var selects=['search-class','date-class'];
+  selects.forEach(function(id){
+    var sel=document.getElementById(id);
+    if(!sel)return;
+    sel.innerHTML='<option value="">اختر الفصل</option>';
+    allClasses.forEach(function(cls){
+      sel.innerHTML+='<option value="'+cls+'">'+cls+'</option>';
+    });
+  });
+}
+
+function loadClassButtons(){
+  var allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
+  var gradeNames={'6':'السادس','7':'السابع','8':'الثامن','9':'التاسع'};
+  var html='';
+  allClasses.forEach(function(cls){
+    var grade=cls.split('/')[0];
+    var section=cls.split('/')[1];
+    html+='<button onclick="selectClass(\''+cls+'\')" style="padding:1rem;font-size:16px;background:#f8f9fa;color:#333;border:1px solid #ddd;border-radius:8px">'+cls+' ('+gradeNames[grade]+' '+section+')</button>';
+  });
+  document.getElementById('classes-list').innerHTML=html;
+}
+
+window.selectClass=async function(cls){
+  var detail=document.getElementById('class-detail');
+  detail.classList.remove('hidden');
+  detail.innerHTML='<div class="card"><h3>طلاب الفصل '+cls+'</h3><p>جاري التحميل...</p></div>';
+  
+  var snap=await getDocs(collection(db,'students'));
+  var students=[];
+  snap.forEach(function(doc){
+    var d=doc.data();
+    if(d.classId===cls)students.push(d);
+  });
+  students.sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ar')});
+  
+  var html='<div class="card"><h3>طلاب الفصل '+cls+' ('+students.length+' طالب)</h3><table><thead><tr><th>#</th><th>اسم الطالب</th><th>رقم الطالب</th></tr></thead><tbody>';
+  students.forEach(function(s,i){
+    html+='<tr><td>'+(i+1)+'</td><td>'+s.name+'</td><td>'+(s.studentId||'-')+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  detail.innerHTML=html;
+};
+
+window.loadStudentNames=async function(){
+  var cls=document.getElementById('search-class').value;
+  var sel=document.getElementById('search-student');
+  sel.innerHTML='<option value="">اختر الطالب</option>';
+  if(!cls)return;
+  
+  var snap=await getDocs(collection(db,'students'));
+  var students=[];
+  snap.forEach(function(doc){
+    var d=doc.data();
+    if(d.classId===cls)students.push(d);
+  });
+  students.sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ar')});
+  students.forEach(function(s){
+    sel.innerHTML+='<option value="'+s.studentId+'">'+s.name+'</option>';
+  });
+};
+
+window.searchStudent=async function(){
+  var cls=document.getElementById('search-class').value;
+  var stuId=document.getElementById('search-student').value;
+  var result=document.getElementById('student-result');
+  if(!cls||!stuId){result.innerHTML='<p style="color:#dc3545">اختر الفصل والطالب</p>';return}
+  
+  var stuName='';
+  var snap1=await getDocs(collection(db,'students'));
+  snap1.forEach(function(doc){var d=doc.data();if(d.studentId===stuId)stuName=d.name});
+  
+  var snap2=await getDocs(collection(db,'attendance'));
+  var records=[];
+  snap2.forEach(function(doc){
+    var d=doc.data();
+    if(d.studentId===stuId||d.classId===cls&&d.studentName===stuName)records.push(d);
+  });
+  
+  if(records.length===0){
+    result.innerHTML='<div style="background:#d4edda;padding:1rem;border-radius:8px;text-align:center"><p>'+stuName+' — لا يوجد أي سجل غياب مسجل</p></div>';
+    return;
+  }
+  
+  var html='<h3>سجل غياب: '+stuName+' ('+cls+')</h3><table><thead><tr><th>التاريخ</th><th>الحصة</th><th>الحالة</th></tr></thead><tbody>';
+  records.forEach(function(r){
+    var statusText=r.status==='absent'?'<span class="badge danger">غائب</span>':'<span class="badge warning">متأخر</span>';
+    html+='<tr><td>'+r.date+'</td><td>'+(r.periodId||'-')+'</td><td>'+statusText+'</td></tr>';
+  });
+  html+='</tbody></table>';
+  result.innerHTML=html;
+};
+
+window.searchByDate=async function(){
+  var cls=document.getElementById('date-class').value;
+  var date=document.getElementById('date-search').value;
+  var result=document.getElementById('date-result');
+  if(!cls||!date){result.innerHTML='<p style="color:#dc3545">اختر الفصل والتاريخ</p>';return}
+  
+  var formattedDate=date.replace(/-/g,'/');
+  
+  var studentsSnap=await getDocs(collection(db,'students'));
+  var classStudents=[];
+  studentsSnap.forEach(function(doc){
+    var d=doc.data();
+    if(d.classId===cls)classStudents.push(d);
+  });
+  classStudents.sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ar')});
+  
+  var attSnap=await getDocs(collection(db,'attendance'));
+  var absentIds=new Set();
+  attSnap.forEach(function(doc){
+    var d=doc.data();
+    if(d.classId===cls&&d.date===formattedDate&&d.status==='absent')absentIds.add(d.studentId);
+  });
+  
+  var html='<h3>كشف الفصل '+cls+' — '+date+'</h3><p>الحضور: '+(classStudents.length-absentIds.size)+' | الغياب: '+absentIds.size+'</p><table><thead><tr><th>#</th><th>اسم الطالب</th><th>الحالة</th></tr></thead><tbody>';
+  classStudents.forEach(function(s,i){
+    var isAbsent=absentIds.has(s.studentId);
+    html+='<tr><td>'+(i+1)+'</td><td>'+s.name+'</td><td>'+(isAbsent?'<span class="badge danger">غائب</span>':'<span class="badge success">حاضر</span>')+'</td></tr>';
+  });
+  html+='</tbody></table>';
+  result.innerHTML=html;
+};
 
 async function loadStats(){
   const attendanceSnap=await getDocs(collection(db,'attendance'));
