@@ -166,8 +166,24 @@ const app=initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDo
 const db=getFirestore(app);
 var currentUser=null,allStudents=[],studentStatuses={};
 var saved=localStorage.getItem('hs_user');
-if(!saved){window.location.href='index.html'}
-else{try{currentUser=JSON.parse(saved);document.getElementById('teacher-name').textContent=currentUser.name||'المعلم';document.getElementById('teacher-class-info').textContent=currentUser.classId?'الفصل: '+currentUser.classId:'جميع الفصول';init()}catch(e){window.location.href='index.html'}}
+console.log('teacher.html - hs_user raw:',saved);
+if(!saved){
+  console.log('No hs_user, redirecting to login');
+  window.location.href='index.html';
+}
+else{
+  try{
+    currentUser=JSON.parse(saved);
+    console.log('teacher.html - User parsed:',currentUser);
+    console.log('teacher.html - Name:',currentUser.name,'Role:',currentUser.role);
+    document.getElementById('teacher-name').textContent=currentUser.name||'المعلم';
+    document.getElementById('teacher-class-info').textContent=currentUser.classId?'الفصل: '+currentUser.classId:'جميع الفصول';
+    init();
+  }catch(e){
+    console.log('teacher.html - Parse error:',e);
+    window.location.href='index.html';
+  }
+}
 var today=new Date(),dd=String(today.getDate()).padStart(2,'0'),mm=String(today.getMonth()+1).padStart(2,'0'),yyyy=today.getFullYear();
 document.getElementById('current-date').textContent=today.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 document.getElementById('reg-date').value=yyyy+'-'+mm+'-'+dd;
