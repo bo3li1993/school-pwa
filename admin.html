@@ -341,16 +341,27 @@ let currentUser=null;
 
 // تحقق من تسجيل الدخول عبر localStorage
 var savedUser=localStorage.getItem('hs_user');
-if(!savedUser){window.location.href='index.html'}
+if(!savedUser){
+  console.log('No hs_user found, redirecting to login');
+  window.location.href='index.html';
+}
 else{
   try{
     currentUser=JSON.parse(savedUser);
-    if(currentUser.role!=='admin'){window.location.href='index.html'}
+    console.log('User loaded:',currentUser.name,'Role:',currentUser.role);
+    if(!currentUser.role||currentUser.role!=='admin'){
+      console.log('Not admin, redirecting');
+      window.location.href='index.html';
+    }
     else{
       document.getElementById('user-name').textContent=currentUser.name||'المدير';
       loadDashboard();
     }
-  }catch(e){window.location.href='index.html'}
+  }catch(e){
+    console.log('Parse error:',e);
+    localStorage.removeItem('hs_user');
+    window.location.href='index.html';
+  }
 }
 
 window.logout=function(){
