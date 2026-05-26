@@ -33,7 +33,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radiu
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
 .modal-content{background:#fff;border-radius:8px;padding:2rem;max-width:800px;width:90%;max-height:90vh;overflow-y:auto}
 .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:1rem}
-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
 table th{background:#f5f5f5;padding:12px;text-align:right;border-bottom:2px solid #ddd}
 table td{padding:12px;border-bottom:1px solid #eee}
 .badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:500}
@@ -41,16 +41,10 @@ table td{padding:12px;border-bottom:1px solid #eee}
 .badge.warning{background:#fff3cd;color:#856404}
 .badge.danger{background:#f8d7da;color:#721c24}
 .hidden{display:none!important}
-.back-btn{background:#6c757d;margin-bottom:1rem;color:white;border:none;padding:8px 16px;border-radius:4px;cursor:pointer}
+.back-btn{background:#6c757d;margin-bottom:1rem}
 .score-high{color:#28a745;font-weight:500}
 .score-mid{color:#ffc107;font-weight:500}
 .score-low{color:#dc3545;font-weight:500}
-.class-box{background:#1a1a2e;color:white;padding:20px;border-radius:8px;text-align:center;cursor:pointer;font-size:18px;font-weight:bold;transition:transform 0.2s}\n.class-box:hover{transform:scale(1.05);background:#2a2a3e}
-@media print {
-  .header, .tabs, button, .back-btn, .modal { display: none !important; }
-  .content { max-width: 100%; padding: 0; }
-  .card { box-shadow: none; border: none; }
-}
 </style>
 </head>
 <body>
@@ -62,7 +56,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
   </div>
   <div class="header-right">
     <span id="current-date"></span>
-    <button onclick="window.print()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px" title="طباعة الصفحة الحالية">🖨️ طباعة</button>
+    <button onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">🖨️</button>
     <button onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">خروج</button>
   </div>
 </div>
@@ -79,55 +73,57 @@ table td{padding:12px;border-bottom:1px solid #eee}
 </div>
 
 <div class="content">
+  <!-- اليوم -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
-      <h2 style="margin-bottom:1rem">حالة تسجيل غياب الفصول اليوم</h2>
+      <h2 style="margin-bottom:1rem">حالة تسجيل الفصول</h2>
       <div id="class-status"></div>
     </div>
   </div>
 
+  <!-- الفصول -->
   <div id="tab-classes" class="hidden">
-    <div class="card" id="classes-list-card">
-      <h2 style="margin-bottom:1rem">اختر الفصل لعرض الطلاب والغياب</h2>
+    <div class="card">
+      <h2 style="margin-bottom:1rem">اختر الفصل</h2>
       <div id="classes-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px"></div>
     </div>
-    <div id="class-detail" class="hidden card">
-      <button class="back-btn" onclick="backToClassesList()">← رجوع لقائمة الفصول</button>
-      <h2 id="selected-class-title" style="margin-bottom:1rem"></h2>
-      <div id="class-students-table"></div>
-    </div>
+    <div id="class-detail" class="hidden"></div>
   </div>
 
+  <!-- الغائبون -->
   <div id="tab-absent" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">🔴 الطلاب الغائبون اليوم</h2>
+      <h2 style="margin-bottom:1rem">🔴 الغائبون اليوم</h2>
       <div id="absent-list"></div>
     </div>
   </div>
 
+  <!-- غياب متكرر -->
   <div id="tab-repeat" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام (تراكمي)</h2>
+      <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
       <div id="repeat-list"></div>
     </div>
   </div>
 
+  <!-- بحث طالب -->
   <div id="tab-student" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">👤 بحث عن سجل غياب طالب</h2>
+      <h2 style="margin-bottom:1rem">👤 بحث عن طالب</h2>
       <div class="form-grid">
         <select id="search-class" onchange="loadStudentNames()"><option value="">اختر الفصل</option></select>
-        <select id="search-student"><option value="">اختر الطالب أولاً</option></select>
+        <select id="search-student"><option value="">اختر الطالب</option></select>
       </div>
-      <button onclick="searchStudent()">بحث عن السجل</button>
+      <button onclick="searchStudent()">بحث</button>
       <div id="student-result" style="margin-top:1.5rem"></div>
     </div>
   </div>
 
+  <!-- بحث بتاريخ -->
   <div id="tab-date" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">📅 مراجعة غياب فصل بتاريخ معين</h2>
+      <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
       <div class="form-grid">
         <select id="date-class"><option value="">اختر الفصل</option></select>
         <input type="date" id="date-search">
@@ -137,27 +133,74 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- الزيارات -->
   <div id="tab-visits" class="hidden">
+    <!-- قائمة الأقسام -->
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-        <h2>🏫 الأقسام الدراسية (الزيارات الصفية)</h2>
+        <h2>🏫 الأقسام الدراسية</h2>
         <button onclick="openNewVisit()" style="background:#28a745">+ زيارة جديدة</button>
       </div>
       <div class="dept-grid">
-        <div class="dept-card" onclick="selectDept('اللغة العربية')"><div class="icon">📝</div><h3>اللغة العربية</h3><p id="arabic-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('الرياضيات')"><div class="icon">🔢</div><h3>الرياضيات</h3><p id="math-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('العلوم')"><div class="icon">🔬</div><h3>العلوم</h3><p id="science-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('التربية الإسلامية')"><div class="icon">☪️</div><h3>التربية الإسلامية</h3><p id="islamic-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('اللغة الإنجليزية')"><div class="icon">🇬🇧</div><h3>اللغة الإنجليزية</h3><p id="english-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('الاجتماعيات')"><div class="icon">🌍</div><h3>الاجتماعيات</h3><p id="social-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('التربية البدنية')"><div class="icon">⚽</div><h3>التربية البدنية</h3><p id="pe-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('الحاسوب')"><div class="icon">💻</div><h3>الحاسوب</h3><p id="computer-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('الكهرباء')"><div class="icon">⚡</div><h3>الكهرباء</h3><p id="electric-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('الديكور')"><div class="icon">🎨</div><h3>الديكور</h3><p id="decor-count">0 زيارة</p></div>
-        <div class="dept-card" onclick="selectDept('الفنية')"><div class="icon">🖌️</div><h3>الفنية</h3><p id="art-count">0 زيارة</p></div>
+        <div class="dept-card" onclick="selectDept('اللغة العربية')">
+          <div class="icon">📝</div>
+          <h3>اللغة العربية</h3>
+          <p id="arabic-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('الرياضيات')">
+          <div class="icon">🔢</div>
+          <h3>الرياضيات</h3>
+          <p id="math-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('العلوم')">
+          <div class="icon">🔬</div>
+          <h3>العلوم</h3>
+          <p id="science-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('التربية الإسلامية')">
+          <div class="icon">☪️</div>
+          <h3>التربية الإسلامية</h3>
+          <p id="islamic-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('اللغة الإنجليزية')">
+          <div class="icon">🇬🇧</div>
+          <h3>اللغة الإنجليزية</h3>
+          <p id="english-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('الاجتماعيات')">
+          <div class="icon">🌍</div>
+          <h3>الاجتماعيات</h3>
+          <p id="social-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('التربية البدنية')">
+          <div class="icon">⚽</div>
+          <h3>التربية البدنية</h3>
+          <p id="pe-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('الحاسوب')">
+          <div class="icon">💻</div>
+          <h3>الحاسوب</h3>
+          <p id="computer-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('الكهرباء')">
+          <div class="icon">⚡</div>
+          <h3>الكهرباء</h3>
+          <p id="electric-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('الديكور')">
+          <div class="icon">🎨</div>
+          <h3>الديكور</h3>
+          <p id="decor-count">0 زيارة</p>
+        </div>
+        <div class="dept-card" onclick="selectDept('الفنية')">
+          <div class="icon">🖌️</div>
+          <h3>الفنية</h3>
+          <p id="art-count">0 زيارة</p>
+        </div>
       </div>
     </div>
 
+    <!-- قائمة زيارات القسم -->
     <div id="dept-visits" class="hidden">
       <button class="back-btn" onclick="backToDepts()">← رجوع للأقسام</button>
       <div class="card">
@@ -167,22 +210,25 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- المستخدمون -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-        <h2>👥 إدارة مستخدمين المنصة</h2>
-        <button onclick="openAddUser()">+ إضافة مستخدم جديد</button>
+        <h2>👥 إدارة المستخدمين</h2>
+        <button onclick="openAddUser()">+ إضافة مستخدم</button>
       </div>
       <div id="users-list"></div>
     </div>
   </div>
 </div>
 
+<!-- نموذج زيارة جديدة -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
-    <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة لمعلم</h2>
+    <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
+    
     <select id="visit-dept" onchange="loadVisitCriteria()">
-      <option value="">اختر القسم التابع له المعلم</option>
+      <option value="">اختر القسم</option>
       <option value="اللغة العربية">اللغة العربية</option>
       <option value="الرياضيات">الرياضيات</option>
       <option value="العلوم">العلوم</option>
@@ -197,47 +243,49 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </select>
     
     <div class="form-grid">
-      <input type="text" id="visit-teacher" placeholder="اسم المعلم بالكامل">
-      <input type="text" id="visit-subject" placeholder="المادة الدراسية">
+      <input type="text" id="visit-teacher" placeholder="اسم المعلم">
+      <input type="text" id="visit-subject" placeholder="المادة">
       <input type="text" id="visit-class" placeholder="الصف (مثال: 9/1)">
-      <input type="number" id="visit-period" placeholder="الحصة (1-7)" min="1" max="7">
+      <input type="number" id="visit-period" placeholder="الحصة" min="1" max="7">
       <input type="date" id="visit-date">
     </div>
     
-    <h3 style="margin:1.5rem 0 1rem">معايير التقييم والبنود الفنية</h3>
+    <h3 style="margin:1.5rem 0 1rem">معايير التقييم</h3>
     <div id="visit-criteria-list"></div>
     
-    <h3 style="margin:1.5rem 0 .5rem">التوجيهات وملاحظات المدير</h3>
-    <textarea id="visit-notes" rows="4" placeholder="اكتب التوصيات والملاحظات الفنية هنا..."></textarea>
+    <h3 style="margin:1.5rem 0 .5rem">ملاحظات المدير</h3>
+    <textarea id="visit-notes" rows="4" placeholder="اكتب ملاحظاتك هنا..."></textarea>
     
     <div style="display:flex;gap:12px;margin-top:1.5rem">
-      <button onclick="saveVisit()" style="background:#28a745;flex:1">💾 حفظ واعتماد الزيارة</button>
+      <button onclick="saveVisit()" style="flex:1">💾 حفظ الزيارة</button>
       <button onclick="closeVisitForm()" class="secondary" style="flex:1">إلغاء</button>
     </div>
   </div>
 </div>
 
+<!-- عرض تفاصيل زيارة -->
 <div id="visit-detail-modal" class="modal">
   <div class="modal-content">
     <div id="visit-detail-content"></div>
-    <button onclick="closeVisitDetail()" style="margin-top:1.5rem;width:100%">إغلاق المعاينة</button>
+    <button onclick="closeVisitDetail()" style="margin-top:1.5rem;width:100%">إغلاق</button>
   </div>
 </div>
 
+<!-- نموذج إضافة مستخدم -->
 <div id="add-user-modal" class="modal">
   <div class="modal-content">
-    <h2 style="margin-bottom:1.5rem">إضافة مستخدم جديد للنظام</h2>
+    <h2 style="margin-bottom:1.5rem">إضافة مستخدم جديد</h2>
     <input type="text" id="new-user-name" placeholder="الاسم الكامل">
-    <input type="text" id="new-user-id" placeholder="رقم المستخدم (رقم السجل / الهوية)">
+    <input type="text" id="new-user-id" placeholder="رقم المستخدم">
     <input type="password" id="new-user-pass" placeholder="كلمة المرور">
     <select id="new-user-role">
-      <option value="">اختر الصلاحية والنوع</option>
-      <option value="admin">مدير / رئيس قسم</option>
-      <option value="teacher">معلم فصل</option>
+      <option value="">اختر الصلاحية</option>
+      <option value="admin">مدير</option>
+      <option value="teacher">معلم</option>
     </select>
-    <input type="text" id="new-user-class" placeholder="الفصل المسؤول عنه (للمعلمين فقط - مثال: 9/1)">
+    <input type="text" id="new-user-class" placeholder="الفصل (للمعلمين فقط)">
     <div style="display:flex;gap:12px;margin-top:1rem">
-      <button onclick="addUser()" style="flex:1">إضافة وحفظ</button>
+      <button onclick="addUser()" style="flex:1">إضافة</button>
       <button onclick="closeAddUser()" class="secondary" style="flex:1">إلغاء</button>
     </div>
   </div>
@@ -253,9 +301,20 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
+window.db = db;
+window.auth = auth;
+window.collection = collection;
+window.doc = doc;
+window.getDoc = getDoc;
+window.getDocs = getDocs;
+window.addDoc = addDoc;
+window.query = query;
+window.where = where;
+window.orderBy = orderBy;
+window.deleteDoc = deleteDoc;
+window.serverTimestamp = serverTimestamp;
+
 let currentUser=null;
-let allStudentsGlobal=[];
-let allClassesGlobal=[];
 
 onAuthStateChanged(auth,async user=>{
   if(!user){window.location.href='index.html';return}
@@ -279,47 +338,31 @@ document.getElementById('current-date').textContent=new Date().toLocaleDateStrin
 
 window.switchTab=t=>{
   document.querySelectorAll('.tab').forEach(tab=>tab.classList.remove('active'));
-  if(event && event.target) event.target.classList.add('active');
+  event.target.classList.add('active');
   document.querySelectorAll('[id^="tab-"]').forEach(tab=>tab.classList.add('hidden'));
   document.getElementById('tab-'+t).classList.remove('hidden');
 };
 
 async function loadDashboard(){
-  await Promise.all([loadStatsAndLists(),loadUsers(),loadVisitCounts()]);
+  await Promise.all([loadStats(),loadUsers(),loadVisitCounts()]);
 }
 
-async function loadStatsAndLists(){
+async function loadStats(){
   const attendanceSnap=await getDocs(collection(db,'attendance'));
   const studentsSnap=await getDocs(collection(db,'students'));
-  const classesSnap=await getDocs(collection(db,'classes'));
-  
   const today=new Date().toISOString().split('T')[0].replace(/-/g,'/');
   
-  // تخزين البيانات عالمياً لتسهيل العمل في التبويبات الأخرى
-  allStudentsGlobal = [];
-  studentsSnap.forEach(d => allStudentsGlobal.push(d.data()));
-  
-  allClassesGlobal = [];
-  classesSnap.forEach(d => allClassesGlobal.push(d.data()));
-  
-  const totalStudents=allStudentsGlobal.length;
+  const totalStudents=studentsSnap.size;
   let absentToday=0;
-  const classesWithAttendanceToday=new Set();
-  let absentStudentsListHTML = '<table><thead><tr><th>الاسم</th><th>الفصل</th><th>الحالة</th></tr></thead><tbody>';
+  const classesRegistered=new Set();
   
   attendanceSnap.forEach(doc=>{
     const d=doc.data();
     if(d.date===today){
-      classesWithAttendanceToday.add(d.classId);
-      if(d.status==='absent'){
-        absentToday++;
-        absentStudentsListHTML += `<tr><td>${d.name || d.studentId}</td><td><span class="badge danger">${d.classId}</span></td><td>غائب</td></tr>`;
-      }
+      classesRegistered.add(d.classId);
+      if(d.status==='absent')absentToday++;
     }
   });
-  absentStudentsListHTML += '</tbody></table>';
-  if(absentToday === 0) absentStudentsListHTML = '<p style="padding:15px; color:green;">💪 لا يوجد أي غيابات مسجلة اليوم.</p>';
-  document.getElementById('absent-list').innerHTML = absentStudentsListHTML;
   
   const presentToday=totalStudents-absentToday;
   
@@ -327,186 +370,23 @@ async function loadStatsAndLists(){
     <div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي الطلاب</p></div>
     <div class="stat-card"><h3>${presentToday}</h3><p>حاضرون اليوم</p></div>
     <div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div>
-    <div class="stat-card"><h3>${classesWithAttendanceToday.size} / ${allClassesGlobal.length}</h3><p>فصول اعتمدت الغياب اليوم</p></div>
+    <div class="stat-card"><h3>${classesRegistered.size} / 15</h3><p>فصول اكتمل الغياب اليوم</p></div>
   `;
-
-  // بناء تبويب حالة تسجيل الفصول اليوم
-  let statusHTML = '<table><thead><tr><th>الفصل</th><th>المعلم المسؤول</th><th>حالة رصد غياب اليوم</th></tr></thead><tbody>';
-  allClassesGlobal.forEach(c => {
-    const isRegistered = classesWithAttendanceToday.has(c.classId);
-    statusHTML += `<tr>
-      <td><b>${c.classId}</b> (${c.className || ''})</td>
-      <td>${c.teacherId || 'غير محدد'}</td>
-      <td>${isRegistered ? '<span class="badge success">✓ تم الرصد والاعتماد</span>' : '<span class="badge danger">❌ لم يرصد بعد</span>'}</td>
-    </tr>`;
+  
+  const allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
+  const gradeNames={'6':'السادس','7':'السابع','8':'الثامن','9':'التاسع'};
+  
+  let statusHTML='<table><thead><tr><th>الفصل</th><th>المعلم المسؤول</th><th>حالة رصد غياب اليوم</th></tr></thead><tbody>';
+  allClasses.forEach(cls=>{
+    const grade=cls.split('/')[0];
+    const section=cls.split('/')[1];
+    const registered=classesRegistered.has(cls);
+    const statusBadge=registered?'<span class="badge success">تم التسجيل ✓</span>':'<span class="badge danger">لم يسجّل بعد ✗</span>';
+    statusHTML+=`<tr><td>${cls} (الصف ${gradeNames[grade]} ${section})</td><td>غير محدد</td><td>${statusBadge}</td></tr>`;
   });
-  statusHTML += '</tbody></table>';
-  document.getElementById('class-status').innerHTML = statusHTML;
-
-  // بناء شاشة الفصول وقوائم البحث المنسدلة
-  buildClassesTab();
+  statusHTML+='</tbody></table>';
+  document.getElementById('class-status').innerHTML='<h3 style="margin-bottom:1rem">حالة تسجيل غياب الفصول اليوم</h3>'+statusHTML;
 }
-
-function buildClassesTab() {
-  let gridHTML = '';
-  let searchClassOptions = '<option value="">اختر الفصل</option>';
-  
-  allClassesGlobal.forEach(c => {
-    gridHTML += `<div class="class-box" onclick="viewClassDetail('${c.classId}')">فصل ${c.classId}</div>`;
-    searchClassOptions += `<option value="${c.classId}">${c.classId}</option>`;
-  });
-  
-  document.getElementById('classes-list').innerHTML = gridHTML;
-  document.getElementById('search-class').innerHTML = searchClassOptions;
-  document.getElementById('date-class').innerHTML = searchClassOptions;
-  
-  // بالمرة نحسب الغياب المتكرر لأكثر من 5 أيام
-  loadRepeatAbsent();
-}
-
-window.viewClassDetail = async (classId) => {
-  document.getElementById('classes-list-card').classList.add('hidden');
-  const detailDiv = document.getElementById('class-detail');
-  detailDiv.classList.remove('hidden');
-  document.getElementById('selected-class-title').textContent = `طلاب وقائمة غياب فصل: ${classId}`;
-  
-  document.getElementById('class-students-table').innerHTML = '<p>جاري تحميل بيانات طلاب الفصل...</p>';
-  
-  // فلترة الطلاب التابعين لهذا الفصل
-  const classStudents = allStudentsGlobal.filter(s => s.classId === classId);
-  
-  if(classStudents.length === 0) {
-    document.getElementById('class-students-table').innerHTML = '<p>لا يوجد طلاب مضافين في هذا الفصل حالياً.</p>';
-    return;
-  }
-  
-  // جلب الغياب لليوم للتأكد من رصدهم
-  const today=new Date().toISOString().split('T')[0].replace(/-/g,'/');
-  const q = query(collection(db, 'attendance'), where('classId', '==', classId), where('date', '==', today));
-  const attSnap = await getDocs(q);
-  const attMap = {};
-  attSnap.forEach(doc => { attMap[doc.data().studentId] = doc.data().status; });
-  
-  let tableHTML = '<table><thead><tr><th>رقم الطالب</th><th>اسم الطالب</th><th>حالة الحضور اليوم</th></tr></thead><tbody>';
-  classStudents.forEach(s => {
-    const status = attMap[s.studentId] || 'حاضر أو لم يرصد';
-    const badge = status === 'absent' ? '<span class="badge danger">غائب</span>' : '<span class="badge success">حاضر</span>';
-    tableHTML += `<tr><td>${s.studentId}</td><td>${s.name}</td><td>${badge}</td></tr>`;
-  });
-  tableHTML += '</tbody></table>';
-  document.getElementById('class-students-table').innerHTML = tableHTML;
-};
-
-window.backToClassesList = () => {
-  document.getElementById('class-detail').classList.add('hidden');
-  document.getElementById('classes-list-card').classList.remove('hidden');
-};
-
-async function loadRepeatAbsent() {
-  try {
-    const attendanceSnap = await getDocs(collection(db, 'attendance'));
-    const countMap = {};
-    const nameMap = {};
-    const classMap = {};
-    
-    attendanceSnap.forEach(doc => {
-      const d = doc.data();
-      if(d.status === 'absent') {
-        countMap[d.studentId] = (countMap[d.studentId] || 0) + 1;
-        nameMap[d.studentId] = d.name || d.studentId;
-        classMap[d.studentId] = d.classId || 'غير محدد';
-      }
-    });
-    
-    let html = '<table><thead><tr><th>اسم الطالب</th><th>الفصل</th><th>إجمالي أيام الغياب</th><th>الحالة والخطورة</th></tr></thead><tbody>';
-    let countRows = 0;
-    
-    for(let id in countMap) {
-      if(countMap[id] >= 5) {
-        countRows++;
-        let riskBadge = countMap[id] >= 10 ? '<span class="badge danger">إنذار فصل / خطير جداً</span>' : '<span class="badge warning">تنبيه / متكرر</span>';
-        html += `<tr><td>${nameMap[id]}</td><td><b>${classMap[id]}</b></td><td><span style="font-size:16px; color:red; font-weight:bold;">${countMap[id]} أيام</span></td><td>${riskBadge}</td></tr>`;
-      }
-    }
-    html += '</tbody></table>';
-    
-    if(countRows === 0) html = '<p style="padding:15px; color:green;">✓ ممتاز! لا يوجد أي طالب تجاوز 5 أيام غياب تراكمي.</p>';
-    document.getElementById('repeat-list').innerHTML = html;
-  } catch(e) {
-    console.error(e);
-  }
-}
-
-window.loadStudentNames = () => {
-  const classId = document.getElementById('search-class').value;
-  let options = '<option value="">اختر الطالب</option>';
-  if(classId) {
-    const filtered = allStudentsGlobal.filter(s => s.classId === classId);
-    filtered.forEach(s => {
-      options += `<option value="${s.studentId}">${s.name}</option>`;
-    });
-  }
-  document.getElementById('search-student').innerHTML = options;
-};
-
-window.searchStudent = async () => {
-  const studentId = document.getElementById('search-student').value;
-  const resDiv = document.getElementById('student-result');
-  if(!studentId) { alert('الرجاء اختيار الطالب أولاً'); return; }
-  
-  resDiv.innerHTML = '<p>جاري البحث في الأرشيف...</p>';
-  
-  try {
-    const q = query(collection(db, 'attendance'), where('studentId', '==', studentId), orderBy('date', 'desc'));
-    const snap = await getDocs(q);
-    
-    if(snap.empty) {
-      resDiv.innerHTML = '<div class="badge success" style="padding:15px; width:100%">السجل نظيف تماماً! الطالب ملتزم ولم يسجل له أي غياب.</div>';
-      return;
-    }
-    
-    let html = `<h3>سجل رصد غياب الطالب:</h3><table style="margin-top:10px"><thead><tr><th>التاريخ</th><th>الحالة</th></tr></thead><tbody>`;
-    snap.forEach(doc => {
-      const d = doc.data();
-      html += `<tr><td>${d.date}</td><td><span class="badge danger">${d.status === 'absent' ? 'غائب' : d.status}</span></td></tr>`;
-    });
-    html += '</tbody></table>';
-    resDiv.innerHTML = html;
-  } catch(e) {
-    resDiv.innerHTML = `<p style="color:red">يتطلب هذا البحث تفعيل الفهرس (Index) في Firebase لترتيب التواريخ. الخطأ: ${e.message}</p>`;
-  }
-};
-
-window.searchByDate = async () => {
-  const classId = document.getElementById('date-class').value;
-  const rawDate = document.getElementById('date-search').value; // YYYY-MM-DD
-  const resDiv = document.getElementById('date-result');
-  
-  if(!classId || !rawDate) { alert('الرجاء اختيار الفصل والتاريخ'); return; }
-  
-  const targetDate = rawDate.replace(/-/g, '/'); // تحويل إلى format YYYY/MM/DD
-  resDiv.innerHTML = '<p>جاري سحب كشف الغياب لهذا التاريخ...</p>';
-  
-  try {
-    const q = query(collection(db, 'attendance'), where('classId', '==', classId), where('date', '==', targetDate));
-    const snap = await getDocs(q);
-    
-    if(snap.empty) {
-      resDiv.innerHTML = '<p style="color:orange; font-weight:bold;">⚠️ لم يتم رصد غياب لهذا الفصل في التاريخ المحدد، أو أن الفصل كان حاضراً بالكامل.</p>';
-      return;
-    }
-    
-    let html = `<h3>كشف غياب فصل (${classId}) بتاريخ ${targetDate}:</h3><table><thead><tr><th>الرقم الموحد</th><th>اسم الطالب</th><th>الحالة</th></tr></thead><tbody>`;
-    snap.forEach(doc => {
-      const d = doc.data();
-      html += `<tr><td>${d.studentId}</td><td>${d.name || 'غير مسجل'}</td><td><span class="badge danger">غائب</span></td></tr>`;
-    });
-    html += '</tbody></table>';
-    resDiv.innerHTML = html;
-  } catch(e) {
-    resDiv.innerHTML = `<p style="color:red">خطأ أثناء جلب البيانات: ${e.message}</p>`;
-  }
-};
 
 const visitCriteria={
   'اللغة العربية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','استخدام اللغة العربية الفصحى','تنمية مهارات القراءة','تنمية مهارات الكتابة','تنمية مهارات الاستماع','تنمية مهارات التحدث','ربط الدرس بالحياة','استخدام السبورة','الالتزام بالوقت'],
@@ -521,6 +401,8 @@ const visitCriteria={
   'الديكور':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','الإبداع','الألوان','التصميم','المهارات اليدوية','السلامة','الالتزام بالوقت'],
   'الفنية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الإبداع','المهارات الفنية','الخامات','النظافة','الذوق الفني','الالتزام بالوقت']
 };
+
+window.visitCriteria = visitCriteria;
 
 async function loadVisitCounts(){
   const visitsSnap=await getDocs(collection(db,'visits'));
@@ -560,12 +442,12 @@ window.loadVisitCriteria=()=>{
     html+=`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:0.5px solid #ddd">
       <span style="font-size:13px">${c}</span>
       <select id="score${i}" style="width:140px;font-size:13px">
-        <option value="">اختر التقييم</option>
-        <option value="5">ممتاز (5)</option>
-        <option value="4">جيد جداً (4)</option>
-        <option value="3">جيد (3)</option>
-        <option value="2">مقبول (2)</option>
-        <option value="1">ضعيف (1)</option>
+        <option value="">اختر</option>
+        <option value="5">ممتاز</option>
+        <option value="4">جيد جداً</option>
+        <option value="3">جيد</option>
+        <option value="2">مقبول</option>
+        <option value="1">ضعيف</option>
       </select>
     </div>`;
   });
@@ -582,7 +464,7 @@ window.saveVisit=async()=>{
   const notes=document.getElementById('visit-notes').value;
   
   if(!dept||!teacher||!className||!period||!date){
-    alert('يرجى ملء كل الحقول المطلوبة واختيار التاريخ');
+    alert('يرجى ملء كل الحقول المطلوبة');
     return;
   }
   
@@ -607,7 +489,7 @@ window.saveVisit=async()=>{
       createdBy:currentUser.userId,
       teacherSigned:false
     });
-    alert('تم حفظ الزيارة بنجاح في قاعدة البيانات');
+    alert('تم حفظ الزيارة بنجاح');
     closeVisitForm();
     loadVisitCounts();
   }catch(e){
@@ -631,14 +513,14 @@ window.backToDepts=()=>{
 
 async function loadDeptVisits(dept){
   const list=document.getElementById('visits-list');
-  list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">جاري سحب تقارير الزيارات المسجلة لهذا القسم...</p>';
+  list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">جاري التحميل...</p>';
   
   try{
     const q=query(collection(db,'visits'),where('dept','==',dept),orderBy('createdAt','desc'));
     const snap=await getDocs(q);
     
     if(snap.empty){
-      list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">لا توجد زيارات مسجلة لهذا القسم حتى الآن</p>';
+      list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">لا توجد زيارات مسجلة لهذا القسم</p>';
       return;
     }
     
@@ -651,21 +533,21 @@ async function loadDeptVisits(dept){
       html+=`<div style="background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:1rem;margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
           <div>
-            <div style="font-weight:500;margin-bottom:4px; font-size:16px; color:#1a1a2e;">👤 المعلم: ${v.teacherName}</div>
-            <div style="font-size:13px;color:#666">فصل: ${v.className} • الحصة: ${v.period} • التاريخ: ${v.date}</div>
+            <div style="font-weight:500;margin-bottom:4px">${v.teacherName}</div>
+            <div style="font-size:13px;color:#666">${v.className} • الحصة ${v.period} • ${v.date}</div>
           </div>
-          <div class="${scoreClass}" style="font-size:20px; font-weight:bold; background:#fff; padding:5px 10px; border-radius:5px; border:1px solid #eee">متوسط: ${avgScore}</div>
+          <div class="${scoreClass}" style="font-size:20px">${avgScore}</div>
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="viewVisit('${doc.id}')" style="flex:1;font-size:13px">👁️ عرض ومعاينة البنود</button>
-          <button onclick="printVisit('${doc.id}')" style="flex:1;font-size:13px;background:#fff;color:#333;border:1px solid #ddd">🖨️ طباعة النموذج الرسمي</button>
+          <button onclick="viewVisit('${doc.id}')" style="flex:1;font-size:13px">عرض التفاصيل</button>
+          <button onclick="printVisit('${doc.id}')" style="flex:1;font-size:13px;background:#fff;color:#333;border:1px solid #ddd">🖨️ طباعة</button>
         </div>
       </div>`;
     });
     
     list.innerHTML=html;
   }catch(e){
-    list.innerHTML='<p style="text-align:center;color:#dc3545;padding:2rem">يتطلب عرض التقرير فهرسة بالتواريخ، أو حدث خطأ أثناء التحميل.</p>';
+    list.innerHTML='<p style="text-align:center;color:#dc3545;padding:2rem">خطأ في تحميل الزيارات</p>';
   }
 }
 
@@ -680,20 +562,20 @@ window.viewVisit=async id=>{
   let critHTML='';
   criteria.forEach((c,i)=>{
     const score=v.scores?.[i]||0;
-    critHTML+=`<tr><td style="padding:8px;border-bottom:0.5px solid #eee">${c}</td><td style="padding:8px;border-bottom:0.5px solid #eee;text-align:center"><b>${scoreLabels[score] || 'غير محدد'}</b></td></tr>`;
+    critHTML+=`<tr><td style="padding:8px;border-bottom:0.5px solid #eee">${c}</td><td style="padding:8px;border-bottom:0.5px solid #eee;text-align:center">${scoreLabels[score]||'-'}</td></tr>`;
   });
   
   document.getElementById('visit-detail-content').innerHTML=`
-    <div style="margin-bottom:1.5rem; border-bottom:2px solid #1a1a2e; padding-bottom:10px">
-      <h3 style="margin:0 0 8px; color:#1a1a2e; font-size:18px;">المعلم: ${v.teacherName}</h3>
-      <p style="margin:0;color:#666;font-size:14px">قسم: ${v.dept} • المادة: ${v.subject||'-'} • الصف: ${v.className} • الحصة: ${v.period} • التاريخ: ${v.date}</p>
+    <div style="margin-bottom:1.5rem">
+      <h3 style="margin:0 0 8px">${v.teacherName}</h3>
+      <p style="margin:0;color:#666;font-size:14px">${v.dept} • ${v.className} • الحصة ${v.period} • ${v.date}</p>
     </div>
     <table style="width:100%;font-size:13px;margin-bottom:1.5rem">
-      <thead><tr style="background:#f5f5f5"><th style="padding:8px;text-align:right">البند / المعيار الفني</th><th style="padding:8px;text-align:center;width:120px">درجة التقييم</th></tr></thead>
+      <thead><tr style="background:#f5f5f5"><th style="padding:8px;text-align:right">المعيار</th><th style="padding:8px;text-align:center;width:120px">التقييم</th></tr></thead>
       <tbody>${critHTML}</tbody>
     </table>
-    ${v.notes?`<div style="background:#f8f9fa;padding:1rem;border-radius:8px;margin-bottom:1rem; border-right:4px solid #1a1a2e;"><div style="font-weight:500;margin-bottom:8px">التوجيهات والتوصيات:</div><p style="margin:0;white-space:pre-wrap">${v.notes}</p></div>`:''}
-    ${v.teacherSigned?`<p style="color:#28a745;font-size:14px; font-weight:bold;">✓ تم توقيع واعتماد المعلم إلكترونياً</p>`:''}
+    ${v.notes?`<div style="background:#f8f9fa;padding:1rem;border-radius:8px;margin-bottom:1rem"><div style="font-weight:500;margin-bottom:8px">ملاحظات المدير:</div><p style="margin:0;white-space:pre-wrap">${v.notes}</p></div>`:''}
+    ${v.teacherSigned?`<p style="color:#28a745;font-size:13px">✓ المعلم وقّع على الزيارة</p>`:''}
   `;
   
   document.getElementById('visit-detail-modal').style.display='flex';
@@ -714,44 +596,44 @@ window.printVisit=async id=>{
   let critRows='';
   criteria.forEach((c,i)=>{
     const score=v.scores?.[i]||0;
-    critRows+=`<tr><td style="padding:8px;border:1px solid #ddd; text-align:right;">${c}</td><td style="padding:8px;border:1px solid #ddd;text-align:center">${scoreLabels[score]||'-'}</td></tr>`;
+    critRows+=`<tr><td style="padding:8px;border:1px solid #ddd">${c}</td><td style="padding:8px;border:1px solid #ddd;text-align:center">${scoreLabels[score]||'-'}</td></tr>`;
   });
   
-  const printContent=`<html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة - ${v.teacherName}</title><style>body{font-family:Arial,sans-serif;padding:1.5cm; line-height:1.4;} h2{text-align:center;margin-bottom:0.5cm; border-bottom:2px solid #000; padding-bottom:10px;} table{width:100%;border-collapse:collapse;margin:0.5cm 0} th{background:#f5f5f5;padding:8px;border:1px solid #ddd; text-align:right;} td{border:1px solid #ddd; padding:6px;} .info{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:0.5cm; border:1px solid #ccc; padding:10px; border-radius:5px;} .signatures{margin-top:1.5cm;display:flex;justify-content:space-between}.sig-box{text-align:center; width:30%; border-top:1px dashed #000; padding-top:10px;}</style></head><body><div style="text-align:center; font-size:14px;">وزارة التربية - الإدارة العامة لمنطقة الأحمدي التعليمية<br><b>متوسطة سالم الحسينان - بنين</b></div><br><h2>نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2><div class="info"><div><strong>اسم المعلم:</strong> ${v.teacherName}</div><div><strong>القسم الدراسي:</strong> ${v.dept}</div><div><strong>المادة:</strong> ${v.subject||'-'}</div><div><strong>الصف الدراسي:</strong> ${v.className}</div><div><strong>الحصة:</strong> الحصة ${v.period}</div><div><strong>تاريخ الزيارة:</strong> ${v.date}</div></div><table><thead><tr><th>البند الفني والمعيار المعتمَد</th><th style="width:140px; text-align:center;">درجة التقييم</th></tr></thead><tbody>${critRows}</tbody></table>${v.notes?`<div style="border:1px solid #000;padding:10px;margin:0.5cm 0"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="white-space:pre-wrap;">${v.notes}</p></div>`:''}<br><div class="signatures"><div class="sig-box"><div>توقيع المعلم</div><br><div>التوقيع: _____________</div></div><div class="sig-box"><div>توقيع رئيس القسم</div><br><div>التوقيع: _____________</div></div><div class="sig-box"><div>توقيع مدير المدرسة</div><br><div>التوقيع: _____________</div></div></div></body></html>`;
+  const printContent=`<html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة - ${v.teacherName}</title><style>@page{size:A4;margin:1cm}body{font-family:Arial,sans-serif;padding:0.5cm;font-size:11px}h2{text-align:center;margin-bottom:0.5cm;font-size:14px}table{width:100%;border-collapse:collapse;margin:0.3cm 0}th{background:#f5f5f5;padding:4px 6px;border:1px solid #ddd;font-size:10px}td{padding:4px 6px;border:1px solid #ddd;font-size:10px}.info{margin:0.3cm 0;display:grid;grid-template-columns:1fr 1fr;gap:4px}.info div{margin:2px 0;font-size:11px}.signatures{margin-top:0.8cm;display:flex;justify-content:space-between}.sig-box{text-align:center;font-size:11px}.notes{border:1px solid #ddd;padding:0.3cm;margin:0.3cm 0;font-size:10px}</style></head><body><h2>نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2><div class="info"><div><strong>اسم المعلم:</strong> ${v.teacherName}</div><div><strong>القسم الدراسي:</strong> ${v.dept}</div><div><strong>المادة:</strong> ${v.subject||v.dept}</div><div><strong>الصف الدراسي:</strong> ${v.className}</div><div><strong>الحصة:</strong> الحصة ${v.period}</div><div><strong>تاريخ الزيارة:</strong> ${v.date}</div></div><table><thead><tr><th style="width:60%">البند التقني والمعيار المحدد</th><th>التقييم</th></tr></thead><tbody>${critRows}</tbody></table>${v.notes?`<div class="notes"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:4px 0">${v.notes}</p></div>`:''}<div class="signatures"><div class="sig-box"><div>التوقيع: _____________</div><div>المدير</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>رئيس القسم</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>المعلم</div></div></div></body></html>`;
   
-  const printWin=window.open('','','width=850,height=700');
+  const printWin=window.open('','','width=800,height=600');
   printWin.document.write(printContent);
   printWin.document.close();
   printWin.focus();
-  setTimeout(()=>printWin.print(),300);
+  setTimeout(()=>printWin.print(),250);
 };
 
 async function loadUsers(){
   const list=document.getElementById('users-list');
-  list.innerHTML='<p style="text-align:center;color:#666">جاري تحميل حسابات المعلمين والمدراء...</p>';
+  list.innerHTML='<p style="text-align:center;color:#666">جاري التحميل...</p>';
   
   try{
     const snap=await getDocs(collection(db,'users'));
-    let html='<table><thead><tr><th>الاسم الكامل</th><th>رقم المستخدم</th><th>الصلاحية</th><th>الفصل المربوط</th><th>كلمة المرور</th><th>إجراءات</th></tr></thead><tbody>';
+    let html='<table><thead><tr><th>الاسم</th><th>رقم المستخدم</th><th>الصلاحية</th><th>الفصل</th><th>كلمة المرور</th><th>إجراءات</th></tr></thead><tbody>';
     
     snap.forEach(doc=>{
       const u=doc.data();
-      const roleText=u.role==='admin'?'مدير / رئيس قسم':'معلم فصل';
+      const roleText=u.role==='admin'?'مدير':'معلم';
       const roleBadge=u.role==='admin'?'success':'warning';
       html+=`<tr>
-        <td><b>${u.name||'-'}</b></td>
-        <td><code>${u.userId}</code></td>
+        <td>${u.name||'-'}</td>
+        <td>${u.userId}</td>
         <td><span class="badge ${roleBadge}">${roleText}</span></td>
-        <td>${u.classId || '<span style="color:gray">كامل الصلاحيات</span>'}</td>
-        <td><span style="font-family:monospace; font-weight:bold; background:#eee; padding:2px 6px; border-radius:4px;">${u.plainPass||'-'}</span></td>
-        <td><button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px">❌ حذف الحساب</button></td>
+        <td>${u.classId||'-'}</td>
+        <td>${u.plainPass?'<span style="font-family:monospace">'+u.plainPass+'</span>':'-'}</td>
+        <td><button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px">حذف</button></td>
       </tr>`;
     });
     
     html+='</tbody></table>';
     list.innerHTML=html;
   }catch(e){
-    list.innerHTML='<p style="text-align:center;color:#dc3545">خطأ في تحميل قائمة المستخدمين</p>';
+    list.innerHTML='<p style="text-align:center;color:#dc3545">خطأ في تحميل المستخدمين</p>';
   }
 }
 
@@ -771,7 +653,7 @@ window.addUser=async()=>{
   const classId=document.getElementById('new-user-class').value.trim();
   
   if(!name||!userId||!pass||!role){
-    alert('يرجى ملء كافة الحقول الأساسية المطلوبة لإنشاء الحساب');
+    alert('يرجى ملء كل الحقول المطلوبة');
     return;
   }
   
@@ -786,19 +668,19 @@ window.addUser=async()=>{
       createdAt:serverTimestamp()
     });
     
-    alert('تم إنشاء الحساب بنجاح وإضافته للمنصة');
+    alert('تم إضافة المستخدم بنجاح');
     closeAddUser();
     loadUsers();
   }catch(e){
-    alert('خطأ أثناء الحفظ: '+e.message);
+    alert('خطأ: '+e.message);
   }
 };
 
 window.deleteUser=async id=>{
-  if(!confirm('هل أنت متأكد تماماً من رغبتك في حذف هذا الحساب نهائياً من السيستم؟'))return;
+  if(!confirm('هل أنت متأكد من حذف هذا المستخدم؟'))return;
   try{
     await deleteDoc(doc(db,'users',id));
-    alert('تم حذف الحساب بنجاح');
+    alert('تم حذف المستخدم');
     loadUsers();
   }catch(e){
     alert('خطأ: '+e.message);
