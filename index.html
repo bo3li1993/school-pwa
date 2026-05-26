@@ -58,18 +58,18 @@ body{font-family:Arial,sans-serif;background:#0a0e27;color:#fff;min-height:100vh
     <div class="success-msg" id="staff-success"></div>
     
     <div class="form-group">
-      <label>رقم المستخدم</label>
+      <label for="staff-id">رقم المستخدم</label>
       <div class="input-wrapper">
         <i>🪪</i>
-        <input type="text" id="staff-id" placeholder="أدخل رقم المستخدم" autocomplete="username">
+        <input type="text" id="staff-id" placeholder="أدخل رقم المستخدم" autocomplete="off">
       </div>
     </div>
     
     <div class="form-group">
-      <label>كلمة المرور</label>
+      <label for="staff-pass">كلمة المرور</label>
       <div class="input-wrapper">
         <i>🔒</i>
-        <input type="password" id="staff-pass" placeholder="أدخل كلمة المرور" autocomplete="current-password">
+        <input type="text" id="staff-pass" placeholder="أدخل كلمة المرور" autocomplete="off" style="-webkit-text-security:disc">
         <button class="toggle-pass" onclick="togglePassword('staff-pass',this)">👁️</button>
       </div>
     </div>
@@ -127,8 +127,11 @@ window.switchLoginTab=function(tab){
 
 window.togglePassword=function(id,btn){
   var inp=document.getElementById(id);
-  if(inp.type==='password'){inp.type='text';btn.textContent='🙈'}
-  else{inp.type='password';btn.textContent='👁️'}
+  if(inp.style.webkitTextSecurity==='disc'||inp.style.webkitTextSecurity===''){
+    inp.style.webkitTextSecurity='none';btn.textContent='🙈';
+  }else{
+    inp.style.webkitTextSecurity='disc';btn.textContent='👁️';
+  }
 };
 
 window.loginStaff=async function(){
@@ -187,16 +190,20 @@ window.loginStaff=async function(){
     
     successEl.textContent='✅ تم تسجيل الدخول بنجاح! مرحباً '+found.name;
     successEl.style.display='block';
+    btn.disabled=false;
+    spinner.style.display='none';
     
-    // توجيه حسب الصلاحية
-    console.log('Redirecting user role:',found.role);
-    setTimeout(function(){
-      if(found.role==='admin'){
-        window.location.replace('admin.html');
-      }else{
-        window.location.replace('teacher.html');
-      }
-    },1200);
+    // توجيه حسب الصلاحية - محاولات متعددة
+    var targetPage=found.role==='admin'?'admin.html':'teacher.html';
+    console.log('Redirecting to:',targetPage,'Role:',found.role);
+    
+    // حفظ الهدف في sessionStorage
+    sessionStorage.setItem('hs_redirect',targetPage);
+    
+    // محاولة أولى
+    setTimeout(function(){window.location.replace(targetPage)},800);
+    // محاولة ثانية احتياطية
+    setTimeout(function(){if(window.location.href.indexOf('index.html')!==-1||window.location.pathname==='/school-pwa/'||window.location.pathname==='/school-pwa/index.html'){window.location.replace(targetPage)}},2500);
     
   }catch(e){
     errorEl.textContent='⚠️ خطأ في الاتصال: '+e.message;
@@ -205,6 +212,14 @@ window.loginStaff=async function(){
     spinner.style.display='none';
   }
 };
+
+// تحقق من redirect معلّق
+var pendingRedirect=sessionStorage.getItem('hs_redirect');
+var hasUser=localStorage.getItem('hs_user');
+if(pendingRedirect&&hasUser){
+  sessionStorage.removeItem('hs_redirect');
+  window.location.replace(pendingRedirect);
+}
 
 // دخول بـ Enter
 document.getElementById('staff-pass').addEventListener('keypress',function(e){
