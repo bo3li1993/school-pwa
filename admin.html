@@ -291,9 +291,34 @@ table td{padding:12px;border-bottom:1px solid #eee}
   </div>
 </div>
 
+<!-- نموذج تعديل مستخدم -->
+<div id="edit-user-modal" class="modal">
+  <div class="modal-content">
+    <h2 style="margin-bottom:1.5rem">✏️ تعديل بيانات المستخدم</h2>
+    <input type="hidden" id="edit-user-docid">
+    <label style="font-size:13px;color:#666">الاسم الكامل</label>
+    <input type="text" id="edit-user-name" placeholder="الاسم الكامل">
+    <label style="font-size:13px;color:#666">رقم المستخدم</label>
+    <input type="text" id="edit-user-id" placeholder="رقم المستخدم">
+    <label style="font-size:13px;color:#666">كلمة المرور الجديدة (اتركه فارغ للإبقاء على القديمة)</label>
+    <input type="text" id="edit-user-pass" placeholder="كلمة المرور الجديدة">
+    <label style="font-size:13px;color:#666">الصلاحية</label>
+    <select id="edit-user-role">
+      <option value="admin">مدير</option>
+      <option value="teacher">معلم</option>
+    </select>
+    <label style="font-size:13px;color:#666">الفصل (للمعلمين فقط)</label>
+    <input type="text" id="edit-user-class" placeholder="مثال: 9/1">
+    <div style="display:flex;gap:12px;margin-top:1rem">
+      <button onclick="saveEditUser()" style="flex:1;background:#28a745">💾 حفظ التعديلات</button>
+      <button onclick="closeEditUser()" class="secondary" style="flex:1">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import {getFirestore,collection,doc,getDoc,getDocs,addDoc,query,where,orderBy,deleteDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import {getFirestore,collection,doc,getDoc,getDocs,addDoc,updateDoc,query,where,orderBy,deleteDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const firebaseConfig={apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9",measurementId:"G-FG9NLDJZQN"};
 const app=initializeApp(firebaseConfig);
@@ -309,6 +334,7 @@ window.query = query;
 window.where = where;
 window.orderBy = orderBy;
 window.deleteDoc = deleteDoc;
+window.updateDoc = updateDoc;
 window.serverTimestamp = serverTimestamp;
 
 let currentUser=null;
@@ -751,7 +777,10 @@ async function loadUsers(){
         <td><span class="badge ${roleBadge}">${roleText}</span></td>
         <td>${u.classId||'-'}</td>
         <td>${u.plainPass?'<span style="font-family:monospace">'+u.plainPass+'</span>':'-'}</td>
-        <td><button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px">حذف</button></td>
+        <td style="white-space:nowrap">
+          <button onclick="openEditUser('${doc.id}','${(u.name||'').replace(/'/g,"\\'")}','${u.userId}','${u.plainPass||''}','${u.role}','${u.classId||''}')" style="background:#ffc107;color:#333;padding:6px 12px;font-size:12px;margin-left:4px">✏️ تعديل</button>
+          <button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px">🗑️ حذف</button>
+        </td>
       </tr>`;
     });
     
@@ -806,6 +835,46 @@ window.deleteUser=async id=>{
   try{
     await deleteDoc(doc(db,'users',id));
     alert('تم حذف المستخدم');
+    loadUsers();
+  }catch(e){
+    alert('خطأ: '+e.message);
+  }
+};
+
+window.openEditUser=function(docId,name,userId,pass,role,classId){
+  document.getElementById('edit-user-docid').value=docId;
+  document.getElementById('edit-user-name').value=name;
+  document.getElementById('edit-user-id').value=userId;
+  document.getElementById('edit-user-pass').value=pass;
+  document.getElementById('edit-user-role').value=role;
+  document.getElementById('edit-user-class').value=classId;
+  document.getElementById('edit-user-modal').style.display='flex';
+};
+
+window.closeEditUser=function(){
+  document.getElementById('edit-user-modal').style.display='none';
+};
+
+window.saveEditUser=async function(){
+  var docId=document.getElementById('edit-user-docid').value;
+  var name=document.getElementById('edit-user-name').value.trim();
+  var userId=document.getElementById('edit-user-id').value.trim();
+  var pass=document.getElementById('edit-user-pass').value.trim();
+  var role=document.getElementById('edit-user-role').value;
+  var classId=document.getElementById('edit-user-class').value.trim();
+  
+  if(!name||!userId||!role){
+    alert('يرجى ملء الاسم ورقم المستخدم والصلاحية');
+    return;
+  }
+  
+  try{
+    var updateData={name:name,userId:userId,role:role,classId:role==='teacher'?classId:''};
+    if(pass)updateData.plainPass=pass;
+    
+    await updateDoc(doc(db,'users',docId),updateData);
+    alert('تم تحديث بيانات المستخدم بنجاح');
+    closeEditUser();
     loadUsers();
   }catch(e){
     alert('خطأ: '+e.message);
