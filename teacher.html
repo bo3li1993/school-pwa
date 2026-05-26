@@ -166,22 +166,20 @@ const app=initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDo
 const db=getFirestore(app);
 var currentUser=null,allStudents=[],studentStatuses={};
 var saved=localStorage.getItem('hs_user');
-console.log('teacher.html - hs_user raw:',saved);
 if(!saved){
-  console.log('No hs_user, redirecting to login');
   window.location.href='index.html';
-}
-else{
+}else{
   try{
     currentUser=JSON.parse(saved);
-    console.log('teacher.html - User parsed:',currentUser);
-    console.log('teacher.html - Name:',currentUser.name,'Role:',currentUser.role);
+  }catch(e){
+    console.log('JSON parse error:',e);
+    localStorage.removeItem('hs_user');
+    window.location.href='index.html';
+  }
+  if(currentUser){
     document.getElementById('teacher-name').textContent=currentUser.name||'المعلم';
     document.getElementById('teacher-class-info').textContent=currentUser.classId?'الفصل: '+currentUser.classId:'جميع الفصول';
-    init();
-  }catch(e){
-    console.log('teacher.html - Parse error:',e);
-    window.location.href='index.html';
+    try{init()}catch(e){console.log('Init error:',e)}
   }
 }
 var today=new Date(),dd=String(today.getDate()).padStart(2,'0'),mm=String(today.getMonth()+1).padStart(2,'0'),yyyy=today.getFullYear();
