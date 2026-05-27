@@ -1,1 +1,97 @@
-  
+  <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل الاستخدام - متوسطة سالم الحسينان</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .action-bar { text-align: center; margin-bottom: 20px; }
+        .btn-download { background: #1a1a2e; color: #fff; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-download:hover { background: #2a2a4e; transform: translateY(-2px); }
+        .btn-back { background: #6c757d; color: #fff; text-decoration: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; margin-right: 10px; }
+        
+        /* تنسيق الورقة الرسمية (A4) */
+        #pdf-content { background: #fff; max-width: 800px; margin: 0 auto; padding: 40px; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .pdf-header { text-align: center; border-bottom: 3px solid #1a1a2e; padding-bottom: 20px; margin-bottom: 30px; }
+        .pdf-header h1 { color: #1a1a2e; font-size: 26px; margin-bottom: 5px; }
+        .pdf-header p { color: #666; font-size: 14px; }
+        
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #4f46e5; border-right: 4px solid #4f46e5; padding-right: 10px; font-size: 20px; margin-bottom: 15px; background: #f8f9fa; padding: 10px 10px 10px 0; border-radius: 4px 0 0 4px; }
+        .section ul, .section ol { padding-right: 20px; line-height: 1.8; color: #444; }
+        .section li { margin-bottom: 8px; }
+        
+        .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="action-bar">
+        <a href="dashboard.html" class="btn-back">🔙 الرجوع للوحة</a>
+        <button class="btn-download" onclick="generatePDF()">📥 تحميل الدليل (PDF)</button>
+    </div>
+
+    <div id="pdf-content">
+        <div class="pdf-header">
+            <h1>نظام إدارة الغياب والحضور الذكي</h1>
+            <p>وزارة التربية - الإدارة العامة لمنطقة الأحمدي التعليمية<br><b>متوسطة سالم الحسينان - بنين</b></p>
+        </div>
+
+        <div class="section">
+            <h2>🎯 أهداف النظام</h2>
+            <ul>
+                <li>تحويل عملية رصد الغياب الورقية إلى نظام إلكتروني سريع وموثوق.</li>
+                <li>توفير قاعدة بيانات فورية ومباشرة (Live) لإدارة المدرسة.</li>
+                <li>حفظ سجلات الزيارات الصفية للمعلمين بشكل آلي ومنظم.</li>
+                <li>تقليل الجهد الإداري ومتابعة حالات الغياب المتكرر بدقة عالية.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🌟 المميزات التقنية</h2>
+            <ul>
+                <li><b>منظومة سحابية:</b> النظام يعمل بكفاءة على جميع الأجهزة (كمبيوتر، آيباد، هواتف ذكية).</li>
+                <li><b>مستويات الصلاحية:</b> واجهة مخصصة للإدارة، وواجهة مبسطة للمعلمين.</li>
+                <li><b>إحصائيات فورية:</b> لوحة مراقبة حية توضح نسبة الحضور والفصول المتأخرة بالرصد.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔧 خطوات الاستخدام (للمعلمين)</h2>
+            <ol>
+                <li>الدخول عبر الرابط المخصص للمنصة وتسجيل الدخول بالرقم المدني وكلمة المرور.</li>
+                <li>اختيار أيقونة <b>"رصد الغياب اليومي"</b> من اللوحة الرئيسية.</li>
+                <li>تحديد الفصل والحصة، وسيظهر كشف بأسماء الطلاب.</li>
+                <li>تحديد الطلاب الغائبين أو المتأخرين، ثم الضغط على <b>"حفظ الغياب"</b>.</li>
+                <li>يمكن للمعلم مراجعة سجلاته السابقة من تبويب <b>"سجلاتي"</b>.</li>
+            </ol>
+        </div>
+
+        <div class="footer">
+            تم تطوير هذا النظام لخدمة العملية التعليمية في متوسطة سالم الحسينان © 2026<br>
+            إعداد وتصميم: أ. حسين محمد
+        </div>
+    </div>
+
+    <script>
+        function generatePDF() {
+            // إخفاء الأزرار وقت التصوير عشان ما تطلع بالطباعة
+            const element = document.getElementById('pdf-content');
+            
+            // إعدادات جودة وخصائص الـ PDF
+            const opt = {
+                margin:       10,
+                filename:     'دليل_استخدام_منصة_الحسينان.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // تشغيل مكتبة التحويل
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
