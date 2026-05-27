@@ -82,6 +82,11 @@ body{font-family:Arial,sans-serif;background:#0a0e27;color:#fff;min-height:100vh
       <span>←</span>
       <div class="spinner" id="staff-spinner"></div>
     </button>
+
+    <div style="text-align: center; margin-top: 25px;">
+      <a href="guide.html" style="background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 8px; display: inline-block; color: #667eea; font-weight: bold; text-decoration: none; border: 1px solid rgba(102, 126, 234, 0.3); font-size: 14px; transition: all 0.3s;">📥 تحميل الدليل التعريفي للنظام (PDF)</a>
+    </div>
+
   </div>
   
   <div id="parent-login" style="display:none">
@@ -190,7 +195,7 @@ window.loginStaff=async function(){
     btn.disabled=false;
     spinner.style.display='none';
     
-  // توجيه حسب الصلاحية (المدير لصفحته والمعلم لصفحته)
+    // توجيه حسب الصلاحية (المدير لصفحته والمعلم لصفحته)
     var targetPage = found.role === 'admin' ? 'admin.html?v=100' : 'teacher.html?v=100';
     
     // حفظ الهدف في sessionStorage
