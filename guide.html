@@ -10,10 +10,16 @@
     .header { text-align: center; border-bottom: 2px solid #667eea; padding-bottom: 1rem; margin-bottom: 2rem; }
     .header h1 { color: #1a1a2e; margin-bottom: 10px; }
     .header p { color: #666; font-size: 14px; }
-    h2 { color: #667eea; margin-top: 1.5rem; border-right: 4px solid #764ba2; padding-right: 10px; }
+    h2 { color: #667eea; margin-top: 1.5rem; border-right: 4px solid #764ba2; padding-right: 10px; page-break-after: avoid; }
     ul, ol { margin-top: 10px; padding-right: 20px; line-height: 1.8; }
     li { margin-bottom: 8px; }
-    .download-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: opacity 0.3s; display: flex; align-items: center; gap: 10px; }
+    
+    /* تنسيقات قسم الصور */
+    .step-box { margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0; page-break-inside: avoid; }
+    .step-box h3 { color: #1a1a2e; margin-bottom: 10px; font-size: 16px; }
+    .step-img { width: 100%; max-width: 100%; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 10px; border: 1px solid #ccc; }
+    
+    .download-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: opacity 0.3s; display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;}
     .download-btn:hover { opacity: 0.9; }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -33,38 +39,48 @@
       <li>📝 تسجيل الغياب بسهولة وسرعة من أي جهاز.</li>
       <li>📊 متابعة إحصائيات الحضور والغياب اليومية بدقة.</li>
       <li>🏫 رفع كفاءة العملية التعليمية وتقليل العمل الورقي.</li>
-      <li>👁️ إتاحة لوحة تحكم شاملة للإدارة المدرسية ورؤساء الأقسام.</li>
     </ul>
 
     <h2>🌟 مميزات النظام</h2>
     <ul>
-      <li>💻 نظام إلكتروني متكامل يعمل على السحابة (Firebase).</li>
+      <li>💻 نظام إلكتروني متكامل يعمل على السحابة.</li>
       <li>📱 متوافق تماماً مع شاشات الهواتف الذكية والأجهزة اللوحية.</li>
       <li>⚡ حفظ البيانات فورياً وتحديثها لحظياً لدى الإدارة.</li>
-      <li>📈 تقارير وإحصائيات شاملة للفصول والمعلمين.</li>
     </ul>
 
-    <h2>🔧 دليل الاستخدام السريع</h2>
-    <ol>
-      <li><b>تسجيل الدخول:</b> قم بإدخال رقم المستخدم وكلمة المرور الخاصة بك في البوابة الرئيسية.</li>
-      <li><b>للمعلمين:</b> اختر الفصل والحصة من لوحتك الخاصة، وحدد الطلاب الغائبين، ثم اضغط "حفظ".</li>
-      <li><b>للإدارة:</b> يمكنكم متابعة إحصائيات اليوم، الفصول المتأخرة عن الرصد، وتوثيق الزيارات الصفية.</li>
-      <li><b>الزيارات الصفية:</b> من لوحة المدير، اختر القسم وسجل زيارة المعلم ليتم أرشفتها رسمياً.</li>
-    </ol>
+    <h2>📸 الشرح التفصيلي (خطوة بخطوة)</h2>
+    
+    <div class="step-box">
+      <h3>1. خطوة الدخول للبوابة:</h3>
+      <p>أدخل رقم المستخدم الخاص بك وكلمة المرور، ثم اضغط على زر الدخول.</p>
+      <img src="step1.jpg" alt="صورة توضيحية لتسجيل الدخول" class="step-img" onerror="this.style.display='none'">
+    </div>
+
+    <div class="step-box">
+      <h3>2. لوحة المعلم وتسجيل الغياب:</h3>
+      <p>اختر الفصل والحصة، ثم اضغط على زر الغياب أو التأخير بجانب اسم الطالب، واضغط حفظ.</p>
+      <img src="step2.jpg" alt="صورة توضيحية لصفحة المعلم" class="step-img" onerror="this.style.display='none'">
+    </div>
+
+    <div class="step-box">
+      <h3>3. لوحة المدير والزيارات الصفية:</h3>
+      <p>تابع إحصائيات المدرسة كاملة، وقم بتسجيل الزيارات الصفية من التبويب المخصص.</p>
+      <img src="step3.jpg" alt="صورة توضيحية لصفحة المدير" class="step-img" onerror="this.style.display='none'">
+    </div>
+
   </div>
 
   <script>
     function downloadPDF() {
       const element = document.getElementById('pdf-content');
       const opt = {
-        margin:       10,
+        margin:       [10, 10, 10, 10],
         filename:     'دليل_نظام_سالم_الحسينان.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       
-      // تحويل وحفظ الـ PDF
       html2pdf().set(opt).from(element).save();
     }
   </script>
