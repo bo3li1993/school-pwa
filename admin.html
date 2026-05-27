@@ -1,135 +1,118 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بوابة الدخول الذكية - متوسطة سالم الحسينان</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>لوحة الإدارة - متوسطة سالم الحسينان</title>
+<style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Segoe UI',Arial;background:#f0f2f5;min-height:100vh}
+    .header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
+    .tabs{background:#fff;display:flex;padding:0 1rem;border-bottom:2px solid #eee;overflow-x:auto}
+    .tab{padding:15px 20px;cursor:pointer;border:none;background:none;font-weight:bold;color:#888;border-bottom:3px solid transparent}
+    .tab.active{color:#1a1a2e;border-bottom-color:#667eea}
+    .content{padding:20px;}
+    .tab-pane{display:none}
+    .tab-pane.active{display:block}
+    .card{background:white;padding:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);margin-bottom:20px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th, td{border:1px solid #ddd;padding:10px;text-align:center}
+    th{background:#f8f9fa}
+    .btn{padding:8px 15px;cursor:pointer;border:none;border-radius:5px;background:#667eea;color:white}
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <img src="images/logo.svg" alt="شعار متوسطة سالم الحسينان" class="logo">
-      <h1>بوابة الدخول الذكية</h1>
-    </div>
-    
-    <div class="login-form">
-      <h2>تسجيل الدخول</h2>
-      <form>
-        <div class="input-group">
-          <img src="images/icons/user.svg" class="icon">
-          <input type="text" id="username" placeholder="اسم المستخدم" autocomplete="off">
-        </div>
-        
-        <div class="input-group">
-          <img src="images/icons/lock.svg" class="icon">
-          <input type="password" id="password" placeholder="كلمة المرور" autocomplete="off" style="-webkit-text-security:disc">
-          <button class="toggle-pass" onclick="togglePassword('password',this)">👁️</button>
-        </div>
-        
-        <div class="checkbox">
-          <input type="checkbox" id="remember">
-          <label for="remember">تذكرني</label>
-        </div>
-        
-        <button type="submit">دخول <img src="images/icons/arrow.svg"></button>
-      </form>
-      
-      <div class="links">
-        <a href="#">نسيت كلمة المرور؟</a>
-        <a href="#">تسجيل حساب جديد</a>
-      </div>
-    </div>
-  </div>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script>
-    // Firebase configuration
-    const firebaseConfig = {
-      // Add your Firebase project configuration here
+<div class="header">
+    <div><h2>مرحباً يا مديرنا الغالي</h2></div>
+    <div>
+        <button onclick="window.open('tv.html', '_blank')" style="background:#dc3545; color:white; border:none; padding:10px; cursor:pointer;">📺 غرفة العمليات</button>
+        <button onclick="logout()" style="background:#6c757d; color:white; border:none; padding:10px; cursor:pointer;">خروج</button>
+    </div>
+</div>
+
+<div class="tabs">
+    <button class="tab active" onclick="switchTab(this, 'today')">📊 إحصائيات اليوم</button>
+    <button class="tab" onclick="switchTab(this, 'visits')">📋 الزيارات الصفية</button>
+    <button class="tab" onclick="switchTab(this, 'users')">👥 المستخدمون</button>
+</div>
+
+<div class="content">
+    <div id="today" class="tab-pane active">
+        <div class="card">
+            <h2>إحصائيات الغياب المباشرة</h2>
+            <div id="stats-area">جاري جلب البيانات...</div>
+            <table id="today-table">
+                <thead><tr><th>الاسم</th><th>الفصل</th><th>الحالة</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <div id="visits" class="tab-pane">
+        <div class="card">
+            <h2>سجل الزيارات الصفية</h2>
+            <div id="visits-area">جاري التحميل...</div>
+        </div>
+    </div>
+    <div id="users" class="tab-pane">
+        <div class="card">
+            <h2>إدارة المستخدمين</h2>
+            <div id="users-area">جاري التحميل...</div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getFirestore, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    const app = initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
+    const db = getFirestore(app);
+
+    // حماية الصفحة للمدير فقط
+    if (!localStorage.getItem('hs_user')) window.location.replace('index.html');
+
+    window.switchTab = (btn, id) => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     };
-    
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
 
-    const loginForm = document.querySelector('form');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
+    window.logout = () => { localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
 
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    async function loadAdminData() {
+        // 1. إحصائيات اليوم (غياب)
+        const today = new Date().toISOString().split('T')[0].replace(/-/g, '/');
+        const attSnap = await getDocs(query(collection(db, 'attendance'), where('date', '==', today)));
+        let tbody = document.querySelector('#today-table tbody');
+        tbody.innerHTML = '';
+        let count = 0;
+        attSnap.forEach(doc => {
+            let d = doc.data();
+            tbody.innerHTML += `<tr><td>${d.studentName}</td><td>${d.classId}</td><td>${d.status}</td></tr>`;
+            count++;
+        });
+        document.getElementById('stats-area').innerHTML = `عدد الغائبين اليوم: <b>${count}</b>`;
 
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value.trim();
+        // 2. تحميل الزيارات
+        const vis = await getDocs(collection(db, 'visits'));
+        let vHtml = '<table><tr><th>المعلم</th><th>القسم</th><th>التقييم</th></tr>';
+        vis.forEach(doc => {
+            let v = doc.data();
+            vHtml += `<tr><td>${v.teacherName}</td><td>${v.dept}</td><td>${v.rating}</td></tr>`;
+        });
+        document.getElementById('visits-area').innerHTML = vHtml + '</table>';
 
-      try {
-        const snapshot = await db.collection('users').where('userId', '==', username).where('plainPass', '==', password).get();
-
-        if (snapshot.empty) {
-          console.log('No matching user found');
-          alert('اسم المستخدم أو كلمة المرور غير صحيحة');
-          return;
-        }
-
-        const userDoc = snapshot.docs[0];
-        const userData = userDoc.data();
-
-        const found = {
-          id: userDoc.id,
-          name: userData.name || '',
-          role: userData.role || '',
-          classId: userData.classId || '',
-          userId: userData.userId
-        };
-
-        localStorage.setItem('hs_user', JSON.stringify(found));
-
-        // توجيه حسب الصلاحية
-        // تعديل: طباعة دور المستخدم في وحدة التحكم
-        console.log('Found user role:', found.role); //
-        console.log('Redirecting user role:', found.role);
-
-        // حفظ الهدف في sessionStorage
-        const targetPage = found.role === 'admin' ? 'admin.html' : 'teacher.html'; //
-        sessionStorage.setItem('hs_redirect', targetPage); //
-
-        // محاولة أولى
-        setTimeout(function() {
-          window.location.replace(targetPage);
-        }, 800);
-
-        // محاولة ثانية احتياطية
-        setTimeout(function() {
-          if (window.location.href.indexOf('index.html') !== -1 || window.location.pathname === '/school-pwa/' || window.location.pathname === '/school-pwa/index.html') {
-            window.location.replace(targetPage);
-          }
-        }, 2500);
-
-      } catch (error) {
-        console.error('Error logging in:', error);
-        alert('حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.');
-      }
-    });
-
-    // تحقق من redirect معلّق
-    const pendingRedirect = sessionStorage.getItem('hs_redirect'); //
-    const hasUser = localStorage.getItem('hs_user'); //
-    if (pendingRedirect && hasUser) { //
-      sessionStorage.removeItem('hs_redirect'); //
-      window.location.replace(pendingRedirect); //
-    } //
-
-    function togglePassword(id, btn) {
-      const input = document.getElementById(id);
-      if (input.style.webkitTextSecurity === 'disc' || input.style.webkitTextSecurity === '') {
-        input.style.webkitTextSecurity = 'none';
-        btn.textContent = '🙈';
-      } else {
-        input.style.webkitTextSecurity = 'disc';
-        btn.textContent = '👁️';
-      }
+        // 3. تحميل المستخدمين
+        const users = await getDocs(collection(db, 'users'));
+        let uHtml = '<table><tr><th>الاسم</th><th>الدور</th></tr>';
+        users.forEach(doc => {
+            let u = doc.data();
+            uHtml += `<tr><td>${u.name}</td><td>${u.role}</td></tr>`;
+        });
+        document.getElementById('users-area').innerHTML = uHtml + '</table>';
     }
-  </script>
+    loadAdminData();
+</script>
 </body>
 </html>
