@@ -2,117 +2,150 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة الإدارة - متوسطة سالم الحسينان</title>
 <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Segoe UI',Arial;background:#f0f2f5;min-height:100vh}
-    .header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
-    .tabs{background:#fff;display:flex;padding:0 1rem;border-bottom:2px solid #eee;overflow-x:auto}
-    .tab{padding:15px 20px;cursor:pointer;border:none;background:none;font-weight:bold;color:#888;border-bottom:3px solid transparent}
-    .tab.active{color:#1a1a2e;border-bottom-color:#667eea}
-    .content{padding:20px;}
-    .tab-pane{display:none}
-    .tab-pane.active{display:block}
-    .card{background:white;padding:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);margin-bottom:20px}
-    table{width:100%;border-collapse:collapse;margin-top:10px}
-    th, td{border:1px solid #ddd;padding:10px;text-align:center}
-    th{background:#f8f9fa}
-    .btn{padding:8px 15px;cursor:pointer;border:none;border-radius:5px;background:#667eea;color:white}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
+.header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:1rem 1.5rem}
+.header-top{display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:18px;font-weight:500}
+.header-sub{font-size:12px;opacity:.7;margin-top:2px}
+.header-btns{display:flex;gap:8px}
+.header-btns button{background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:background .2s}
+.header-btns button:hover{background:rgba(255,255,255,.25)}
+.tabs-container{background:#fff;border-bottom:2px solid #eee;overflow-x:auto;display:flex;padding:0 1rem}
+.tab{padding:14px 20px;border:none;background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:#888;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+.tab.active{color:#1a1a2e;border-bottom-color:#667eea;background:#f8f9ff}
+.content{max-width:1000px;margin:2rem auto;padding:0 1rem}
+.card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.card h2{margin-bottom:1rem;font-size:18px;color:#1a1a2e;border-bottom:1px solid #eee;padding-bottom:10px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+@media(max-width:768px){.grid-4{grid-template-columns:1fr}}
+.hidden{display:none!important}
+table{width:100%;border-collapse:collapse;margin-top:15px;font-size:14px}
+th,td{padding:12px;text-align:right;border-bottom:1px solid #eee}
+th{background:#f8f9fa}
+.badge{padding:4px 8px;border-radius:12px;font-size:11px;font-weight:bold;display:inline-block}
+.badge-danger{background:#ffe3e3;color:#dc3545}
+.badge-warning{background:#fff3cd;color:#856404}
+.badge-success{background:#d4edda;color:#155724}
 </style>
 </head>
 <body>
 
 <div class="header">
-    <div><h2>مرحباً يا مديرنا الغالي</h2></div>
+  <div class="header-top">
     <div>
-        <button onclick="window.open('tv.html', '_blank')" style="background:#dc3545; color:white; border:none; padding:10px; cursor:pointer;">📺 غرفة العمليات</button>
-        <button onclick="logout()" style="background:#6c757d; color:white; border:none; padding:10px; cursor:pointer;">خروج</button>
+      <h1>مرحباً، <span id="admin-name">المدير</span></h1>
+      <div class="header-sub">متوسطة سالم الحسينان - لوحة التحكم</div>
     </div>
+    <div class="header-btns">
+      <button onclick="window.open('tv.html', '_blank')" style="background:#dc3545; font-weight:bold;">📺 غرفة العمليات</button>
+      <button id="btn-logout">خروج</button>
+    </div>
+  </div>
 </div>
 
-<div class="tabs">
-    <button class="tab active" onclick="switchTab(this, 'today')">📊 إحصائيات اليوم</button>
-    <button class="tab" onclick="switchTab(this, 'visits')">📋 الزيارات الصفية</button>
-    <button class="tab" onclick="switchTab(this, 'users')">👥 المستخدمون</button>
+<div class="tabs-container" id="tabs-bar">
+  <button class="tab active" data-tab="today">📊 إحصائيات اليوم</button>
+  <button class="tab" data-tab="classes">🏫 الفصول</button>
+  <button class="tab" data-tab="visits">📋 الزيارات الصفية</button>
+  <button class="tab" data-tab="users">👥 المستخدمون</button>
 </div>
 
 <div class="content">
-    <div id="today" class="tab-pane active">
-        <div class="card">
-            <h2>إحصائيات الغياب المباشرة</h2>
-            <div id="stats-area">جاري جلب البيانات...</div>
-            <table id="today-table">
-                <thead><tr><th>الاسم</th><th>الفصل</th><th>الحالة</th></tr></thead>
-                <tbody></tbody>
-            </table>
+  <div id="tab-today" class="tab-pane">
+    <div class="card">
+      <h2>نظرة عامة على اليوم</h2>
+      <div class="grid-4" style="text-align:center;">
+        <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+          <div style="font-size:24px;font-weight:bold" id="stat-total">0</div>
+          <div style="font-size:12px;color:#666">الطلاب</div>
         </div>
-    </div>
-    <div id="visits" class="tab-pane">
-        <div class="card">
-            <h2>سجل الزيارات الصفية</h2>
-            <div id="visits-area">جاري التحميل...</div>
+        <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+          <div style="font-size:24px;font-weight:bold;color:#28a745" id="stat-present">0</div>
+          <div style="font-size:12px;color:#666">حاضر</div>
         </div>
-    </div>
-    <div id="users" class="tab-pane">
-        <div class="card">
-            <h2>إدارة المستخدمين</h2>
-            <div id="users-area">جاري التحميل...</div>
+        <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+          <div style="font-size:24px;font-weight:bold;color:#dc3545" id="stat-absent">0</div>
+          <div style="font-size:12px;color:#666">غائب</div>
         </div>
+        <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+          <div style="font-size:24px;font-weight:bold;color:#f0ad4e" id="stat-late">0</div>
+          <div style="font-size:12px;color:#666">متأخر</div>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div id="tab-classes" class="tab-pane hidden">
+    <div class="card"><h2>الفصول</h2><p>يمكن استعراض الطلاب من خلال شاشة المعلم</p></div>
+  </div>
+
+  <div id="tab-visits" class="tab-pane hidden">
+    <div class="card"><h2>الزيارات الصفية</h2><div id="visits-list">جاري التحميل...</div></div>
+  </div>
+
+  <div id="tab-users" class="tab-pane hidden">
+    <div class="card"><h2>إدارة المستخدمين</h2><div id="users-list">جاري التحميل...</div></div>
+  </div>
 </div>
 
 <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getFirestore, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import {getFirestore,collection,getDocs,query,where} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-    const app = initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
-    const db = getFirestore(app);
+const app = initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
+const db = getFirestore(app);
 
-    // حماية الصفحة للمدير فقط
-    if (!localStorage.getItem('hs_user')) window.location.replace('index.html');
+// التنقل (تم تصليحه)
+document.getElementById('tabs-bar').addEventListener('click', function(e){
+  var btn = e.target.closest('.tab');
+  if(!btn) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+  document.getElementById('tab-' + btn.getAttribute('data-tab')).classList.remove('hidden');
+});
 
-    window.switchTab = (btn, id) => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    };
+// الخروج
+document.getElementById('btn-logout').addEventListener('click', () => {
+  localStorage.removeItem('hs_user');
+  window.location.replace('index.html');
+});
 
-    window.logout = () => { localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
-
-    async function loadAdminData() {
-        // 1. إحصائيات اليوم (غياب)
-        const today = new Date().toISOString().split('T')[0].replace(/-/g, '/');
-        const attSnap = await getDocs(query(collection(db, 'attendance'), where('date', '==', today)));
-        let tbody = document.querySelector('#today-table tbody');
-        tbody.innerHTML = '';
-        let count = 0;
-        attSnap.forEach(doc => {
-            let d = doc.data();
-            tbody.innerHTML += `<tr><td>${d.studentName}</td><td>${d.classId}</td><td>${d.status}</td></tr>`;
-            count++;
-        });
-        document.getElementById('stats-area').innerHTML = `عدد الغائبين اليوم: <b>${count}</b>`;
-
-        // 2. تحميل الزيارات
-        const vis = await getDocs(collection(db, 'visits'));
-        let vHtml = '<table><tr><th>المعلم</th><th>القسم</th><th>التقييم</th></tr>';
-        vis.forEach(doc => {
-            let v = doc.data();
-            vHtml += `<tr><td>${v.teacherName}</td><td>${v.dept}</td><td>${v.rating}</td></tr>`;
-        });
-        document.getElementById('visits-area').innerHTML = vHtml + '</table>';
-
-        // 3. تحميل المستخدمين
-        const users = await getDocs(collection(db, 'users'));
-        let uHtml = '<table><tr><th>الاسم</th><th>الدور</th></tr>';
-        users.forEach(doc => {
-            let u = doc.data();
-            uHtml += `<tr><td>${u.name}</td><td>${u.role}</td></tr>`;
-        });
-        document.getElementById('users-area').innerHTML = uHtml + '</table>';
-    }
-    loadAdminData();
+// تحميل البيانات
+async function loadAll(){
+  try {
+    const user = JSON.parse(localStorage.getItem('hs_user'));
+    if(user) document.getElementById('admin-name').textContent = user.name;
+    
+    // إحصائيات
+    const students = await getDocs(collection(db, 'students'));
+    document.getElementById('stat-total').textContent = students.size;
+    
+    const att = await getDocs(collection(db, 'attendance'));
+    let absent = 0, late = 0;
+    att.forEach(d => { if(d.data().status==='absent') absent++; if(d.data().status==='late') late++; });
+    document.getElementById('stat-absent').textContent = absent;
+    document.getElementById('stat-late').textContent = late;
+    document.getElementById('stat-present').textContent = students.size - absent - late;
+    
+    // زيارات
+    const vis = await getDocs(collection(db, 'visits'));
+    let vHtml = '<table><tr><th>المعلم</th><th>القسم</th><th>التقييم</th></tr>';
+    vis.forEach(d => { let v=d.data(); vHtml += `<tr><td>${v.teacherName}</td><td>${v.dept}</td><td>${v.rating}</td></tr>`; });
+    document.getElementById('visits-list').innerHTML = vHtml + '</table>';
+    
+    // مستخدمين
+    const users = await getDocs(collection(db, 'users'));
+    let uHtml = '<table><tr><th>الاسم</th><th>الدور</th></tr>';
+    users.forEach(d => { let u=d.data(); uHtml += `<tr><td>${u.name}</td><td>${u.role}</td></tr>`; });
+    document.getElementById('users-list').innerHTML = uHtml + '</table>';
+  } catch(e) { console.error(e); }
+}
+loadAll();
 </script>
 </body>
 </html>
