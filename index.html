@@ -190,8 +190,8 @@ window.loginStaff=async function(){
     btn.disabled=false;
     spinner.style.display='none';
     
-    // توجيه إلى اللوحة المركزية الجديدة
-    var targetPage = 'dashboard.html?v=1';
+  // توجيه حسب الصلاحية (المدير لصفحته والمعلم لصفحته)
+    var targetPage = found.role === 'admin' ? 'admin.html?v=100' : 'teacher.html?v=100';
     
     // حفظ الهدف في sessionStorage
     sessionStorage.setItem('hs_redirect',targetPage);
