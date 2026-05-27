@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دليل النظام - متوسطة سالم الحسينان</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: #333; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+    .page-content { background: #fff; padding: 3rem; border-radius: 10px; max-width: 800px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+    .header { text-align: center; border-bottom: 2px solid #667eea; padding-bottom: 1rem; margin-bottom: 2rem; }
+    .header h1 { color: #1a1a2e; margin-bottom: 10px; }
+    .header p { color: #666; font-size: 14px; }
+    h2 { color: #667eea; margin-top: 1.5rem; border-right: 4px solid #764ba2; padding-right: 10px; }
+    ul, ol { margin-top: 10px; padding-right: 20px; line-height: 1.8; }
+    li { margin-bottom: 8px; }
+    .download-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: opacity 0.3s; display: flex; align-items: center; gap: 10px; }
+    .download-btn:hover { opacity: 0.9; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+  <button class="download-btn" onclick="downloadPDF()">📥 تحميل الدليل كملف PDF</button>
+
+  <div class="page-content" id="pdf-content">
+    <div class="header">
+      <h1>نظام إدارة الغياب والحضور</h1>
+      <p>متوسطة سالم الحسينان - دليل الاستخدام الرسمي</p>
+    </div>
+
+    <h2>🎯 أهداف النظام</h2>
+    <ul>
+      <li>📝 تسجيل الغياب بسهولة وسرعة من أي جهاز.</li>
+      <li>📊 متابعة إحصائيات الحضور والغياب اليومية بدقة.</li>
+      <li>🏫 رفع كفاءة العملية التعليمية وتقليل العمل الورقي.</li>
+      <li>👁️ إتاحة لوحة تحكم شاملة للإدارة المدرسية ورؤساء الأقسام.</li>
+    </ul>
+
+    <h2>🌟 مميزات النظام</h2>
+    <ul>
+      <li>💻 نظام إلكتروني متكامل يعمل على السحابة (Firebase).</li>
+      <li>📱 متوافق تماماً مع شاشات الهواتف الذكية والأجهزة اللوحية.</li>
+      <li>⚡ حفظ البيانات فورياً وتحديثها لحظياً لدى الإدارة.</li>
+      <li>📈 تقارير وإحصائيات شاملة للفصول والمعلمين.</li>
+    </ul>
+
+    <h2>🔧 دليل الاستخدام السريع</h2>
+    <ol>
+      <li><b>تسجيل الدخول:</b> قم بإدخال رقم المستخدم وكلمة المرور الخاصة بك في البوابة الرئيسية.</li>
+      <li><b>للمعلمين:</b> اختر الفصل والحصة من لوحتك الخاصة، وحدد الطلاب الغائبين، ثم اضغط "حفظ".</li>
+      <li><b>للإدارة:</b> يمكنكم متابعة إحصائيات اليوم، الفصول المتأخرة عن الرصد، وتوثيق الزيارات الصفية.</li>
+      <li><b>الزيارات الصفية:</b> من لوحة المدير، اختر القسم وسجل زيارة المعلم ليتم أرشفتها رسمياً.</li>
+    </ol>
+  </div>
+
+  <script>
+    function downloadPDF() {
+      const element = document.getElementById('pdf-content');
+      const opt = {
+        margin:       10,
+        filename:     'دليل_نظام_سالم_الحسينان.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      // تحويل وحفظ الـ PDF
+      html2pdf().set(opt).from(element).save();
+    }
+  </script>
+
+</body>
+</html>
