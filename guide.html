@@ -3,69 +3,131 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>دليل النظام - متوسطة سالم الحسينان</title>
+  <title>الدليل الرسمي للنظام - متوسطة سالم الحسينان</title>
   <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; color: #333; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
-    .page-content { background: #fff; padding: 3rem; border-radius: 10px; max-width: 800px; width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-    .header { text-align: center; border-bottom: 2px solid #667eea; padding-bottom: 1rem; margin-bottom: 2rem; }
-    .header h1 { color: #1a1a2e; margin-bottom: 10px; }
-    .header p { color: #666; font-size: 14px; }
-    h2 { color: #667eea; margin-top: 1.5rem; border-right: 4px solid #764ba2; padding-right: 10px; page-break-after: avoid; }
-    ul, ol { margin-top: 10px; padding-right: 20px; line-height: 1.8; }
-    li { margin-bottom: 8px; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #333; padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; }
+    .page-content { background: #fff; padding: 3rem; border-radius: 12px; max-width: 850px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 2rem; }
     
-    /* تنسيقات قسم الصور */
-    .step-box { margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border: 1px solid #e0e0e0; page-break-inside: avoid; }
-    .step-box h3 { color: #1a1a2e; margin-bottom: 10px; font-size: 16px; }
-    .step-img { width: 100%; max-width: 100%; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 10px; border: 1px solid #ccc; }
+    /* الهيدر الرسمي */
+    .official-header { text-align: center; border-bottom: 3px double #667eea; padding-bottom: 1.5rem; margin-bottom: 2.5rem; }
+    .official-header h1 { color: #1a1a2e; font-size: 26px; margin-bottom: 8px; font-weight: bold; }
+    .official-header p { color: #666; font-size: 15px; }
     
-    .download-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: opacity 0.3s; display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;}
-    .download-btn:hover { opacity: 0.9; }
+    h2 { color: #1a1a2e; margin-top: 2rem; border-right: 5px solid #667eea; padding-right: 12px; font-size: 18px; page-break-after: avoid; }
+    p.intro { line-height: 1.8; color: #4a4a4a; font-size: 15px; margin-top: 10px; }
+    ul, ol { margin-top: 10px; padding-right: 25px; line-height: 1.8; font-size: 14px; }
+    li { margin-bottom: 10px; }
+    
+    /* قوالب الشاشات التوضيحية بالـ CSS */
+    .visual-step { background: #f8f9fc; border: 1px solid #e3e6f0; border-radius: 10px; padding: 1.5rem; margin-top: 1.5rem; page-break-inside: avoid; }
+    .visual-step h3 { font-size: 15px; color: #667eea; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    
+    /* شاشة دخول افتراضية */
+    .mock-login-screen { background: #0a0e27; padding: 1.5rem; border-radius: 8px; max-width: 340px; margin: 10px auto; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .mock-input { background: #0d1025; border: 1px solid #1e2340; padding: 8px; border-radius: 6px; width: 85%; margin: 6px auto; font-size: 11px; color: #666; text-align: right; }
+    .mock-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 10px; border-radius: 6px; width: 85%; margin: 12px auto 0; font-size: 12px; font-weight: bold; }
+    
+    /* شاشة معلم افتراضية */
+    .mock-teacher-screen { background: #f0f2f5; border: 1px solid #ccc; border-radius: 8px; max-width: 500px; margin: 10px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; }
+    .mock-navbar { background: linear-gradient(135deg,#1a1a2e,#16213e); color: white; padding: 8px; font-size: 11px; display: flex; justify-content: space-between; }
+    .mock-tabs { display: flex; background: white; border-bottom: 1px solid #eee; font-size: 11px; text-align: center; }
+    .mock-tab { flex: 1; padding: 8px; color: #888; border-bottom: 2px solid transparent; }
+    .mock-tab.active { color: #1a1a2e; border-bottom-color: #667eea; background: #f8f9ff; font-weight: bold; }
+    .mock-row { background: white; padding: 8px 12px; margin: 8px; border-radius: 6px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+    .mock-pills { display: flex; gap: 5px; }
+    .mock-pill { padding: 4px 8px; border-radius: 12px; font-size: 10px; border: 1px solid #e0e0e0; background: white; }
+    .mock-pill.active { background: #dc3545; color: white; border-color: #dc3545; }
+    
+    /* مؤشرات الأسهم التوضيحية */
+    .guide-pointer { background: #fff3cd; border-right: 4px solid #ffc107; padding: 8px 12px; margin-top: 12px; font-size: 13px; border-radius: 4px; display: flex; align-items: center; gap: 6px; }
+    
+    /* زر التحميل الثابت علوياً */
+    .download-container { position: sticky; top: 10px; z-index: 100; margin-bottom: 1rem; }
+    .download-btn { background: linear-gradient(135deg, #28a745, #218838); color: white; border: none; padding: 14px 28px; font-size: 16px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(40,167,69,0.3); display: flex; align-items: center; gap: 10px; transition: all 0.2s; }
+    .download-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(40,167,69,0.4); }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
-  <button class="download-btn" onclick="downloadPDF()">📥 تحميل الدليل كملف PDF</button>
+  <div class="download-container">
+    <button class="download-btn" onclick="downloadPDF()">📥 تحميل الدليل التعريفي كملف PDF رسمي</button>
+  </div>
 
   <div class="page-content" id="pdf-content">
-    <div class="header">
-      <h1>نظام إدارة الغياب والحضور</h1>
-      <p>متوسطة سالم الحسينان - دليل الاستخدام الرسمي</p>
+    <div class="official-header">
+      <h1>نظام إدارة الغياب والحضور السحابي</h1>
+      <p>وزارة التربية - الإدارة العامة لمنطقة الأحمدي التعليمية</p>
+      <p style="font-weight: bold; margin-top: 5px; color: #1a1a2e;">مدرسة سالم الحسينان المتوسطة للبنين</p>
     </div>
 
-    <h2>🎯 أهداف النظام</h2>
+    <h2>🎯 أهداف المنصة الذكية</h2>
+    <p class="intro">تم تطوير هذا النظام للانتقال بالعمل الإداري والتعليمي داخل المدرسة إلى بيئة رقمية متكاملة وسحابية، تضمن الدقة والسرعة الفائقة في رصد غياب الطلاب ومتابعته من قبل الإدارة المدرسية فورياً.</p>
+
+    <h2>🌟 أبرز مميزات النظام</h2>
     <ul>
-      <li>📝 تسجيل الغياب بسهولة وسرعة من أي جهاز.</li>
-      <li>📊 متابعة إحصائيات الحضور والغياب اليومية بدقة.</li>
-      <li>🏫 رفع كفاءة العملية التعليمية وتقليل العمل الورقي.</li>
+      <li><b>ربط سحابي متكامل:</b> قاعدة بيانات مركبة وآمنة عبر (Firebase Firestore) تحفظ الحضور لحظياً.</li>
+      <li><b>منظومة رؤساء الأقسام والإدارة:</b> أرشفة كاملة للزيارات الصفية وتقييم المعايير مع ميزة الطباعة الفورية بقياس A4.</li>
+      <li><b>أمن وحماية البيانات:</b> نظام صلاحيات صارم يفصل بين حسابات "المدير" وحسابات "المعلمين".</li>
     </ul>
 
-    <h2>🌟 مميزات النظام</h2>
-    <ul>
-      <li>💻 نظام إلكتروني متكامل يعمل على السحابة.</li>
-      <li>📱 متوافق تماماً مع شاشات الهواتف الذكية والأجهزة اللوحية.</li>
-      <li>⚡ حفظ البيانات فورياً وتحديثها لحظياً لدى الإدارة.</li>
-    </ul>
+    <h2>📸 الشرح التطبيقي للمنصة (خطوة بخطوة)</h2>
 
-    <h2>📸 الشرح التفصيلي (خطوة بخطوة)</h2>
-    
-    <div class="step-box">
-      <h3>1. خطوة الدخول للبوابة:</h3>
-      <p>أدخل رقم المستخدم الخاص بك وكلمة المرور، ثم اضغط على زر الدخول.</p>
-      <img src="step1.jpg" alt="صورة توضيحية لتسجيل الدخول" class="step-img" onerror="this.style.display='none'">
+    <div class="visual-step">
+      <h3>1️⃣ شاشة تسجيل الدخول الموحدة</h3>
+      <p class="intro" style="font-size: 13px; margin-bottom: 10px;">يتم الدخول للمنصة عبر رابط المدرسة الرسمي باستخدام الرقم الوظيفي وكلمة المرور المعتمدة.</p>
+      
+      <div class="mock-login-screen">
+        <div style="color: white; font-size: 14px; font-weight: bold; margin-bottom: 10px;">متوسطة سالم الحسينان</div>
+        <div class="mock-input">🪪 رقم المستخدم (الرقم الوظيفي)</div>
+        <div class="mock-input">🔒 كلمة المرور الخاص بك</div>
+        <div class="mock-btn">تسجيل الدخول ←</div>
+      </div>
+      
+      <div class="guide-pointer">
+        💡 <b>توجيه:</b> نظام الذكاء في البوابة يقرأ "صلاحية الحساب" تلقائياً؛ فإذا كنت مديراً يحولك مباشرة للوحة الإدارة، وإذا كنت معلماً يحولك للوحة الرصد الخاصة بك.
+      </div>
     </div>
 
-    <div class="step-box">
-      <h3>2. لوحة المعلم وتسجيل الغياب:</h3>
-      <p>اختر الفصل والحصة، ثم اضغط على زر الغياب أو التأخير بجانب اسم الطالب، واضغط حفظ.</p>
-      <img src="step2.jpg" alt="صورة توضيحية لصفحة المعلم" class="step-img" onerror="this.style.display='none'">
+    <div class="visual-step">
+      <h3>2️⃣ واجهة المعلم ورصد الحصص</h3>
+      <p class="intro" style="font-size: 13px; margin-bottom: 10px;">واجهة مرنة جداً ومخصصة للهواتف الذكية لتمكين المعلم من رصد الغياب داخل الفصل بثوانٍ معدودة.</p>
+      
+      <div class="mock-teacher-screen">
+        <div class="mock-navbar">
+          <span>📋 م. سالم الحسينان</span>
+          <span>أهلاً، الأستاذ المعلم 👋</span>
+        </div>
+        <div class="mock-tabs">
+          <div class="mock-tab active">✏️ تسجيل غياب</div>
+          <div class="mock-tab">📋 سجلاتي</div>
+          <div class="mock-tab">👥 الطلاب</div>
+        </div>
+        <div style="padding: 10px; font-size: 11px; color: #666; background: #fff; margin: 8px; border-radius: 6px; border: 1px dashed #667eea;">
+          📍 اختر الفصل الدراسي 👈 [ 8/1 ] | اختر الحصة 👈 [ الحصة الثالثة ]
+        </div>
+        <div class="mock-row">
+          <span>1. أحمد محمد الهاجري</span>
+          <div class="mock-pills"><div class="mock-pill">⏰ متأخر</div><div class="mock-pill"> حاضـر</div></div>
+        </div>
+        <div class="mock-row" style="background: #fff5f5;">
+          <span>2. بدر مشاري الهويدي</span>
+          <div class="mock-pills"><div class="mock-pill active">✗ غائب</div><div class="mock-pill"> حاضـر</div></div>
+        </div>
+        <div style="background: #28a745; color: white; text-align: center; padding: 10px; margin: 8px; border-radius: 6px; font-size: 12px; font-weight: bold;">💾 حفظ وإرسال كشف الغياب للادارة</div>
+      </div>
+      
+      <div class="guide-pointer">
+        💡 <b>توجيه:</b> بمجرد الضغط على زر "حفظ الغياب الأخضر"، يرتفع الكشف تلقائياً إلى السحابة، وتتحدث شاشات الإدارة ومكتب المدير في نفس اللحظة بدون أي تأخير.
+      </div>
     </div>
 
-    <div class="step-box">
-      <h3>3. لوحة المدير والزيارات الصفية:</h3>
-      <p>تابع إحصائيات المدرسة كاملة، وقم بتسجيل الزيارات الصفية من التبويب المخصص.</p>
-      <img src="step3.jpg" alt="صورة توضيحية لصفحة المدير" class="step-img" onerror="this.style.display='none'">
+    <div class="visual-step">
+      <h3>3️⃣ لوحة الإدارة ونظام الزيارات الصفية</h3>
+      <p class="intro" style="font-size: 13px; margin-bottom: 10px;">تتيح للمدير ورؤساء الأقسام متابعة نسب الغياب اليومية، ومعرفة الفصول المتأخرة عن الرصد، بالإضافة إلى توثيق وأرشفة زيارات المعلمين وتقييم المعايير الـ 18 مبرمجة على قياس طباعة ممتازة لورقة A4 واحدة.</p>
+      <div class="guide-pointer" style="background: #e8f4fd; border-right-color: #007bff;">
+        ⚙️ <b>قسم رؤساء الأقسام:</b> ادخل على تبويب "🏫 الزيارات" -> اختر القسم العلمي -> اضغط "+ زيارة جديدة" -> املأ الاستمارة واحفظها لتجهيزها للطباعة والتوقيع في أي وقت.
+      </div>
     </div>
 
   </div>
@@ -74,8 +136,8 @@
     function downloadPDF() {
       const element = document.getElementById('pdf-content');
       const opt = {
-        margin:       [10, 10, 10, 10],
-        filename:     'دليل_نظام_سالم_الحسينان.pdf',
+        margin:       [12, 12, 12, 12],
+        filename:     'دليل_نظام_سالم_الحسينان_الرسمي.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
