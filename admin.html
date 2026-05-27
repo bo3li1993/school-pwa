@@ -1,75 +1,135 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>لوحة الإدارة - متوسطة سالم الحسينان</title>
-  <style>
-    body { font-family: sans-serif; background: #f4f7f6; margin: 0; }
-    .nav { background: #1a1a2e; padding: 15px; display: flex; gap: 10px; color: white; }
-    .nav button { background: #667eea; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
-    .content { padding: 20px; }
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block; }
-    table { width: 100%; border-collapse: collapse; background: white; }
-    th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة - متوسطة سالم الحسينان</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
+.header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:1rem 1.5rem}
+.header-top{display:flex;justify-content:space-between;align-items:center}
+.header h1{font-size:18px;font-weight:500}
+.header-sub{font-size:12px;opacity:.7;margin-top:2px}
+.header-btns{display:flex;gap:8px}
+.header-btns button{background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:background .2s}
+.header-btns button:hover{background:rgba(255,255,255,.25)}
+.tabs-container{background:#fff;border-bottom:2px solid #eee;overflow-x:auto;display:flex;padding:0 1rem}
+.tab{padding:14px 20px;border:none;background:transparent;cursor:pointer;font-size:14px;font-weight:500;color:#888;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+.tab.active{color:#1a1a2e;border-bottom-color:#667eea;background:#f8f9ff}
+.content{max-width:1000px;margin:2rem auto;padding:0 1rem}
+.card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.card h2{margin-bottom:1rem;font-size:18px;color:#1a1a2e;border-bottom:1px solid #eee;padding-bottom:10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:15px}
+@media(max-width:768px){.grid-2,.grid-4{grid-template-columns:1fr}}
+.form-group{margin-bottom:15px}
+label{display:block;margin-bottom:5px;font-size:13px;color:#666;font-weight:bold}
+input,select{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px}
+.btn{background:#1a1a2e;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:bold;transition:all .2s}
+.btn:hover{opacity:.9}
+.btn-danger{background:#dc3545}
+.badge{padding:4px 8px;border-radius:12px;font-size:11px;font-weight:bold;display:inline-block}
+.badge-danger{background:#ffe3e3;color:#dc3545}
+.badge-warning{background:#fff3cd;color:#856404}
+.hidden{display:none!important}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-content{background:#fff;padding:2rem;border-radius:12px;width:90%;max-width:500px}
+</style>
 </head>
 <body>
 
-  <div class="nav">
-    <button onclick="showTab('today')">📊 إحصائيات</button>
-    <button onclick="showTab('visits')">📋 الزيارات</button>
-    <button onclick="window.open('tv.html', '_blank')" style="background:#dc3545">📺 غرفة العمليات</button>
-    <button onclick="logout()" style="background:#6c757d">خروج</button>
-  </div>
-
-  <div class="content">
-    <div id="today" class="tab-pane active">
-      <h2>إحصائيات اليوم</h2>
-      <div id="stats">جاري تحميل البيانات...</div>
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>مرحباً، <span id="admin-name">المدير</span></h1>
+      <div class="header-sub">متوسطة سالم الحسينان - لوحة التحكم</div>
     </div>
-    <div id="visits" class="tab-pane">
-      <h2>سجل الزيارات الصفية</h2>
-      <div id="visits-list">جاري تحميل الزيارات...</div>
+    <div class="header-btns">
+      <button onclick="window.open('tv.html', '_blank')" style="background:#dc3545; font-weight:bold;">📺 غرفة العمليات</button>
+      <button id="btn-logout">خروج</button>
     </div>
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+<div class="tabs-container" id="tabs-bar">
+  <button class="tab active" data-tab="today">📊 إحصائيات اليوم</button>
+  <button class="tab" data-tab="classes">🏫 الفصول</button>
+  <button class="tab" data-tab="visits">📋 الزيارات الصفية</button>
+  <button class="tab" data-tab="users">👥 المستخدمون</button>
+</div>
 
-    const app = initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
-    const db = getFirestore(app);
+<div class="content">
+  <div id="tab-today" class="tab-pane">
+    <div class="card">
+      <h2>نظرة عامة</h2>
+      <div class="grid-4" style="text-align:center;">
+        <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+          <div style="font-size:24px;font-weight:bold" id="stat-total">0</div>
+          <div style="font-size:12px;color:#666">الطلاب</div>
+        </div>
+        <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+          <div style="font-size:24px;font-weight:bold;color:#28a745" id="stat-present">0</div>
+          <div style="font-size:12px;color:#666">حاضر</div>
+        </div>
+        <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+          <div style="font-size:24px;font-weight:bold;color:#dc3545" id="stat-absent">0</div>
+          <div style="font-size:12px;color:#666">غائب</div>
+        </div>
+        <div style="background:#f8f9fa;padding:15px;border-radius:8px">
+          <div style="font-size:24px;font-weight:bold;color:#f0ad4e" id="stat-late">0</div>
+          <div style="font-size:12px;color:#666">متأخر</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    // وظيفة التنقل بين التبويبات
-    window.showTab = (id) => {
-      document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    };
+  <div id="tab-classes" class="tab-pane hidden">
+    <div class="card"><h2>الفصول</h2><p>استخدم صفحة المعلم لتسجيل الحضور</p></div>
+  </div>
 
-    // وظيفة الخروج
-    window.logout = () => {
-      localStorage.removeItem('hs_user');
-      window.location.replace('index.html');
-    };
+  <div id="tab-visits" class="tab-pane hidden">
+    <div class="card"><h2>الزيارات الصفية</h2><p>النظام مفعل</p></div>
+  </div>
 
-    // تحميل البيانات الأساسية
-    async function loadData() {
-      // إحصائيات اليوم
-      const attSnap = await getDocs(collection(db, 'attendance'));
-      document.getElementById('stats').innerHTML = `عدد سجلات الغياب المسجلة: ${attSnap.size}`;
+  <div id="tab-users" class="tab-pane hidden">
+    <div class="card"><h2>المستخدمون</h2><p>تم تفعيل الإدارة</p></div>
+  </div>
+</div>
 
-      // تحميل الزيارات
-      const visitSnap = await getDocs(collection(db, 'visits'));
-      let vHtml = '<table border="1"><tr><th>المعلم</th><th>القسم</th><th>التقييم</th></tr>';
-      visitSnap.forEach(doc => {
-        let v = doc.data();
-        vHtml += `<tr><td>${v.teacherName}</td><td>${v.dept}</td><td>${v.rating}</td></tr>`;
-      });
-      document.getElementById('visits-list').innerHTML = vHtml + '</table>';
-    }
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import {getFirestore,collection,getDocs} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-    loadData();
-  </script>
+const app = initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
+const db = getFirestore(app);
+
+// 1. نظام التنقل المحسن (يعمل على أي مكان تضغط فيه بالزر)
+document.getElementById('tabs-bar').addEventListener('click', function(e){
+  var btn = e.target.closest('.tab');
+  if(!btn) return;
+  
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+  document.getElementById('tab-' + btn.getAttribute('data-tab')).classList.remove('hidden');
+});
+
+// 2. تسجيل الخروج
+document.getElementById('btn-logout').addEventListener('click', () => {
+  localStorage.removeItem('hs_user');
+  window.location.replace('index.html');
+});
+
+// 3. تحديث الإحصائيات الأولية
+async function loadStats(){
+  try {
+    const std = await getDocs(collection(db, 'students'));
+    document.getElementById('stat-total').textContent = std.size;
+  } catch(e){}
+}
+loadStats();
+</script>
 </body>
 </html>
