@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شاشة القيادة الذكية - متوسطة سالم الحسينان</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0a0e27; color: #fff; min-height: 100vh; overflow: hidden; }
+  
+  /* الهيدر */
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: linear-gradient(135deg, #141832, #1a1f3a); border-bottom: 2px solid #667eea; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+  .school-info h1 { font-size: 28px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .school-info p { color: #888; font-size: 14px; margin-top: 5px; }
+  .clock-container { text-align: left; }
+  .time { font-size: 32px; font-weight: bold; color: #f4d35e; letter-spacing: 2px; }
+  .date { color: #aaa; font-size: 14px; }
+  
+  /* المحتوى الرئيسي */
+  .main-content { padding: 30px 40px; display: grid; grid-template-columns: 3fr 1fr; gap: 30px; height: calc(100vh - 100px); }
+  
+  /* قسم الإحصائيات (اليمين) */
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; align-content: start; }
+  .stat-card { background: #141832; border-radius: 15px; padding: 30px; text-align: center; border: 1px solid #1e2340; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; }
+  .stat-card.total::before { background: #667eea; }
+  .stat-card.present::before { background: #28a745; }
+  .stat-card.absent::before { background: #dc3545; }
+  .stat-card.late::before { background: #f0ad4e; }
+  
+  .stat-title { font-size: 20px; color: #aaa; margin-bottom: 15px; }
+  .stat-value { font-size: 60px; font-weight: bold; }
+  .total .stat-value { color: #fff; }
+  .present .stat-value { color: #28a745; }
+  .absent .stat-value { color: #dc3545; }
+  .late .stat-value { color: #f0ad4e; }
+  
+  /* قسم القوائم (اليسار) */
+  .side-panels { display: flex; flex-direction: column; gap: 25px; }
+  .panel { background: #141832; border-radius: 15px; padding: 20px; border: 1px solid #1e2340; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .panel h3 { font-size: 18px; color: #f4d35e; margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; display: flex; justify-content: space-between; }
+  
+  .missing-classes { display: flex; flex-wrap: wrap; gap: 10px; overflow-y: auto; align-content: start; }
+  .class-badge { background: rgba(220, 53, 69, 0.15); color: #ff6b6b; border: 1px solid rgba(220, 53, 69, 0.3); padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 16px; }
+  .class-badge.done { background: rgba(40, 167, 69, 0.15); color: #51cf66; border-color: rgba(40, 167, 69, 0.3); }
+
+  .visits-list { overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+  .visit-item { background: #0d1025; padding: 12px; border-radius: 8px; border-right: 4px solid #667eea; font-size: 13px; }
+  .visit-item strong { color: #fff; display: block; margin-bottom: 4px; font-size: 14px;}
+  .visit-item span { color: #aaa; }
+  
+  /* تأثير النبض للمباشر */
+  .live-indicator { display: flex; align-items: center; gap: 8px; color: #dc3545; font-weight: bold; font-size: 14px; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+  
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0d1025; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="school-info">
+    <h1>غرفة العمليات والقيادة الذكية</h1>
+    <p>متوسطة سالم الحسينان - لوحة المتابعة اللحظية المباشرة</p>
+  </div>
+  <div class="live-indicator">
+    <div style="width:10px;height:10px;background:#dc3545;border-radius:50%;"></div>
+    LIVE
+  </div>
+  <div class="clock-container">
+    <div class="time" id="clock">00:00:00</div>
+    <div class="date" id="fulldate">جاري التحميل...</div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-title">إجمالي المقيدين</div>
+      <div class="stat-value" id="tv-total">0</div>
+    </div>
+    <div class="stat-card present">
+      <div class="stat-title">الحضور اليوم</div>
+      <div class="stat-value" id="tv-present">0</div>
+    </div>
+    <div class="stat-card absent">
+      <div class="stat-title">الغياب اليوم</div>
+      <div class="stat-value" id="tv-absent">0</div>
+    </div>
+    <div class="stat-card late">
+      <div class="stat-title">التأخير اليوم</div>
+      <div class="stat-value" id="tv-late">0</div>
+    </div>
+  </div>
+  
+  <div class="side-panels">
+    <div class="panel">
+      <h3>فصول لم تسجل الغياب <span id="missing-count" style="color:#fff;background:#dc3545;padding:2px 8px;border-radius:10px;font-size:12px;">0</span></h3>
+      <div class="missing-classes" id="tv-missing-classes">
+        <div style="color:#888;font-size:13px;width:100%;text-align:center;padding:20px 0;">جاري التحميل...</div>
+      </div>
+    </div>
+    
+    <div class="panel">
+      <h3>أحدث الزيارات الصفية <span>امس/اليوم</span></h3>
+      <div class="visits-list" id="tv-visits">
+        <div style="color:#888;font-size:13px;text-align:center;padding:20px 0;">لا توجد زيارات حديثة</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import {getFirestore, collection, onSnapshot, query, where, getDocs, limit, orderBy} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+const app = initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
+const db = getFirestore(app);
+
+// تحديث الساعة والتاريخ
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', {hour12: false});
+  document.getElementById('fulldate').textContent = now.toLocaleDateString('ar-SA', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+const allClasses = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
+var totalStudents = 0;
+
+// 1. جلب العدد الكلي للطلاب (مرة واحدة)
+async function fetchTotalStudents() {
+  try {
+    const snap = await getDocs(collection(db, 'students'));
+    totalStudents = snap.size;
+    document.getElementById('tv-total').textContent = totalStudents;
+  } catch (e) { console.error("Error fetching students:", e); }
+}
+
+// 2. الاستماع المباشر (Live) للغياب اليوم
+function listenToAttendance() {
+  const today = new Date();
+  const dateStr = today.getFullYear() + '/' + String(today.getMonth()+1).padStart(2,'0') + '/' + String(today.getDate()).padStart(2,'0');
+  
+  const q = query(collection(db, 'attendance'), where('date', '==', dateStr));
+  
+  onSnapshot(q, (snapshot) => {
+    let absent = 0, late = 0;
+    let reportedClasses = new Set();
+    
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      reportedClasses.add(data.classId);
+      if(data.status === 'absent') absent++;
+      if(data.status === 'late') late++;
+    });
+    
+    // تحديث الأرقام
+    document.getElementById('tv-absent').textContent = absent;
+    document.getElementById('tv-late').textContent = late;
+    if(totalStudents > 0) {
+      document.getElementById('tv-present').textContent = totalStudents - absent - late;
+    }
+    
+    // حساب الفصول التي لم تسجل
+    const missingEl = document.getElementById('tv-missing-classes');
+    missingEl.innerHTML = '';
+    let missingCount = 0;
+    
+    allClasses.forEach(cls => {
+      if(!reportedClasses.has(cls)) {
+        missingCount++;
+        missingEl.innerHTML += `<div class="class-badge">${cls}</div>`;
+      }
+    });
+    
+    document.getElementById('missing-count').textContent = missingCount;
+    
+    if(missingCount === 0) {
+      missingEl.innerHTML = `<div class="class-badge done" style="width:100%;text-align:center;">✅ اكتمل رصد جميع الفصول</div>`;
+    }
+  });
+}
+
+// 3. الاستماع المباشر لأحدث الزيارات
+function listenToVisits() {
+  const q = query(collection(db, 'visits'), orderBy('createdAt', 'desc'), limit(5));
+  onSnapshot(q, (snapshot) => {
+    const visitsEl = document.getElementById('tv-visits');
+    visitsEl.innerHTML = '';
+    if(snapshot.empty) {
+      visitsEl.innerHTML = '<div style="color:#888;font-size:13px;text-align:center;padding:20px 0;">لا توجد زيارات حديثة</div>';
+      return;
+    }
+    snapshot.forEach(doc => {
+      const v = doc.data();
+      visitsEl.innerHTML += `
+        <div class="visit-item">
+          <strong>${v.teacherName || 'معلم'} (${v.dept || 'قسم'})</strong>
+          <span>فصل: ${v.classId || '-'} | تقييم: ${v.rating || 'غير محدد'}</span>
+        </div>
+      `;
+    });
+  });
+}
+
+// التشغيل
+fetchTotalStudents().then(listenToAttendance);
+listenToVisits();
+</script>
+</body>
+</html>
