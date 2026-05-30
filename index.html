@@ -18,12 +18,13 @@
       <form>
         <div class="input-group">
           <img src="images/icons/user.svg" class="icon">
-          <input type="text" id="username" placeholder="اسم المستخدم" required>
+          <input type="text" id="username" placeholder="اسم المستخدم" autocomplete="off">
         </div>
         
         <div class="input-group">
           <img src="images/icons/lock.svg" class="icon">
-          <input type="password" id="password" placeholder="كلمة المرور" required>
+          <input type="password" id="password" placeholder="كلمة المرور" autocomplete="off" style="-webkit-text-security:disc">
+          <button class="toggle-pass" onclick="togglePassword('password',this)">👁️</button>
         </div>
         
         <div class="checkbox">
@@ -42,16 +43,17 @@
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script>
     // Firebase configuration
     const firebaseConfig = {
-      // Add your Firebase project configuration here
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      // Add other configuration options as needed
     };
     
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.firestore();
 
     const loginForm = document.querySelector('form');
@@ -65,8 +67,7 @@
       const password = passwordInput.value.trim();
 
       try {
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef.where('userId', '==', username).where('plainPass', '==', password).get();
+        const snapshot = await db.collection('users').where('userId', '==', username).where('plainPass', '==', password).get();
 
         if (snapshot.empty) {
           console.log('No matching user found');
@@ -88,23 +89,45 @@
         localStorage.setItem('hs_user', JSON.stringify(found));
 
         // توجيه حسب الصلاحية
-        // تعديل: طباعة دور المستخدم في وحدة التحكم
-        console.log('Found user role:', found.role); //
+        console.log('Found user role:', found.role);
         console.log('Redirecting user role:', found.role);
+
+        const targetPage = found.role === 'admin' ? 'admin.html' : 'teacher.html';
+        sessionStorage.setItem('hs_redirect', targetPage);
+
         setTimeout(function() {
-          if (found.role === 'admin') {
-            window.location.href = 'admin.html';
-          } else {
-            // تعديل: استخدام مسار مطلق
-            window.location.href = '/school-pwa/teacher.html'; //
+          window.location.replace(targetPage);
+        }, 800);
+
+        setTimeout(function() {
+          if (window.location.href.indexOf('index.html') !== -1 || window.location.pathname === '/school-pwa/' || window.location.pathname === '/school-pwa/index.html') {
+            window.location.replace(targetPage);
           }
-        }, 1200);
+        }, 2500);
 
       } catch (error) {
         console.error('Error logging in:', error);
         alert('حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.');
       }
     });
+
+    const pendingRedirect = sessionStorage.getItem('hs_redirect');
+    const hasUser = localStorage.getItem('hs_user');
+    if (pendingRedirect && hasUser) {
+      sessionStorage.removeItem('hs_redirect');
+      window.location.replace(pendingRedirect);
+    }
+
+    function togglePassword(id, btn) {
+      const input = document.getElementById(id);
+      if (input.style.webkitTextSecurity === 'disc' || input.style.webkitTextSecurity === '') {
+        input.style.webkitTextSecurity = 'none';
+        btn.textContent = '🙈';
+      } else {
+        input.style.webkitTextSecurity = 'disc';
+        btn.textContent = '👁️';
+      }
+    }
   </script>
 </body>
 </html>
