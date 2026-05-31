@@ -6,6 +6,7 @@
 <link rel="manifest" href="manifest.json">
 <title>لوحة المدير - متوسطة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- مكتبات تصدير الـ PDF الاحترافية لمنع الحظر على الهواتف والكمبيوتر -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -80,6 +81,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
 </div>
 
 <div class="content">
+  <!-- اليوم -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
@@ -88,6 +90,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- الفصول -->
   <div id="tab-classes" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">اختر الفصل</h2>
@@ -96,6 +99,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <div id="class-detail" class="hidden"></div>
   </div>
 
+  <!-- الغائبون -->
   <div id="tab-absent" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">🔴 الغائبون اليوم</h2>
@@ -103,6 +107,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- غياب متكرر -->
   <div id="tab-repeat" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
@@ -110,6 +115,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- كشف الجزاءات والسلوكيات للمدير -->
   <div id="tab-behavior" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📑 سجل المخالفات السلوكية والجزاءات المرصودة</h2>
@@ -117,6 +123,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- بحث طالب الشامل -->
   <div id="tab-student" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">👤 بحث عن طالب</h2>
@@ -132,6 +139,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- بحث بتاريخ -->
   <div id="tab-date" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
@@ -144,6 +152,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- الزيارات الفنية -->
   <div id="tab-visits" class="hidden">
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
@@ -196,6 +205,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- المستخدمون -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -207,6 +217,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
   </div>
 </div>
 
+<!-- Modals -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
@@ -535,7 +546,7 @@ window.downloadStudentPDF = function() {
   });
 };
 
-// دالة تصدير وطباعة تقرير الزيارة الصفية كـ PDF في (صفحة واحدة فقط A4) متوافق تماماً مع الهواتف
+// دالة تصدير وطباعة تقرير الزيارة الصفية كـ PDF في (صفحة واحدة فقط A4) - تم تصحيح وسم strong هنا
 window.printVisit = async id => {
   const docSnap = await getDoc(doc(db, 'visits', id));
   if (!docSnap.exists()) return;
@@ -585,7 +596,7 @@ window.printVisit = async id => {
       <tbody>${critRows}</tbody>
     </table>
     
-    ${v.notes ? `<div style="border:1px solid #999; padding:8px; margin-bottom:10px; font-size:11px; border-radius:4px; background:#fafafa; line-height:1.3;">strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:4px 0 0 0; white-space:pre-wrap;">${v.notes}</p></div>` : ''}
+    ${v.notes ? `<div style="border:1px solid #999; padding:8px; margin-bottom:10px; font-size:11px; border-radius:4px; background:#fafafa; line-height:1.3;"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:4px 0 0 0; white-space:pre-wrap;">${v.notes}</p></div>` : ''}
     
     <div style="margin-top:20px; display:flex; justify-content:space-between; font-size:11px;">
       <div style="text-align:center;">التوقيع: _____________<br><span style="font-size:10px; color:#666;">المدير</span></div>
@@ -801,7 +812,7 @@ const visitCriteria={
   'اللغة الإنجليزية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','Speaking skills','Listening skills','Reading skills','Writing skills','Vocabulary','Grammar','Pronunciation'],
   'الاجتماعيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','الخرائط','الأحداث التاريخية','الجغرافيا','الوطنية','التفكير الناقد','استخدام السبورة'],
   'التربية البدنية':['التخطيط للدرس','وضوح الأهداف','الإحماء','التمارين البدنية','المهارات الحركية','السلامة','إدارة الصف','التحفيز','التقويم','الانضباط','اللياقة البدنية','الألعاب الجماعية','الألعاب الفردية','الروح الرياضية','استخدام الأدوات','الالتزام بالوقت','الزي الرياضي'],
-  'الحاسوب':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','البرمجيات','الإنترنت','السلامة الرقمية','حل المشكلات','التفكير المنطفي','الالتزام بالوقت'],
+  'الحاسوب':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','البرمجيات','الإنترنت','السلامة الرقمية','حل المشكلات','التفكير المنطقي','الالتزام بالوقت'],
   'الكهرباء':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','السلامة المهنية','الأدوات والمعدات','المهارات اليدوية','قراءة المخططات','حل المشكلات','الالتزام بالوقت'],
   'الديكور':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','الإبداع','الألوان','التصميم','المهارات اليدوية','السلامة','الالتزام بالوقت'],
   'الفنية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الإبداع','المهارات الفنية','الخامات','النظافة','الذوق الفني','الالتزام بالوقت']
@@ -996,7 +1007,7 @@ window.addUser=async()=>{
 };
 
 window.deleteUser=async id=>{
-  if(!confirm('هل أنت متأكد من حذف هذا المستخدم؟'))return;
+  if(!confirm('هل أنت متأكد من حذف هذا المستخدم Lien؟'))return;
   try{ await deleteDoc(doc(db,'users',id)); alert('تم حذف المستخدم'); loadUsers(); }catch(e){ alert('خطأ: '+e.message); }
 };
 
@@ -1044,4 +1055,4 @@ if(tabsBar) {
 }
 </script>
 </body>
-</html> 
+</html>
