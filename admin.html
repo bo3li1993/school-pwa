@@ -85,7 +85,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
-      <h2 style="margin-bottom:1rem">حالة تسجيل الفصول</h2>
+      <h2 style="margin-bottom:1rem">حالة تسجيل الفصول اليوم</h2>
       <div id="class-status"></div>
     </div>
   </div>
@@ -338,6 +338,7 @@ else{
     }
     else{
       document.getElementById('user-name').textContent=currentUser.name||'المدير';
+      // تشغيل التحميل الفوري فور الدخول بدون مشاكل تجميد
       loadDashboard();
     }
   }catch(e){
@@ -375,6 +376,7 @@ window.switchTab = function(tabId) {
 };
 
 async function loadDashboard(){
+  // جلب سريع للبيانات الأولية الأساسية لتسريع لود الصفحة
   await Promise.all([loadStats(),loadUsers(),loadVisitCounts(),populateClassDropdowns(),loadClassButtons()]);
 }
 
@@ -442,7 +444,6 @@ window.loadStudentNames=async function(){
   });
 };
 
-// دالة البحث الشاملة والمطورة للطالب (غياب + سلوك)
 window.searchStudent=async function(){
   var cls=document.getElementById('search-class').value;
   var stuId=document.getElementById('search-student').value;
@@ -516,7 +517,6 @@ window.searchStudent=async function(){
   pdfBtn.classList.remove('hidden');
 };
 
-// دالة تحميل ملف كرت الطالب الشامل PDF
 window.downloadStudentPDF = function() {
   const element = document.getElementById('pdf-print-area');
   const stuSelect = document.getElementById('search-student');
@@ -546,7 +546,6 @@ window.downloadStudentPDF = function() {
   });
 };
 
-// دالة تصدير وطباعة تقرير الزيارة الصفية كـ PDF في (صفحة واحدة فقط A4) - تم تصحيح وسم strong هنا
 window.printVisit = async id => {
   const docSnap = await getDoc(doc(db, 'visits', id));
   if (!docSnap.exists()) return;
@@ -620,7 +619,6 @@ window.printVisit = async id => {
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       
-      // إجبار الأبعاد على التوافق التام بداخل ورقة واحدة بدون تكرار الصفحات
       const imgWidth = pageWidth - 20;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
@@ -636,6 +634,51 @@ window.printVisit = async id => {
     });
   }, 500);
 };
+
+// 🛠️ تحديث جوهري هنا: فلترة الغياب لتاريخ اليوم فقط لمنع التعليق والبطء نهائياً
+async function loadStats(){
+  const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
+  
+  // 1. جلب إجمالي الطلاب والتحميل المتوازي السريع
+  const studentsSnap = await getDocs(collection(db,'students'));
+  const totalStudents = studentsSnap.size;
+  
+  // 2. استخدام الاستعلام المفلتر لـ (اليوم فقط) بدلاً من استدعاء كل الداتا التاريخية
+  const todayQuery = query(collection(db, 'attendance'), where('date', '==', today));
+  const attendanceSnap = await getDocs(todayQuery);
+  
+  let absentToday = 0;
+  const classesRegistered = new Set();
+  
+  attendanceSnap.forEach(doc => {
+    const d = doc.data();
+    classesRegistered.add(d.classId);
+    if(d.status === 'absent') absentToday++;
+  });
+  
+  const presentToday = totalStudents - absentToday;
+  
+  document.getElementById('stats-cards').innerHTML = `
+    <div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي الطلاب</p></div>
+    <div class="stat-card"><h3>${presentToday}</h3><p>حاضرون اليوم</p></div>
+    <div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div>
+    <div class="stat-card"><h3>${classesRegistered.size} / 15</h3><p>فصول اكتمل الغياب اليوم</p></div>
+  `;
+  
+  const allClasses = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
+  const gradeNames = {'6':'السادس','7':'السابع','8':'الثامن','9':'التاسع'};
+  
+  let statusHTML = '<table><thead><tr><th>الفصل</th><th>حالة رصد غياب اليوم</th></tr></thead><tbody>';
+  allClasses.forEach(cls => {
+    const grade = cls.split('/')[0];
+    const section = cls.split('/')[1];
+    const registered = classesRegistered.has(cls);
+    const statusBadge = registered ? '<span class="badge success">تم التسجيل ✓</span>' : '<span class="badge danger">لم يسجّل بعد ✗</span>';
+    statusHTML += `<tr><td>${cls} (الصف ${gradeNames[grade]} ${section})</td><td>${statusBadge}</td></tr>`;
+  });
+  statusHTML += '</tbody></table>';
+  document.getElementById('class-status').innerHTML = statusHTML;
+}
 
 window.searchByDate=async function(){
   var cls=document.getElementById('date-class').value;
@@ -667,46 +710,6 @@ window.searchByDate=async function(){
   html+='</tbody></table>';
   result.innerHTML=html;
 };
-
-async function loadStats(){
-  const attendanceSnap=await getDocs(collection(db,'attendance'));
-  const studentsSnap=await getDocs(collection(db,'students'));
-  const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
-  
-  const totalStudents=studentsSnap.size;
-  let absentToday=0;
-  const classesRegistered=new Set();
-  
-  attendanceSnap.forEach(doc=>{
-    const d=doc.data();
-    if(d.date===today){
-      classesRegistered.add(d.classId);
-      if(d.status==='absent')absentToday++;
-    }
-  });
-  
-  const presentToday=totalStudents-absentToday;
-  document.getElementById('stats-cards').innerHTML=`
-    <div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي الطلاب</p></div>
-    <div class="stat-card"><h3>${presentToday}</h3><p>حاضرون اليوم</p></div>
-    <div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div>
-    <div class="stat-card"><h3>${classesRegistered.size} / 15</h3><p>فصول اكتمل الغياب اليوم</p></div>
-  `;
-  
-  const allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
-  const gradeNames={'6':'السادس','7':'السابع','8':'الثامن','9':'التاسع'};
-  
-  let statusHTML='<table><thead><tr><th>الفصل</th><th>المعلم المسؤول</th><th>حالة رصد غياب اليوم</th></tr></thead><tbody>';
-  allClasses.forEach(cls=>{
-    const grade=cls.split('/')[0];
-    const section=cls.split('/')[1];
-    const registered=classesRegistered.has(cls);
-    const statusBadge=registered?'<span class="badge success">تم التسجيل ✓</span>':'<span class="badge danger">لم يسجّل بعد ✗</span>';
-    statusHTML+=`<tr><td>${cls} (الصف ${gradeNames[grade]} ${section})</td><td>غير محدد</td><td>${statusBadge}</td></tr>`;
-  });
-  statusHTML+='</tbody></table>';
-  document.getElementById('class-status').innerHTML='<h3 style="margin-bottom:1rem">حالة تسجيل غياب الفصول اليوم</h3>'+statusHTML;
-}
 
 async function loadAbsentToday() {
   const list = document.getElementById('absent-list');
@@ -1007,7 +1010,7 @@ window.addUser=async()=>{
 };
 
 window.deleteUser=async id=>{
-  if(!confirm('هل أنت متأكد من حذف هذا المستخدم Lien؟'))return;
+  if(!confirm('هل أنت متأكد من حذف هذا المستخدم؟'))return;
   try{ await deleteDoc(doc(db,'users',id)); alert('تم حذف المستخدم'); loadUsers(); }catch(e){ alert('خطأ: '+e.message); }
 };
 
@@ -1047,6 +1050,7 @@ if(tabsBar) {
     if (e.target.classList.contains('tab')) {
       const tabId = e.target.getAttribute('data-tab');
       window.switchTab(tabId);
+      if (tabId === 'today') window.loadStats();
       if (tabId === 'absent') window.loadAbsentToday();
       if (tabId === 'repeat') window.loadRepeatAbsent();
       if (tabId === 'behavior') window.loadAdminBehaviorList();
