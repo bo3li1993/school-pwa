@@ -6,6 +6,7 @@
 <link rel="manifest" href="manifest.json">
 <title>لوحة المدير - متوسطة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- مكتبات تصدير الـ PDF الاحترافية لمنع الحظر على الهواتف والكمبيوتر -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -80,6 +81,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
 </div>
 
 <div class="content">
+  <!-- اليوم -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
@@ -88,6 +90,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- الفصول -->
   <div id="tab-classes" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">اختر الفصل</h2>
@@ -96,6 +99,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <div id="class-detail" class="hidden"></div>
   </div>
 
+  <!-- الغائبون -->
   <div id="tab-absent" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">🔴 الغائبون اليوم</h2>
@@ -103,6 +107,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- غياب متكرر -->
   <div id="tab-repeat" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
@@ -110,6 +115,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- كشف الجزاءات والسلوكيات للمدير -->
   <div id="tab-behavior" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📑 سجل المخالفات السلوكية والجزاءات المرصودة</h2>
@@ -117,6 +123,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- بحث طالب الشامل -->
   <div id="tab-student" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">👤 بحث عن طالب</h2>
@@ -132,6 +139,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- بحث بتاريخ -->
   <div id="tab-date" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
@@ -144,6 +152,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- الزيارات الفنية المربوطة بالمعايير المحدثة -->
   <div id="tab-visits" class="hidden">
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
@@ -196,6 +205,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- المستخدمون -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -207,6 +217,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
   </div>
 </div>
 
+<!-- Modals -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
@@ -533,64 +544,99 @@ window.downloadStudentPDF = function() {
   });
 };
 
-// 🛠️ دالة طباعة مخصصة في صفحة واحدة وبترقيم تسلسلي مطابق للزيارات الرسمية المرفوعة
+// 🛠️ التحديث الجوهري لتقرير الـ PDF ليصبح صورة طبق الأصل من النموذج الورقي المرسل
 window.printVisit = async id => {
   const docSnap = await getDoc(doc(db, 'visits', id));
   if (!docSnap.exists()) return;
   
   const v = docSnap.data();
   const criteria = visitCriteria[v.dept] || [];
-  const scoreLabels = ['', 'ضعيف', 'مقبول', 'جيد', 'جيد جداً', 'ممتاز'];
   
   let critRows = '';
   criteria.forEach((c, i) => {
     const score = v.scores?.[i] || 0;
+    // وضع صح في المربع الصحيح بناءً على التقييم المختار
     critRows += `<tr>
-      <td style="padding:4px 8px; border:1px solid #999; font-size:11px; text-align:center; line-height:1.2;">${i + 1}</td>
-      <td style="padding:4px 8px; border:1px solid #999; font-size:11px; text-align:right; line-height:1.2;">${c}</td>
-      <td style="padding:4px 8px; border:1px solid #999; text-align:center; font-size:11px; line-height:1.2;">${scoreLabels[score] || '-'}</td>
+      <td style="padding:5px; border:1px solid #333; font-size:11px; text-align:center; font-weight:bold;">${i + 1}</td>
+      <td style="padding:5px; border:1px solid #333; font-size:11px; text-align:right; font-weight:500;">${c}</td>
+      <td style="padding:5px; border:1px solid #333; text-align:center; font-size:12px; font-weight:bold; color:#1a1a2e;">${score === 5 ? '✓' : ''}</td>
+      <td style="padding:5px; border:1px solid #333; text-align:center; font-size:12px; font-weight:bold; color:#1a1a2e;">${score === 4 ? '✓' : ''}</td>
+      <td style="padding:5px; border:1px solid #333; text-align:center; font-size:12px; font-weight:bold; color:#1a1a2e;">${score === 3 ? '✓' : ''}</td>
+      <td style="padding:5px; border:1px solid #333; text-align:center; font-size:12px; font-weight:bold; color:#1a1a2e;">${score === 2 ? '✓' : ''}</td>
+      <td style="padding:5px; border:1px solid #333; text-align:center; font-size:12px; font-weight:bold; color:#1a1a2e;">${score === 1 ? '✓' : ''}</td>
     </tr>`;
   });
   
   const printContainer = document.createElement('div');
   printContainer.style.position = 'absolute';
   printContainer.style.left = '-9999px';
-  printContainer.style.width = '175mm';
-  printContainer.style.padding = '10px';
+  printContainer.style.width = '185mm';
+  printContainer.style.padding = '12px';
   printContainer.style.background = '#fff';
   printContainer.style.direction = 'rtl';
   printContainer.style.fontFamily = 'Arial, sans-serif';
   
   printContainer.innerHTML = `
-    <div style="text-align:center; font-size:10px; margin-bottom:4px; color:#555; border-bottom:1px solid #ddd; padding-bottom:2px;">نموذج زيارة معتمد • ${v.dept} • ${v.date}</div>
-    <h2 style="text-align:center; margin-bottom:10px; font-size:14px; font-weight:bold; color:#1a1a2e;">نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2>
-    
-    <div style="margin-bottom:10px; display:grid; grid-template-columns:1fr 1fr; gap:4px; font-size:11px; background:#f8f9fa; padding:8px; border-radius:4px; border:1px solid #eee;">
-      <div><strong>اسم المعلم:</strong> ${v.teacherName}</div>
-      <div><strong>القسم الدراسي:</strong> ${v.dept}</div>
-      <div><strong>المادة:</strong> ${v.subject || v.dept}</div>
-      <div><strong>الصف الدراسي:</strong> ${v.className}</div>
-      <div><strong>الحصة:</strong> الحصة ${v.period}</div>
-      <div><strong>تاريخ الزيارة:</strong> ${v.date}</div>
+    <!-- الترويسة الوزارية الرسمية المطابقة للأوراق المرفقة -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:2px solid #333; padding-bottom:8px;">
+      <div style="font-size:10px; line-height:1.4; font-weight:bold; width:35%;">
+        دولة الكويت<br>وزارة التربية<br>الإدارة العامة لمنطقة العاصمة التعليمية<br>مدرسة سالم الحسينان المتوسطة - بنين
+      </div>
+      <div style="text-align:center; width:30%;">
+        <!-- الشعار الخاص بالمدرسة من النموذج المرفق -->
+        <div style="font-size:24px; margin-bottom:2px;">🏫</div>
+        <div style="font-size:11px; font-weight:bold; color:#1a1a2e; letter-spacing:0.5px;">متوسطة سالم الحسينان</div>
+      </div>
+      <div style="text-align:left; font-size:10px; font-weight:bold; width:35%; line-height:1.4;">
+        زيارة معلم ${v.dept}<br>العام الدراسي: 2026 / 2027 م<br>الفصل الدراسي: الأول
+      </div>
     </div>
     
+    <!-- مربعات تفاصيل المعلم والدرس المعتمدة -->
+    <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:11px;">
+      <tr>
+        <td style="border:1px solid #333; padding:5px; width:50%;"><strong>اسم المعلم:</strong> ${v.teacherName}</td>
+        <td style="border:1px solid #333; padding:5px; width:50%;"><strong>موضوع الدرس:</strong> ${v.subject || v.dept}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #333; padding:5px;"><strong>الصف:</strong> الصف ${v.className}</td>
+        <td style="border:1px solid #333; padding:5px;"><strong>الحصة:</strong> الحصة ${v.period}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #333; padding:5px;" colspan="2"><strong>اليوم والموافق:</strong> ${v.date}</td>
+      </tr>
+    </table>
+    
+    <!-- جدول عناصر التقييم وشبكة الصح (✓) -->
     <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
       <thead>
-        <tr style="background:#f0f0f0;">
-          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:center; width:8%;">م</th>
-          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:right;">عناصر التقييم والمتابعة</th>
-          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:center; width:22%;">التقييم</th>
+        <tr style="background:#f2f2f2; font-size:11px; font-weight:bold;">
+          <th style="padding:6px; border:1px solid #333; text-align:center; width:6%;" rowspan="2">م</th>
+          <th style="padding:6px; border:1px solid #333; text-align:right; width:54%;" rowspan="2">عناصر التقييم والمتابعة</th>
+          <th style="padding:4px; border:1px solid #333; text-align:center;" colspan="5">التقييم</th>
+        </tr>
+        <tr style="background:#fafafa; font-size:10px; font-weight:bold;">
+          <th style="padding:4px; border:1px solid #333; text-align:center; width:8%;">ممتاز</th>
+          <th style="padding:4px; border:1px solid #333; text-align:center; width:8%;">جيد جداً</th>
+          <th style="padding:4px; border:1px solid #333; text-align:center; width:8%;">جيد</th>
+          <th style="padding:4px; border:1px solid #333; text-align:center; width:8%;">مقبول</th>
+          <th style="padding:4px; border:1px solid #333; text-align:center; width:8%;">ضعيف</th>
         </tr>
       </thead>
       <tbody>${critRows}</tbody>
     </table>
     
-    ${v.notes ? `<div style="border:1px solid #999; padding:8px; margin-bottom:10px; font-size:11px; border-radius:4px; background:#fafafa; line-height:1.3;"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:4px 0 0 0; white-space:pre-wrap;">${v.notes}</p></div>` : ''}
+    <!-- صندوق الملاحظات والتوصيات الفنية -->
+    <div style="border:1px solid #333; padding:6px; margin-bottom:15px; font-size:11px; background:#fff; min-height:60px;">
+      <strong>ملاحظات وتوجيهات المدير:</strong>
+      <p style="margin:4px 0 0 0; font-size:11px; white-space:pre-wrap; line-height:1.4; color:#222;">${v.notes || 'لا يوجد ملاحظات مسجلة.'}</p>
+    </div>
     
-    <div style="margin-top:20px; display:flex; justify-content:space-between; font-size:11px;">
-      <div style="text-align:center;">التوقيع: _____________<br><span style="font-size:10px; color:#666;">المدير</span></div>
-      <div style="text-align:center;">التوقيع: _____________<br><span style="font-size:10px; color:#666;">رئيس القسم</span></div>
-      <div style="text-align:center;">التوقيع: _____________<br><span style="font-size:10px; color:#666;">المعلم</span></div>
+    <!-- توقيعات الهيئة الإدارية والتعليمية المطابقة للأوراق -->
+    <div style="margin-top:15px; display:flex; justify-content:space-between; font-size:11px; font-weight:bold; border-top:1px dashed #999; padding-top:10px;">
+      <div style="text-align:center; width:25%;">المعلم بالعلم<br><br>التوقيع: _______________</div>
+      <div style="text-align:center; width:25%;">رئيس القسم الدراسي<br><br>التوقيع: _______________</div>
+      <div style="text-align:center; width:35%;">المدير المساعد<br>أ. سعود السنين<br><br>التوقيع: _______________</div>
     </div>
   `;
   
@@ -598,7 +644,7 @@ window.printVisit = async id => {
   
   const loadingAlert = document.createElement('div');
   loadingAlert.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff; padding:12px 24px; border-radius:30px; font-size:13px; z-index:9999;";
-  loadingAlert.textContent = "جاري استخراج صفحة التقييم PDF...";
+  loadingAlert.textContent = "جاري طباعة نموذج الزيارة الرسمي بقفل الصح ✓...";
   document.body.appendChild(loadingAlert);
 
   setTimeout(() => {
@@ -609,11 +655,11 @@ window.printVisit = async id => {
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       
-      const imgWidth = pageWidth - 20;
+      const imgWidth = pageWidth - 16;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
-      pdf.save(`تقييم_زيارة_${v.teacherName}_${v.date.replace(/\//g, '-')}.pdf`);
+      pdf.addImage(imgData, 'PNG', 8, 8, imgWidth, imgHeight);
+      pdf.save(`نموذج_زيارة_${v.dept}_${v.teacherName}.pdf`);
       
       document.body.removeChild(printContainer);
       document.body.removeChild(loadingAlert);
@@ -656,7 +702,6 @@ window.searchByDate=async function(){
   result.innerHTML=html;
 };
 
-// 🛠️ استعلام مفلتر وذكي لتاريخ اليوم لحفظ السرعة الفورية عند فتح الصفحة
 async function loadStats(){
   const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
   
@@ -795,7 +840,6 @@ async function loadAdminBehaviorList() {
 }
 window.loadAdminBehaviorList = loadAdminBehaviorList;
 
-// 🛠️ مصفوفة البنود الرسمية الدقيقة 100% المأخوذة من الكشوف المرفوعة لمدرسة سالم الحسينان
 const visitCriteria = {
   'اللغة العربية': [
     'نظافة - الفصل / مختبر لغوي / العروض الضوئية',
