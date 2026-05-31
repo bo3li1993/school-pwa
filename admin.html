@@ -6,7 +6,6 @@
 <link rel="manifest" href="manifest.json">
 <title>لوحة المدير - متوسطة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<!-- مكتبات تصدير الـ PDF الاحترافية -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -51,8 +50,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
 .score-high{color:#28a745;font-weight:500}
 .score-mid{color:#ffc107;font-weight:500}
 .score-low{color:#dc3545;font-weight:500}
-
-/* تنسيق مخصص لطباعة وتصدير كرت الطالب لـ PDF */
 #pdf-print-area { padding: 10px; border-radius: 6px; }
 </style>
 </head>
@@ -83,7 +80,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
 </div>
 
 <div class="content">
-  <!-- اليوم -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
@@ -92,7 +88,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- الفصول -->
   <div id="tab-classes" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">اختر الفصل</h2>
@@ -101,7 +96,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <div id="class-detail" class="hidden"></div>
   </div>
 
-  <!-- الغائبون -->
   <div id="tab-absent" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">🔴 الغائبون اليوم</h2>
@@ -109,7 +103,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- غياب متكرر -->
   <div id="tab-repeat" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
@@ -117,7 +110,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- كشف الجزاءات والسلوكيات للمدير -->
   <div id="tab-behavior" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📑 سجل المخالفات السلوكية والجزاءات المرصودة</h2>
@@ -125,7 +117,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- بحث طالب (تم دمج الغياب والسلوك والـ PDF الشامل) -->
   <div id="tab-student" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">👤 بحث عن طالب</h2>
@@ -141,7 +132,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- بحث بتاريخ -->
   <div id="tab-date" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
@@ -154,7 +144,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- الزيارات الفنية -->
   <div id="tab-visits" class="hidden">
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
@@ -207,7 +196,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- إدارة المستخدمين -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -219,7 +207,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
   </div>
 </div>
 
-<!-- النوافذ المنبثقة (Modals) -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
@@ -444,7 +431,7 @@ window.loadStudentNames=async function(){
   });
 };
 
-// التحديث الجوهري لدالة البحث لربط (الغياب + السلوك) وتجهيز الطباعة
+// دالة البحث الشاملة والمطورة للطالب (غياب + سلوك)
 window.searchStudent=async function(){
   var cls=document.getElementById('search-class').value;
   var stuId=document.getElementById('search-student').value;
@@ -459,7 +446,6 @@ window.searchStudent=async function(){
   var snap1=await getDocs(collection(db,'students'));
   snap1.forEach(function(doc){var d=doc.data();if(d.studentId===stuId)stuName=d.name});
   
-  // 1. جلب سجل الغياب
   var snap2=await getDocs(collection(db,'attendance'));
   var records=[];
   snap2.forEach(function(doc){
@@ -469,7 +455,6 @@ window.searchStudent=async function(){
     }
   });
   
-  // 2. جلب سجل المخالفات السلوكية
   var behaviorRecords=[];
   try {
     var snap3 = await getDocs(collection(db,'behavior'));
@@ -479,10 +464,8 @@ window.searchStudent=async function(){
     });
   } catch(e){ console.error(e); }
   
-  // بناء كرت المعاينة الشامل القابل للتصدير لـ PDF
   var html=`<div id="pdf-print-area">
     <h3 style="margin-bottom:1rem;color:#1a1a2e;border-bottom:2px solid #1a1a2e;padding-bottom:6px">الملف الشامل الموحد للطالب: ${stuName} (${cls})</h3>
-    
     <h4 style="margin:1.2rem 0 0.5rem;color:#1a1a2e"><i class="bi bi-clock-history"></i> أولاً: سجل الغياب والتأخير الدراسي (${records.length})</h4>`;
   
   if(records.length===0){
@@ -519,26 +502,21 @@ window.searchStudent=async function(){
   
   html+= '</div>';
   result.innerHTML=html;
-  pdfBtn.classList.remove('hidden'); // إظهار زر تحميل الـ PDF بعد جلب البيانات
+  pdfBtn.classList.remove('hidden');
 };
 
-// دالة تصدير ملف كرت الطالب الشامل إلى PDF مخصص واحترافي
+// دالة تحميل ملف كرت الطالب الشامل PDF
 window.downloadStudentPDF = function() {
   const element = document.getElementById('pdf-print-area');
   const stuSelect = document.getElementById('search-student');
   const studentName = stuSelect.options[stuSelect.selectedIndex] ? stuSelect.options[stuSelect.selectedIndex].text : 'طالب';
-
   if (!element) return;
 
-  // إعدادات تصدير الصورة عالية الدقة من الشاشة ثم تحويلها لـ PDF متناسق
-  html2canvas(element, {
-    scale: 2, // رفع دقة الحروف والجداول لتكون حادة وواضحة جداً عند الطباعة
-    useCORS: true
-  }).then(canvas => {
+  html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
     const imgData = canvas.toDataURL('image/png');
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 210; // عرض صفحة A4 بالمتر
+    const imgWidth = 210;
     const pageHeight = 295;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight;
@@ -553,9 +531,99 @@ window.downloadStudentPDF = function() {
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
-
     pdf.save(`الملف_الشامل_${studentName}.pdf`);
   });
+};
+
+// دالة تصدير وطباعة تقرير الزيارة الصفية كـ PDF فوري متوافق مع الهواتف
+window.printVisit = async id => {
+  const docSnap = await getDoc(doc(db, 'visits', id));
+  if (!docSnap.exists()) return;
+  
+  const v = docSnap.data();
+  const criteria = visitCriteria[v.dept] || [];
+  const scoreLabels = ['', 'ضعيف', 'مقبول', 'جيد', 'جيد جداً', 'ممتاز'];
+  
+  let critRows = '';
+  criteria.forEach((c, i) => {
+    const score = v.scores?.[i] || 0;
+    critRows += `<tr><td style="padding:8px; border:1px solid #999; font-size:12px;">${c}</td><td style="padding:8px; border:1px solid #999; text-align:center; font-size:12px;">${scoreLabels[score] || '-'}</td></tr>`;
+  });
+  
+  const printContainer = document.createElement('div');
+  printContainer.style.position = 'absolute';
+  printContainer.style.left = '-9999px';
+  printContainer.style.width = '170mm';
+  printContainer.style.padding = '15px';
+  printContainer.style.background = '#fff';
+  printContainer.style.direction = 'rtl';
+  printContainer.style.fontFamily = 'Arial, sans-serif';
+  
+  printContainer.innerHTML = `
+    <div style="text-align:center; font-size:11px; margin-bottom:8px; color:#555; border-bottom:1px solid #ddd; padding-bottom:4px;">نموذج زيارة • ${v.dept} • ${v.date}</div>
+    <h2 style="text-align:center; margin-bottom:15px; font-size:15px; font-weight:bold; color:#1a1a2e;">نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2>
+    
+    <div style="margin-bottom:15px; display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px; background:#f8f9fa; padding:10px; border-radius:6px; border:1px solid #eee;">
+      <div><strong>اسم المعلم:</strong> ${v.teacherName}</div>
+      <div><strong>القسم الدراسي:</strong> ${v.dept}</div>
+      <div><strong>المادة:</strong> ${v.subject || v.dept}</div>
+      <div><strong>الصف الدراسي:</strong> ${v.className}</div>
+      <div><strong>الحصة:</strong> الحصة ${v.period}</div>
+      <div><strong>تاريخ الزيارة:</strong> ${v.date}</div>
+    </div>
+    
+    <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+      <thead>
+        <tr style="background:#f0f0f0;"><th style="padding:8px; border:1px solid #999; font-size:12px; text-align:right;">البند التقني والمعيار المحدد</th><th style="padding:8px; border:1px solid #999; font-size:12px; text-align:center; width:30%;">التقييم</th></tr>
+      </thead>
+      <tbody>${critRows}</tbody>
+    </table>
+    
+    ${v.notes ? `<div style="border:1px solid #999; padding:10px; margin-bottom:15px; font-size:12px; border-radius:4px; background:#fafafa;"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:6px 0 0 0; white-space:pre-wrap;">${v.notes}</p></div>` : ''}
+    
+    <div style="margin-top:25px; display:flex; justify-content:space-between; font-size:11px;">
+      <div style="text-align:center;">التوقيع: _____________<br><br><strong>المدير</strong></div>
+      <div style="text-align:center;">التوقيع: _____________<br><br><strong>رئيس القسم</strong></div>
+      <div style="text-align:center;">التوقيع: _____________<br><br><strong>المعلم</strong></div>
+    </div>
+  `;
+  
+  document.body.appendChild(printContainer);
+  
+  const loadingAlert = document.createElement('div');
+  loadingAlert.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff; padding:12px 24px; border-radius:30px; font-size:13px; z-index:9999;";
+  loadingAlert.textContent = "جاري تحضير ملف التقييم PDF...";
+  document.body.appendChild(loadingAlert);
+
+  setTimeout(() => {
+    html2canvas(printContainer, { scale: 2, useCORS: true }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`تقييم_زيارة_${v.teacherName}_${v.date.replace(/\//g, '-')}.pdf`);
+      document.body.removeChild(printContainer);
+      document.body.removeChild(loadingAlert);
+    }).catch(err => {
+      alert("خطأ: " + err.message);
+      loadingAlert.remove();
+    });
+  }, 500);
 };
 
 window.searchByDate=async function(){
@@ -565,7 +633,6 @@ window.searchByDate=async function(){
   if(!cls||!date){result.innerHTML='<p style="color:#dc3545">اختر الفصل والتاريخ</p>';return}
   
   var formattedDate=date.replace(/-/g,'/');
-  
   var studentsSnap=await getDocs(collection(db,'students'));
   var classStudents=[];
   studentsSnap.forEach(function(doc){
@@ -608,7 +675,6 @@ async function loadStats(){
   });
   
   const presentToday=totalStudents-absentToday;
-  
   document.getElementById('stats-cards').innerHTML=`
     <div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي الطلاب</p></div>
     <div class="stat-card"><h3>${presentToday}</h3><p>حاضرون اليوم</p></div>
@@ -635,17 +701,14 @@ async function loadAbsentToday() {
   const list = document.getElementById('absent-list');
   if(!list) return;
   list.innerHTML = '<p style="text-align:center;color:#666;padding:1rem;">جاري جلب القائمة...</p>';
-  
   try {
     const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
     const q = query(collection(db, 'attendance'), where('date', '==', today), where('status', '==', 'absent'));
     const snap = await getDocs(q);
-    
     if (snap.empty) {
       list.innerHTML = '<div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;text-align:center;">كل الطلاب حضور اليوم والحمد لله ✓</div>';
       return;
     }
-    
     let html = '<table><thead><tr><th>#</th><th>اسم الطالب</th><th>الفصل</th><th>الحالة</th></tr></thead><tbody>';
     let counter = 1;
     snap.forEach(doc => {
@@ -664,12 +727,10 @@ async function loadRepeatAbsent() {
   const list = document.getElementById('repeat-list');
   if(!list) return;
   list.innerHTML = '<p style="text-align:center;color:#666;padding:1rem;">جاري احتساب السجلات...</p>';
-  
   try {
     const snap = await getDocs(collection(db, 'attendance'));
     const counts = {};
     const info = {};
-    
     snap.forEach(doc => {
       const d = doc.data();
       if(d.status === 'absent') {
@@ -680,10 +741,8 @@ async function loadRepeatAbsent() {
         }
       }
     });
-    
     let html = '<table><thead><tr><th>اسم الطالب</th><th>الفصل</th><th>إجمالي أيام الغياب</th><th>حالة الخطر</th></tr></thead><tbody>';
     let hasData = false;
-    
     for(let key in counts) {
       if(counts[key] >= 5) {
         hasData = true;
@@ -702,25 +761,20 @@ async function loadAdminBehaviorList() {
   const list = document.getElementById('admin-behavior-list');
   if(!list) return;
   list.innerHTML = '<p style="text-align:center;color:#666;padding:2rem;">جاري جلب السجلات السلوكية الفورية...</p>';
-  
   try {
     const q = query(collection(db, 'behavior'), orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
-    
     if (snap.empty) {
       list.innerHTML = '<div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;text-align:center;">لا توجد جزاءات أو مخالفات سلوكية مسجلة حتى الآن ✓</div>';
       return;
     }
-    
     let html = '<table><thead><tr><th>#</th><th>التاريخ</th><th>اسم الطالب</th><th>الفصل</th><th>نوع الإجراء</th><th>تفاصيل المخالفة والسبب</th><th>المعلم الراصد</th></tr></thead><tbody>';
     let counter = 1;
-    
     snap.forEach(doc => {
       const b = doc.data();
       let badgeStyle = 'badge success';
       if (b.behaviorType.includes('تعهد') || b.behaviorType.includes('إنذار')) badgeStyle = 'badge warning';
       if (b.behaviorType.includes('استدعاء') || b.behaviorType.includes('مخالفة')) badgeStyle = 'badge danger';
-      
       html += `<tr>
         <td>${counter++}</td>
         <td style="white-space:nowrap">${b.date || '-'}</td>
@@ -731,7 +785,6 @@ async function loadAdminBehaviorList() {
         <td>${b.recordedBy || 'معلم غير محدد'}</td>
       </tr>`;
     });
-    
     html += '</tbody></table>';
     list.innerHTML = html;
   } catch(e) {
@@ -753,7 +806,6 @@ const visitCriteria={
   'الديكور':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','الإبداع','الألوان','التصميم','المهارات اليدوية','السلامة','الالتزام بالوقت'],
   'الفنية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الإبداع','المهارات الفنية','الخامات','النظافة','الذوق الفني','الالتزام بالوقت']
 };
-
 window.visitCriteria = visitCriteria;
 
 async function loadVisitCounts(){
@@ -763,7 +815,6 @@ async function loadVisitCounts(){
     const dept=doc.data().dept;
     if(counts[dept]!==undefined)counts[dept]++;
   });
-  
   const idMap={'اللغة العربية':'arabic','الرياضيات':'math','العلوم':'science','التربية الإسلامية':'islamic','اللغة الإنجليزية':'english','الاجتماعيات':'social','التربية البدنية':'pe','الحاسوب':'computer','الكهرباء':'electric','الديكور':'decor','الفنية':'art'};
   for(let dept in counts){
     const el=document.getElementById(idMap[dept]+'-count');
@@ -786,7 +837,6 @@ window.loadVisitCriteria=()=>{
   const dept=document.getElementById('visit-dept').value;
   const list=document.getElementById('visit-criteria-list');
   if(!dept){list.innerHTML='';return}
-  
   const criteria=visitCriteria[dept]||[];
   let html='';
   criteria.forEach((c,i)=>{
@@ -813,39 +863,19 @@ window.saveVisit=async()=>{
   const period=document.getElementById('visit-period').value;
   const date=document.getElementById('visit-date').value.split('-').reverse().join('/');
   const notes=document.getElementById('visit-notes').value;
-  
-  if(!dept||!teacher||!className||!period||!date){
-    alert('يرجى ملء كل الحقول المطلوبة');
-    return;
-  }
-  
+  if(!dept||!teacher||!className||!period||!date){ alert('يرجى ملء كل الحقول المطلوبة'); return; }
   const criteria=visitCriteria[dept]||[];
   const scores=[];
   for(let i=0;i<criteria.length;i++){
     const sel=document.getElementById('score'+i);
     scores.push(sel?parseInt(sel.value)||0:0);
   }
-  
   try{
-    await addDoc(collection(db,'visits'),{
-      dept,
-      teacherName:teacher,
-      subject,
-      className,
-      period,
-      date,
-      scores,
-      notes,
-      createdAt:serverTimestamp(),
-      createdBy:currentUser.userId,
-      teacherSigned:false
-    });
+    await addDoc(collection(db,'visits'),{ dept, teacherName:teacher, subject, className, period, date, scores, notes, createdAt:serverTimestamp(), createdBy:currentUser.userId, teacherSigned:false });
     alert('تم حفظ الزيارة بنجاح');
     closeVisitForm();
     loadVisitCounts();
-  }catch(e){
-    alert('خطأ: '+e.message);
-  }
+  }catch(e){ alert('خطأ: '+e.message); }
 };
 
 let selectedDept='';
@@ -865,22 +895,15 @@ window.backToDepts=()=>{
 async function loadDeptVisits(dept){
   const list=document.getElementById('visits-list');
   list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">جاري التحميل...</p>';
-  
   try{
     const q=query(collection(db,'visits'),where('dept','==',dept),orderBy('createdAt','desc'));
     const snap=await getDocs(q);
-    
-    if(snap.empty){
-      list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">لا توجد زيارات مسجلة لهذا القسم</p>';
-      return;
-    }
-    
+    if(snap.empty){ list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">لا توجد زيارات مسجلة لهذا القسم</p>'; return; }
     let html='';
     snap.forEach(doc=>{
       const v=doc.data();
       const avgScore=v.scores?(v.scores.reduce((a,b)=>a+b,0)/v.scores.length).toFixed(1):'-';
       const scoreClass=avgScore>=4?'score-high':avgScore>=3?'score-mid':'score-low';
-      
       html+=`<div style="background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:1rem;margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
           <div>
@@ -891,30 +914,25 @@ async function loadDeptVisits(dept){
         </div>
         <div style="display:flex;gap:8px">
           <button onclick="viewVisit('${doc.id}')" style="flex:1;font-size:13px">عرض التفاصيل</button>
-          <button onclick="printVisit('${doc.id}')" style="flex:1;font-size:13px;background:#fff;color:#333;border:1px solid #ddd">🖨️ طباعة</button>
+          <button onclick="printVisit('${doc.id}')" style="flex:1;font-size:13px;background:#fff;color:#333;border:1px solid #ddd">🖨️ طباعة PDF</button>
         </div>
       </div>`;
     });
     list.innerHTML=html;
-  }catch(e){
-    list.innerHTML='<p style="text-align:center;color:#dc3545;padding:2rem">خطأ في تحميل الزيارات</p>';
-  }
+  }catch(e){ list.innerHTML='<p style="text-align:center;color:#dc3545;padding:2rem">خطأ في تحميل الزيارات</p>'; }
 }
 
 window.viewVisit=async id=>{
   const docSnap=await getDoc(doc(db,'visits',id));
   if(!docSnap.exists())return;
-  
   const v=docSnap.data();
   const criteria=visitCriteria[v.dept]||[];
   const scoreLabels=['','ضعيف','مقبول','جيد','جيد جداً','ممتاز'];
-  
   let critHTML='';
   criteria.forEach((c,i)=>{
     const score=v.scores?.[i]||0;
     critHTML+=`<tr><td style="padding:8px;border-bottom:0.5px solid #eee">${c}</td><td style="padding:8px;border-bottom:0.5px solid #eee;text-align:center">${scoreLabels[score]||'-'}</td></tr>`;
   });
-  
   document.getElementById('visit-detail-content').innerHTML=`
     <div style="margin-bottom:1.5rem">
       <h3 style="margin:0 0 8px">${v.teacherName}</h3>
@@ -930,41 +948,14 @@ window.viewVisit=async id=>{
   document.getElementById('visit-detail-modal').style.display='flex';
 };
 
-window.closeVisitDetail=()=>{
-  document.getElementById('visit-detail-modal').style.display='none';
-};
-
-window.printVisit=async id=>{
-  const docSnap=await getDoc(doc(db,'visits',id));
-  if(!docSnap.exists())return;
-  
-  const v=docSnap.data();
-  const criteria=visitCriteria[v.dept]||[];
-  const scoreLabels=['','ضعيف','مقبول','جيد','جيد جداً','ممتاز'];
-  
-  let critRows='';
-  criteria.forEach((c,i)=>{
-    const score=v.scores?.[i]||0;
-    critRows+=`<tr><td style="padding:8px;border:1px solid #999">${c}</td><td style="padding:8px;border:1px solid #999;text-align:center">${scoreLabels[score]||'-'}</td><td style="padding:8px;border:1px solid #999"></td></tr>`;
-  });
-  
-  const printContent=`<html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة - ${v.teacherName}</title><style>@page{size:A4;margin:0.8cm}*{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%}body{font-family:Arial,sans-serif;padding:0.8cm;font-size:13px;display:flex;flex-direction:column;min-height:100vh}h2{text-align:center;margin-bottom:0.6cm;font-size:16px;font-weight:bold}table{width:100%;border-collapse:collapse;flex:1}th{background:#f0f0f0;padding:8px;border:1px solid #999;font-size:12px;font-weight:bold}td{padding:8px;border:1px solid #999;font-size:12px}.info{margin:0.5cm 0;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px}.info div{padding:4px 0}.header-line{text-align:center;font-size:11px;margin-bottom:4px;color:#555}.signatures{margin-top:auto;padding-top:1.5cm;display:flex;justify-content:space-between}.sig-box{text-align:center;font-size:12px}.sig-box div:first-child{margin-bottom:8px}.notes{border:1px solid #999;padding:0.5cm;margin:0.4cm 0;font-size:12px;min-height:2cm}</style></head><body><div class="header-line">نموذج زيارة • ${v.dept} • ${v.date}</div><h2>نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2><div class="info"><div><strong>اسم المعلم:</strong> ${v.teacherName}</div><div><strong>القسم الدراسي:</strong> ${v.dept}</div><div><strong>المادة:</strong> ${v.subject||v.dept}</div><div><strong>الصف الدراسي:</strong> ${v.className}</div><div><strong>الحصة:</strong> الحصة ${v.period}</div><div><strong>تاريخ الزيارة:</strong> ${v.date}</div></div><table><thead><tr><th style="width:55%">البند التقني والمعيار المحدد</th><th style="width:15%">التقييم</th><th style="width:30%">ملاحظات</th></tr></thead><tbody>${critRows}</tbody></table>${v.notes?`<div class="notes"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:6px 0">${v.notes}</p></div>`:''}<div class="signatures"><div class="sig-box"><div>التوقيع: _____________</div><div>المدير</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>رئيس القسم</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>المعلم</div></div></div></body></html>`;
-  
-  const printWin=window.open('','','width=800,height=600');
-  printWin.document.write(printContent);
-  printWin.document.close();
-  printWin.focus();
-  setTimeout(()=>printWin.print(),250);
-};
+window.closeVisitDetail=()=>{ document.getElementById('visit-detail-modal').style.display='none'; };
 
 async function loadUsers(){
   const list=document.getElementById('users-list');
   list.innerHTML='<p style="text-align:center;color:#666">جاري التحميل...</p>';
-  
   try{
     const snap=await getDocs(collection(db,'users'));
     let html='<table><thead><tr><th>الاسم</th><th>رقم المستخدم</th><th>الصلاحية</th><th>الفصل</th><th>كلمة المرور</th><th>إجراءات</th></tr></thead><tbody>';
-    
     snap.forEach(doc=>{
       const u=doc.data();
       const roleText=u.role==='admin'?'مدير':'معلم';
@@ -983,18 +974,11 @@ async function loadUsers(){
     });
     html+='</tbody></table>';
     list.innerHTML=html;
-  }catch(e){
-    list.innerHTML='<p style="text-align:center;color:#dc3545">خطأ في تحميل المستخدمين</p>';
-  }
+  }catch(e){ list.innerHTML='<p style="text-align:center;color:#dc3545">خطأ في تحميل المستخدمين</p>'; }
 }
 
-window.openAddUser=()=>{
-  document.getElementById('add-user-modal').style.display='flex';
-};
-
-window.closeAddUser=()=>{
-  document.getElementById('add-user-modal').style.display='none';
-};
+window.openAddUser=()=>{ document.getElementById('add-user-modal').style.display='flex'; };
+window.closeAddUser=()=>{ document.getElementById('add-user-modal').style.display='none'; };
 
 window.addUser=async()=>{
   const name=document.getElementById('new-user-name').value.trim();
@@ -1002,39 +986,18 @@ window.addUser=async()=>{
   const pass=document.getElementById('new-user-pass').value;
   const role=document.getElementById('new-user-role').value;
   const classId=document.getElementById('new-user-class').value.trim();
-  
-  if(!name||!userId||!pass||!role){
-    alert('يرجى ملء كل الحقول المطلوبة');
-    return;
-  }
-  
+  if(!name||!userId||!pass||!role){ alert('يرجى ملء كل الحقول المطلوبة'); return; }
   try{
-    await addDoc(collection(db,'users'),{
-      name,
-      userId,
-      plainPass:pass,
-      email:userId+'@hosainan.edu',
-      role,
-      classId:role==='teacher'?classId:'',
-      createdAt:serverTimestamp()
-    });
+    await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, email:userId+'@hosainan.edu', role, classId:role==='teacher'?classId:'', createdAt:serverTimestamp() });
     alert('تم إضافة المستخدم بنجاح');
     closeAddUser();
     loadUsers();
-  }catch(e){
-    alert('خطأ: '+e.message);
-  }
+  }catch(e){ alert('خطأ: '+e.message); }
 };
 
 window.deleteUser=async id=>{
   if(!confirm('هل أنت متأكد من حذف هذا المستخدم؟'))return;
-  try{
-    await deleteDoc(doc(db,'users',id));
-    alert('تم حذف المستخدم');
-    loadUsers();
-  }catch(e){
-    alert('خطأ: '+e.message);
-  }
+  try{ await deleteDoc(doc(db,'users',id)); alert('تم حذف المستخدم'); loadUsers(); }catch(e){ alert('خطأ: '+e.message); }
 };
 
 window.openEditUser=function(docId,name,userId,pass,role,classId){
@@ -1047,9 +1010,7 @@ window.openEditUser=function(docId,name,userId,pass,role,classId){
   document.getElementById('edit-user-modal').style.display='flex';
 };
 
-window.closeEditUser=function(){
-  document.getElementById('edit-user-modal').style.display='none';
-};
+window.closeEditUser=function(){ document.getElementById('edit-user-modal').style.display='none'; };
 
 window.saveEditUser=async function(){
   var docId=document.getElementById('edit-user-docid').value;
@@ -1058,23 +1019,15 @@ window.saveEditUser=async function(){
   var pass=document.getElementById('edit-user-pass').value.trim();
   var role=document.getElementById('edit-user-role').value;
   var classId=document.getElementById('edit-user-class').value.trim();
-  
-  if(!name||!userId||!role){
-    alert('يرجى ملء الاسم ورقم المستخدم والصلاحية');
-    return;
-  }
-  
+  if(!name||!userId||!role){ alert('يرجى ملء الاسم ورقم المستخدم والصلاحية'); return; }
   try{
     var updateData={name:name,userId:userId,role:role,classId:role==='teacher'?classId:''};
     if(pass)updateData.plainPass=pass;
-    
     await updateDoc(doc(db,'users',docId),updateData);
     alert('تم تحديث بيانات المستخدم بنجاح');
     closeEditUser();
     loadUsers();
-  }catch(e){
-    alert('خطأ: '+e.message);
-  }
+  }catch(e){ alert('خطأ: '+e.message); }
 };
 
 const tabsBar = document.getElementById('tabs-bar');
@@ -1083,16 +1036,9 @@ if(tabsBar) {
     if (e.target.classList.contains('tab')) {
       const tabId = e.target.getAttribute('data-tab');
       window.switchTab(tabId);
-      
-      if (tabId === 'absent') {
-        window.loadAbsentToday();
-      }
-      if (tabId === 'repeat') {
-        window.loadRepeatAbsent();
-      }
-      if (tabId === 'behavior') {
-        window.loadAdminBehaviorList();
-      }
+      if (tabId === 'absent') window.loadAbsentToday();
+      if (tabId === 'repeat') window.loadRepeatAbsent();
+      if (tabId === 'behavior') window.loadAdminBehaviorList();
     }
   });
 }
