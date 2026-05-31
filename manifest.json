@@ -4,19 +4,19 @@
   "description": "منصة ذكية لإدارة حضور الطلاب، الزيارات الصفية، والتواصل التربوي.",
   "icons": [
     {
-      "src": "img/logo.png",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "img/logo.png",
+      "src": "logo.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
   "display": "standalone",
