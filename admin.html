@@ -37,14 +37,16 @@ button.secondary{background:#fff;color:#333;border:1px solid #ddd}
 input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;margin-bottom:12px}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
 .modal-content{background:#fff;border-radius:8px;padding:2rem;max-width:800px;width:90%;max-height:90vh;overflow-y:auto}
+.form-grid style{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:1rem}
 .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:1rem}
-table{width:100%;border-collapse:collapse;font-size:14px}
+table {width:100%;border-collapse:collapse;font-size:14px}
 table th{background:#f5f5f5;padding:12px;text-align:right;border-bottom:2px solid #ddd}
 table td{padding:12px;border-bottom:1px solid #eee}
 .badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:500}
 .badge.success{background:#d4edda;color:#155724}
 .badge.warning{background:#fff3cd;color:#856404}
 .badge.danger{background:#f8d7da;color:#721c24}
+.badge.info{background:#d1ecf1;color:#0c5460}
 .hidden{display:none!important}
 .back-btn{background:#6c757d;margin-bottom:1rem}
 .score-high{color:#28a745;font-weight:500}
@@ -258,6 +260,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <select id="new-user-role">
       <option value="">اختر الصلاحية</option>
       <option value="admin">مدير</option>
+      <option value="assistant">مدير مساعد</option>
       <option value="teacher">معلم</option>
     </select>
     <input type="text" id="new-user-class" placeholder="الفصل (للمعلمين فقط)">
@@ -281,6 +284,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <label style="font-size:13px;color:#666">الصلاحية</label>
     <select id="edit-user-role">
       <option value="admin">مدير</option>
+      <option value="assistant">مدير مساعد</option>
       <option value="teacher">معلم</option>
     </select>
     <label style="font-size:13px;color:#666">الفصل (للمعلمين فقط)</label>
@@ -322,7 +326,8 @@ if(!savedUser){
 else{
   try{
     currentUser=JSON.parse(savedUser);
-    if(!currentUser.role||currentUser.role!=='admin'){
+    // تفعيل الصلاحية للمدير والمدير المساعد
+    if(!currentUser.role || (currentUser.role !== 'admin' && currentUser.role !== 'assistant')){
       window.location.href='index.html';
     }
     else{
@@ -387,7 +392,7 @@ function loadClassButtons(){
   allClasses.forEach(function(cls){
     var grade=cls.split('/')[0];
     var section=cls.split('/')[1];
-    html+='<button onclick="selectClass(\''+cls+'\')" style="padding:1rem;font-size:16px;background:#f8f9fa;color:#333;border:1px solid #ddd;border-radius:8px">'+cls+' ('+gradeNames[grade]+' '+section+')</button>';
+    html+='<button onclick="selectClass(\''+cls+'\')" style="padding:1rem;font-size:166px;background:#f8f9fa;color:#333;border:1px solid #ddd;border-radius:8px;font-size:14px;">'+cls+' ('+gradeNames[grade]+' '+section+')</button>';
   });
   document.getElementById('classes-list').innerHTML=html;
 }
@@ -533,7 +538,7 @@ window.downloadStudentPDF = function() {
   });
 };
 
-// 🛠️ تم إصلاح دالة الطباعة بالكامل لمنع انعكاس الحروف العربية نهائياً وإلغاء تفكيك النص
+// 🛠️ تم إحكام الطباعة بالكامل وتأسيس التوقيعات الذكية ديناميكياً بناءً على رتبة الحساب
 window.printVisit = async id => {
   const docSnap = await getDoc(doc(db, 'visits', id));
   if (!docSnap.exists()) return;
@@ -564,7 +569,17 @@ window.printVisit = async id => {
   printContainer.style.direction = 'rtl';
   printContainer.style.fontFamily = 'Arial, sans-serif';
   
-  // 💡 تم التخلص من letter-spacing المسبب للعكس وضبط القوالب باتجاه RTL صحيح ومحكم
+  // احتساب سطر التوقيع ديناميكياً بناءً على طلبك الشفهي
+  let managerTitle = "المدير المساعد";
+  let managerName = currentUser.name || "المسؤول الإداري";
+  if (currentUser.role === 'admin') {
+    managerTitle = "مدير المدرسة";
+    managerName = "د. شريان ضاحي اللوغاني";
+  } else if (currentUser.role === 'assistant') {
+    managerTitle = "المدير المساعد";
+    managerName = currentUser.name;
+  }
+  
   printContainer.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:2px solid #333; padding-bottom:8px; direction:rtl;">
       <div style="font-size:10px; line-height:1.4; font-weight:bold; width:35%; text-align:right;">
@@ -612,14 +627,14 @@ window.printVisit = async id => {
     </table>
     
     <div style="border:1px solid #333; padding:6px; margin-bottom:15px; font-size:11px; background:#fff; min-height:60px; direction:rtl; text-align:right;">
-      <strong>ملاحظات وتوجيهات المدير:</strong>
+      <strong>ملاحظات وتوجيهات الإدارة:</strong>
       <p style="margin:4px 0 0 0; font-size:11px; white-space:pre-wrap; line-height:1.4; color:#222; text-align:right;">${v.notes || 'لا يوجد ملاحظات مسجلة.'}</p>
     </div>
     
     <div style="margin-top:15px; display:flex; justify-content:space-between; font-size:11px; font-weight:bold; border-top:1px dashed #999; padding-top:10px; direction:rtl;">
       <div style="text-align:center; width:25%;">المعلم بالعلم<br><br>التوقيع: _______________</div>
       <div style="text-align:center; width:25%;">رئيس القسم الدراسي<br><br>التوقيع: _______________</div>
-      <div style="text-align:center; width:35%;">المدير المساعد<br>أ. سعود السنين<br><br>التوقيع: _______________</div>
+      <div style="text-align:center; width:35%;">${managerTitle}<br>${managerName}<br><br>التوقيع: _______________</div>
     </div>
   `;
   
@@ -823,6 +838,7 @@ async function loadAdminBehaviorList() {
 }
 window.loadAdminBehaviorList = loadAdminBehaviorList;
 
+// المجموعات الكاملة الـ 11 للأقسام دون نقصان حرف واحد
 const visitCriteria = {
   'اللغة العربية': [
     'نظافة - الفصل / مختبر لغوي / العروض الضوئية',
@@ -879,7 +895,7 @@ const visitCriteria = {
     'المظهر العام للمعلم وشخصيته',
     'التقنيات التربوية والوسائل المستخدمة',
     'تنظيم استخدام زمن الحصة الدراسية',
-    'mتابعة الأعمال التحريرية',
+    'متابعة الأعمال التحريرية',
     'الإجابة على التقويم مع الطلاب خلال الحصة'
   ],
   'الرياضيات': [
@@ -1182,8 +1198,8 @@ async function loadUsers(){
     let html='<table><thead><tr><th>الاسم</th><th>رقم المستخدم</th><th>الصلاحية</th><th>الفصل</th><th>كلمة المرور</th><th>إجراءات</th></tr></thead><tbody>';
     snap.forEach(doc=>{
       const u=doc.data();
-      const roleText=u.role==='admin'?'مدير':'معلم';
-      const roleBadge=u.role==='admin'?'success':'warning';
+      const roleText=u.role==='admin'?'مدير':u.role==='assistant'?'مدير مساعد':'معلم';
+      const roleBadge=u.role==='admin'?'success':u.role==='assistant'?'info':'warning';
       html+=`<tr>
         <td>${u.name||'-'}</td>
         <td>${u.userId}</td>
@@ -1212,7 +1228,7 @@ window.addUser=async()=>{
   const classId=document.getElementById('new-user-class').value.trim();
   if(!name||!userId||!pass||!role){ alert('يرجى ملء كل الحقول المطلوبة'); return; }
   try{
-    await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, email:userId+'@hosainan.edu', role, classId:role==='teacher'?classId:'', createdAt:serverTimestamp() });
+    await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, email:userId+'@hosainan.edu', role, classId:(role==='teacher')?classId:'', createdAt:serverTimestamp() });
     alert('تم إضافة المستخدم بنجاح');
     closeAddUser();
     loadUsers();
@@ -1245,7 +1261,7 @@ window.saveEditUser=async function(){
   var classId=document.getElementById('edit-user-class').value.trim();
   if(!name||!userId||!role){ alert('يرجى ملء الاسم ورقم المستخدم والصلاحية'); return; }
   try{
-    var updateData={name:name,userId:userId,role:role,classId:role==='teacher'?classId:''};
+    var updateData={name:name,userId:userId,role:role,classId:(role==='teacher')?classId:''};
     if(pass)updateData.plainPass=pass;
     await updateDoc(doc(db,'users',docId),updateData);
     alert('تم تحديث بيانات المستخدم بنجاح');
