@@ -3,87 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة المدير - متوسطة سالم الحسينان</title>
+<title>لوحة الإدارة - متوسطة سالم الحسينان</title>
 <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
-    .header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:1rem 1.5rem}
-    .header-top{display:flex;justify-content:space-between;align-items:center}
+    body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;min-height:100vh}
+    .header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
     .header-btns{display:flex;gap:8px}
-    .header-btns button{background:rgba(255,255,255,.15);border:none;color:#fff;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px}
-    .tabs-container{background:#fff;border-bottom:2px solid #eee;display:flex;padding:0 1rem;overflow-x:auto}
-    .tab{padding:14px 20px;border:none;background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:#888;border-bottom:3px solid transparent}
-    .tab.active{color:#1a1a2e;border-bottom-color:#667eea;background:#f8f9ff}
-    .content{max-width:1000px;margin:2rem auto;padding:0 1rem}
-    .card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .tabs-container{background:#fff;display:flex;padding:0 1rem;border-bottom:2px solid #eee;overflow-x:auto}
+    .tab{padding:14px 20px;border:none;background:transparent;cursor:pointer;font-weight:600;color:#888;border-bottom:3px solid transparent}
+    .tab.active{color:#667eea;border-bottom-color:#667eea}
+    .content{max-width:1100px;margin:2rem auto;padding:0 1rem}
+    .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);margin-bottom:20px}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border:1px solid #ddd;padding:10px;text-align:center}
+    th{background:#f8f9fa}
     .hidden{display:none!important}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="header-top">
-    <div>
-      <h1>مرحباً، <span id="admin-name">المدير</span></h1>
-    </div>
+    <h2>لوحة الإدارة - متوسطة سالم الحسينان</h2>
     <div class="header-btns">
-      <button onclick="window.open('tv.html', '_blank')" style="background:#dc3545; font-weight:bold;">📺 غرفة العمليات</button>
-      <button onclick="window.logout()">خروج</button>
+        <button onclick="window.open('tv.html', '_blank')" style="background:#dc3545; color:white; border:none; padding:10px; cursor:pointer;">📺 غرفة العمليات</button>
+        <button onclick="logout()" style="background:#6c757d; color:white; border:none; padding:10px; cursor:pointer;">خروج</button>
     </div>
-  </div>
 </div>
 
 <div class="tabs-container" id="tabs-bar">
-  <button class="tab active" data-tab="today">📊 إحصائيات اليوم</button>
-  <button class="tab" data-tab="classes">🏫 الفصول</button>
-  <button class="tab" data-tab="visits">📋 الزيارات الصفية</button>
-  <button class="tab" data-tab="users">👥 المستخدمون</button>
+    <button class="tab active" onclick="switchTab('today')">📊 إحصائيات</button>
+    <button class="tab" onclick="switchTab('classes')">🏫 الفصول</button>
+    <button class="tab" onclick="switchTab('visits')">📋 الزيارات</button>
+    <button class="tab" onclick="switchTab('users')">👥 المستخدمون</button>
 </div>
 
 <div class="content">
-  <div id="tab-today" class="tab-pane"><div class="card"><h2>نظرة عامة</h2><div id="stats-area">جاري التحميل...</div></div></div>
-  <div id="tab-classes" class="tab-pane hidden"><div class="card"><h2>الفصول</h2><div id="classes-area">جاري التحميل...</div></div></div>
-  <div id="tab-visits" class="tab-pane hidden"><div class="card"><h2>الزيارات الصفية</h2><div id="visits-area">جاري التحميل...</div></div></div>
-  <div id="tab-users" class="tab-pane hidden"><div class="card"><h2>المستخدمون</h2><div id="users-area">جاري التحميل...</div></div></div>
+    <div id="tab-today" class="tab-pane">
+        <div class="card"><h2>نظرة عامة</h2><div id="stats-area">جاري التحميل...</div></div>
+    </div>
+    <div id="tab-classes" class="tab-pane hidden">
+        <div class="card"><h2>إدارة الفصول</h2><div id="classes-area">جاري التحميل...</div></div>
+    </div>
+    <div id="tab-visits" class="tab-pane hidden">
+        <div class="card"><h2>سجل الزيارات الصفية</h2><div id="visits-area">جاري التحميل...</div></div>
+    </div>
+    <div id="tab-users" class="tab-pane hidden">
+        <div class="card"><h2>إدارة المستخدمين</h2><div id="users-area">جاري التحميل...</div></div>
+    </div>
 </div>
 
 <script type="module">
-import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import {getFirestore,collection,getDocs} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import {getFirestore, collection, getDocs} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const app = initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
-const db = getFirestore(app);
+    const app = initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
+    const db = getFirestore(app);
 
-// ربط الدوال بالـ window عشان المتصفح يشوف الأزرار
-window.logout = () => {
-  localStorage.removeItem('hs_user');
-  window.location.href = 'index.html';
-};
+    // ربط الدوال بـ window لضمان عمل الأزرار
+    window.logout = () => { localStorage.removeItem('hs_user'); window.location.href = 'index.html'; };
 
-window.switchTab = (tabId) => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
-    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-    document.getElementById('tab-' + tabId).classList.remove('hidden');
-};
+    window.switchTab = (id) => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+        document.getElementById('tab-' + id).classList.remove('hidden');
+    };
 
-// تشغيل التبويبات
-document.getElementById('tabs-bar').addEventListener('click', (e) => {
-    const btn = e.target.closest('.tab');
-    if(btn) window.switchTab(btn.getAttribute('data-tab'));
-});
+    async function loadData() {
+        try {
+            // إحصائيات
+            const att = await getDocs(collection(db, 'attendance'));
+            document.getElementById('stats-area').innerHTML = `إجمالي سجلات الغياب: <b>${att.size}</b>`;
+            
+            // زيارات
+            const vis = await getDocs(collection(db, 'visits'));
+            let vHtml = '<table><tr><th>المعلم</th><th>القسم</th><th>التقييم</th></tr>';
+            vis.forEach(d => { let v = d.data(); vHtml += `<tr><td>${v.teacherName}</td><td>${v.dept}</td><td>${v.rating}</td></tr>`; });
+            document.getElementById('visits-area').innerHTML = vHtml + '</table>';
 
-// تحميل البيانات الأساسي
-async function init() {
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    if(user) document.getElementById('admin-name').textContent = user.name;
-    
-    // جلب البيانات
-    const students = await getDocs(collection(db, 'students'));
-    const att = await getDocs(collection(db, 'attendance'));
-    document.getElementById('stats-area').innerHTML = `إجمالي الطلاب: ${students.size} | سجلات الغياب: ${att.size}`;
-}
-init();
+            // مستخدمين
+            const users = await getDocs(collection(db, 'users'));
+            let uHtml = '<table><tr><th>الاسم</th><th>الدور</th></tr>';
+            users.forEach(d => { let u = d.data(); uHtml += `<tr><td>${u.name}</td><td>${u.role}</td></tr>`; });
+            document.getElementById('users-area').innerHTML = uHtml + '</table>';
+        } catch(e) { console.error("Error loading data:", e); }
+    }
+    loadData();
 </script>
 </body>
 </html>
