@@ -1,0 +1,26 @@
+{
+  "short_name": "المدرسة الذكية",
+  "name": "برنامج المدرسة الذكية - متوسطة سالم الحسينان",
+  "description": "منصة ذكية لإدارة حضور الطلاب، الزيارات الصفية، والتواصل التربوي.",
+  "icons": [
+    {
+      "src": "img/logo.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "img/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/index.html",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "ar"
+}
