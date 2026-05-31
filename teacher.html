@@ -21,13 +21,13 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#333;min-h
 .tab{flex:1;padding:12px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:#888;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;text-align:center}
 .tab.active{color:#1a1a2e;border-bottom-color:#667eea;background:#f8f9ff}
 .content{max-width:800px;margin:0 auto;padding:1rem}
-.card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.card{background:#fff;border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 2px 8 rgba(0,0,0,.06)}
 .card h2{margin-bottom:1rem;font-size:17px;color:#1a1a2e}
 .form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem}
 @media(max-width:600px){.form-row{grid-template-columns:1fr}}
 label.field-label{font-size:12px;color:#888;display:block;margin-bottom:4px;font-weight:500}
-select,input[type=date],input[type=text],input[type=password]{width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;background:#fafafa;transition:border .2s}
-select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
+select,input[type=date],input[type=text],input[type=password],textarea{width:100%;padding:10px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;background:#fafafa;transition:border .2s}
+select:focus,input:focus,textarea:focus{outline:none;border-color:#667eea;background:#fff}
 .btn{background:#1a1a2e;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s}
 .btn:hover{background:#2a2a4e;transform:translateY(-1px)}
 .btn-success{background:#28a745}
@@ -62,7 +62,7 @@ select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
 .modal-content{background:#fff;border-radius:12px;padding:2rem;max-width:400px;width:90%}
 .modal-content h3{margin-bottom:1.5rem;font-size:18px}
 #error-screen{display:none;padding:2rem;text-align:center;background:#fff;margin:2rem;border-radius:12px;border:2px solid #dc3545;}
-</style>
+</embed></style>
 </head>
 <body>
 
@@ -93,6 +93,7 @@ select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
 
   <div class="tabs" id="tabs-bar">
     <button class="tab active" data-tab="register">✏️ تسجيل غياب</button>
+    <button class="tab" data-tab="behavior">📑 تسجيل سلوك</button>
     <button class="tab" data-tab="myrecords">📋 سجلاتي</button>
     <button class="tab" data-tab="classstudents">👥 الطلاب</button>
   </div>
@@ -121,6 +122,39 @@ select:focus,input:focus{outline:none;border-color:#667eea;background:#fff}
           <button id="btn-all-present" style="background:#1a1a2e">✅ حضور كامل</button>
           <button id="btn-save" style="background:#28a745">💾 حفظ الغياب</button>
         </div>
+      </div>
+    </div>
+
+    <div id="tab-behavior" class="hidden">
+      <div class="card">
+        <h2>📑 تسجيل سلوك ومخالفات الطلاب</h2>
+        <div class="form-row">
+          <div>
+            <label class="field-label" for="beh-class">الفصل</label>
+            <select id="beh-class"><option value="">اختر الفصل</option></select>
+          </div>
+          <div>
+            <label class="field-label" for="beh-student">اسم الطالب</label>
+            <select id="beh-student"><option value="">اختر الطالب</option></select>
+          </div>
+          <div>
+            <label class="field-label" for="beh-type">نوع الإجراء</label>
+            <select id="beh-type">
+              <option value="">اختر الإجراء</option>
+              <option value="تعهد خطي">📝 تعهد خطي</option>
+              <option value="إنذار أول">⚠️ إنذار أول</option>
+              <option value="إنذار ثان">🚨 إنذار ثان</option>
+              <option value="استدعاء ولي أمر">👥 استدعاء ولي أمر</option>
+              <option value="مخالفة سلوكية">❌ مخالفة سلوكية عامة</option>
+              <option value="سلوك إيجابي">⭐ سلوك إيجابي / تحفيز</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label class="field-label" for="beh-notes">تفاصيل المخالفة والسبب</label>
+          <textarea id="beh-notes" rows="3" placeholder="اكتب تفاصيل المخالفة هنا..." style="resize: none; font-family: sans-serif;"></textarea>
+        </div>
+        <button class="btn btn-primary" id="btn-save-behavior" style="width: 100%; padding: 12px;">💾 حفظ وإرسال الإجراء للإدارة</button>
       </div>
     </div>
 
@@ -171,7 +205,6 @@ import {getFirestore,collection,doc,getDocs,addDoc,updateDoc,query,where,serverT
 const app=initializeApp({apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"});
 const db=getFirestore(app);
 
-// تعريف المتغيرات والمصفوفات أولاً لتفادي خطأ undefined
 var currentUser=null,allStudents=[],studentStatuses={};
 var allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
 
@@ -181,10 +214,10 @@ document.getElementById('reg-date').value=yyyy+'-'+mm+'-'+dd;
 document.getElementById('rec-date').value=yyyy+'-'+mm+'-'+dd;
 
 function populateDropdowns(){
-  ['reg-class','rec-class','view-class'].forEach(function(id){
+  ['reg-class','rec-class','view-class','beh-class'].forEach(function(id){
     var s=document.getElementById(id);
     if(s) {
-      s.innerHTML = '<option value="">اختر</option>'; // تفادي التكرار
+      s.innerHTML = '<option value="">اختر</option>';
       allClasses.forEach(function(c){
         var o=document.createElement('option');
         o.value=c;o.textContent=c;s.appendChild(o);
@@ -193,21 +226,18 @@ function populateDropdowns(){
   });
 }
 
-// دالة التشغيل الأساسية بعد اكتمال قراءة المتغيرات
 function init(){
   populateDropdowns();
   if(currentUser && currentUser.classId){
     setTimeout(function(){
       var regClsEl = document.getElementById('reg-class');
-      if(regClsEl) {
-        regClsEl.value=currentUser.classId;
-        loadClassStudents();
-      }
+      var behClsEl = document.getElementById('beh-class');
+      if(regClsEl) { regClsEl.value=currentUser.classId; loadClassStudents(); }
+      if(behClsEl) { behClsEl.value=currentUser.classId; loadBehaviorStudents(); }
     },200);
   }
 }
 
-// التحقق من الجلسة وبدء التطبيق
 var saved=localStorage.getItem('hs_user');
 if(!saved){
   document.getElementById('error-screen').style.display='block';
@@ -227,8 +257,15 @@ if(!saved){
   }
 }
 
-// Tabs
-document.getElementById('tabs-bar').addEventListener('click',function(e){var b=e.target.closest('.tab');if(!b)return;document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});b.classList.add('active');document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden')});document.getElementById('tab-'+b.getAttribute('data-tab')).classList.remove('hidden')});
+// Tabs التحكم في شريط التبويبات العلوي
+document.getElementById('tabs-bar').addEventListener('click',function(e){
+  var b=e.target.closest('.tab');
+  if(!b)return;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  b.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(function(t){t.classList.add('hidden')});
+  document.getElementById('tab-'+b.getAttribute('data-tab')).classList.remove('hidden');
+});
 
 // Logout
 document.getElementById('btn-logout').addEventListener('click',function(){
@@ -256,7 +293,7 @@ document.getElementById('btn-save-pass').addEventListener('click',async function
   }catch(e){errEl.textContent='خطأ: '+e.message;errEl.style.display='block'}
 });
 
-// Load students
+// Load students for registration
 async function loadClassStudents(){
   var cls=document.getElementById('reg-class').value,container=document.getElementById('students-container'),summary=document.getElementById('summary-section'),saveS=document.getElementById('save-section');
   if(!cls){container.innerHTML='';summary.classList.add('hidden');saveS.classList.add('hidden');return}
@@ -315,6 +352,79 @@ document.getElementById('btn-save').addEventListener('click',async function(){
     await Promise.all(pr);alert('تم الحفظ ✅');allStudents.forEach(function(s){studentStatuses[s.studentId]='present'});renderStudents();updateSummary();
   }catch(e){alert('خطأ: '+e.message)}
 });
+
+// ================== نظام رصد السلوك والجزاءات الفوري الجديد ==================
+
+async function loadBehaviorStudents() {
+  var cls = document.getElementById('beh-class').value;
+  var sel = document.getElementById('beh-student');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">جاري تحميل الطلاب...</option>';
+  if(!cls) { sel.innerHTML = '<option value="">اختر الطالب</option>'; return; }
+  
+  try {
+    var snap = await getDocs(collection(db, 'students'));
+    var bStudents = [];
+    snap.forEach(function(d) {
+      var s = d.data();
+      if(s.classId === cls) bStudents.push(s);
+    });
+    bStudents.sort(function(a,b) { return (a.name || '').localeCompare(b.name || '', 'ar') });
+    
+    sel.innerHTML = '<option value="">اختر الطالب</option>';
+    bStudents.forEach(function(s) {
+      var o = document.createElement('option');
+      o.value = s.studentId;
+      o.textContent = s.name;
+      o.setAttribute('data-name', s.name);
+      sel.appendChild(o);
+    });
+  } catch(e) {
+    sel.innerHTML = '<option value="">خطأ في تحميل الأسماء</option>';
+  }
+}
+document.getElementById('beh-class').addEventListener('change', loadBehaviorStudents);
+
+async function saveStudentBehavior() {
+  var classId = document.getElementById('beh-class').value;
+  var studentSel = document.getElementById('beh-student');
+  var studentId = studentSel.value;
+  var behaviorType = document.getElementById('beh-type').value;
+  var notes = document.getElementById('beh-notes').value.trim();
+  
+  var studentName = studentSel.options[studentSel.selectedIndex] ? studentSel.options[studentSel.selectedIndex].getAttribute('data-name') : '';
+  
+  if(!classId || !studentId || !behaviorType || !notes) {
+    alert('يرجى اختيار الفصل والطالب ونوع الإجراء وكتابة تفاصيل السبب أولاً');
+    return;
+  }
+  
+  try {
+    // ترحيل الإجراء وحفظه فورا في تجميعة behavior بقاعدة البيانات
+    await addDoc(collection(db, 'behavior'), {
+      classId: classId,
+      studentId: studentId,
+      studentName: studentName,
+      behaviorType: behaviorType,
+      notes: notes,
+      date: new Date().toLocaleDateString('en-CA').replace(/-/g,'/'), // صيغة YYYY/MM/DD المتزامنة مع نظامك
+      createdAt: serverTimestamp(),
+      recordedBy: currentUser.name || currentUser.userId,
+      teacherId: currentUser.userId
+    });
+    
+    alert(`تم تسجيل (${behaviorType}) بنجاح بحق الطالب: ${studentName} وتوجيهه للإدارة المدرسية ✅`);
+    
+    // تفريغ الحقول بعد نجاح عملية الحفظ
+    document.getElementById('beh-type').value = "";
+    document.getElementById('beh-notes').value = "";
+  } catch(e) {
+    alert('خطأ أثناء الحفظ في قاعدة البيانات: ' + e.message);
+  }
+}
+document.getElementById('btn-save-behavior').addEventListener('click', saveStudentBehavior);
+
+// ============================================================================
 
 // My records
 async function loadMyRecords(){
