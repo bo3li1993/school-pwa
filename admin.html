@@ -6,6 +6,10 @@
 <link rel="manifest" href="manifest.json">
 <title>لوحة المدير - متوسطة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<!-- مكتبات تصدير الـ PDF الاحترافية -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Arial,sans-serif;background:#f5f5f5;color:#333;line-height:1.6}
@@ -47,6 +51,9 @@ table td{padding:12px;border-bottom:1px solid #eee}
 .score-high{color:#28a745;font-weight:500}
 .score-mid{color:#ffc107;font-weight:500}
 .score-low{color:#dc3545;font-weight:500}
+
+/* تنسيق مخصص لطباعة وتصدير كرت الطالب لـ PDF */
+#pdf-print-area { padding: 10px; border-radius: 6px; }
 </style>
 </head>
 <body>
@@ -76,6 +83,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
 </div>
 
 <div class="content">
+  <!-- اليوم -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
@@ -84,6 +92,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- الفصول -->
   <div id="tab-classes" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">اختر الفصل</h2>
@@ -92,6 +101,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <div id="class-detail" class="hidden"></div>
   </div>
 
+  <!-- الغائبون -->
   <div id="tab-absent" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">🔴 الغائبون اليوم</h2>
@@ -99,6 +109,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- غياب متكرر -->
   <div id="tab-repeat" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
@@ -106,6 +117,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- كشف الجزاءات والسلوكيات للمدير -->
   <div id="tab-behavior" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📑 سجل المخالفات السلوكية والجزاءات المرصودة</h2>
@@ -113,6 +125,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- بحث طالب (تم دمج الغياب والسلوك والـ PDF الشامل) -->
   <div id="tab-student" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">👤 بحث عن طالب</h2>
@@ -120,11 +133,15 @@ table td{padding:12px;border-bottom:1px solid #eee}
         <select id="search-class" onchange="loadStudentNames()"><option value="">اختر الفصل</option></select>
         <select id="search-student"><option value="">اختر الطالب</option></select>
       </div>
-      <button onclick="searchStudent()">بحث</button>
+      <div style="display:flex; gap:10px;">
+        <button onclick="searchStudent()" style="flex:1;">بحث</button>
+        <button id="btn-download-pdf" onclick="downloadStudentPDF()" class="secondary hidden" style="background:#28a745; color:#fff; border:none;"><i class="bi bi-file-earmark-pdf-fill"></i> 📥 تحميل ملف الطالب PDF</button>
+      </div>
       <div id="student-result" style="margin-top:1.5rem"></div>
     </div>
   </div>
 
+  <!-- بحث بتاريخ -->
   <div id="tab-date" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
@@ -137,6 +154,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- الزيارات الفنية -->
   <div id="tab-visits" class="hidden">
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
@@ -145,59 +163,37 @@ table td{padding:12px;border-bottom:1px solid #eee}
       </div>
       <div class="dept-grid">
         <div class="dept-card" onclick="selectDept('اللغة العربية')">
-          <div class="icon">📝</div>
-          <h3>اللغة العربية</h3>
-          <p id="arabic-count">0 زيارة</p>
+          <div class="icon">📝</div><h3>اللغة العربية</h3><p id="arabic-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('الرياضيات')">
-          <div class="icon">🔢</div>
-          <h3>الرياضيات</h3>
-          <p id="math-count">0 زيارة</p>
+          <div class="icon">🔢</div><h3>الرياضيات</h3><p id="math-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('العلوم')">
-          <div class="icon">🔬</div>
-          <h3>العلوم</h3>
-          <p id="science-count">0 زيارة</p>
+          <div class="icon">🔬</div><h3>العلوم</h3><p id="science-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('التربية الإسلامية')">
-          <div class="icon">☪️</div>
-          <h3>التربية الإسلامية</h3>
-          <p id="islamic-count">0 زيارة</p>
+          <div class="icon">☪️</div><h3>التربية الإسلامية</h3><p id="islamic-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('اللغة الإنجليزية')">
-          <div class="icon">🇬🇧</div>
-          <h3>اللغة الإنجليزية</h3>
-          <p id="english-count">0 زيارة</p>
+          <div class="icon">🇬🇧</div><h3>اللغة الإنجليزية</h3><p id="english-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('الاجتماعيات')">
-          <div class="icon">🌍</div>
-          <h3>الاجتماعيات</h3>
-          <p id="social-count">0 زيارة</p>
+          <div class="icon">🌍</div><h3>الاجتماعيات</h3><p id="social-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('التربية البدنية')">
-          <div class="icon">⚽</div>
-          <h3>التربية البدنية</h3>
-          <p id="pe-count">0 زيارة</p>
+          <div class="icon">⚽</div><h3>التربية البدنية</h3><p id="pe-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('الحاسوب')">
-          <div class="icon">💻</div>
-          <h3>الحاسوب</h3>
-          <p id="computer-count">0 زيارة</p>
+          <div class="icon">💻</div><h3>الحاسوب</h3><p id="computer-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('الكهرباء')">
-          <div class="icon">⚡</div>
-          <h3>الكهرباء</h3>
-          <p id="electric-count">0 زيارة</p>
+          <div class="icon">⚡</div><h3>الكهرباء</h3><p id="electric-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('الديكور')">
-          <div class="icon">🎨</div>
-          <h3>الديكور</h3>
-          <p id="decor-count">0 زيارة</p>
+          <div class="icon">🎨</div><h3>الديكور</h3><p id="decor-count">0 زيارة</p>
         </div>
         <div class="dept-card" onclick="selectDept('الفنية')">
-          <div class="icon">🖌️</div>
-          <h3>الفنية</h3>
-          <p id="art-count">0 زيارة</p>
+          <div class="icon">🖌️</div><h3>الفنية</h3><p id="art-count">0 زيارة</p>
         </div>
       </div>
     </div>
@@ -211,6 +207,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
+  <!-- إدارة المستخدمين -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -222,6 +219,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
   </div>
 </div>
 
+<!-- النوافذ المنبثقة (Modals) -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
@@ -446,35 +444,118 @@ window.loadStudentNames=async function(){
   });
 };
 
+// التحديث الجوهري لدالة البحث لربط (الغياب + السلوك) وتجهيز الطباعة
 window.searchStudent=async function(){
   var cls=document.getElementById('search-class').value;
   var stuId=document.getElementById('search-student').value;
   var result=document.getElementById('student-result');
-  if(!cls||!stuId){result.innerHTML='<p style="color:#dc3545">اختر الفصل والطالب</p>';return}
+  var pdfBtn=document.getElementById('btn-download-pdf');
+  
+  if(!cls||!stuId){result.innerHTML='<p style="color:#dc3545">اختر الفصل والطالب أولاً</p>'; pdfBtn.classList.add('hidden'); return}
+  
+  result.innerHTML='<p style="text-align:center;color:#666;padding:1rem;">جاري جلب السجل الشامل للطالب...</p>';
   
   var stuName='';
   var snap1=await getDocs(collection(db,'students'));
   snap1.forEach(function(doc){var d=doc.data();if(d.studentId===stuId)stuName=d.name});
   
+  // 1. جلب سجل الغياب
   var snap2=await getDocs(collection(db,'attendance'));
   var records=[];
   snap2.forEach(function(doc){
     var d=doc.data();
-    if(d.studentId===stuId||d.classId===cls&&d.studentName===stuName)records.push(d);
+    if(d.studentId===stuId||d.classId===cls&&d.studentName===stuName) {
+      if(d.status==='absent'||d.status==='late') records.push(d);
+    }
   });
+  
+  // 2. جلب سجل المخالفات السلوكية
+  var behaviorRecords=[];
+  try {
+    var snap3 = await getDocs(collection(db,'behavior'));
+    snap3.forEach(function(doc){
+      var b = doc.data();
+      if(b.studentId===stuId) behaviorRecords.push(b);
+    });
+  } catch(e){ console.error(e); }
+  
+  // بناء كرت المعاينة الشامل القابل للتصدير لـ PDF
+  var html=`<div id="pdf-print-area">
+    <h3 style="margin-bottom:1rem;color:#1a1a2e;border-bottom:2px solid #1a1a2e;padding-bottom:6px">الملف الشامل الموحد للطالب: ${stuName} (${cls})</h3>
+    
+    <h4 style="margin:1.2rem 0 0.5rem;color:#1a1a2e"><i class="bi bi-clock-history"></i> أولاً: سجل الغياب والتأخير الدراسي (${records.length})</h4>`;
   
   if(records.length===0){
-    result.innerHTML='<div style="background:#d4edda;padding:1rem;border-radius:8px;text-align:center"><p>'+stuName+' — لا يوجد أي سجل غياب مسجل</p></div>';
-    return;
+    html+='<div style="background:#d4edda;color:#155724;padding:10px;border-radius:6px;margin-bottom:1.5rem"><p>لا يوجد غياب أو تأخير مسجل بحق الطالب ✓</p></div>';
+  } else {
+    html+='<table><thead><tr><th>التاريخ</th><th>الحصة</th><th>الحالة</th></tr></thead><tbody>';
+    records.forEach(function(r){
+      var statusText=r.status==='absent'?'<span class="badge danger">غائب</span>':'<span class="badge warning">متأخر</span>';
+      html+='<tr><td>'+r.date+'</td><td>'+(r.periodId||'-')+'</td><td>'+statusText+'</td></tr>';
+    });
+    html+='</tbody></table>';
   }
   
-  var html='<h3>سجل غياب: '+stuName+' ('+cls+')</h3><table><thead><tr><th>التاريخ</th><th>الحصة</th><th>الحالة</th></tr></thead><tbody>';
-  records.forEach(function(r){
-    var statusText=r.status==='absent'?'<span class="badge danger">غائب</span>':'<span class="badge warning">متأخر</span>';
-    html+='<tr><td>'+r.date+'</td><td>'+(r.periodId||'-')+'</td><td>'+statusText+'</td></tr>';
-  });
-  html+='</tbody></table>';
+  html+=`<h4 style="margin:1.5rem 0 0.5rem;color:#1a1a2e"><i class="bi bi-exclamation-triangle"></i> ثانياً: السجل السلوكي والجزاءات الإدارية (${behaviorRecords.length})</h4>`;
+  
+  if(behaviorRecords.length===0){
+    html+='<div style="background:#f8f9fa;color:#666;padding:10px;border-radius:6px;border:1px solid #ddd"><p>السجل السلوكي للطالب نظيف (لا توجد إنذارات أو تعهدات) ✓</p></div>';
+  } else {
+    html+='<table><thead><tr><th>التاريخ</th><th>نوع الإجراء</th><th>تفاصيل المخالفة والسبب</th><th>المعلم الراصد</th></tr></thead><tbody>';
+    behaviorRecords.forEach(function(b){
+      let badgeStyle = 'badge success';
+      if (b.behaviorType.includes('تعهد') || b.behaviorType.includes('إنذار')) badgeStyle = 'badge warning';
+      if (b.behaviorType.includes('استدعاء') || b.behaviorType.includes('مخالفة')) badgeStyle = 'badge danger';
+      
+      html+=`<tr>
+        <td style="white-space:nowrap">${b.date||'-'}</td>
+        <td><span class="${badgeStyle}">${b.behaviorType}</span></td>
+        <td style="max-width:250px;word-wrap:break-word">${b.notes||'-'}</td>
+        <td>${b.recordedBy||'-'}</td>
+      </tr>`;
+    });
+    html+='</tbody></table>';
+  }
+  
+  html+= '</div>';
   result.innerHTML=html;
+  pdfBtn.classList.remove('hidden'); // إظهار زر تحميل الـ PDF بعد جلب البيانات
+};
+
+// دالة تصدير ملف كرت الطالب الشامل إلى PDF مخصص واحترافي
+window.downloadStudentPDF = function() {
+  const element = document.getElementById('pdf-print-area');
+  const stuSelect = document.getElementById('search-student');
+  const studentName = stuSelect.options[stuSelect.selectedIndex] ? stuSelect.options[stuSelect.selectedIndex].text : 'طالب';
+
+  if (!element) return;
+
+  // إعدادات تصدير الصورة عالية الدقة من الشاشة ثم تحويلها لـ PDF متناسق
+  html2canvas(element, {
+    scale: 2, // رفع دقة الحروف والجداول لتكون حادة وواضحة جداً عند الطباعة
+    useCORS: true
+  }).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgWidth = 210; // عرض صفحة A4 بالمتر
+    const pageHeight = 295;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save(`الملف_الشامل_${studentName}.pdf`);
+  });
 };
 
 window.searchByDate=async function(){
@@ -617,7 +698,6 @@ async function loadRepeatAbsent() {
 }
 window.loadRepeatAbsent = loadRepeatAbsent;
 
-// دالة جلب وعرض السلوكيات والمخالفات المرفوعة من المعلمين للمدير
 async function loadAdminBehaviorList() {
   const list = document.getElementById('admin-behavior-list');
   if(!list) return;
@@ -637,7 +717,7 @@ async function loadAdminBehaviorList() {
     
     snap.forEach(doc => {
       const b = doc.data();
-      let badgeStyle = 'badge success'; // سلوك إيجابي
+      let badgeStyle = 'badge success';
       if (b.behaviorType.includes('تعهد') || b.behaviorType.includes('إنذار')) badgeStyle = 'badge warning';
       if (b.behaviorType.includes('استدعاء') || b.behaviorType.includes('مخالفة')) badgeStyle = 'badge danger';
       
@@ -655,7 +735,6 @@ async function loadAdminBehaviorList() {
     html += '</tbody></table>';
     list.innerHTML = html;
   } catch(e) {
-    console.error("Error loading behavior collection:", e);
     list.innerHTML = '<p style="text-align:center;color:#dc3545;padding:2rem;">خطأ أثناء مزامنة السجلات السلوكية من السيرفر</p>';
   }
 }
@@ -998,7 +1077,6 @@ window.saveEditUser=async function(){
   }
 };
 
-// مراقب الأحداث الذكي والمطور لتبديل التبويبات والمزامنة التلقائية الفورية للبيانات
 const tabsBar = document.getElementById('tabs-bar');
 if(tabsBar) {
   tabsBar.addEventListener('click', (e) => {
@@ -1006,15 +1084,12 @@ if(tabsBar) {
       const tabId = e.target.getAttribute('data-tab');
       window.switchTab(tabId);
       
-      // مزامنة فورية عند الضغط على تبويب الغائبون اليوم
       if (tabId === 'absent') {
         window.loadAbsentToday();
       }
-      // مزامنة فورية عند الضغط على تبويب غياب متكرر
       if (tabId === 'repeat') {
         window.loadRepeatAbsent();
       }
-      // مزامنة فورية عند الضغط على تبويب سجل السلوكيات والجزاءات الجديد
       if (tabId === 'behavior') {
         window.loadAdminBehaviorList();
       }
