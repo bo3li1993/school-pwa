@@ -6,7 +6,6 @@
 <link rel="manifest" href="manifest.json">
 <title>لوحة المدير - متوسطة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<!-- مكتبات تصدير الـ PDF الاحترافية لمنع الحظر على الهواتف والكمبيوتر -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -81,16 +80,14 @@ table td{padding:12px;border-bottom:1px solid #eee}
 </div>
 
 <div class="content">
-  <!-- اليوم -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
-      <h2 style="margin-bottom:1rem">حالة تسجيل الفصول اليوم</h2>
+      <h2 style="margin-bottom:1rem">حالة تسجيل غياب الفصول اليوم</h2>
       <div id="class-status"></div>
     </div>
   </div>
 
-  <!-- الفصول -->
   <div id="tab-classes" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">اختر الفصل</h2>
@@ -99,7 +96,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <div id="class-detail" class="hidden"></div>
   </div>
 
-  <!-- الغائبون -->
   <div id="tab-absent" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">🔴 الغائبون اليوم</h2>
@@ -107,7 +103,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- غياب متكرر -->
   <div id="tab-repeat" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
@@ -115,7 +110,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- كشف الجزاءات والسلوكيات للمدير -->
   <div id="tab-behavior" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📑 سجل المخالفات السلوكية والجزاءات المرصودة</h2>
@@ -123,7 +117,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- بحث طالب الشامل -->
   <div id="tab-student" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">👤 بحث عن طالب</h2>
@@ -139,7 +132,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- بحث بتاريخ -->
   <div id="tab-date" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
@@ -152,7 +144,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- الزيارات الفنية -->
   <div id="tab-visits" class="hidden">
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
@@ -205,7 +196,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
     </div>
   </div>
 
-  <!-- المستخدمون -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -217,7 +207,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
   </div>
 </div>
 
-<!-- Modals -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
@@ -242,7 +231,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
       <input type="number" id="visit-period" placeholder="الحصة" min="1" max="7">
       <input type="date" id="visit-date">
     </div>
-    <h3 style="margin:1.5rem 0 1rem">معايير التقييم</h3>
+    <h3 style="margin:1.5rem 0 1rem">معايير التقييم الرسمية</h3>
     <div id="visit-criteria-list"></div>
     <h3 style="margin:1.5rem 0 .5rem">ملاحظات المدير</h3>
     <textarea id="visit-notes" rows="4" placeholder="اكتب ملاحظاتك هنا..."></textarea>
@@ -338,7 +327,6 @@ else{
     }
     else{
       document.getElementById('user-name').textContent=currentUser.name||'المدير';
-      // تشغيل التحميل الفوري فور الدخول بدون مشاكل تجميد
       loadDashboard();
     }
   }catch(e){
@@ -376,7 +364,6 @@ window.switchTab = function(tabId) {
 };
 
 async function loadDashboard(){
-  // جلب سريع للبيانات الأولية الأساسية لتسريع لود الصفحة
   await Promise.all([loadStats(),loadUsers(),loadVisitCounts(),populateClassDropdowns(),loadClassButtons()]);
 }
 
@@ -546,6 +533,7 @@ window.downloadStudentPDF = function() {
   });
 };
 
+// 🛠️ دالة طباعة مخصصة في صفحة واحدة وبترقيم تسلسلي مطابق للزيارات الرسمية المرفوعة
 window.printVisit = async id => {
   const docSnap = await getDoc(doc(db, 'visits', id));
   if (!docSnap.exists()) return;
@@ -558,7 +546,8 @@ window.printVisit = async id => {
   criteria.forEach((c, i) => {
     const score = v.scores?.[i] || 0;
     critRows += `<tr>
-      <td style="padding:4px 8px; border:1px solid #999; font-size:11px; line-height:1.2;">${c}</td>
+      <td style="padding:4px 8px; border:1px solid #999; font-size:11px; text-align:center; line-height:1.2;">${i + 1}</td>
+      <td style="padding:4px 8px; border:1px solid #999; font-size:11px; text-align:right; line-height:1.2;">${c}</td>
       <td style="padding:4px 8px; border:1px solid #999; text-align:center; font-size:11px; line-height:1.2;">${scoreLabels[score] || '-'}</td>
     </tr>`;
   });
@@ -573,7 +562,7 @@ window.printVisit = async id => {
   printContainer.style.fontFamily = 'Arial, sans-serif';
   
   printContainer.innerHTML = `
-    <div style="text-align:center; font-size:10px; margin-bottom:4px; color:#555; border-bottom:1px solid #ddd; padding-bottom:2px;">نموذج زيارة • ${v.dept} • ${v.date}</div>
+    <div style="text-align:center; font-size:10px; margin-bottom:4px; color:#555; border-bottom:1px solid #ddd; padding-bottom:2px;">نموذج زيارة معتمد • ${v.dept} • ${v.date}</div>
     <h2 style="text-align:center; margin-bottom:10px; font-size:14px; font-weight:bold; color:#1a1a2e;">نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2>
     
     <div style="margin-bottom:10px; display:grid; grid-template-columns:1fr 1fr; gap:4px; font-size:11px; background:#f8f9fa; padding:8px; border-radius:4px; border:1px solid #eee;">
@@ -588,8 +577,9 @@ window.printVisit = async id => {
     <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
       <thead>
         <tr style="background:#f0f0f0;">
-          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:right;">البند التقني والمعيار المحدد</th>
-          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:center; width:25%;">التقييم</th>
+          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:center; width:8%;">م</th>
+          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:right;">عناصر التقييم والمتابعة</th>
+          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:center; width:22%;">التقييم</th>
         </tr>
       </thead>
       <tbody>${critRows}</tbody>
@@ -635,15 +625,44 @@ window.printVisit = async id => {
   }, 500);
 };
 
-// 🛠️ تحديث جوهري هنا: فلترة الغياب لتاريخ اليوم فقط لمنع التعليق والبطء نهائياً
+window.searchByDate=async function(){
+  var cls=document.getElementById('date-class').value;
+  var date=document.getElementById('date-search').value;
+  var result=document.getElementById('date-result');
+  if(!cls||!date){result.innerHTML='<p style="color:#dc3545">اختر الفصل والتاريخ</p>';return}
+  
+  var formattedDate=date.replace(/-/g,'/');
+  var studentsSnap=await getDocs(collection(db,'students'));
+  var classStudents=[];
+  studentsSnap.forEach(function(doc){
+    var d=doc.data();
+    if(d.classId===cls)classStudents.push(d);
+  });
+  classStudents.sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ar')});
+  
+  var attSnap=await getDocs(collection(db,'attendance'));
+  var absentIds=new Set();
+  attSnap.forEach(function(doc){
+    var d=doc.data();
+    if(d.classId===cls&&d.date===formattedDate&&d.status==='absent')absentIds.add(d.studentId);
+  });
+  
+  var html='<h3>كشف الفصل '+cls+' — '+date+'</h3><p>الحضور: '+(classStudents.length-absentIds.size)+' | الغياب: '+absentIds.size+'</p><table><thead><tr><th>#</th><th>اسم الطالب</th><th>الحالة</th></tr></thead><tbody>';
+  classStudents.forEach(function(s,i){
+    var isAbsent=absentIds.has(s.studentId);
+    html+='<tr><td>'+(i+1)+'</td><td>'+s.name+'</td><td>'+(isAbsent?'<span class="badge danger">غائب</span>':'<span class="badge success">حاضر</span>')+'</td></tr>';
+  });
+  html+='</tbody></table>';
+  result.innerHTML=html;
+};
+
+// 🛠️ استعلام مفلتر وذكي لتاريخ اليوم لحفظ السرعة الفورية عند فتح الصفحة
 async function loadStats(){
   const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
   
-  // 1. جلب إجمالي الطلاب والتحميل المتوازي السريع
   const studentsSnap = await getDocs(collection(db,'students'));
   const totalStudents = studentsSnap.size;
   
-  // 2. استخدام الاستعلام المفلتر لـ (اليوم فقط) بدلاً من استدعاء كل الداتا التاريخية
   const todayQuery = query(collection(db, 'attendance'), where('date', '==', today));
   const attendanceSnap = await getDocs(todayQuery);
   
@@ -679,37 +698,6 @@ async function loadStats(){
   statusHTML += '</tbody></table>';
   document.getElementById('class-status').innerHTML = statusHTML;
 }
-
-window.searchByDate=async function(){
-  var cls=document.getElementById('date-class').value;
-  var date=document.getElementById('date-search').value;
-  var result=document.getElementById('date-result');
-  if(!cls||!date){result.innerHTML='<p style="color:#dc3545">اختر الفصل والتاريخ</p>';return}
-  
-  var formattedDate=date.replace(/-/g,'/');
-  var studentsSnap=await getDocs(collection(db,'students'));
-  var classStudents=[];
-  studentsSnap.forEach(function(doc){
-    var d=doc.data();
-    if(d.classId===cls)classStudents.push(d);
-  });
-  classStudents.sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ar')});
-  
-  var attSnap=await getDocs(collection(db,'attendance'));
-  var absentIds=new Set();
-  attSnap.forEach(function(doc){
-    var d=doc.data();
-    if(d.classId===cls&&d.date===formattedDate&&d.status==='absent')absentIds.add(d.studentId);
-  });
-  
-  var html='<h3>كشف الفصل '+cls+' — '+date+'</h3><p>الحضور: '+(classStudents.length-absentIds.size)+' | الغياب: '+absentIds.size+'</p><table><thead><tr><th>#</th><th>اسم الطالب</th><th>الحالة</th></tr></thead><tbody>';
-  classStudents.forEach(function(s,i){
-    var isAbsent=absentIds.has(s.studentId);
-    html+='<tr><td>'+(i+1)+'</td><td>'+s.name+'</td><td>'+(isAbsent?'<span class="badge danger">غائب</span>':'<span class="badge success">حاضر</span>')+'</td></tr>';
-  });
-  html+='</tbody></table>';
-  result.innerHTML=html;
-};
 
 async function loadAbsentToday() {
   const list = document.getElementById('absent-list');
@@ -807,18 +795,213 @@ async function loadAdminBehaviorList() {
 }
 window.loadAdminBehaviorList = loadAdminBehaviorList;
 
-const visitCriteria={
-  'اللغة العربية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','استخدام اللغة العربية الفصحى','تنمية مهارات القراءة','تنمية مهارات الكتابة','تنمية مهارات الاستماع','تنمية مهارات التحدث','ربط الدرس بالحياة','استخدام السبورة','الالتزام بالوقت'],
-  'الرياضيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','حل المسائل','الربط بالواقع','استخدام الأمثلة','التدرج في الصعوبة','تنمية مهارات التفكير','استخدام السبورة','الالتزام بالوقت'],
-  'العلوم':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','التجارب العملية','المختبر والسلامة','الربط بالبيئة','التفكير العلمي','الملاحظة والاستنتاج','استخدام السبورة','الالتزام بالوقت'],
-  'التربية الإسلامية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','تلاوة القرآن','حفظ الآيات','الأحاديث النبوية','القيم الإسلامية','الربط بالسلوك','استخدام السبورة','الالتزام بالوقت'],
-  'اللغة الإنجليزية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','Speaking skills','Listening skills','Reading skills','Writing skills','Vocabulary','Grammar','Pronunciation'],
-  'الاجتماعيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','الخرائط','الأحداث التاريخية','الجغرافيا','الوطنية','التفكير الناقد','استخدام السبورة'],
-  'التربية البدنية':['التخطيط للدرس','وضوح الأهداف','الإحماء','التمارين البدنية','المهارات الحركية','السلامة','إدارة الصف','التحفيز','التقويم','الانضباط','اللياقة البدنية','الألعاب الجماعية','الألعاب الفردية','الروح الرياضية','استخدام الأدوات','الالتزام بالوقت','الزي الرياضي'],
-  'الحاسوب':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','البرمجيات','الإنترنت','السلامة الرقمية','حل المشكلات','التفكير المنطقي','الالتزام بالوقت'],
-  'الكهرباء':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','السلامة المهنية','الأدوات والمعدات','المهارات اليدوية','قراءة المخططات','حل المشكلات','الالتزام بالوقت'],
-  'الديكور':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','الإبداع','الألوان','التصميم','المهارات اليدوية','السلامة','الالتزام بالوقت'],
-  'الفنية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الإبداع','المهارات الفنية','الخامات','النظافة','الذوق الفني','الالتزام بالوقت']
+// 🛠️ مصفوفة البنود الرسمية الدقيقة 100% المأخوذة من الكشوف المرفوعة لمدرسة سالم الحسينان
+const visitCriteria = {
+  'اللغة العربية': [
+    'نظافة - الفصل / مختبر لغوي / العروض الضوئية',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'إعداد خطط تقويم للطلاب الضعاف',
+    'إعداد خطط اثرائية للطلاب الفائقين',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية',
+    'الجملة الإملائية العلاجية',
+    'التقويم ( إعداد الفقرة وتحقيقها للأهداف السلوكية )'
+  ],
+  'اللغة الإنجليزية': [
+    'نظافة - الفصل / مختبر لغوي / العروض الضوئية',
+    'ترتيب الطلاب - تنظيم القاعة ( طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'إعداد خطط تقويم للطلاب الضعاف',
+    'إعداد خطط اثرائية للطلاب الفائقين',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية',
+    'إستخدام اللغة الإنجليزية فى الحوار طوال الحصة'
+  ],
+  'العلوم': [
+    'نظافة - الفصل / مختبر العلوم',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'إعداد خطط تقويم للطلاب الضعاف',
+    'إعداد خطط اثرائية للطلاب الفائقين',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية',
+    'الإجابة على التقويم مع الطلاب خلال الحصة'
+  ],
+  'الرياضيات': [
+    'نظافة - الفصل /',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'إعداد خطط تقويم للطلاب الضعاف',
+    'إعداد خطط اثرائية للطلاب الفائقين',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية',
+    'الإجابة على التقويم مع الطلاب خلال الحصة'
+  ],
+  'التربية الإسلامية': [
+    'نظافة - الفصل /',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'إعداد خطط تقويم للطلاب الضعاف',
+    'إعداد خطط اثرائية للطلاب الفائقين',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية',
+    'الإجابة على التقويم مع الطلاب خلال الحصة'
+  ],
+  'الاجتماعيات': [
+    'نظافة - الفصل / قاعة العروض الضوئية',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'إعداد خطط تقويم للطلاب الضعاف',
+    'إعداد خطط اثرائية للطلاب الفائقين',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية'
+  ],
+  'التربية البدنية': [
+    'نظافة - الفصل /',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'إعداد خطط تقويم للطلاب الضعاف',
+    'إعداد خطط اثرائية للطلاب الفائقين',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية',
+    'الإجابة على التقويم مع الطلاب خلال الحصة'
+  ],
+  'الحاسوب': [
+    'نظافة - الفصل مختبر الحاسوب',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة والفنية',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'تنفيذ التطبيق العلمي بسلاسة أمام الطلاب',
+    'متابعة الطلاب أثناء التطبيق العملي',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية'
+  ],
+  'الكهرباء': [
+    'نظافة الورشة - ترتيب الأدوات والخامات',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة والفنية',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'تنفيذ التطبيق العلمي بسلاسة أمام الطلاب',
+    'متابعة الطلاب أثناء التطبيق العملي',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية'
+  ],
+  'الديكور': [
+    'نظافة الورشة - ترتيب الأدوات والخامات',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة والفنية',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'تنفيذ التطبيق العلمي بسلاسة أمام الطلاب',
+    'متابعة الطلاب أثناء التطبيق العملي',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية'
+  ],
+  'الفنية': [
+    'نظافة المرسم - ترتيب الأدوات والخامات',
+    'ترتيب الطلاب - تنظيم القاعة (طاولات - مقاعد )',
+    'تنسيق السبورة - الخط',
+    'إعداد الدرس / التحضير الذهني',
+    'عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات',
+    'استجابة الطلاب خلال المناقشة والشرح',
+    'العلاقة مع الطلاب وأسلوب التعامل',
+    'التصرف في المواقف المختلفة الطارئة والفنية',
+    'السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية',
+    'التمكين من المادة العلمية',
+    'تنفيذ التطبيق الفني بسلاسة أمام الطلاب',
+    'متابعة الطلاب أثناء العمل الفني',
+    'المظهر العام للمعلم وشخصيته',
+    'التقنيات التربوية والوسائل المستخدمة',
+    'تنظيم استخدام زمن الحصة الدراسية',
+    'متابعة الأعمال التحريرية'
+  ]
 };
 window.visitCriteria = visitCriteria;
 
