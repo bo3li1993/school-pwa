@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <title>لوحة المدير - متوسطة سالم الحسينان</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Arial,sans-serif;background:#f5f5f5;color:#333;line-height:1.6}
@@ -57,7 +58,8 @@ table td{padding:12px;border-bottom:1px solid #eee}
   </div>
   <div class="header-right">
     <span id="current-date"></span>
-<button id="btn-print" onclick="window.print()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">🖨️</button>    <button id="btn-logout" onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">خروج</button>
+    <button id="btn-print" onclick="window.print()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">🖨️</button>
+    <button id="btn-logout" onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">خروج</button>
   </div>
 </div>
 
@@ -215,7 +217,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
-    
     <select id="visit-dept" onchange="loadVisitCriteria()">
       <option value="">اختر القسم</option>
       <option value="اللغة العربية">اللغة العربية</option>
@@ -230,7 +231,6 @@ table td{padding:12px;border-bottom:1px solid #eee}
       <option value="الديكور">الديكور</option>
       <option value="الفنية">الفنية</option>
     </select>
-    
     <div class="form-grid">
       <input type="text" id="visit-teacher" placeholder="اسم المعلم">
       <input type="text" id="visit-subject" placeholder="المادة">
@@ -238,13 +238,10 @@ table td{padding:12px;border-bottom:1px solid #eee}
       <input type="number" id="visit-period" placeholder="الحصة" min="1" max="7">
       <input type="date" id="visit-date">
     </div>
-    
     <h3 style="margin:1.5rem 0 1rem">معايير التقييم</h3>
     <div id="visit-criteria-list"></div>
-    
     <h3 style="margin:1.5rem 0 .5rem">ملاحظات المدير</h3>
     <textarea id="visit-notes" rows="4" placeholder="اكتب ملاحظاتك هنا..."></textarea>
-    
     <div style="display:flex;gap:12px;margin-top:1.5rem">
       <button onclick="saveVisit()" style="flex:1">💾 حفظ الزيارة</button>
       <button onclick="closeVisitForm()" class="secondary" style="flex:1">إلغاء</button>
@@ -286,7 +283,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <input type="text" id="edit-user-name" placeholder="الاسم الكامل">
     <label style="font-size:13px;color:#666">رقم المستخدم</label>
     <input type="text" id="edit-user-id" placeholder="رقم المستخدم">
-    <label style="font-size:13px;color:#666">كلمة المرور الجديدة (اتركه فارغ للإبقاء على القديمة)</label>
+    <label style="font-size:13px;color:#666">كلمة المرور الجديدة</label>
     <input type="text" id="edit-user-pass" placeholder="كلمة المرور الجديدة">
     <label style="font-size:13px;color:#666">الصلاحية</label>
     <select id="edit-user-role">
@@ -325,18 +322,14 @@ window.serverTimestamp = serverTimestamp;
 
 let currentUser=null;
 
-// تحقق من تسجيل الدخول عبر localStorage
 var savedUser=localStorage.getItem('hs_user');
 if(!savedUser){
-  console.log('No hs_user found, redirecting to login');
   window.location.href='index.html';
 }
 else{
   try{
     currentUser=JSON.parse(savedUser);
-    console.log('User loaded:',currentUser.name,'Role:',currentUser.role);
     if(!currentUser.role||currentUser.role!=='admin'){
-      console.log('Not admin, redirecting');
       window.location.href='index.html';
     }
     else{
@@ -344,7 +337,6 @@ else{
       loadDashboard();
     }
   }catch(e){
-    console.log('Parse error:',e);
     localStorage.removeItem('hs_user');
     window.location.href='index.html';
   }
@@ -357,7 +349,6 @@ window.logout=function(){
 
 document.getElementById('current-date').textContent=new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-// دالة التبديل تم ربطها بالـ window لتكون مرئية للـ HTML بالكامل بدون تعارض
 window.switchTab = function(tabId) {
   const tabs = document.querySelectorAll('.tab');
   const tabContents = document.querySelectorAll('.content > div');
@@ -513,7 +504,7 @@ window.searchByDate=async function(){
 async function loadStats(){
   const attendanceSnap=await getDocs(collection(db,'attendance'));
   const studentsSnap=await getDocs(collection(db,'students'));
-  const today=new Date().toISOString().split('T')[0].replace(/-/g,'/');
+  const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/'); // المزامنة مع صيغة الـ تاريخ YYYY/MM/DD
   
   const totalStudents=studentsSnap.size;
   let absentToday=0;
@@ -551,6 +542,75 @@ async function loadStats(){
   document.getElementById('class-status').innerHTML='<h3 style="margin-bottom:1rem">حالة تسجيل غياب الفصول اليوم</h3>'+statusHTML;
 }
 
+// دالة المزامنة الفورية لجلب غائبين اليوم وعرضهم في جدول
+async function loadAbsentToday() {
+  const list = document.getElementById('absent-list');
+  if(!list) return;
+  list.innerHTML = '<p style="text-align:center;color:#666;padding:1rem;">جاري جلب القائمة...</p>';
+  
+  try {
+    const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
+    const q = query(collection(db, 'attendance'), where('date', '==', today), where('status', '==', 'absent'));
+    const snap = await getDocs(q);
+    
+    if (snap.empty) {
+      list.innerHTML = '<div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;text-align:center;">كل الطلاب حضور اليوم والحمد لله ✓</div>';
+      return;
+    }
+    
+    let html = '<table><thead><tr><th>#</th><th>اسم الطالب</th><th>الفصل</th><th>الحالة</th></tr></thead><tbody>';
+    let counter = 1;
+    snap.forEach(doc => {
+      const d = doc.data();
+      html += `<tr><td>${counter++}</td><td>${d.studentName || 'غير محدد'}</td><td>${d.classId || '-'}</td><td><span class="badge danger">غائب</span></td></tr>`;
+    });
+    html += '</tbody></table>';
+    list.innerHTML = html;
+  } catch(e) {
+    list.innerHTML = '<p style="text-align:center;color:#dc3545;padding:1rem;">خطأ في جلب بيانات الغائبين</p>';
+  }
+}
+window.loadAbsentToday = loadAbsentToday;
+
+// دالة جلب الطلاب المتكرر غيابهم لأكثر من 5 أيام
+async function loadRepeatAbsent() {
+  const list = document.getElementById('repeat-list');
+  if(!list) return;
+  list.innerHTML = '<p style="text-align:center;color:#666;padding:1rem;">جاري احتساب السجلات...</p>';
+  
+  try {
+    const snap = await getDocs(collection(db, 'attendance'));
+    const counts = {};
+    const info = {};
+    
+    snap.forEach(doc => {
+      const d = doc.data();
+      if(d.status === 'absent') {
+        const key = d.studentId || d.studentName;
+        if(key) {
+          counts[key] = (counts[key] || 0) + 1;
+          info[key] = { name: d.studentName, classId: d.classId };
+        }
+      }
+    });
+    
+    let html = '<table><thead><tr><th>اسم الطالب</th><th>الفصل</th><th>إجمالي أيام الغياب</th><th>حالة الخطر</th></tr></thead><tbody>';
+    let hasData = false;
+    
+    for(let key in counts) {
+      if(counts[key] >= 5) {
+        hasData = true;
+        html += `<tr><td>${info[key].name}</td><td>${info[key].classId}</td><td><strong>${counts[key]} أيام</strong></td><td><span class="badge danger">خطر (تجاوز الإنذار)</span></td></tr>`;
+      }
+    }
+    html += '</tbody></table>';
+    list.innerHTML = hasData ? html : '<div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;text-align:center;">لا يوجد أي طالب تجاوز 5 أيام غياب متفرقة ✓</div>';
+  } catch(e) {
+    list.innerHTML = '<p style="text-align:center;color:#dc3545;padding:1rem;">خطأ في احتساب الغياب المتكرر</p>';
+  }
+}
+window.loadRepeatAbsent = loadRepeatAbsent;
+
 const visitCriteria={
   'اللغة العربية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','استخدام اللغة العربية الفصحى','تنمية مهارات القراءة','تنمية مهارات الكتابة','تنمية مهارات الاستماع','تنمية مهارات التحدث','ربط الدرس بالحياة','استخدام السبورة','الالتزام بالوقت'],
   'الرياضيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','حل المسائل','الربط بالواقع','استخدام الأمثلة','التدرج في الصعوبة','تنمية مهارات التفكير','استخدام السبورة','الالتزام بالوقت'],
@@ -576,7 +636,6 @@ async function loadVisitCounts(){
   });
   
   const idMap={'اللغة العربية':'arabic','الرياضيات':'math','العلوم':'science','التربية الإسلامية':'islamic','اللغة الإنجليزية':'english','الاجتماعيات':'social','التربية البدنية':'pe','الحاسوب':'computer','الكهرباء':'electric','الديكور':'decor','الفنية':'art'};
-  
   for(let dept in counts){
     const el=document.getElementById(idMap[dept]+'-count');
     if(el)el.textContent=counts[dept]+' زيارة';
@@ -707,7 +766,6 @@ async function loadDeptVisits(dept){
         </div>
       </div>`;
     });
-    
     list.innerHTML=html;
   }catch(e){
     list.innerHTML='<p style="text-align:center;color:#dc3545;padding:2rem">خطأ في تحميل الزيارات</p>';
@@ -740,7 +798,6 @@ window.viewVisit=async id=>{
     ${v.notes?`<div style="background:#f8f9fa;padding:1rem;border-radius:8px;margin-bottom:1rem"><div style="font-weight:500;margin-bottom:8px">ملاحظات المدير:</div><p style="margin:0;white-space:pre-wrap">${v.notes}</p></div>`:''}
     ${v.teacherSigned?`<p style="color:#28a745;font-size:13px">✓ المعلم وقّع على الزيارة</p>`:''}
   `;
-  
   document.getElementById('visit-detail-modal').style.display='flex';
 };
 
@@ -795,7 +852,6 @@ async function loadUsers(){
         </td>
       </tr>`;
     });
-    
     html+='</tbody></table>';
     list.innerHTML=html;
   }catch(e){
@@ -833,7 +889,6 @@ window.addUser=async()=>{
       classId:role==='teacher'?classId:'',
       createdAt:serverTimestamp()
     });
-    
     alert('تم إضافة المستخدم بنجاح');
     closeAddUser();
     loadUsers();
@@ -893,13 +948,22 @@ window.saveEditUser=async function(){
   }
 };
 
-// مراقب الحدث لشريط التبويبات يعمل بكفاءة هنا
+// مراقب الأحداث الذكي والمطور لتبديل التبويبات والمزامنة التلقائية الفورية للبيانات
 const tabsBar = document.getElementById('tabs-bar');
 if(tabsBar) {
   tabsBar.addEventListener('click', (e) => {
     if (e.target.classList.contains('tab')) {
       const tabId = e.target.getAttribute('data-tab');
       window.switchTab(tabId);
+      
+      // مزامنة فورية عند الضغط على تبويب الغائبون اليوم
+      if (tabId === 'absent') {
+        window.loadAbsentToday();
+      }
+      // مزامنة فورية عند الضغط على تبويب غياب متكرر
+      if (tabId === 'repeat') {
+        window.loadRepeatAbsent();
+      }
     }
   });
 }
