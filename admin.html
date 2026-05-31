@@ -68,6 +68,7 @@ table td{padding:12px;border-bottom:1px solid #eee}
   <button class="tab" data-tab="classes">🏫 الفصول</button>
   <button class="tab" data-tab="absent">🔴 الغائبون</button>
   <button class="tab" data-tab="repeat">⚠️ متكرر</button>
+  <button class="tab" data-tab="behavior">📑 سلوك الطلاب</button>
   <button class="tab" data-tab="student">👤 طالب</button>
   <button class="tab" data-tab="date">📅 تاريخ</button>
   <button class="tab" data-tab="visits">🏫 الزيارات</button>
@@ -102,6 +103,13 @@ table td{padding:12px;border-bottom:1px solid #eee}
     <div class="card">
       <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
       <div id="repeat-list"></div>
+    </div>
+  </div>
+
+  <div id="tab-behavior" class="hidden">
+    <div class="card">
+      <h2 style="margin-bottom:1rem">📑 سجل المخالفات السلوكية والجزاءات المرصودة</h2>
+      <div id="admin-behavior-list"></div>
     </div>
   </div>
 
@@ -504,7 +512,7 @@ window.searchByDate=async function(){
 async function loadStats(){
   const attendanceSnap=await getDocs(collection(db,'attendance'));
   const studentsSnap=await getDocs(collection(db,'students'));
-  const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/'); // المزامنة مع صيغة الـ تاريخ YYYY/MM/DD
+  const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
   
   const totalStudents=studentsSnap.size;
   let absentToday=0;
@@ -542,7 +550,6 @@ async function loadStats(){
   document.getElementById('class-status').innerHTML='<h3 style="margin-bottom:1rem">حالة تسجيل غياب الفصول اليوم</h3>'+statusHTML;
 }
 
-// دالة المزامنة الفورية لجلب غائبين اليوم وعرضهم في جدول
 async function loadAbsentToday() {
   const list = document.getElementById('absent-list');
   if(!list) return;
@@ -572,7 +579,6 @@ async function loadAbsentToday() {
 }
 window.loadAbsentToday = loadAbsentToday;
 
-// دالة جلب الطلاب المتكرر غيابهم لأكثر من 5 أيام
 async function loadRepeatAbsent() {
   const list = document.getElementById('repeat-list');
   if(!list) return;
@@ -610,6 +616,50 @@ async function loadRepeatAbsent() {
   }
 }
 window.loadRepeatAbsent = loadRepeatAbsent;
+
+// دالة جلب وعرض السلوكيات والمخالفات المرفوعة من المعلمين للمدير
+async function loadAdminBehaviorList() {
+  const list = document.getElementById('admin-behavior-list');
+  if(!list) return;
+  list.innerHTML = '<p style="text-align:center;color:#666;padding:2rem;">جاري جلب السجلات السلوكية الفورية...</p>';
+  
+  try {
+    const q = query(collection(db, 'behavior'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    
+    if (snap.empty) {
+      list.innerHTML = '<div style="background:#d4edda;color:#155724;padding:1rem;border-radius:8px;text-align:center;">لا توجد جزاءات أو مخالفات سلوكية مسجلة حتى الآن ✓</div>';
+      return;
+    }
+    
+    let html = '<table><thead><tr><th>#</th><th>التاريخ</th><th>اسم الطالب</th><th>الفصل</th><th>نوع الإجراء</th><th>تفاصيل المخالفة والسبب</th><th>المعلم الراصد</th></tr></thead><tbody>';
+    let counter = 1;
+    
+    snap.forEach(doc => {
+      const b = doc.data();
+      let badgeStyle = 'badge success'; // سلوك إيجابي
+      if (b.behaviorType.includes('تعهد') || b.behaviorType.includes('إنذار')) badgeStyle = 'badge warning';
+      if (b.behaviorType.includes('استدعاء') || b.behaviorType.includes('مخالفة')) badgeStyle = 'badge danger';
+      
+      html += `<tr>
+        <td>${counter++}</td>
+        <td style="white-space:nowrap">${b.date || '-'}</td>
+        <td style="font-weight:500">${b.studentName || 'غير محدد'}</td>
+        <td><span class="badge secondary" style="background:#e9ecef;color:#333">${b.classId || '-'}</span></td>
+        <td><span class="${badgeStyle}">${b.behaviorType}</span></td>
+        <td style="max-width:300px;word-wrap:break-word">${b.notes || '-'}</td>
+        <td>${b.recordedBy || 'معلم غير محدد'}</td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    list.innerHTML = html;
+  } catch(e) {
+    console.error("Error loading behavior collection:", e);
+    list.innerHTML = '<p style="text-align:center;color:#dc3545;padding:2rem;">خطأ أثناء مزامنة السجلات السلوكية من السيرفر</p>';
+  }
+}
+window.loadAdminBehaviorList = loadAdminBehaviorList;
 
 const visitCriteria={
   'اللغة العربية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','استخدام اللغة العربية الفصحى','تنمية مهارات القراءة','تنمية مهارات الكتابة','تنمية مهارات الاستماع','تنمية مهارات التحدث','ربط الدرس بالحياة','استخدام السبورة','الالتزام بالوقت'],
@@ -963,6 +1013,10 @@ if(tabsBar) {
       // مزامنة فورية عند الضغط على تبويب غياب متكرر
       if (tabId === 'repeat') {
         window.loadRepeatAbsent();
+      }
+      // مزامنة فورية عند الضغط على تبويب سجل السلوكيات والجزاءات الجديد
+      if (tabId === 'behavior') {
+        window.loadAdminBehaviorList();
       }
     }
   });
