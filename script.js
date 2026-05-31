@@ -18,3 +18,10 @@ loginForm.addEventListener('submit', (e) => {
   console.log('تم تسجيل الدخول بنجاح');
   loginForm.reset();
 });
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker Registered successfully!', reg))
+      .catch(err => console.log('Service Worker Registration failed:', err));
+  });
+}
