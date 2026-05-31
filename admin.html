@@ -535,7 +535,7 @@ window.downloadStudentPDF = function() {
   });
 };
 
-// دالة تصدير وطباعة تقرير الزيارة الصفية كـ PDF فوري متوافق مع الهواتف
+// دالة تصدير وطباعة تقرير الزيارة الصفية كـ PDF في (صفحة واحدة فقط A4) متوافق تماماً مع الهواتف
 window.printVisit = async id => {
   const docSnap = await getDoc(doc(db, 'visits', id));
   if (!docSnap.exists()) return;
@@ -547,23 +547,26 @@ window.printVisit = async id => {
   let critRows = '';
   criteria.forEach((c, i) => {
     const score = v.scores?.[i] || 0;
-    critRows += `<tr><td style="padding:8px; border:1px solid #999; font-size:12px;">${c}</td><td style="padding:8px; border:1px solid #999; text-align:center; font-size:12px;">${scoreLabels[score] || '-'}</td></tr>`;
+    critRows += `<tr>
+      <td style="padding:4px 8px; border:1px solid #999; font-size:11px; line-height:1.2;">${c}</td>
+      <td style="padding:4px 8px; border:1px solid #999; text-align:center; font-size:11px; line-height:1.2;">${scoreLabels[score] || '-'}</td>
+    </tr>`;
   });
   
   const printContainer = document.createElement('div');
   printContainer.style.position = 'absolute';
   printContainer.style.left = '-9999px';
-  printContainer.style.width = '170mm';
-  printContainer.style.padding = '15px';
+  printContainer.style.width = '175mm';
+  printContainer.style.padding = '10px';
   printContainer.style.background = '#fff';
   printContainer.style.direction = 'rtl';
   printContainer.style.fontFamily = 'Arial, sans-serif';
   
   printContainer.innerHTML = `
-    <div style="text-align:center; font-size:11px; margin-bottom:8px; color:#555; border-bottom:1px solid #ddd; padding-bottom:4px;">نموذج زيارة • ${v.dept} • ${v.date}</div>
-    <h2 style="text-align:center; margin-bottom:15px; font-size:15px; font-weight:bold; color:#1a1a2e;">نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2>
+    <div style="text-align:center; font-size:10px; margin-bottom:4px; color:#555; border-bottom:1px solid #ddd; padding-bottom:2px;">نموذج زيارة • ${v.dept} • ${v.date}</div>
+    <h2 style="text-align:center; margin-bottom:10px; font-size:14px; font-weight:bold; color:#1a1a2e;">نموذج تقييم الزيارة الصفية لرئيس القسم والمدير</h2>
     
-    <div style="margin-bottom:15px; display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px; background:#f8f9fa; padding:10px; border-radius:6px; border:1px solid #eee;">
+    <div style="margin-bottom:10px; display:grid; grid-template-columns:1fr 1fr; gap:4px; font-size:11px; background:#f8f9fa; padding:8px; border-radius:4px; border:1px solid #eee;">
       <div><strong>اسم المعلم:</strong> ${v.teacherName}</div>
       <div><strong>القسم الدراسي:</strong> ${v.dept}</div>
       <div><strong>المادة:</strong> ${v.subject || v.dept}</div>
@@ -572,19 +575,22 @@ window.printVisit = async id => {
       <div><strong>تاريخ الزيارة:</strong> ${v.date}</div>
     </div>
     
-    <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
       <thead>
-        <tr style="background:#f0f0f0;"><th style="padding:8px; border:1px solid #999; font-size:12px; text-align:right;">البند التقني والمعيار المحدد</th><th style="padding:8px; border:1px solid #999; font-size:12px; text-align:center; width:30%;">التقييم</th></tr>
+        <tr style="background:#f0f0f0;">
+          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:right;">البند التقني والمعيار المحدد</th>
+          <th style="padding:5px; border:1px solid #999; font-size:11px; text-align:center; width:25%;">التقييم</th>
+        </tr>
       </thead>
       <tbody>${critRows}</tbody>
     </table>
     
-    ${v.notes ? `<div style="border:1px solid #999; padding:10px; margin-bottom:15px; font-size:12px; border-radius:4px; background:#fafafa;"><strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:6px 0 0 0; white-space:pre-wrap;">${v.notes}</p></div>` : ''}
+    ${v.notes ? `<div style="border:1px solid #999; padding:8px; margin-bottom:10px; font-size:11px; border-radius:4px; background:#fafafa; line-height:1.3;">strong>التوجيهات والتوصيات الفنية للمدير:</strong><p style="margin:4px 0 0 0; white-space:pre-wrap;">${v.notes}</p></div>` : ''}
     
-    <div style="margin-top:25px; display:flex; justify-content:space-between; font-size:11px;">
-      <div style="text-align:center;">التوقيع: _____________<br><br><strong>المدير</strong></div>
-      <div style="text-align:center;">التوقيع: _____________<br><br><strong>رئيس القسم</strong></div>
-      <div style="text-align:center;">التوقيع: _____________<br><br><strong>المعلم</strong></div>
+    <div style="margin-top:20px; display:flex; justify-content:space-between; font-size:11px;">
+      <div style="text-align:center;">التوقيع: _____________<br><span style="font-size:10px; color:#666;">المدير</span></div>
+      <div style="text-align:center;">التوقيع: _____________<br><span style="font-size:10px; color:#666;">رئيس القسم</span></div>
+      <div style="text-align:center;">التوقيع: _____________<br><span style="font-size:10px; color:#666;">المعلم</span></div>
     </div>
   `;
   
@@ -592,35 +598,29 @@ window.printVisit = async id => {
   
   const loadingAlert = document.createElement('div');
   loadingAlert.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#fff; padding:12px 24px; border-radius:30px; font-size:13px; z-index:9999;";
-  loadingAlert.textContent = "جاري تحضير ملف التقييم PDF...";
+  loadingAlert.textContent = "جاري استخراج صفحة التقييم PDF...";
   document.body.appendChild(loadingAlert);
 
   setTimeout(() => {
     html2canvas(printContainer, { scale: 2, useCORS: true }).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
       const { jsPDF } = window.jspdf;
+      
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210;
-      const pageHeight = 295;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      
+      // إجبار الأبعاد على التوافق التام بداخل ورقة واحدة بدون تكرار الصفحات
+      const imgWidth = pageWidth - 20;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
+      
+      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
       pdf.save(`تقييم_زيارة_${v.teacherName}_${v.date.replace(/\//g, '-')}.pdf`);
+      
       document.body.removeChild(printContainer);
       document.body.removeChild(loadingAlert);
     }).catch(err => {
       alert("خطأ: " + err.message);
+      if(document.body.contains(printContainer)) document.body.removeChild(printContainer);
       loadingAlert.remove();
     });
   }, 500);
@@ -801,7 +801,7 @@ const visitCriteria={
   'اللغة الإنجليزية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','Speaking skills','Listening skills','Reading skills','Writing skills','Vocabulary','Grammar','Pronunciation'],
   'الاجتماعيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','الخرائط','الأحداث التاريخية','الجغرافيا','الوطنية','التفكير الناقد','استخدام السبورة'],
   'التربية البدنية':['التخطيط للدرس','وضوح الأهداف','الإحماء','التمارين البدنية','المهارات الحركية','السلامة','إدارة الصف','التحفيز','التقويم','الانضباط','اللياقة البدنية','الألعاب الجماعية','الألعاب الفردية','الروح الرياضية','استخدام الأدوات','الالتزام بالوقت','الزي الرياضي'],
-  'الحاسوب':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','البرمجيات','الإنترنت','السلامة الرقمية','حل المشكلات','التفكير المنطقي','الالتزام بالوقت'],
+  'الحاسوب':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','البرمجيات','الإنترنت','السلامة الرقمية','حل المشكلات','التفكير المنطفي','الالتزام بالوقت'],
   'الكهرباء':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','السلامة المهنية','الأدوات والمعدات','المهارات اليدوية','قراءة المخططات','حل المشكلات','الالتزام بالوقت'],
   'الديكور':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','الإبداع','الألوان','التصميم','المهارات اليدوية','السلامة','الالتزام بالوقت'],
   'الفنية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الإبداع','المهارات الفنية','الخامات','النظافة','الذوق الفني','الالتزام بالوقت']
