@@ -80,6 +80,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
   <button class="tab" data-tab="repeat" id="tab-btn-repeat">⚠️ متكرر</button>
   <button class="tab" data-tab="behavior" id="tab-btn-behavior">📑 سلوك الطلاب</button>
   <button class="tab" data-tab="gatepass" id="tab-btn-gatepass">🎫 حقيبة الاستئذان</button>
+  <button class="tab" data-tab="guard" id="tab-btn-guard">🚪 بوابة الحارس</button>
   <button class="tab" data-tab="student" id="tab-btn-student">👤 طالب</button>
   <button class="tab" data-tab="students-manage" id="tab-btn-students-manage">📁 إدارة الطلاب (Excel)</button>
   <button class="tab" data-tab="rounds" id="tab-btn-rounds">📋 جولة الجناح</button>
@@ -147,26 +148,63 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
         <select id="gatepass-student"><option value="">اختر الطالب المستأذن</option></select>
         <input type="text" id="gatepass-parent" placeholder="اسم ولي الأمر المستلم الفعلي">
         <input type="text" id="gatepass-civilid" placeholder="رقم البطاقة المدنية لولي الأمر">
+        <input type="text" id="gatepass-phone" placeholder="رقم هاتف ولي الأمر المستلم (جديد)">
         <input type="text" id="gatepass-reason" placeholder="سبب الاستئذان أو المغادرة الطارئة">
       </div>
       <button onclick="saveGatePass()" style="background:#e67e22; width:100%; font-weight:bold;">🎫 حفظ وإصدار تصريح الخروج الرقمي فوراً لبوابة المدرسة</button>
     </div>
+    
+    <div class="card" style="background: #fafafa; border: 1px solid #ddd;">
+      <h3>🔍 الأرشيف التاريخي والبحث عن تصاريح المغادرة</h3>
+      <div style="display:flex; gap:10px; margin-top:0.5rem; margin-bottom:0.5rem;">
+        <input type="date" id="gatepass-search-date" style="margin-bottom:0;">
+        <button onclick="searchGatePassByDate()" style="background:#1a1a2e;">بحث بالتاريخ</button>
+      </div>
+      <div id="gatepass-archive-results"></div>
+    </div>
+
     <div class="card">
       <h2>🛡️ شاشة أمن بوابة المدرسة وحارس المنشأة (التصاريح النشطة اليوم)</h2>
       <div id="gatepass-live-list" style="margin-top:1rem;"></div>
     </div>
   </div>
 
+  <div id="tab-guard" class="hidden">
+    <div class="card" style="background:#eefdf4; border:1px solid #bcead1;">
+      <h2 style="color:#1e7e34; margin-bottom:1rem;"><i class="bi bi-person-badge-fill"></i> دفتر تسجيل ضيوف وزوار مدرسة سالم الحسينان</h2>
+      <div class="form-grid">
+        <input type="text" id="visitor-name" placeholder="اسم الزائر بالكامل">
+        <input type="text" id="visitor-civilid" placeholder="الرقم المدني للزائر">
+        <input type="text" id="visitor-phone" placeholder="رقم هاتف الزائر">
+        <input type="text" id="visitor-reason" placeholder="سبب الزيارة / الجهة المقصودة">
+      </div>
+      <button onclick="saveSchoolVisitor()" style="background:#1e7e34; width:100%; font-weight:bold;">📝 توثيق وحفظ بيانات الزائر في سجل المنشأة</button>
+    </div>
+
+    <div class="card">
+      <h3>📅 سجل التدقيق والمراقبة التاريخية للزوار</h3>
+      <div style="display:flex; gap:10px; margin-bottom:1rem;">
+        <input type="date" id="visitor-search-date" style="margin-bottom:0;">
+        <button onclick="loadVisitorsByDate()" style="background:#1a1a2e;">بحث في دفتر الزوار</button>
+      </div>
+      <div id="visitor-logs-table"></div>
+    </div>
+
+    <div class="card">
+      <h3>🎫 تصاريح خروج الطلاب المعتمدة اليوم (للمطابقة الفورية عند البوابة)</h3>
+      <div id="guard-gatepass-live-view"></div>
+    </div>
+  </div>
+
   <div id="tab-students-manage" class="hidden">
     <div class="card" style="background:#eef9ff; border:1px solid #bce1f5;">
       <h2 style="margin-bottom:1rem; color:#1a5a80;"><i class="bi bi-file-earmark-excel-fill"></i> الرفع الجماعي والذكي لطلاب السنة الدراسية الجديدة</h2>
-      <p style="font-size:13px; color:#555; margin-bottom:1rem;">تتيح لك هذه الأداة سحب قوائم الطلاب من ملف إكسيل وزرعها دفعة واحدة في السيستم. يرجى مطابقة أعمدة ملف الإكسيل مع العناوين التالية تماماً: <strong>studentId</strong>، <strong>name</strong>، <strong>classId</strong>.</p>
+      <p style="font-size:13px; color:#555; margin-bottom:1rem;">تتيح لك هذه الأداة سحب قوائم الطلاب من ملف إكسيل وزرعها دفعة واحدة في السيستم. الأعمدة المطلوبة: <strong>studentId</strong>، <strong>name</strong>، <strong>classId</strong>.</p>
       <input type="file" id="students-excel-input" accept=".xlsx, .xls" style="background:#fff; border:1px solid #ccc; padding:8px; width:100%;">
       <button onclick="importStudentsFromExcel()" style="background:#1a5a80; width:100%; font-weight:bold; margin-top:8px;"><i class="bi bi-cloud-arrow-up-fill"></i> بدء المعالجة والرفع السحابي الفوري لقاعدة البيانات</button>
     </div>
     <div class="card" style="background:#fff5f5; border:1px solid #fabebe;">
       <h3 style="color:#c0392b; margin-bottom:0.5rem;"><i class="bi bi-exclamation-triangle-fill"></i> المنطقة الخطرة: تهيئة النظام وتصفير الهيكل المدرسي</h3>
-      <p style="font-size:13px; color:#666; margin-bottom:1rem;">استخدم هذا الخيار بنهاية العام الدراسي الحالي فقط؛ لتنظيف وإفراغ جدول الطلاب بالكامل من قاعدة البيانات استعداداً للدفعة الجديدة.</p>
       <button onclick="clearAllStudents()" style="background:#c0392b; border:none;"><i class="bi bi-trash3-fill"></i> مسح وإفراغ سجل الطلاب الحاليين نهائياً</button>
     </div>
   </div>
@@ -234,14 +272,13 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
   <div id="tab-honors" class="hidden">
     <div class="card">
       <h2>🏆 لوحة شرف الفائقين والمتميزين سلوكياً وبالمواظبة الرقمية</h2>
-      <p style="color:#666; font-size:13px; margin-bottom:1rem;">يتم فرز الطلاب الذين لديهم سجل حضور متميز وخالٍ من المخالفات السلوكية بصورة آلية.</p>
       <div id="honors-wall-list"></div>
     </div>
   </div>
 
   <div id="tab-date" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
+      <h2 style="margin-bottom:1rem">📅 بحث بتاريخ ومطابقة الدفاتر أبجدياً</h2>
       <div class="form-grid">
         <select id="date-class"><option value="">اختر الفصل</option></select>
         <input type="date" id="date-search">
@@ -340,6 +377,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
       <option value="head">رئيس قسم</option>
       <option value="specialist">أخصائي</option>
       <option value="teacher">معلم</option>
+      <option value="guard">حارس المدرسة</option>
     </select>
     <input type="text" id="new-user-class" placeholder="الفصل (للمعلمين) / القسم (لرؤساء الأقسام - مثل: اللغة العربية)">
     <div style="display:flex;gap:12px;margin-top:1rem">
@@ -371,7 +409,7 @@ if(!savedUser){ window.location.href='index.html'; }
 else{
   try{
     currentUser=JSON.parse(savedUser);
-    const allowedRoles = ['admin', 'assistant', 'supervisor', 'head', 'specialist'];
+    const allowedRoles = ['admin', 'assistant', 'supervisor', 'head', 'specialist', 'guard'];
     if(!currentUser.role || !allowedRoles.includes(currentUser.role)){ window.location.href='index.html'; }
     else{
       document.getElementById('user-name').textContent=currentUser.name||'المستخدم الإداري';
@@ -388,12 +426,12 @@ window.switchTab = function(tabId) {
   if (tabId === 'students-manage' && currentUser.role !== 'admin') { alert('حظر أمني: إدارة الهيكل الدراسي والرفع الجماعي حكر لمدير المدرسة فقط.'); return; }
   if (tabId === 'visits' && !['admin', 'assistant', 'head'].includes(currentUser.role)) { alert('حظر أمني: تبويب الزيارات الفنية مقتصر فقط على مدير المدرسة، المدير المساعد، ورئيس القسم.'); return; }
   if (currentUser.role === 'specialist' && !['absent', 'behavior', 'student', 'honors', 'gatepass'].includes(tabId)) { alert('صلاحية مقيدة: لا يملك الأخصائي إذن لتصفح هذه الصفحة.'); return; }
+  if (currentUser.role === 'guard' && tabId !== 'guard') { alert('صلاحية مقيدة: حساب حارس المنشأة مقتصر على تصفح بوابة الحارس وسجل الزوار فقط.'); return; }
 
   const tabs = document.querySelectorAll('.tab');
   const tabContents = document.querySelectorAll('.content > div');
   tabs.forEach(tab => { if (tab.getAttribute('data-tab') === tabId) { tab.classList.add('active'); } else { tab.classList.remove('active'); } });
-  
-  tabContents.forEach(content => { if (content.id === `tab-${tabId}`) { content.classList.remove('hidden'); } else { content.classList.add('hidden'); } });
+  tabContents.forEach(content => { if (content.id === `tab-${tabId}`) { content.classList.remove('hidden'); } else { content.add('hidden'); } });
 };
 
 async function loadDashboard(){
@@ -405,6 +443,7 @@ async function loadDashboard(){
   const tHonors = document.getElementById('tab-btn-honors'); const tDate = document.getElementById('tab-btn-date');
   const tVisits = document.getElementById('tab-btn-visits'); const tUsers = document.getElementById('tab-btn-users');
   const tStudentsManage = document.getElementById('tab-btn-students-manage');
+  const tGuard = document.getElementById('tab-btn-guard');
 
   if(tUsers) tUsers.classList.add('hidden'); if(tStudentsManage) tStudentsManage.classList.add('hidden');
   if(role === 'admin') { if(tUsers) tUsers.classList.remove('hidden'); if(tStudentsManage) tStudentsManage.classList.remove('hidden'); }
@@ -416,14 +455,34 @@ async function loadDashboard(){
     document.getElementById('supervisor-round-form-area').classList.add('hidden');
   } else { if(tRounds) tRounds.classList.add('hidden'); }
 
+  // تخصيص بوابة الحارس ومنع اختلاط الصلاحيات
+  if(role === 'guard') {
+    if(tToday) tToday.classList.add('hidden'); if(tClasses) tClasses.classList.add('hidden');
+    if(tAbsent) tAbsent.classList.add('hidden'); if(tRepeat) tRepeat.classList.add('hidden');
+    if(tBehavior) tBehavior.classList.add('hidden'); if(tStudent) tStudent.classList.add('hidden');
+    if(tGate) tGate.classList.add('hidden'); if(tRounds) tRounds.classList.add('hidden');
+    if(tHonors) tHonors.classList.add('hidden'); if(tDate) tDate.classList.add('hidden');
+    if(tVisits) tVisits.classList.add('hidden');
+    if(tGuard) tGuard.classList.remove('hidden');
+    setTimeout(() => { window.switchTab('guard'); window.loadLiveGatePasses(); window.loadVisitorsByDate(); }, 150);
+    return;
+  } else {
+    // فتح سجل زوار الحارس للإدارة للمتابعة
+    if(['admin', 'assistant'].includes(role)) { if(tGuard) tGuard.classList.remove('hidden'); }
+  }
+
   if(role === 'specialist') {
     if(tToday) tToday.classList.add('hidden'); if(tClasses) tClasses.classList.add('hidden');
     if(tRepeat) tRepeat.classList.add('hidden'); if(tDate) tDate.classList.add('hidden');
     if(tVisits) tVisits.classList.add('hidden'); if(tRounds) tRounds.classList.add('hidden');
+    if(tGuard) tGuard.classList.add('hidden');
     setTimeout(() => { window.switchTab('absent'); window.loadAbsentToday(); }, 150);
   }
 
-  await Promise.all([loadStats(),loadUsers(),loadVisitCounts(),populateClassDropdowns(),loadClassButtons(),loadRoundsHistory(),loadHonorsWall(),loadLiveGatePasses()]);
+  document.getElementById('visitor-search-date').valueAsDate = new Date();
+  document.getElementById('gatepass-search-date').valueAsDate = new Date();
+
+  await Promise.all([loadStats(),loadUsers(),loadVisitCounts(),populateClassDropdowns(),loadClassButtons(),loadRoundsHistory(),loadHonorsWall(),loadLiveGatePasses(),loadVisitorsByDate()]);
 }
 
 function populateClassDropdowns(){
@@ -458,7 +517,7 @@ async function importStudentsFromExcel() {
           successCount++;
         }
       }
-      alert(`🏆 تم رفع وتوثيق ${successCount} طالباً بنجاح في قاعدة البيانات!`);
+      alert(`🏆 تم رفع وتوثيق ${successCount} طالباً بنجاح لقاعدة البيانات!`);
       fileInput.value = '';
       populateClassDropdowns();
     } catch (err) { alert('خطأ أثناء المعالجة: ' + err.message); }
@@ -467,11 +526,11 @@ async function importStudentsFromExcel() {
 }
 
 async function clearAllStudents() {
-  if (!confirm('🚨 تحذير: هل أنت متأكد من حذف جميع الطلاب؟ لا يمكن التراجع!')) return;
+  if (!confirm('🚨 هل أنت متأكد من حذف جميع الطلاب؟ لا يمكن التراجع!')) return;
   try {
     const snap = await getDocs(collection(db, 'students'));
     for (let dDoc of snap.docs) { await deleteDoc(doc(db, 'students', dDoc.id)); }
-    alert('✓ تم تصفير وإفراغ قاعدة بيانات الطلاب بالكامل بنجاح!');
+    alert('✓ تم تصفير قاعدة البيانات بنجاح!');
     populateClassDropdowns();
   } catch(e) { alert('فشل المسح: ' + e.message); }
 }
@@ -517,26 +576,100 @@ async function saveGatePass() {
   const stuName = stuSel.options[stuSel.selectedIndex] ? stuSel.options[stuSel.selectedIndex].getAttribute('data-name') : '';
   const parent = document.getElementById('gatepass-parent').value.trim();
   const civilId = document.getElementById('gatepass-civilid').value.trim();
+  const phone = document.getElementById('gatepass-phone').value.trim();
   const reason = document.getElementById('gatepass-reason').value.trim();
   if(!cls || !stuId || !parent || !civilId) { alert('الرجاء تعبئة البيانات المطلوبة لإصدار الإذن قانونياً!'); return; }
   try {
-    await addDoc(collection(db, 'gatepasses'), { classId: cls, studentId: stuId, studentName: stuName, parentName: parent, parentCivilId: civilId, reason: reason, issuedBy: currentUser.name, date: new Date().toLocaleDateString('ar-KW'), time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}), createdAt: serverTimestamp() });
+    await addDoc(collection(db, 'gatepasses'), { classId: cls, studentId: stuId, studentName: stuName, parentName: parent, parentCivilId: civilId, parentPhone: phone, reason: reason, issuedBy: currentUser.name, date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}), createdAt: serverTimestamp() });
     alert('✓ تم إصدار تصريح الخروج وتمريره لبوابة الحارس!');
-    document.getElementById('gatepass-parent').value = ''; document.getElementById('gatepass-civilid').value = ''; document.getElementById('gatepass-reason').value = '';
+    document.getElementById('gatepass-parent').value = ''; document.getElementById('gatepass-civilid').value = ''; document.getElementById('gatepass-reason').value = ''; document.getElementById('gatepass-phone').value = '';
     loadLiveGatePasses();
   } catch(e) { alert('فشل في حفظ الإذن: ' + e.message); }
 }
 
-async function loadLiveGatePasses() {
-  const container = document.getElementById('gatepass-live-list'); if(!container) return;
+// بحث أرشيفي شامل عن تصاريح المغادرة بالتاريخ (طلب لقطة الشاشة IMG_9213)
+window.searchGatePassByDate = async function() {
+  const sDate = document.getElementById('gatepass-search-date').value;
+  const area = document.getElementById('gatepass-archive-results');
+  if(!sDate) { alert('الرجاء تحديد تاريخ البحث الأرشيفي أولاً!'); return; }
+  area.innerHTML = '<p>جاري سحب الأرشيف...</p>';
   try {
-    const q = query(collection(db, 'gatepasses'), orderBy('createdAt', 'desc')); const snap = await getDocs(q);
-    if(snap.empty) { container.innerHTML = '<div style="text-align:center; padding:1rem; color:#777;">لا توجد تصاريح خروج صادرة لليوم.</div>'; return; }
-    let html = '<table><thead><tr><th>الوقت</th><th>الطالب</th><th>الفصل</th><th>المستلم</th><th>الرقم المدني</th><th>السبب</th><th>المسؤول</th></tr></thead><tbody>';
-    snap.forEach(doc => { const g = doc.data(); html += `<tr style="background:#fffdec;"><td>🕒 ${g.time || '-'}</td><td style="font-weight:bold;">${g.studentName}</td><td>${g.classId}</td><td>${g.parentName}</td><td>${g.parentCivilId}</td><td>${g.reason || '-'}</td><td>${g.issuedBy}</td></tr>`; });
-    container.innerHTML = html + '</tbody></table>';
+    const snap = await getDocs(collection(db, 'gatepasses'));
+    let html = '<table><thead><tr><th>الوقت</th><th>الطالب</th><th>الفصل</th><th>المستلم</th><th>الهاتف</th><th>السبب</th></tr></thead><tbody>';
+    let matchCount = 0;
+    snap.forEach(doc => {
+      const g = doc.data();
+      if(g.date === sDate) {
+        matchCount++;
+        html += `<tr><td>🕒 ${g.time || '-'}</td><td><strong>${g.studentName}</strong></td><td>${g.classId}</td><td>${g.parentName}</td><td>${g.parentPhone || '-'}</td><td>${g.reason || '-'}</td></tr>`;
+      }
+    });
+    if(matchCount === 0) { area.innerHTML = '<p style="color:red; padding:10px;">لا توجد مغادرات مسجلة في هذا التاريخ المحدد.</p>'; }
+    else { area.innerHTML = html + '</tbody></table>'; }
+  } catch(e) { area.innerHTML = '<p>خطأ أثناء جلب الأرشيف</p>'; }
+};
+
+async function loadLiveGatePasses() {
+  const container = document.getElementById('gatepass-live-list');
+  const guardView = document.getElementById('guard-gatepass-live-view');
+  const today = new Date().toLocaleDateString('en-CA');
+  try {
+    const snap = await getDocs(collection(db, 'gatepasses'));
+    let activeList = [];
+    snap.forEach(doc => { if(doc.data().date === today) activeList.push(doc.data()); });
+    
+    let html = '<table><thead><tr><th>الوقت</th><th>الطالب</th><th>الفصل</th><th>المستلم</th><th>رقم الهاتف</th><th>الرقم المدني</th><th>السبب</th><th>المسؤول</th></tr></thead><tbody>';
+    activeList.forEach(g => { html += `<tr style="background:#fffdec;"><td>🕒 ${g.time || '-'}</td><td style="font-weight:bold; color:#d4af37;">${g.studentName}</td><td>${g.classId}</td><td>${g.parentName}</td><td><strong>${g.parentPhone || '-'}</strong></td><td>${g.parentCivilId}</td><td>${g.reason || '-'}</td><td>${g.issuedBy}</td></tr>`; });
+    html += '</tbody></table>';
+    
+    if(activeList.length === 0) html = '<div style="text-align:center; padding:1rem; color:#777;">لا توجد تصاريح خروج صادرة لليوم حتى الآن.</div>';
+    if(container) container.innerHTML = html;
+    if(guardView) guardView.innerHTML = html;
   } catch(e) { console.error(e); }
 }
+
+// 🟩 وظائف تسجيل وبحث زوار المدرسة لـ حارس الأمن 🟩
+window.saveSchoolVisitor = async function() {
+  const name = document.getElementById('visitor-name').value.trim();
+  const civil = document.getElementById('visitor-civilid').value.trim();
+  const phone = document.getElementById('visitor-phone').value.trim();
+  const reason = document.getElementById('visitor-reason').value.trim();
+  if(!name || !civil || !phone) { alert('الرجاء إدخال بيانات الزائر الكاملة (الاسم، المدني، الهاتف) للتوثيق!'); return; }
+  try {
+    await addDoc(collection(db, 'visitors'), {
+      name, civilId: civil, phone, reason,
+      date: new Date().toLocaleDateString('en-CA'),
+      time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}),
+      recordedBy: currentUser.name,
+      createdAt: serverTimestamp()
+    });
+    alert('✓ تم توثيق بيانات الزائر بنجاح في دفتر الأمن الرقمي!');
+    document.getElementById('visitor-name').value = ''; document.getElementById('visitor-civilid').value = '';
+    document.getElementById('visitor-phone').value = ''; document.getElementById('visitor-reason').value = '';
+    loadVisitorsByDate();
+  } catch(e) { alert('فشل التسجيل: ' + e.message); }
+};
+
+window.loadVisitorsByDate = async function() {
+  const sDate = document.getElementById('visitor-search-date').value;
+  const logTable = document.getElementById('visitor-logs-table');
+  if(!logTable) return;
+  if(!sDate) { logTable.innerHTML = '<p>الرجاء اختيار تاريخ العرض.</p>'; return; }
+  try {
+    const snap = await getDocs(collection(db, 'visitors'));
+    let html = '<table><thead><tr><th>الوقت</th><th>اسم الزائر</th><th>الرقم المدني</th><th>رقم الهاتف</th><th>سبب الزيارة / المقصد</th><th>حارس البوابة</th></tr></thead><tbody>';
+    let count = 0;
+    snap.forEach(doc => {
+      const v = doc.data();
+      if(v.date === sDate) {
+        count++;
+        html += `<tr><td>🕒 ${v.time || '-'}</td><td style="font-weight:bold;">${v.name}</td><td>${v.civilId}</td><td>${v.phone}</td><td>${v.reason || '-'}</td><td>${v.recordedBy}</td></tr>`;
+      }
+    });
+    if(count === 0) { logTable.innerHTML = '<div style="text-align:center; padding:1rem; color:#666;">لا يوجد زوار مسجلين في هذا التاريخ.</div>'; }
+    else { logTable.innerHTML = html + '</tbody></table>'; }
+  } catch(e) { logTable.innerHTML = '<p style="color:red;">خطأ أثناء جلب سجل الزوار</p>'; }
+};
 
 function loadClassButtons(){
   var allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
@@ -561,21 +694,35 @@ async function loadStudentNames(){
   students.sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ar')}); students.forEach(function(s){ sel.innerHTML+='<option value="'+s.studentId+'">'+s.name+'</option>'; });
 }
 
+// 🟩 تحديث البحث الشامل ليعرض أيام خروج الطالب من المدرسة (طلب لقطة شاشة IMG_9212) 🟩
 async function searchStudent(){
   var cls=document.getElementById('search-class').value; var stuId=document.getElementById('search-student').value;
   var result=document.getElementById('student-result'); var pdfBtn=document.getElementById('btn-download-pdf');
   if(!cls||!stuId){result.innerHTML='<p style="color:#dc3545">اختر الفصل والطالب أولاً</p>'; pdfBtn.classList.add('hidden'); return}
-  result.innerHTML='<p style="text-align:center;color:#666;">جاري سحب الملف الشامل...</p>';
+  result.innerHTML='<p style="text-align:center;color:#666;">جاري سحب الملف الموحد الشامل للطالب...</p>';
   var stuName=''; var snap1=await getDocs(collection(db,'students')); snap1.forEach(function(doc){var d=doc.data();if(d.studentId===stuId)stuName=d.name});
-  var snap2=await getDocs(collection(db,'attendance')); var records=[]; snap2.forEach(function(doc){ var d=doc.data(); if(d.studentId===stuId||d.classId===cls&&d.studentName===stuName) { if(d.status==='absent'||d.status==='late') records.push(d); } });
+  
+  var snap2=await getDocs(collection(db,'attendance')); var records=[]; snap2.forEach(function(doc){ var d=doc.data(); if(d.studentId===stuId) { if(d.status==='absent'||d.status==='late') records.push(d); } });
   var bRecords=[]; try { var snap3 = await getDocs(collection(db,'behavior')); snap3.forEach(function(doc){ var b = doc.data(); if(b.studentId===stuId) bRecords.push(b); }); } catch(e){ console.error(e); }
+  
+  // سحب سجل خروج الطالب الميداني (حقيبة الاستئذان) لزرعها في التقرير
+  var gRecords=[]; try { var snap4 = await getDocs(collection(db,'gatepasses')); snap4.forEach(function(doc){ var g = doc.data(); if(g.studentId===stuId) gRecords.push(g); }); } catch(e){ console.error(e); }
+
   let mBanner = medicalAlertMockList[stuId] ? `<div style="background:#fff0f2; border-right:5px solid #d32f2f; padding:15px; border-radius:6px; margin-bottom:1.5rem;"><h4 style="color:#c62828;"><i class="bi bi-heart-pulse-fill"></i> لافتة الطوارئ الطبية:</h4><p>${medicalAlertMockList[stuId]}</p></div>` : '';
+  
   var html=`<div id="pdf-print-area">${mBanner}<h3 style="border-bottom:2px solid #1a1a2e;padding-bottom:6px">الملف الموحد للطالب: ${stuName} (${cls})</h3><h4 style="margin-top:1rem;"><i class="bi bi-clock-history"></i> سجل الحضور والغيبات (${records.length})</h4>`;
   if(records.length===0){ html+='<p style="color:green; padding:5px;">الملف نظيف من الغياب والـتأخير ✓</p>'; } 
   else { html+='<table><thead><tr><th>التاريخ</th><th>الحصة</th><th>الحالة</th></tr></thead><tbody>'; records.forEach(function(r){ html+='<tr><td>'+r.date+'</td><td>الحصة '+(r.periodId||'-')+'</td><td>'+(r.status==='absent'?'<span class="badge danger">غائب</span>':'<span class="badge warning">متأخر</span>')+'</td></tr>'; }); html+='</tbody></table>'; }
-  html+=`<h4 style="margin-top:1.5rem;"><i class="bi bi-exclamation-triangle"></i> سجل السلوك والإجراءات (${bRecords.length})</h4>`;
+  
+  // حقن قسم كشوف أيام المغادرة والاستئذان الميداني
+  html+=`<h4 style="margin-top:1.5rem; color:#e67e22;"><i class="bi bi-box-arrow-up-right"></i> سجل تصاريح المغادرة والاستئذان الطارئ (${gRecords.length})</h4>`;
+  if(gRecords.length===0){ html+='<p style="color:gray; padding:5px;">لم يغادر الطالب المدرسة أثناء الدوام كلياً ✓</p>'; }
+  else { html+='<table><thead><tr><th>التاريخ</th><th>الوقت</th><th>اسم المستلم</th><th>سبب الخروج الرسمي</th></tr></thead><tbody>'; gRecords.forEach(function(g){ html+=`<tr><td>${g.date}</td><td>🕒 ${g.time||'-'}</td><td>${g.parentName}</td><td>${g.reason||'-'}</td></tr>`; }); html+='</tbody></table>'; }
+
+  html+=`<h4 style="margin-top:1.5rem;"><i class="bi bi-exclamation-triangle"></i> سجل السلوك والإجراءات التراكمية (${bRecords.length})</h4>`;
   if(bRecords.length===0){ html+='<p style="color:gray; padding:5px;">لا توجد عقوبات مسجلة بحق الطالب ✓</p>'; } 
   else { html+='<table><thead><tr><th>التاريخ</th><th>المخالفة</th><th>الراصد</th><th>حالة المعالجة</th></tr></thead><tbody>'; bRecords.forEach(function(b){ html+=`<tr><td>${b.date||'-'}</td><td>${b.behaviorType}</td><td>${b.recordedBy||'-'}</td><td><span class="badge success">${b.specialistStatus || 'معلق'}</span></td></tr>`; }); html+='</tbody></table>'; }
+  
   result.innerHTML=html+'</div>'; pdfBtn.classList.remove('hidden');
 }
 
@@ -651,11 +798,18 @@ async function updateSpecialistStatus(docId, value) {
   try { await updateDoc(doc(db, 'behavior', docId), { specialistStatus: value, specialistUpdatedBy: currentUser.name, specialistUpdatedAt: serverTimestamp() }); alert('تم تحديث رادار الإجراء بنجاح ✓'); loadAdminBehaviorList(); } catch(e) { alert('فشل التحديث: ' + e.message); }
 }
 
+// 🟩 إصلاح الفرز الهجائي والأبجدي الصارم للأسماء بناء على طلب لقطة الشاشة IMG Rog-9214 🟩
 async function searchByDate() {
-  var cls=document.getElementById('date-class').value; var date=document.getElementById('date-search').value; var result=document.getElementById('date-result'); if(!cls||!date){alert('اختر الصف والتاريخ');return}
-  var formattedDate=date.replace(/-/g,'/'); var studentsSnap=await getDocs(collection(db,'students')); var classStudents=[]; studentsSnap.forEach(function(doc){ var d=doc.data(); if(d.classId===cls)classStudents.push(d); });
-  var attSnap=await getDocs(collection(db,'attendance')); var absentIds=new Set(); attSnap.forEach(function(doc){ var d=doc.data(); if(d.classId===cls&&d.date===formattedDate&&d.status==='absent')absentIds.add(d.studentId); });
-  let html = '<table><tbody>'; classStudents.forEach(function(s){ html+='<tr><td>'+s.name+'</td><td>'+(absentIds.has(s.studentId)?'<span class="badge danger">غائب</span>':'<span class="badge success">حاضر</span>')+'</td></tr>'; }); result.innerHTML=html+'</tbody></table>';
+  var cls=document.getElementById('date-class').value; var date=document.getElementById('date-search').value; var result=document.getElementById('date-result'); if(!cls||!date){alert('اختر الصف والتاريخ لفرز الأسماء');return}
+  var formattedDate=date.replace(/-/g,'/'); 
+  result.innerHTML = '<p>جاري سحب الكشوفات والترتيب هجائياً...</p>';
+  var studentsSnap=await getDocs(collection(db,'students')); var classStudents=[]; studentsSnap.forEach(function(doc){ var d=doc.data(); if(d.classId===cls)classStudents.push(d); });
+  
+  // الفرز الأبجدي الصارم لمنع تشتت الأسماء ومطابقة الكشكول المكتبي للمدرسة
+  classStudents.sort(function(a,b){ return (a.name || '').localeCompare(b.name || '', 'ar'); });
+
+  var attSnap=await getDocs(collection(db,'attendance')); var absentIds=new Set(); attSnap.forEach(function(doc){ var d=doc.data(); if(d.classId===cls&&d.date formattedDate&&d.status==='absent')absentIds.add(d.studentId); });
+  let html = '<table><thead><tr><th>اسم الطالب (مرتب هجائياً)</th><th>حالة الحضور اليومية</th></tr></thead><tbody>'; classStudents.forEach(function(s){ html+='<tr><td><strong>'+s.name+'</strong></td><td>'+(absentIds.has(s.studentId)?'<span class="badge danger">غائب</span>':'<span class="badge success">حاضر ✓</span>')+'</td></tr>'; }); result.innerHTML=html+'</tbody></table>';
 }
 
 async function loadStats(){
@@ -664,9 +818,9 @@ async function loadStats(){
   const todayQuery = query(collection(db, 'attendance'), where('date', '==', today)); const attendanceSnap = await getDocs(todayQuery);
   globalTodayAttendance = []; let absentToday = 0; const classesRegistered = new Set();
   attendanceSnap.forEach(doc => { const d = doc.data(); globalTodayAttendance.push(d); classesRegistered.add(d.classId); if(d.status === 'absent') absentToday++; });
-  if (currentUser.role !== 'specialist') { document.getElementById('stats-cards').innerHTML = `<div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي طلاب المدرسة</p></div><div class="stat-card"><h3>${totalStudents - absentToday}</h3><p>حاضرون اليوم</p></div><div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div><div class="stat-card"><h3>${classesRegistered.size} / 15</h3><p>فصول رُصدت</p></div>`; }
+  if (currentUser.role !== 'specialist' && currentUser.role !== 'guard') { document.getElementById('stats-cards').innerHTML = `<div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي طلاب المدرسة</p></div><div class="stat-card"><h3>${totalStudents - absentToday}</h3><p>حاضرون اليوم</p></div><div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div><div class="stat-card"><h3>${classesRegistered.size} / 15</h3><p>فصول رُصدت</p></div>`; }
   let statusHTML = `<div style="margin-bottom:1rem;"><div style="display:flex; gap:8px; overflow-x:auto;">${[1,2,3,4,5,6,7].map(hNum => `<button type="button" class="period-tab-item" id="p-tab-btn-${hNum}" onclick="viewPeriodStatus(${hNum})" style="padding:10px 18px; font-weight:bold; cursor:pointer; background:#e9ecef; border:1px solid #ddd; border-radius:4px;">الحصة ${hNum}</button>`).join('')}</div></div><div id="period-status-table-result"></div>`;
-  document.getElementById('class-status').innerHTML = statusHTML;
+  if(document.getElementById('class-status')) document.getElementById('class-status').innerHTML = statusHTML;
 }
 
 window.viewPeriodStatus = function(periodNum) {
@@ -714,68 +868,34 @@ window.openNewVisit=()=>{ document.getElementById('visit-form-modal').style.disp
 window.closeVisitForm=()=>{ document.getElementById('visit-form-modal').style.display='none'; document.getElementById('visit-dept').value=''; document.getElementById('visit-criteria-list').innerHTML=''; };
 window.loadVisitCriteria=()=>{ const dept=document.getElementById('visit-dept').value; const list=document.getElementById('visit-criteria-list'); if(!dept){list.innerHTML='';return} const criteria=visitCriteria[dept]||[]; let html=''; criteria.forEach((c,i)=>{ html+=`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:0.5px solid #ddd"><span>${c}</span><select id="score${i}" style="width:120px;"><option value="5">ممتاز</option><option value="4">جيد جداً</option></select></div>`; }); list.innerHTML=html; };
 
-// 🟩 دالة الحفظ المحدثة: تقوم بسحب كافة درجات المعايير والملاحظات وتخزينها رسمياً 🟩
 window.saveVisit=async()=>{ 
-  const dept=document.getElementById('visit-dept').value; 
-  const teacher=document.getElementById('visit-teacher').value.trim(); 
-  const className=document.getElementById('visit-class').value.trim(); 
-  const period=document.getElementById('visit-period').value; 
-  const date=document.getElementById('visit-date').value.split('-').reverse().join('/'); 
-  const notes=document.getElementById('visit-notes').value.trim(); 
-  
+  const dept=document.getElementById('visit-dept').value; const teacher=document.getElementById('visit-teacher').value.trim(); 
+  const className=document.getElementById('visit-class').value.trim(); const period=document.getElementById('visit-period').value; 
+  const date=document.getElementById('visit-date').value.split('-').reverse().join('/'); const notes=document.getElementById('visit-notes').value.trim(); 
   if(!dept||!teacher||!className){ alert('الرجاء تعبئة البيانات الأساسية للتقرير الفني!'); return; } 
-  
-  const criteria = visitCriteria[dept] || [];
-  const scores = [];
-  criteria.forEach((c, i) => {
-    const scoreEl = document.getElementById(`score${i}`);
-    if(scoreEl) { scores.push({ criterion: c, score: scoreEl.value }); }
-  });
-
+  const criteria = visitCriteria[dept] || []; const scores = [];
+  criteria.forEach((c, i) => { const scoreEl = document.getElementById(`score${i}`); if(scoreEl) { scores.push({ criterion: c, score: scoreEl.value }); } });
   try{ 
-    await addDoc(collection(db,'visits'),{ 
-      dept, 
-      teacherName:teacher, 
-      className, 
-      period, 
-      date, 
-      notes,
-      scores,
-      createdAt:serverTimestamp(), 
-      createdBy:currentUser.userId 
-    }); 
-    alert('✓ تم ترحيل التقرير الفني للزيارة بنجاح كلي وثابت!'); 
-    closeVisitForm(); 
-    document.getElementById('visit-teacher').value = '';
-    document.getElementById('visit-class').value = '';
-    document.getElementById('visit-period').value = '';
-    document.getElementById('visit-notes').value = '';
-    loadVisitCounts(); 
-  }catch(e){ alert('خطأ أثناء الحفظ: '+e.message); } 
+    await addDoc(collection(db,'visits'),{ dept, teacherName:teacher, className, period, date, notes, scores, createdAt:serverTimestamp(), createdBy:currentUser.userId }); 
+    alert('✓ تم ترحيل التقرير الفني للزيارة الفنية للقسم الدراسي!'); closeVisitForm(); loadVisitCounts(); 
+  }catch(e){ alert('خطأ: '+e.message); } 
 };
 
 let selectedDept=''; window.selectDept=async dept=>{ if (currentUser.role === 'head' && dept !== currentUser.classId) { alert('خطأ أمني: غير مصرح لك بتصفح تقارير هذا القسم.'); return; } selectedDept=dept; document.getElementById('dept-list').style.display='none'; document.getElementById('dept-visits').classList.remove('hidden'); document.getElementById('selected-dept-name').textContent=dept; await loadDeptVisits(dept); };
 window.backToDepts=()=>{ document.getElementById('dept-visits').classList.add('hidden'); document.getElementById('dept-list').style.display='block'; };
 
-// 🟩 دالة العرض المحدثة: تسترجع الدرجات والملاحظات وتوفر زر طباعة تقرير منفرد لكل مادة 🟩
+// 🟩 إصلاح وعزل كروت الزيارة لمنع الـ undefined وحل مشكلة عدم الطباعة للتقرير (IMG_9215) 🟩
 async function loadDeptVisits(dept){
   const list=document.getElementById('visits-list'); list.innerHTML='<p style="text-align:center;color:#666;">جاري تحميل سجلات التفتيش الفني للقسم الدراسي...</p>';
   try{
-    // حذف الـ orderBy لإلغاء قيود الفهرسة المعقدة بالسيرفر وحل مشكلة الاختفاء
-    const q=query(collection(db,'visits'),where('dept','==',dept)); 
-    const snap=await getDocs(q);
+    const q=query(collection(db,'visits'),where('dept','==',dept)); const snap=await getDocs(q);
     if(snap.empty){ list.innerHTML='<p style="text-align:center;color:#666;">لا توجد زيارات فنية مسجلة لهذا القسم.</p>'; return; }
-    
-    let visitsList = [];
-    snap.forEach(doc => { visitsList.push({ id: doc.id, ...doc.data() }); });
-    
-    // فرز البيانات برمجياً وبشكل مستقر داخل المتصفح من الأحدث للأقدم
+    let visitsList = []; snap.forEach(doc => { visitsList.push({ id: doc.id, ...doc.data() }); });
     visitsList.sort((a, b) => {
       const tA = a.createdAt ? (typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(a.createdAt).getTime()) : 0;
       const tB = b.createdAt ? (typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(b.createdAt).getTime()) : 0;
       return tB - tA;
     });
-
     let html=''; 
     visitsList.forEach(v=>{ 
       let canSee = (currentUser.role === 'admin') || (currentUser.role === 'assistant' && v.createdBy === currentUser.userId) || (currentUser.role === 'head' && v.dept === currentUser.classId); 
@@ -783,29 +903,29 @@ async function loadDeptVisits(dept){
       
       let scoresHtml = '';
       if (v.scores && v.scores.length > 0) {
-        scoresHtml = '<div style="margin-top:8px; background:#f9f9f9; padding:8px; border-radius:4px; border:1px solid #eee;"><strong>📋 بنود تقييم المعايير:</strong><ul style="padding-right:20px; margin-top:4px; font-size:13px; color:#444;">';
-        v.scores.forEach(s => {
-          scoresHtml += `<li style="margin-bottom:2px;">${s.criterion}: <span style="color:#27ae60; font-weight:bold;">${s.score === '5' ? 'ممتاز (5/5)' : 'جيد جداً (4/5)'}</span></li>`;
+        scoresHtml = '<div style="margin-top:8px; background:#f9f9f9; padding:8px; border-radius:4px; border:1px solid #eee;"><strong>📋 بنود تقييم المعايير المعتمدة:</strong><ul style="padding-right:20px; margin-top:4px; font-size:13px; color:#444;">';
+        v.scores.forEach((s, idx) => {
+          // حماية برمجية كاملة: إذا كان اسم المعيار قادماً بـ undefined يتم سحبه من المصفوفة أو استبداله برقم البند فوراً
+          let criterionText = s.criterion || (visitCriteria[v.dept] && visitCriteria[v.dept][idx]) || `البند المعتمد رقم ${idx + 1}`;
+          scoresHtml += `<li style="margin-bottom:2px;">${criterionText}: <span style="color:#27ae60; font-weight:bold;">${s.score === '5' ? 'ممتاز (5/5)' : 'جيد جداً (4/5)'}</span></li>`;
         });
         scoresHtml += '</ul></div>';
       }
-      
       let notesHtml = v.notes ? `<div style="margin-top:8px; font-size:13px; color:#555; background:#fffdec; padding:8px; border-right:4px solid #e67e22; border-radius:4px;"><strong>📝 توجيهات وملاحظات المقيم:</strong><p style="margin-top:2px;">${v.notes}</p></div>` : '';
 
       html+=`
-        <div class="card" id="print-visit-${v.id}" style="background:#fff; border:1px solid #ddd; border-radius:8px; padding:1.2rem; margin-bottom:1rem; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
-          <div style="display:flex; justify-content:between; align-items:center; border-bottom:2px solid #1a1a2e; padding-bottom:6px; margin-bottom:10px;">
+        <div class="card" id="print-visit-${v.id}" style="background:#fff; border:1px solid #ddd; border-radius:8px; padding:1.2rem; margin-bottom:1rem; box-shadow:0 1px 2px rgba(0,0,0,0.05); text-align:right; direction:rtl;">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #1a1a2e; padding-bottom:6px; margin-bottom:10px;">
             <div>
               <span style="font-size:16px; font-weight:bold; color:#1a1a2e;">👨‍🏫 المعلم: ${v.teacherName}</span>
-              <span class="badge secondary" style="margin-right:6px; background:#e2e5ff; color:#4a00e0;">الصف ${v.className}</span>
-              <span class="badge info" style="background:#d1ecf1; color:#0c5460;">الحصة ${v.period || '-'}</span>
+              <span class="badge secondary" style="margin-right:6px;">الصف ${v.className}</span>
+              <span class="badge info">الحصة ${v.period || '-'}</span>
             </div>
             <span style="font-size:13px; font-weight:bold; color:#666;">📅 ${v.date}</span>
           </div>
           <div>
-            <p style="font-size:14px;"><strong>🏫 القسم التابع له:</strong> قسم ${v.dept}</p>
-            ${scoresHtml}
-            ${notesHtml}
+            <p style="font-size:14px;"><strong>🏫 القسم الدراسي للزيارة:</strong> قسم ${v.dept}</p>
+            ${scoresHtml} ${notesHtml}
           </div>
           <div style="margin-top:12px; text-align:left;" class="no-print-area">
             <button onclick="window.printSingleVisit('${v.id}', '${v.teacherName}')" style="background:#27ae60; color:#fff; font-size:12px; padding:6px 12px; border-radius:4px; border:none;"><i class="bi bi-printer-fill"></i> 📥 طباعة التقرير الفني PDF</button>
@@ -817,19 +937,13 @@ async function loadDeptVisits(dept){
   }catch(e){ console.error(e); list.innerHTML='<p style="text-align:center;color:red;">خطأ في تحميل زيارات القسم</p>'; }
 }
 
-// 🟩 دالة معالجة الطباعة المخصصة لتقارير التوجيه الفني 🟩
 window.printSingleVisit = function(visitId, teacherName) {
-  const element = document.getElementById(`print-visit-${visitId}`);
-  if (!element) return;
-  const btnArea = element.querySelector('.no-print-area');
-  if (btnArea) btnArea.style.display = 'none';
-  
+  const element = document.getElementById(`print-visit-${visitId}`); if (!element) return;
+  const btn = element.querySelector('.no-print-area'); if (btn) btn.style.display = 'none';
   html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
-    if (btnArea) btnArea.style.display = 'block';
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
-    pdf.addImage(imgData, 'PNG', 5, 5, 200, (canvas.height * 200) / canvas.width);
-    pdf.save(`تقرير_زيارة_${teacherName}.pdf`);
+    if (btn) btn.style.display = 'block';
+    const imgData = canvas.toDataURL('image/png'); const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+    pdf.addImage(imgData, 'PNG', 5, 5, 200, (canvas.height * 200) / canvas.width); pdf.save(`تقرير_زيارة_${teacherName}.pdf`);
   });
 };
 
@@ -837,54 +951,37 @@ const visitCriteria = {
   'اللغة العربية': ['ترتيب طاولات ومقاعد الطلاب وتنظيم القاعة','تنسيق السبورة اللغوية وجودة الخط العربي للدرس','إعداد الدرس والتحضير الذهني والتمكين العلمي الصحيح','متابعة الأعمال التحريرية وكراسات الطلاب والتصحيح المقنن'], 
   'العلوم': ['تجهيز ونظافة مختبر العلوم والأدوات التفاعلية','تنفيذ التجربة العملية المخبرية بسلاسة وبأمان كامل','عرض واستيعاب المفاهيم ومخرجات المنهج الميداني برصانة'],
   'الرياضيات': ['استخدام استراتيجيات التدريس الحديثة ومراعاة الفروق الفردية','جودة تطبيقات الحساب الذهني وتفعيل السبورة','الالتزام بخطة توزيع المنهج المدرسي المقررة'],
-  'التربية الإسلامية': ['صحة القراءة والاستشهاد بالآيات والأحاديث الشريفة','الربط القيمي والتربوي والسلوكي بالدرس المعروض','متابعة تقويم الطلاب والواجبات المنزلية المقررة']
+  'التربية الإسلامية': ['صحة القراءة والاستشهاد بالآيات والأحاديث الشريفة','الربط القيمي والتربوي والسلوكي بالدرس المعروض','متابعة تقويم الطلاب والواجبات المنزلية المقررة'],
+  'اللغة الإنجليزية': ['تفعيل المحادثة باللغة الإنجليزية في الصف','إعداد الدرس وتنوع الوسائل التعليمية المتفاعلة','متابعة مهارات الكتابة والقراءة لدى الطلاب']
 };
 
 async function loadUsers(){
   const list=document.getElementById('users-list'); list.innerHTML='<p style="text-align:center;color:#666">جاري التحميل...</p>';
   try{
     const snap=await getDocs(collection(db,'users')); let html='<table><thead><tr><th>الاسم الكامل</th><th>رقم المستخدم</th><th>الوظيفة والصلاحية</th><th>الفصل / القسم</th><th>إجراءات</th></tr></thead><tbody>';
-    snap.forEach(doc=>{ const u=doc.data(); const roleText=u.role==='admin'?'مدير':u.role==='assistant'?'مدير مساعد':u.role==='supervisor'?'مشرف جناح':u.role==='head'?'رئيس قسم':u.role==='specialist'?'أخصائي':'معلم'; html+=`<tr><td>${u.name||'-'}</td><td>${u.userId}</td><td><span class="badge info">${roleText}</span></td><td><strong>${u.classId||'-'}</strong></td><td><button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px;">🗑|</button></td></tr>`; }); list.innerHTML=html+'</tbody></table>';
-  }catch(e){ list.innerHTML='<p style="text-align:center;color:red">خطأ في تحميل قشرة المستخدمين والصلاحيات</p>'; }
+    snap.forEach(doc=>{ const u=doc.data(); const roleText=u.role==='admin'?'مدير':u.role==='assistant'?'مدير مساعد':u.role==='supervisor'?'مشرف جناح':u.role==='head'?'رئيس قسم':u.role==='specialist'?'أخصائي':u.role==='guard'?'حارس المنشأة':'معلم'; html+=`<tr><td>${u.name||'-'}</td><td>${u.userId}</td><td><span class="badge info">${roleText}</span></td><td><strong>${u.classId||'-'}</strong></td><td><button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px;">🗑|</button></td></tr>`; }); list.innerHTML=html+'</tbody></table>';
+  }catch(e){ list.innerHTML='<p style="text-align:center;color:red">خطأ في تحميل المستخدمين</p>'; }
 }
 
 window.openAddUser=()=>{ document.getElementById('add-user-modal').style.display='flex'; };
 window.closeAddUser=()=>{ document.getElementById('add-user-modal').style.display='none'; };
-window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); if(!name||!userId||!pass||!role){ alert('يرجى ملء كل الحقول المطلوبة لثبوت الصلاحيات الحسابية!'); return; } try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId:(role==='teacher'||role==='head')?classId:'', createdAt:serverTimestamp() }); alert('تم إضافة الحساب الجديد بنجاح ملموس'); closeAddUser(); loadUsers(); }catch(e){ alert('خطأ: '+e.message); } };
+window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); if(!name||!userId||!pass||!role){ alert('يرجى ملء كل الحقول المطلوبة لتخزين الصلاحيات الحسابية!'); return; } try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId:(role==='teacher'||role==='head')?classId:'', createdAt:serverTimestamp() }); alert('تم إضافة الحساب الجديد بنجاح ملموس'); closeAddUser(); loadUsers(); }catch(e){ alert('خطأ: '+e.message); } };
 window.deleteUser=async id=>{ if(!confirm('هل أنت متأكد من حذف هذا الحساب؟'))return; try{ await deleteDoc(doc(db,'users',id)); alert('تم الحذف بنجاح'); loadUsers(); }catch(e){ alert('خطأ: '+e.message); } };
 
-// القفل الحديدي العام للتبويبات والوظائف الفورية بالمتصفح
-window.loadStats = loadStats;
-window.loadAdminBehaviorList = loadAdminBehaviorList;
-window.loadHonorsWall = loadHonorsWall;
-window.loadRoundsHistory = loadRoundsHistory;
-window.loadLiveGatePasses = loadLiveGatePasses;
-window.loadAbsentToday = loadAbsentToday;
-window.loadRepeatAbsent = loadRepeatAbsent;
-window.loadClassButtons = loadClassButtons;
-window.importStudentsFromExcel = importStudentsFromExcel;
-window.clearAllStudents = clearAllStudents;
-window.loadQuickStudentNames = loadQuickStudentNames;
-window.loadGatePassStudentNames = loadGatePassStudentNames;
-window.submitQuickBehavior = submitQuickBehavior;
-window.saveGatePass = saveGatePass;
-window.selectClass = selectClass;
-window.loadStudentNames = loadStudentNames;
-window.searchStudent = searchStudent;
-window.downloadStudentPDF = downloadStudentPDF;
-window.printSummonNotice = printSummonNotice;
-window.printHonorCertificate = printHonorCertificate;
-window.saveSupervisorRound = saveSupervisorRound;
-window.searchByDate = searchByDate;
-window.loadVisitCounts = loadVisitCounts;
-window.loadVisitCriteria = loadVisitCriteria;
-window.saveVisit = saveVisit;
-window.selectDept = selectDept;
-window.backToDepts = backToDepts;
-window.loadUsers = loadUsers;
+// قفل الموديول الحديدي - ربط كافة الدوال بنافذة الـ window العامة لمنع الـ TypeError كلياً
+window.loadStats = loadStats; window.loadAdminBehaviorList = loadAdminBehaviorList; window.loadHonorsWall = loadHonorsWall;
+window.loadRoundsHistory = loadRoundsHistory; window.loadLiveGatePasses = loadLiveGatePasses; window.loadAbsentToday = loadAbsentToday;
+window.loadRepeatAbsent = loadRepeatAbsent; window.loadClassButtons = loadClassButtons; window.importStudentsFromExcel = importStudentsFromExcel;
+window.clearAllStudents = clearAllStudents; window.loadQuickStudentNames = loadQuickStudentNames; window.loadGatePassStudentNames = loadGatePassStudentNames;
+window.submitQuickBehavior = submitQuickBehavior; window.saveGatePass = saveGatePass; window.selectClass = selectClass;
+window.loadStudentNames = loadStudentNames; window.searchStudent = searchStudent; window.downloadStudentPDF = downloadStudentPDF;
+window.printSummonNotice = printSummonNotice; window.printHonorCertificate = printHonorCertificate; window.saveSupervisorRound = saveSupervisorRound;
+window.searchByDate = searchByDate; window.loadVisitCounts = loadVisitCounts; window.loadVisitCriteria = loadVisitCriteria;
+window.saveVisit = saveVisit; window.selectDept = selectDept; window.backToDepts = backToDepts; window.loadUsers = loadUsers;
+window.saveSchoolVisitor = saveSchoolVisitor; window.loadVisitorsByDate = loadVisitorsByDate;
 
 const tabsBar = document.getElementById('tabs-bar');
-if(tabsBar) { tabsBar.addEventListener('click', (e) => { if (e.target.classList.contains('tab')) { const tabId = e.target.getAttribute('data-tab'); window.switchTab(tabId); if (tabId === 'today') window.loadStats(); if (tabId === 'absent') window.loadAbsentToday(); if (tabId === 'repeat') window.loadRepeatAbsent(); if (tabId === 'behavior') window.loadAdminBehaviorList(); if (tabId === 'honors') window.loadHonorsWall(); if (tabId === 'rounds') window.loadRoundsHistory(); if (tabId === 'gatepass') window.loadLiveGatePasses(); if (tabId === 'classes') window.loadClassButtons(); if (tabId === 'users') window.loadUsers(); if (tabId === 'visits') window.loadVisitCounts(); } }); }
+if(tabsBar) { tabsBar.addEventListener('click', (e) => { if (e.target.classList.contains('tab')) { const tabId = e.target.getAttribute('data-tab'); window.switchTab(tabId); if (tabId === 'today') window.loadStats(); if (tabId === 'absent') window.loadAbsentToday(); if (tabId === 'repeat') window.loadRepeatAbsent(); if (tabId === 'behavior') window.loadAdminBehaviorList(); if (tabId === 'honors') window.loadHonorsWall(); if (tabId === 'rounds') window.loadRoundsHistory(); if (tabId === 'gatepass') window.loadLiveGatePasses(); if (tabId === 'classes') window.loadClassButtons(); if (tabId === 'users') window.loadUsers(); if (tabId === 'visits') window.loadVisitCounts(); if (tabId === 'guard') { window.loadLiveGatePasses(); window.loadVisitorsByDate(); } } }); }
 </script>
 </body>
 </html>
