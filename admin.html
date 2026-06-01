@@ -54,7 +54,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
 .hidden{display:none!important}
 .back-btn{background:#6c757d;margin-bottom:1rem}
 
-/* شريط التوجيهات والتعاميم الإدارية المتحرك بثبات */
 .announcement-banner { background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 12px; border-radius: 6px; margin-bottom: 1.5rem; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 8px; }
 @keyframes blinker { 50% { opacity: 0.3; } }
 .medical-pulse-badge { background: #ffebee; color: #c62828; animation: blinker 1.8s linear infinite; font-weight: bold; border: 1px solid #ffcdd2; font-size:11px; padding: 2px 8px; border-radius: 4px; }
@@ -63,7 +62,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
 </head>
 <body>
 
-<!-- شريط التعاميم الإدارية الموحد المباشر بقمة التطبيق -->
 <div class="content" style="padding-bottom: 0; margin-top: 1rem;">
   <div id="live-announcement-banner" class="announcement-banner hidden">
     <i class="bi bi-megaphone-fill"></i> <span id="announcement-text-view">جاري جلب التعاميم الإدارية الحالية...</span>
@@ -104,7 +102,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
 </div>
 
 <div class="content">
-  <!-- اليوم والرسوم البيانية للمؤشرات -->
+  <!-- اليوم والمؤشرات -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="grid-layout" style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
@@ -119,17 +117,16 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     </div>
   </div>
 
-  <!-- لوحة كتابة وتوزيع التعاميم والتعليمات الإدارية -->
+  <!-- إرسال تعميم إداري -->
   <div id="tab-announcements" class="hidden">
     <div class="card" style="background:#fffde6; border:1px solid #e6db55;">
       <h2>📢 بث تعميم وتوجيه إداري لجميع المستخدمين بالمدرسة</h2>
-      <p style="font-size:13px; color:#666; margin-bottom:1rem;">النص المكتوب هنا سيظهر مباشرة في شريط علوي متحرك بحسابات المعلمين ورؤساء الأقسام فوراً.</p>
       <textarea id="announcement-input-text" rows="4" placeholder="اكتب نص التعميم أو التوجيه الإداري هنا بالكامل..."></textarea>
       <button onclick="saveAdminAnnouncement()" style="background:#e67e22; width:100%; font-weight:bold;">🚀 نشر وتعميم التوجيه على المنظومة حياً</button>
     </div>
   </div>
 
-  <!-- دليل المعلمين والبيانات الشخصية المستكملة -->
+  <!-- دليل المعلمين المفرز حسب الأقسام -->
   <div id="tab-teacher-directory" class="hidden">
     <div id="directory-dept-grid-area">
       <h2 style="margin-bottom:1.5rem">📇 استعراض وتدقيق الهيكل الوظيفي للأقسام الدراسية</h2>
@@ -144,16 +141,15 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     </div>
   </div>
 
-  <!-- لوحة كفاءة الأداء المدرسي وإحصائيات الزيارات والمخالفات -->
+  <!-- لوحة كفاءة الأداء المدرسي -->
   <div id="tab-teacher-perf" class="hidden">
     <div class="card">
       <h2>📈 لوحة قياس كفاءة الأداء ومؤشرات الأقسام التراكمية</h2>
-      <p style="color:#666; font-size:13px; margin-bottom:1rem;">تحليل آلي لإنتاجية الأقسام الدراسية ومعدل رصد التفتيش والمخالفات السلوكية التراكمية.</p>
       <div id="perf-metrics-result-table"></div>
     </div>
   </div>
 
-  <!-- 🩺 العيادة المدرسية والملفات الطبية الحية -->
+  <!-- العيادة المدرسية والملفات الطبية الحية -->
   <div id="tab-clinic" class="hidden">
     <div class="card" style="background:#fff5f5; border:1px solid #fabebe;">
       <h2>🩺 سجل الإحالات والزيارات اليومية لعيادة المدرسة الطبية</h2>
@@ -184,7 +180,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     <div id="class-detail" class="hidden"></div>
   </div>
 
-  <!-- الغائبون -->
+  <!-- الغائبون اليوم -->
   <div id="tab-absent" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">🔴 كشف غياب الطلاب اليومي (نظام الرادار التحذيري حياً)</h2>
@@ -215,7 +211,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
       </div>
     </div>
     <div class="card">
-      <h2 style="margin-bottom:1rem">📑 سجل السلوك الذكي (مزود برادار الرصد التراكمي وتوليد وثائق الاستدعاء)</h2>
+      <h2 style="margin-bottom:1rem">📑 سجل السلوك الذكي (برادار الرصد التراكمي وتوليد وثائق الاستدعاء)</h2>
       <div id="admin-behavior-list"></div>
     </div>
   </div>
@@ -223,7 +219,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
   <!-- حقيبة الاستئذان والمغادرة الرقمية الذكية -->
   <div id="tab-gatepass" class="hidden">
     <div class="card" id="gatepass-form-area" style="background:#fffde6; border:1px solid #e6db55;">
-      <h2 style="margin-bottom:1rem; color:#d4af37;"><i class="bi bi-ticket-perforated-fill"></i> إصدار تصريح خروج واستئذان طالب أثناء الدوام الرسمي</h2>
+      <h2>🎫 إصدار تصريح خروج واستئذان طالب أثناء الدوام الرسمي</h2>
       <div class="form-grid">
         <select id="gatepass-class" onchange="loadGatePassStudentNames()"><option value="">اختر الفصل</option></select>
         <select id="gatepass-student"><option value="">اختر الطالب المستأذن</option></select>
@@ -248,10 +244,10 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     </div>
   </div>
 
-  <!-- 🚪 تبويب بوابة الحارس الرسمي وتوثيق دفتر الضيوف -->
+  <!-- بوابة الحارس لتوثيق دفتر الضيوف والزوار -->
   <div id="tab-guard" class="hidden">
     <div class="card" style="background:#eefdf4; border:1px solid #bcead1;">
-      <h2 style="color:#1e7e34; margin-bottom:1rem;"><i class="bi bi-person-badge-fill"></i> دفتر تسجيل ضيوف وزوار مدرسة سالم الحسينان (سجل الأمن)</h2>
+      <h2><i class="bi bi-person-badge-fill"></i> دفتر تسجيل ضيوف وزوار مدرسة سالم الحسينان (سجل الأمن)</h2>
       <div class="form-grid">
         <input type="text" id="visitor-name" placeholder="اسم الزائر بالكامل">
         <input type="text" id="visitor-civilid" placeholder="الرقم المدني للزائر">
@@ -269,7 +265,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
       <div id="visitor-logs-table"></div>
     </div>
     <div class="card">
-      <h3>🎫 تصاريح خروج الطلاب المعتمدة اليوم (للمطابقة الفورية والإخلاء الطبي)</h3>
+      <h3>🎫 تصاريح خروج الطلاب المعتمدة اليوم (لالمطابقة الفورية والإخلاء الطبي)</h3>
       <div id="guard-gatepass-live-view"></div>
     </div>
   </div>
@@ -277,7 +273,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
   <!-- بحث طالب الشامل -->
   <div id="tab-student" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">👤 بحث ملف الطالب الشامل</h2>
+      <h2>👤 بحث ملف الطالب الشامل</h2>
       <div class="form-grid">
         <select id="search-class" onchange="loadStudentNames()"><option value="">اختر الفصل</option></select>
         <select id="search-student"><option value="">اختر الطالب</option></select>
@@ -290,12 +286,12 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     </div>
   </div>
 
-  <!-- إدارة الطلاب الجماعي عبر الـ Excel -->
+  <!-- إدارة واستيراد الطلاب الجماعي عبر الـ Excel -->
   <div id="tab-students-manage" class="hidden">
     <div class="card" style="background:#eef9ff; border:1px solid #bce1f5;">
       <h2>📁 الرفع الجماعي لطلاب السنة الدراسية الجديدة</h2>
       <input type="file" id="students-excel-input" accept=".xlsx, .xls">
-      <button onclick="importStudentsFromExcel()" style="background:#1a5a80; width:100%; margin-top:8px;">بدء المعالجة والرفع السحابي لقاعدة البيانات</button>
+      <button onclick="importStudentsFromExcel()" style="background:#1a5a80; width:100%; margin-top:8px;">بدء الرفع السحابي لقاعدة البيانات</button>
     </div>
     <div class="card" style="background:#fff5f5; border:1px solid #fabebe;">
       <button onclick="clearAllStudents()" style="background:#c0392b; border:none;">مسح وإفراغ سجل الطلاب الحاليين نهائياً</button>
@@ -341,7 +337,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     </div>
   </div>
 
-  <!-- بحث بتاريخ -->
+  <!-- بحث بتاريخ ومطابقة الأسماء أبجدياً -->
   <div id="tab-date" class="hidden">
     <div class="card">
       <h2>📅 بحث بتاريخ ومطابقة الدفاتر أبجدياً</h2>
@@ -354,7 +350,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     </div>
   </div>
 
-  <!-- الزيارات الفنية المقيدة للمدير والمساعد ورئيس القسم بقسمه فقط -->
+  <!-- الزيارات الفنية المقيدة للمدير والمساعد ورئيس القسم -->
   <div id="tab-visits" class="hidden">
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
@@ -378,7 +374,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     </div>
   </div>
 
-  <!-- المستخدمون -->
+  <!-- المستخدمون والصلاحيات -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -390,11 +386,25 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
   </div>
 </div>
 
-<!-- 🚨 مـودال اسـتـكـمـال بـيـانـات الـمـعـلـم الإجـبـاري لأول مـرة 🚨 -->
+<!-- 🚨 مـودال اسـتـكـمـال بـيـانـات الـمـعـلـم الإجـبـاري لأول مـرة - الـمـطـور كـلـيـاً (طلب لقطة شاشة IMG_9216.png) 🚨 -->
 <div id="profile-completion-modal" class="modal" style="display:none;">
   <div class="modal-content" style="border: 3px solid #1a1a2e;">
     <h2 style="color:#1a1a2e; margin-bottom:10px;"><i class="bi bi-file-earmark-person-fill"></i> تحديث واستكمال البيانات الشخصية المعتمدة</h2>
     <p style="font-size:13px; color:#555; margin-bottom:1.5rem;">أهلاً بك في فضاء مدرسة سالم الحسينان. يرجى ملء بياناتك الرسمية التالية بدقة لأول مرة لتفعيل حسابك بالكامل بالدليل المدرسي.</p>
+    
+    <!-- حقل مضاف: الاسم الكامل -->
+    <input type="text" id="setup-user-name" placeholder="الاسم الكامل (كما هو مسجل رسمياً في كشف الوزارة)">
+    
+    <!-- حقل مضاف: القسم الدراسي -->
+    <select id="setup-user-dept" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:4px; font-size:14px; margin-bottom:12px;">
+      <option value="">اختر القسم الدراسي التابع له</option>
+      <option value="اللغة العربية">اللغة العربية</option>
+      <option value="الرياضيات">الرياضيات</option>
+      <option value="العلوم">العلوم</option>
+      <option value="التربية الإسلامية">التربية الإسلامية</option>
+      <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
+    </select>
+
     <input type="text" id="setup-user-phone" placeholder="رقم الهاتف النقال (مثال: 99XXXXXX)">
     <input type="text" id="setup-user-civilid" placeholder="الرقم المدني المكون من 12 خانة">
     <input type="text" id="setup-user-filenumber" placeholder="رقم الملف الدراسي والوظيفي الخاص بك">
@@ -402,7 +412,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
   </div>
 </div>
 
-<!-- Modals -->
+<!-- Modals الباقية -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2>تسجيل زيارة جديدة</h2>
@@ -446,7 +456,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
       <option value="teacher">معلم</option>
       <option value="guard">حارس المدرسة</option>
     </select>
-    <input type="text" id="new-user-class" placeholder="القسم (لإداري ورئيس قسم - مثال: اللغة العربية)">
+    <input type="text" id="new-user-class" placeholder="القسم (لإداري ورئيس قسم - مثل: اللغة العربية)">
     <div style="display:flex;gap:12px;margin-top:1rem">
       <button onclick="addUser()" style="flex:1">إضافة</button>
       <button onclick="closeAddUser()" class="secondary" style="flex:1">إلغاء</button>
@@ -478,40 +488,65 @@ else{
 window.logout=function(){ localStorage.removeItem('hs_user'); window.location.href='index.html'; };
 document.getElementById('current-date').textContent=new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-// 🟩 دالة الفحص الإجباري لاستكمال بيانات المعلم 🟩
+// 🟩 دالة الفحص الإجباري المحدثة - تشمل فحص تواجد الاسم والقسم أيضاً 🟩
 async function checkOnboardingStatus() {
   try {
     const q = query(collection(db, 'users'), where('userId', '==', currentUser.userId));
     const snap = await getDocs(q);
     if (!snap.empty) {
       const uData = snap.docs[0].data();
-      if (!uData.phone || !uData.civilId || !uData.fileNumber) {
+      // إذا كان أي بند من الخمسة الأساسية ناقص، يفتح المودال فوراً لتعبئته
+      if (!uData.name || !uData.classId || !uData.phone || !uData.civilId || !uData.fileNumber) {
+        if(uData.name) document.getElementById('setup-user-name').value = uData.name;
+        if(uData.classId) document.getElementById('setup-user-dept').value = uData.classId;
+        if(uData.phone) document.getElementById('setup-user-phone').value = uData.phone;
+        if(uData.civilId) document.getElementById('setup-user-civilid').value = uData.civilId;
+        if(uData.fileNumber) document.getElementById('setup-user-filenumber').value = uData.fileNumber;
+        
         document.getElementById('profile-completion-modal').style.display = 'flex';
       } else {
-        // تحديث الحقيبة المحلية والمتابعة
+        // تحديث البيانات محلياً وتحديث شريط الترحيب العلوي حياً باسم المعلم المعتمد
+        currentUser.name = uData.name; currentUser.classId = uData.classId;
         currentUser.phone = uData.phone; currentUser.civilId = uData.civilId; currentUser.fileNumber = uData.fileNumber;
         localStorage.setItem('hs_user', JSON.stringify(currentUser));
+        document.getElementById('user-name').textContent = currentUser.name || 'المستخدم الإداري';
         loadDashboard();
       }
     } else { loadDashboard(); }
   } catch(e) { console.error(e); loadDashboard(); }
 }
 
+// 🟩 دالة حفظ المودال المحدثة والمؤمنة بالكامل لحفظ الاسم والقسم برمجياً 🟩
 window.saveMandatoryProfileData = async function() {
+  const name = document.getElementById('setup-user-name').value.trim();
+  const dept = document.getElementById('setup-user-dept').value;
   const phone = document.getElementById('setup-user-phone').value.trim();
   const civilId = document.getElementById('setup-user-civilid').value.trim();
   const fileNumber = document.getElementById('setup-user-filenumber').value.trim();
-  if(!phone || !civilId || !fileNumber) { alert('الرجاء تعبئة كافة الحقول المطلوبة لتوثيق ملفك الإداري!'); return; }
+  
+  if(!name || !dept || !phone || !civilId || !fileNumber) { 
+    alert('الرجاء تعبئة كافة الحقول بما فيها الاسم والتعيين في القسم لتوثيق ملفك الإداري!'); 
+    return; 
+  }
   try {
     const q = query(collection(db, 'users'), where('userId', '==', currentUser.userId));
     const snap = await getDocs(q);
     if(!snap.empty) {
-      await updateDoc(doc(db, 'users', snap.docs[0].id), { phone, civilId, fileNumber, profileCompleted: true });
+      await updateDoc(doc(db, 'users', snap.docs[0].id), { 
+        name, classId: dept, phone, civilId, fileNumber, profileCompleted: true 
+      });
       document.getElementById('profile-completion-modal').style.display = 'none';
-      alert('✓ تم توثيق وحفظ ملفك الشخصي بالمنظومة بنجاح!');
-      checkOnboardingStatus();
+      alert('✓ تم توثيق وحفظ ملفك الشخصي بالمنظومة بنجاح كلي!');
+      
+      // مزامنة فورية بالذاكرة والجلسة الفورية للمتصفح دون تجميد الصفحة
+      currentUser.name = name; currentUser.classId = dept;
+      currentUser.phone = phone; currentUser.civilId = civilId; currentUser.fileNumber = fileNumber;
+      localStorage.setItem('hs_user', JSON.stringify(currentUser));
+      document.getElementById('user-name').textContent = name;
+      
+      loadDashboard();
     }
-  } catch(e) { alert('خطأ في المزامنة: ' + e.message); }
+  } catch(e) { alert('خطأ في المزامنة السحابية: ' + e.message); }
 };
 
 window.switchTab = function(tabId) {
@@ -527,7 +562,6 @@ window.switchTab = function(tabId) {
 
 async function loadDashboard(){
   const role = currentUser.role;
-  // إخفاء وإظهار التبويبات بحسب الرتب والأمن المتبع
   const tAnnounce = document.getElementById('tab-btn-announcements'); const tDir = document.getElementById('tab-btn-teacher-directory');
   const tPerf = document.getElementById('tab-btn-teacher-perf'); const tClinic = document.getElementById('tab-btn-clinic');
   const tUsers = document.getElementById('tab-btn-users'); const tStudentsManage = document.getElementById('tab-btn-students-manage');
@@ -548,10 +582,8 @@ async function loadDashboard(){
   await Promise.all([loadStats(),loadUsers(),loadVisitCounts(),populateClassDropdowns(),loadClassButtons(),loadRoundsHistory(),loadHonorsWall(),loadLiveGatePasses(),loadVisitorsByDate(),loadAdminLiveAnnouncements(),buildDirectoryGrid(),loadTeacherPerformanceDashboard()]);
 }
 
-// 🟩 نظام جلب وعرض التعاميم الإدارية بقمة الموقع 🟩
 async function loadAdminLiveAnnouncements() {
-  const banner = document.getElementById('live-announcement-banner');
-  const textEl = document.getElementById('announcement-text-view');
+  const banner = document.getElementById('live-announcement-banner'); const textEl = document.getElementById('announcement-text-view');
   try {
     const snap = await getDocs(collection(db, 'announcements'));
     if(!snap.empty) {
@@ -559,43 +591,37 @@ async function loadAdminLiveAnnouncements() {
       list.sort((a,b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
       textEl.textContent = list[0].text; banner.classList.remove('hidden');
     }
-  } catch(e) { console.error(e); }
+  } catch(e) {}
 }
 
 window.saveAdminAnnouncement = async function() {
   const text = document.getElementById('announcement-input-text').value.trim();
-  if(!text) { alert('الرجاء كتابة نص التوجيه والتعميم أولاً!'); return; }
+  if(!text) return;
   try {
     await addDoc(collection(db, 'announcements'), { text, createdBy: currentUser.name, createdAt: serverTimestamp() });
-    alert('✓ تم نشر وبث التعميم الإداري بنجاح لكافة شاشات المنصة!');
+    alert('✓ تم نشر وبث التعميم الإداري بنجاح!');
     document.getElementById('announcement-input-text').value = ''; loadAdminLiveAnnouncements();
-  } catch(e) { alert('فشل البث: ' + e.message); }
+  } catch(e) {}
 };
 
-// 🟩 بناء دليل المعلمين الذكي المفرز حسب الرتب والأقسام 🟩
 async function buildDirectoryGrid() {
   const container = document.getElementById('directory-cards-container'); if(!container) return;
   const depts = ['اللغة العربية', 'الرياضيات', 'العلوم', 'التربية الإسلامية', 'اللغة الإنجليزية'];
-  
   if(currentUser.role === 'head') {
-    // رئيس القسم يقفز تلقائياً لعرض قسمه فقط حماية للخصوصية
     document.getElementById('directory-dept-grid-area').classList.add('hidden');
     document.getElementById('directory-teachers-list-view').classList.remove('hidden');
     document.getElementById('directory-selected-dept-title').textContent = currentUser.classId;
-    await viewDeptTeachersDirectory(currentUser.classId);
-    return;
+    await viewDeptTeachersDirectory(currentUser.classId); return;
   }
-  
-  let html = '';
-  depts.forEach(d => { html += `<div class="dept-card" onclick="viewDeptTeachersDirectory('${d}')"><div class="icon">📇</div><h3>قسم ${d}</h3><p>عرض الملفات الشخصية</p></div>`; });
+  let html = ''; depts.forEach(d => { html += `<div class="dept-card" onclick="viewDeptTeachersDirectory('${d}')"><div class="icon">📇</div><h3>قسم ${d}</h3><p>عرض الملفات الشخصية</p></div>`; });
   container.innerHTML = html;
 }
 
 window.viewDeptTeachersDirectory = async function(deptName) {
   document.getElementById('directory-dept-grid-area').classList.add('hidden');
-  const listView = document.getElementById('directory-teachers-list-view'); listView.classList.remove('hidden');
+  document.getElementById('directory-teachers-list-view').classList.remove('hidden');
   document.getElementById('directory-selected-dept-title').textContent = deptName;
-  const tableArea = document.getElementById('directory-table-result'); tableArea.innerHTML = '<p>جاري سحب الجداول وتدقيق أرقام الملفات...</p>';
+  const tableArea = document.getElementById('directory-table-result'); tableArea.innerHTML = '<p>جاري سحب الجداول وتدقيق الأسماء والأقسام الشخصية...</p>';
   try {
     const snap = await getDocs(collection(db, 'users'));
     let html = '<table><thead><tr><th>اسم المعلم</th><th>الوظيفة</th><th>رقم الهاتف</th><th>الرقم المدني</th><th>رقم الملف الوظيفي</th></tr></thead><tbody>';
@@ -604,12 +630,12 @@ window.viewDeptTeachersDirectory = async function(deptName) {
       const u = doc.data();
       if(u.classId === deptName && (u.role === 'teacher' || u.role === 'head')) {
         count++;
-        html += `<tr><td style="font-weight:bold; color:#1a1a2e;">أ. ${u.name}</td><td><span class="badge info">${u.role==='head'?'رئيس قسم':'معلم'}</span></td><td>${u.phone || '<span style="color:red">لم يستكمل بعد</span>'}</td><td>${u.civilId || '-'}</td><td><strong>${u.fileNumber || '-'}</strong></td></tr>`;
+        html += `<tr><td style="font-weight:bold; color:#1a1a2e;">أ. ${u.name || 'لم يُدخل اسمه بعد'}</td><td><span class="badge info">${u.role==='head'?'رئيس قسم':'معلم'}</span></td><td>${u.phone || '-'}</td><td>${u.civilId || '-'}</td><td><strong>${u.fileNumber || '-'}</strong></td></tr>`;
       }
     });
-    if(count === 0) tableArea.innerHTML = '<p style="color:#777; padding:10px;">لا يوجد معلمون مسجلون أو مستكملون لبياناتهم في هذا القسم حالياً.</p>';
+    if(count === 0) tableArea.innerHTML = '<p style="color:#777; padding:10px;">لا يوجد معلمون مسجلون في هذا القسم حالياً.</p>';
     else tableArea.innerHTML = html + '</tbody></table>';
-  } catch(e) { tableArea.innerHTML = '<p style="color:red">خطأ أثناء استدعاء الدليل المعزز</p>'; }
+  } catch(e) { tableArea.innerHTML = '<p style="color:red">خطأ أثناء استدعاء الدليل</p>'; }
 };
 
 window.backToDirectoryGrid = function() {
@@ -618,35 +644,29 @@ window.backToDirectoryGrid = function() {
   document.getElementById('directory-dept-grid-area').classList.remove('hidden');
 };
 
-// 🟩 لوحة قياس كفاءة أداء الأقسام التراكمية (فكرة 8) 🟩
 async function loadTeacherPerformanceDashboard() {
   const tableArea = document.getElementById('perf-metrics-result-table'); if(!tableArea) return;
   try {
     const [vSnap, bSnap] = await Promise.all([getDocs(collection(db, 'visits')), getDocs(collection(db, 'behavior'))]);
     const depts = ['اللغة العربية', 'الرياضيات', 'العلوم', 'التربية الإسلامية', 'اللغة الإنجليزية'];
     let vCounts = {}, bCounts = {}; depts.forEach(d => { vCounts[d]=0; bCounts[d]=0; });
-    
     vSnap.forEach(doc => { const v=doc.data(); if(vCounts[v.dept]!==undefined) vCounts[v.dept]++; });
-    bSnap.forEach(doc => { const b=doc.data(); // تقدير تقريبي للقسم من خلال رصد السلوك
-    if(bCounts[b.classId]!==undefined) bCounts[b.classId]++; });
-
-    let html = '<table><thead><tr><th>القسم الدراسي للتحليل</th><th>إجمالي التفتيش والزيارات الفنية</th><th>المخالفات المرصودة عبر المنصة</th><th>مؤشر النشاط التراكمي</th></tr></thead><tbody>';
+    bSnap.forEach(doc => { const b=doc.data(); if(bCounts[b.classId]!==undefined) bCounts[b.classId]++; });
+    let html = '<table><thead><tr><th>القسم الدراسي</th><th>إجمالي الزيارات الفنية</th><th>المخالفات المرصودة</th><th>مؤشر الأداء</th></tr></thead><tbody>';
     depts.forEach(d => {
-      if(currentUser.role === 'head' && d !== currentUser.classId) return; // قفل وحماية للأقسام الأخرى
+      if(currentUser.role === 'head' && d !== currentUser.classId) return;
       let totalActs = vCounts[d] + bCounts[d];
-      let statusBadge = totalActs > 8 ? '<span class="badge success">ممتاز ونشط جداً ✓</span>' : '<span class="badge warning">يحتاج تكثيف المتابعة</span>';
-      html += `<tr><td><strong>قسم ${d}</strong></td><td>📊 ${vCounts[d]} زيارة فنية</td><td>⚡ ${bCounts[d]} مخالفة</td><td>${statusBadge}</td></tr>`;
+      let statusBadge = totalActs > 8 ? '<span class="badge success">ممتاز ونشط جداً ✓</span>' : '<span class="badge warning">تحت المتابعة</span>';
+      html += `<tr><td><strong>قسم ${d}</strong></td><td>📊 ${vCounts[d]} زيارة</td><td>⚡ ${bCounts[d]} مخالفة</td><td>${statusBadge}</td></tr>`;
     });
     tableArea.innerHTML = html + '</tbody></table>';
-  } catch(e) { console.error(e); }
+  } catch(e) {}
 }
 
-// 🟩 تشغيل واستدعاء العيادة المدرسية والملفات الطبية 🟩
 async function loadClinicStudentNames() {
   var cls = document.getElementById('clinic-class').value; var sel = document.getElementById('clinic-student');
   sel.innerHTML = '<option value="">اختر الطالب</option>'; if(!cls) return;
-  var snap = await getDocs(collection(db, 'students')); var list = [];
-  snap.forEach(doc => { var d=doc.data(); if(d.classId===cls) list.push(d); });
+  var snap = await getDocs(collection(db, 'students')); var list = []; snap.forEach(doc => { var d=doc.data(); if(d.classId===cls) list.push(d); });
   list.sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar'));
   list.forEach(s => { sel.innerHTML += `<option value="${s.studentId}" data-name="${s.name}">${s.name}</option>`; });
 }
@@ -656,16 +676,15 @@ window.saveClinicLog = async function() {
   const cls = document.getElementById('clinic-class').value; const stuSel = document.getElementById('clinic-student');
   const stuId = stuSel.value; const stuName = stuSel.options[stuSel.selectedIndex] ? stuSel.options[stuSel.selectedIndex].getAttribute('data-name') : '';
   const symptoms = document.getElementById('clinic-symptoms').value.trim(); const action = document.getElementById('clinic-action').value;
-  if(!cls || !stuId || !symptoms) { alert('الرجاء تحديد الطالب ووصف الأعراض لحفظ الملف الصحي!'); return; }
+  if(!cls || !stuId || !symptoms) return;
   try {
     await addDoc(collection(db, 'clinic_logs'), { classId: cls, studentId: stuId, studentName: stuName, symptoms, action, date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}), createdAt: serverTimestamp() });
-    // إذا كانت الحالة طارئة وتستدعي الخروج، نزرعها آلياً بحقيبة الحارس والـ gatepasses
     if(action.includes('مغادرة طبية فوراً')) {
       await addDoc(collection(db, 'gatepasses'), { classId: cls, studentId: stuId, studentName: stuName, parentName: 'إخلاء طبي طارئ', parentCivilId: 'العيادة الطبية', parentPhone: 'إشعار الطبيب', reason: 'مغادرة صحية: ' + symptoms, issuedBy: 'طبيب العيادة', date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}), createdAt: serverTimestamp() });
     }
-    alert('✓ تم تسجيل الزيارة الطبية وربطها بملف الطالب وبوابة الحارس بنجاح!');
+    alert('✓ تم تسجيل الزيارة الطبية وربطها بالبوابة حياً!');
     document.getElementById('clinic-symptoms').value = ''; loadClinicTodayLogs(); loadLiveGatePasses();
-  } catch(e) { alert('خطأ في ترحيل الملف الطبي: ' + e.message); }
+  } catch(e) {}
 };
 
 async function loadClinicTodayLogs() {
@@ -673,28 +692,17 @@ async function loadClinicTodayLogs() {
   const today = new Date().toLocaleDateString('en-CA');
   try {
     const snap = await getDocs(collection(db, 'clinic_logs')); let count = 0;
-    let html = '<table><thead><tr><th>الوقت</th><th>اسم الطالب</th><th>الصف</th><th>الأعراض المشكو منها</th><th>التدبير والقرار الطبي المعجل</th></tr></thead><tbody>';
-    snap.forEach(doc => {
-      const c = doc.data();
-      if(c.date === today) {
-        count++;
-        html += `<tr style="background:#fff5f5;"><td>🕒 ${c.time || '-'}</td><td style="font-weight:bold;">${c.studentName}</td><td>${c.classId}</td><td>${c.symptoms}</td><td><strong>${c.action}</strong></td></tr>`;
-      }
-    });
-    table.innerHTML = count === 0 ? '<p style="color:#777; padding:10px;">لا توجد إحالات طبية مسجلة لليوم بالعيادة الدراسية.</p>' : html + '</tbody></table>';
-  } catch(e) { console.error(e); }
+    let html = '<table><thead><tr><th>الوقت</th><th>اسم الطالب</th><th>الصف</th><th>الأعراض</th><th>التدبير والقرار الطبي</th></tr></thead><tbody>';
+    snap.forEach(doc => { const c = doc.data(); if(c.date === today) { count++; html += `<tr style="background:#fff5f5;"><td>🕒 ${c.time || '-'}</td><td>${c.studentName}</td><td>${c.classId}</td><td>${c.symptoms}</td><td><strong>${c.action}</strong></td></tr>`; } });
+    table.innerHTML = count === 0 ? '<p style="color:#777; padding:10px;">لا توجد إحالات طبية اليوم.</p>' : html + '</tbody></table>';
+  } catch(e) {}
 }
 
-// 🟩 بناء ورسم المؤشرات والتحليلات البيانية الذكية (فكرة 3) 🟩
 function renderAttendancePieChart(present, absent) {
   const ctx = document.getElementById('attendanceChart'); if(!ctx) return;
-  if(attendancePieChart) attendancePieChart.destroy(); // تصفير للرسمة القديمة لمنع التداخل
+  if(attendancePieChart) attendancePieChart.destroy();
   attendancePieChart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: ['حاضرون اليوم', 'غائبون اليوم'],
-      datasets: [{ data: [present, absent], backgroundColor: ['#2ecc71', '#e74c3c'], borderWidth: 1 }]
-    },
+    type: 'pie', data: { labels: ['حاضرون اليوم', 'غائبون اليوم'], datasets: [{ data: [present, absent], backgroundColor: ['#2ecc71', '#e74c3c'], borderWidth: 1 }] },
     options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
   });
 }
@@ -705,14 +713,12 @@ async function loadStats(){
   const todayQuery = query(collection(db, 'attendance'), where('date', '==', today.replace(/-/g,'/'))); const attendanceSnap = await getDocs(todayQuery);
   globalTodayAttendance = []; let absentToday = 0; const classesRegistered = new Set();
   attendanceSnap.forEach(doc => { const d = doc.data(); globalTodayAttendance.push(d); classesRegistered.add(d.classId); if(d.status === 'absent') absentToday++; });
-  
   const presentToday = totalStudents - absentToday;
   if (currentUser.role !== 'specialist' && currentUser.role !== 'guard') { 
     document.getElementById('stats-cards').innerHTML = `<div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي طلاب المدرسة</p></div><div class="stat-card"><h3>${presentToday}</h3><p>حاضرون اليوم</p></div><div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div><div class="stat-card"><h3>${classesRegistered.size} / 15</h3><p>فصول رُصدت</p></div>`; 
-    // إطلاق محرك المؤشرات الدائرية حياً
     renderAttendancePieChart(presentToday, absentToday);
   }
-  let statusHTML = `<div style="margin-bottom:1rem;"><div style="display:flex; gap:8px; overflow-x:auto;">${[1,2,3,4,5,6,7].map(hNum => `<button type="button" class="period-tab-item" id="p-tab-btn-${hNum}" onclick="viewPeriodStatus(${hNum})" style="padding:10px 18px; font-weight:bold; cursor:pointer; background:#e9ecef; border:1px solid #ddd; border-radius:4px;">الحصة ${hNum}</button>`).join('')}</div></div><div id="period-status-table-result"></div>`;
+  let statusHTML = `<div style="margin-bottom:1rem;"><div style="display:flex; gap:8px; overflow-x:auto;">${[1,2,3,4,5,6,7].map(hNum => `<button type="button" class="period-tab-item" id="p-tab-btn-${hNum}" onclick="viewPeriodStatus(${hNum})" style="padding:10px 18px; font-weight:bold; background:#e9ecef; border:1px solid #ddd; border-radius:4px;">الحصة ${hNum}</button>`).join('')}</div></div><div id="period-status-table-result"></div>`;
   if(document.getElementById('class-status')) document.getElementById('class-status').innerHTML = statusHTML;
 }
 
@@ -722,11 +728,10 @@ window.viewPeriodStatus = function(periodNum) {
   const allClasses = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
   const registeredInPeriod = new Set(); globalTodayAttendance.forEach(rec => { if(String(rec.periodId) === String(periodNum)) { registeredInPeriod.add(rec.classId); } });
   let html = '<table><thead><tr><th>الفصل</th><th>حالة الرصد والمزامنة الحالية</th></tr></thead><tbody>';
-  allClasses.forEach(cls => { html += `<tr><td><strong>${cls}</strong></td><td>${registeredInPeriod.has(cls) ? '<span class="badge success">تم الرصد والمزامنة الحية ✓</span>' : '<span class="badge danger">لم يُرصد ✗</span>'}</td></tr>`; });
+  allClasses.forEach(cls => { html += `<tr><td><strong>${cls}</strong></td><td>${registeredInPeriod.has(cls) ? '<span class="badge success">تم الرصد حياً ✓</span>' : '<span class="badge danger">لم يُرصد ✗</span>'}</td></tr>`; });
   document.getElementById('period-status-table-result').innerHTML = html+'</tbody></table>';
 };
 
-// بقية الدوال والمحركات المحسنة والمؤمنة بالكامل
 async function populateClassDropdowns(){
   const allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4'];
   ['search-class','date-class','quick-behavior-class','gatepass-class','clinic-class'].forEach(function(id){
@@ -740,13 +745,13 @@ async function saveGatePass() {
   const stuId = stuSel.value; const stuName = stuSel.options[stuSel.selectedIndex] ? stuSel.options[stuSel.selectedIndex].getAttribute('data-name') : '';
   const parent = document.getElementById('gatepass-parent').value.trim(); const civilId = document.getElementById('gatepass-civilid').value.trim();
   const phone = document.getElementById('gatepass-phone').value.trim(); const reason = document.getElementById('gatepass-reason').value.trim();
-  if(!cls || !stuId || !parent || !civilId) { alert('الرجاء تعبئة البيانات المطلوبة لإصدار الإذن قانونياً!'); return; }
+  if(!cls || !stuId || !parent || !civilId) return;
   try {
     await addDoc(collection(db, 'gatepasses'), { classId: cls, studentId: stuId, studentName: stuName, parentName: parent, parentCivilId: civilId, parentPhone: phone, reason: reason, issuedBy: currentUser.name, date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}), createdAt: serverTimestamp() });
-    alert('✓ تم إصدار تصريح الخروج وتمريره لبوابة الحارس!');
+    alert('✓ تم إصدار تصريح الخروج بنجاح!');
     document.getElementById('gatepass-parent').value = ''; document.getElementById('gatepass-civilid').value = ''; document.getElementById('gatepass-reason').value = ''; document.getElementById('gatepass-phone').value = '';
     loadLiveGatePasses();
-  } catch(e) { alert('فشل في حفظ الإذن: ' + e.message); }
+  } catch(e) {}
 }
 
 window.searchGatePassByDate = async function() {
@@ -771,19 +776,19 @@ async function loadLiveGatePasses() {
     html += '</tbody></table>';
     if(activeList.length === 0) html = '<div style="text-align:center; padding:1rem; color:#777;">لا توجد تصاريح خروج صادرة لليوم حتى الآن.</div>';
     if(container) container.innerHTML = html; if(guardView) guardView.innerHTML = html;
-  } catch(e) { console.error(e); }
+  } catch(e) {}
 }
 
 window.saveSchoolVisitor = async function() {
   const name = document.getElementById('visitor-name').value.trim(); const civil = document.getElementById('visitor-civilid').value.trim();
   const phone = document.getElementById('visitor-phone').value.trim(); const reason = document.getElementById('visitor-reason').value.trim();
-  if(!name || !civil || !phone) { alert('الرجاء إدخال بيانات الزائر الكاملة للتوثيق!'); return; }
+  if(!name || !civil || !phone) return;
   try {
     await addDoc(collection(db, 'visitors'), { name, civilId: civil, phone, reason, date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}), recordedBy: currentUser.name, createdAt: serverTimestamp() });
-    alert('✓ تم توثيق بيانات الزائر بنجاح في دفتر الأمن الرقمي!');
+    alert('✓ تم توثيق بيانات الزائر بنجاح!');
     document.getElementById('visitor-name').value = ''; document.getElementById('visitor-civilid').value = ''; document.getElementById('visitor-phone').value = ''; document.getElementById('visitor-reason').value = '';
     loadVisitorsByDate();
-  } catch(e) { alert('فشل التسجيل: ' + e.message); }
+  } catch(e) {}
 };
 
 window.loadVisitorsByDate = async function() {
@@ -793,36 +798,35 @@ window.loadVisitorsByDate = async function() {
     let html = '<table><thead><tr><th>الوقت</th><th>اسم الزائر</th><th>الرقم المدني</th><th>رقم الهاتف</th><th>سبب الزيارة</th><th>حارس البوابة</th></tr></thead><tbody>';
     let count = 0; snap.forEach(doc => { const v = doc.data(); if(v.date === sDate) { count++; html += `<tr><td>🕒 ${v.time || '-'}</td><td style="font-weight:bold;">${v.name}</td><td>${v.civilId}</td><td>${v.phone}</td><td>${v.reason || '-'}</td><td>${v.recordedBy}</td></tr>`; } });
     logTable.innerHTML = count === 0 ? '<div style="text-align:center; padding:1rem; color:#666;">لا يوجد زوار مسجلون في هذا التاريخ.</div>' : html + '</tbody></table>';
-  } catch(e) { logTable.innerHTML = '<p style="color:red;">خطأ أثناء جلب سجل الزوار</p>'; }
+  } catch(e) {}
 };
 
 async function searchByDate() {
-  var cls=document.getElementById('date-class').value; var date=document.getElementById('date-search').value; var result=document.getElementById('date-result'); if(!cls||!date){alert('اختر الصف والتاريخ');return}
+  var cls=document.getElementById('date-class').value; var date=document.getElementById('date-search').value; var result=document.getElementById('date-result'); if(!cls||!date) return;
   var formattedDate=date.replace(/-/g,'/'); result.innerHTML = '<p>جاري الترتيب هجائياً...</p>';
   var studentsSnap=await getDocs(collection(db,'students')); var classStudents=[]; studentsSnap.forEach(function(doc){ var d=doc.data(); if(d.classId===cls)classStudents.push(d); });
-  classStudents.sort(function(a,b){ return (a.name || '').localeCompare(b.name || '', 'ar'); }); // الترتيب الهجائي الصارم بناء على طلب بوعلي
+  classStudents.sort(function(a,b){ return (a.name || '').localeCompare(b.name || '', 'ar'); }); 
   var attSnap=await getDocs(collection(db,'attendance')); var absentIds=new Set(); attSnap.forEach(function(doc){ var d=doc.data(); if(d.classId===cls&&d.date===formattedDate&&d.status==='absent')absentIds.add(d.studentId); });
   let html = '<table><thead><tr><th>اسم الطالب (مرتب هجائياً)</th><th>الحالة اليومية</th></tr></thead><tbody>'; classStudents.forEach(function(s){ html+='<tr><td><strong>'+s.name+'</strong></td><td>'+(absentIds.has(s.studentId)?'<span class="badge danger">غائب</span>':'<span class="badge success">حاضر ✓</span>')+'</td></tr>'; }); result.innerHTML=html+'</tbody></table>';
 }
 
 async function searchStudent(){
   var cls=document.getElementById('search-class').value; var stuId=document.getElementById('search-student').value; var result=document.getElementById('student-result'); var pdfBtn=document.getElementById('btn-download-pdf'); if(!cls||!stuId) return;
-  result.innerHTML='<p style="text-align:center;color:#666;">جاري سحب الملف الموحد الشامل للطالب...</p>';
+  result.innerHTML='<p style="text-align:center;color:#666;">جاري سحب الملف الموحد...</p>';
   var stuName=''; var snap1=await getDocs(collection(db,'students')); snap1.forEach(function(doc){var d=doc.data();if(d.studentId===stuId)stuName=d.name});
   var snap2=await getDocs(collection(db,'attendance')); var records=[]; snap2.forEach(function(doc){ var d=doc.data(); if(d.studentId===stuId) { if(d.status==='absent'||d.status==='late') records.push(d); } });
   var gRecords=[]; try { var snap4 = await getDocs(collection(db,'gatepasses')); snap4.forEach(function(doc){ var g = doc.data(); if(g.studentId===stuId) gRecords.push(g); }); } catch(e){}
   
-  var html=`<div id="pdf-print-area"><h3 style="border-bottom:2px solid #1a1a2e;padding-bottom:6px">الملف الموحد للطالب: ${stuName} (${cls})</h3><h4 style="margin-top:1rem;"><i class="bi bi-clock-history"></i> سجل الحضور والغيبات (${records.length})</h4>`;
-  if(records.length===0){ html+='<p style="color:green; padding:5px;">الملف نظيف من الغياب والـتأخير ✓</p>'; } 
+  var html=`<div id="pdf-print-area"><h3>الملف الموحد للطالب: ${stuName} (${cls})</h3><h4><i class="bi bi-clock-history"></i> سجل الحضور والغيبات (${records.length})</h4>`;
+  if(records.length===0){ html+='<p style="color:green; padding:5px;">الملف نظيف من الغياب ✓</p>'; } 
   else { html+='<table><thead><tr><th>التاريخ</th><th>الحصة</th><th>الحالة</th></tr></thead><tbody>'; records.forEach(function(r){ html+='<tr><td>'+r.date+'</td><td>الحصة '+(r.periodId||'-')+'</td><td>'+(r.status==='absent'?'<span class="badge danger">غائب</span>':'<span class="badge warning">متأخر</span>')+'</td></tr>'; }); html+='</tbody></table>'; }
   
-  html+=`<h4 style="margin-top:1.5rem; color:#e67e22;"><i class="bi bi-box-arrow-up-right"></i> سجل تصاريح المغادرة والاستئذان الطارئ والعيادة (${gRecords.length})</h4>`;
+  html+=`<h4 style="margin-top:1.5rem; color:#e67e22;"><i class="bi bi-box-arrow-up-right"></i> سجل تصاريح المغادرة والاستئذان والعيادة (${gRecords.length})</h4>`;
   if(gRecords.length===0){ html+='<p style="color:gray; padding:5px;">لم يغادر الطالب المدرسة كلياً ✓</p>'; }
   else { html+='<table><thead><tr><th>التاريخ</th><th>الوقت</th><th>اسم المستلم</th><th>سبب الخروج الرسمي</th></tr></thead><tbody>'; gRecords.forEach(function(g){ html+=`<tr><td>${g.date}</td><td>🕒 ${g.time||'-'}</td><td>${g.parentName}</td><td>${g.reason||'-'}</td></tr>`; }); html+='</tbody></table>'; }
-  result.innerHTML=html+'</div>'; pdfBtn.remove('hidden'); pdfBtn.classList.remove('hidden');
+  result.innerHTML=html+'</div>'; pdfBtn.classList.remove('hidden');
 }
 
-// تحميل الفصول والروابط والأزرار الباقية
 function loadClassButtons(){
   var allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4']; var html='';
   allClasses.forEach(function(cls){ html+='<button onclick="selectClass(\''+cls+'\')" style="padding:1rem;background:#f8f9fa;color:#333;border:1px solid #ddd;border-radius:8px;">'+cls+'</button>'; });
@@ -840,7 +844,7 @@ async function loadAbsentToday() {
   const list = document.getElementById('absent-list'); if(!list) return;
   const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
   const q = query(collection(db, 'attendance'), where('date', '==', today), where('status', '==', 'absent')); const snap = await getDocs(q);
-  if (snap.empty) { list.innerHTML = '<div style="background:#d4edda;color:#155724;padding:1rem;text-align:center;">كل الطلاب حضور اليوم والحمد لله ✓</div>'; return; }
+  if (snap.empty) { list.innerHTML = '<div style="background:#d4edda;color:#155724;padding:1rem;text-align:center;">كل الطلاب حضور اليوم ✓</div>'; return; }
   let html = '<table><thead><tr><th>#</th><th>اسم الطالب الغائب</th><th>الفصل</th><th>الحصة</th></tr></thead><tbody>'; let counter = 1;
   snap.forEach(doc => { const d = doc.data(); html += `<tr><td>${counter++}</td><td style="font-weight:bold;">${d.studentName || 'غير محدد'}</td><td><span class="badge secondary">${d.classId || '-'}</span></td><td>الحصة ${d.periodId || '-'}</td></tr>`; });
   list.innerHTML = html + '</tbody></table>';
@@ -851,7 +855,7 @@ async function loadRepeatAbsent() {
   snap.forEach(doc => { const d = doc.data(); if(d.status === 'absent') { const key = d.studentId || d.studentName; if(key) { counts[key] = (counts[key] || 0) + 1; info[key] = { name: d.studentName, classId: d.classId }; } } });
   let html = '<table><thead><tr><th>اسم الطالب</th><th>الفصل</th><th>عدد أيام الغياب المتراكمة</th></tr></thead><tbody>'; let hasData = false;
   for(let key in counts) { if(counts[key] >= 5) { hasData = true; html += `<tr><td>${info[key].name}</td><td>${info[key].classId}</td><td><strong style="color:red;">${counts[key]} أيام غياب</strong></td></tr>`; } }
-  list.innerHTML = hasData ? html + '</tbody></table>' : '<div style="text-align:center; padding:1rem; color:#666;">لا يوجد طالب متجاوز لإنذار الـ 5 أيام حضورياً.</div>';
+  list.innerHTML = hasData ? html + '</tbody></table>' : '<div style="text-align:center; padding:1rem; color:#666;">لا يوجد طالب متجاوز لإنذار الـ 5 أيام.</div>';
 }
 async function loadVisitCounts(){
   const visitsSnap=await getDocs(collection(db,'visits')); const counts={'اللغة العربية':0,'الرياضيات':0,'العلوم':0,'التربية الإسلامية':0,'اللغة الإنجليزية':0};
@@ -876,8 +880,8 @@ async function loadRoundsHistory() {
   const container = document.getElementById('rounds-history-list'); if(!container) return;
   const q = query(collection(db, 'rounds'), orderBy('createdAt', 'desc')); const snap = await getDocs(q);
   if(snap.empty) { container.innerHTML = '<p style="color:#666; text-align:center;">لا توجد تقارير جولات مسجلة.</p>'; return; }
-  let html = '<table><thead><tr><th>التاريخ</th><th>المشرف</th><th>الجناح</th><th>الانضباط</th></tr></thead><tbody>';
-  snap.forEach(doc => { const r = doc.data(); html += `<tr><td>${r.date}</td><td>أ. ${r.recordedBy}</td><td>${r.wing}</td><td>${r.noise}</td></tr>`; }); container.innerHTML = html + '</tbody></table>';
+  let html = '<table><thead><tr><th>التاريخ</th><th>المشرف</th><th>الجناح</th></tr></thead><tbody>';
+  snap.forEach(doc => { const r = doc.data(); html += `<tr><td>${r.date}</td><td>أ. ${r.recordedBy}</td><td>${r.wing}</td></tr>`; }); container.innerHTML = html + '</tbody></table>';
 }
 async function loadHonorsWall() {
   const wall = document.getElementById('honors-wall-list'); if(!wall) return;
@@ -888,16 +892,15 @@ async function loadHonorsWall() {
 
 window.openAddUser=()=>{ document.getElementById('add-user-modal').style.display='flex'; };
 window.closeAddUser=()=>{ document.getElementById('add-user-modal').style.display='none'; };
-window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId, createdAt:serverTimestamp() }); alert('تم إضافة الحساب الجديد بنجاح ملموس'); closeAddUser(); loadUsers(); }catch(e){ alert('خطأ: '+e.message); } };
+window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId, createdAt:serverTimestamp() }); alert('تم إضافة الحساب الجديد بنجاح'); closeAddUser(); loadUsers(); }catch(e){} };
 
 window.loadStats = loadStats; window.loadAdminBehaviorList = loadAdminBehaviorList; window.loadHonorsWall = loadHonorsWall;
 window.loadRoundsHistory = loadRoundsHistory; window.loadLiveGatePasses = loadLiveGatePasses; window.loadAbsentToday = loadAbsentToday;
 window.loadRepeatAbsent = loadRepeatAbsent; window.loadClassButtons = loadClassButtons; window.loadQuickStudentNames = loadQuickStudentNames;
 window.loadGatePassStudentNames = loadGatePassStudentNames; window.saveGatePass = saveGatePass; window.selectClass = selectClass;
-window.loadStudentNames = loadStudentNames; window.searchStudent = searchStudent; window.saveSupervisorRound = async function(){};
-window.searchByDate = searchByDate; window.loadVisitCounts = loadVisitCounts; window.saveSchoolVisitor = saveSchoolVisitor;
-window.loadVisitorsByDate = loadVisitorsByDate; window.viewDeptTeachersDirectory = viewDeptTeachersDirectory;
-window.backToDirectoryGrid = backToDirectoryGrid; window.loadClinicTodayLogs = loadClinicTodayLogs;
+window.loadStudentNames = loadStudentNames; window.searchStudent = searchStudent; window.searchByDate = searchByDate; 
+window.loadVisitCounts = loadVisitCounts; window.saveSchoolVisitor = saveSchoolVisitor; window.loadVisitorsByDate = loadVisitorsByDate; 
+window.viewDeptTeachersDirectory = viewDeptTeachersDirectory; window.backToDirectoryGrid = backToDirectoryGrid; window.loadClinicTodayLogs = loadClinicTodayLogs;
 
 const tabsBar = document.getElementById('tabs-bar');
 if(tabsBar) { tabsBar.addEventListener('click', (e) => { if (e.target.classList.contains('tab')) { const tabId = e.target.getAttribute('data-tab'); window.switchTab(tabId); if (tabId === 'today') window.loadStats(); if (tabId === 'absent') window.loadAbsentToday(); if (tabId === 'repeat') window.loadRepeatAbsent(); if (tabId === 'behavior') window.loadAdminBehaviorList(); if (tabId === 'honors') window.loadHonorsWall(); if (tabId === 'rounds') window.loadRoundsHistory(); if (tabId === 'gatepass') window.loadLiveGatePasses(); if (tabId === 'classes') window.loadClassButtons(); if (tabId === 'users') window.loadUsers(); if (tabId === 'visits') window.loadVisitCounts(); if (tabId === 'guard') { window.loadLiveGatePasses(); window.loadVisitorsByDate(); } if (tabId === 'clinic') window.loadClinicTodayLogs(); if (tabId === 'teacher-directory') buildDirectoryGrid(); if (tabId === 'teacher-perf') loadTeacherPerformanceDashboard(); } }); }
