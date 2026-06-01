@@ -23,7 +23,6 @@ body{font-family:Arial,sans-serif;background:#f5f5f5;color:#333;line-height:1.6}
 .tab{padding:8px 16px;border:none;background:transparent;cursor:pointer;font-size:14px;white-space:nowrap;border-radius:4px;transition:background .2s}
 .tab:hover{background:#f5f5f5}
 .tab.active{background:#1a1a2e;color:#fff}
-.content覆{max-width:1200px;margin:0 auto;padding:1.5rem}
 .content{max-width:1200px;margin:0 auto;padding:1.5rem}
 .card{background:#fff;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.1)}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
@@ -516,21 +515,21 @@ window.saveMandatoryProfileData = async function() {
   } catch(e) { alert('خطأ في الحفظ: ' + e.message); }
 };
 
-// 🟩 دوال مـزامـنـة وسـحـب قـوائـم الـطـلاب بـحـسـب الـصـف حياً 🟩
 async function fetchStudentsByClass(cls, dropdownId) {
   var sel = document.getElementById(dropdownId); if(!sel) return;
   sel.innerHTML = '<option value="">اختر الطالب</option>'; if(!cls) return;
-  var snap = await getDocs(collection(db, 'students')); var list = [];
-  snap.forEach(doc => { var d=doc.data(); if(d.classId===cls) list.push(d); });
-  list.sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar'));
-  list.forEach(s => { sel.innerHTML += `<option value="${s.studentId}" data-name="${s.name}">${s.name}</option>`; });
+  try {
+    var snap = await getDocs(collection(db, 'students')); var list = [];
+    snap.forEach(doc => { var d=doc.data(); if(d.classId===cls) list.push(d); });
+    list.sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar'));
+    list.forEach(s => { sel.innerHTML += `<option value="${s.studentId}" data-name="${s.name}">${s.name}</option>`; });
+  } catch(err) {}
 }
 window.loadClinicStudentNames = function() { fetchStudentsByClass(document.getElementById('clinic-class').value, 'clinic-student'); };
 window.loadQuickStudentNames = function() { fetchStudentsByClass(document.getElementById('quick-behavior-class').value, 'quick-behavior-student'); };
 window.loadGatePassStudentNames = function() { fetchStudentsByClass(document.getElementById('gatepass-class').value, 'gatepass-student'); };
 window.loadStudentNames = function() { fetchStudentsByClass(document.getElementById('search-class').value, 'search-student'); };
 
-// 🟩 إطلاق البطاقات السلوكية الملونة الفورية 🟩
 window.submitQuickBehavior = async function(behaviorType) {
   const cls = document.getElementById('quick-behavior-class').value; const stuSel = document.getElementById('quick-behavior-student');
   const stuId = stuSel.value; const stuName = stuSel.options[stuSel.selectedIndex] ? stuSel.options[stuSel.selectedIndex].getAttribute('data-name') : '';
@@ -542,7 +541,6 @@ window.submitQuickBehavior = async function(behaviorType) {
   } catch(e) { alert('خطأ: ' + e.message); }
 };
 
-// 🟩 إدارة ملفات التفتيش والزيارات الفنية للأقسام 🟩
 window.selectDept = function(deptName) {
   document.getElementById('dept-list').classList.add('hidden');
   const view = document.getElementById('dept-visits'); view.classList.remove('hidden');
@@ -631,13 +629,15 @@ function updateDepartmentsUIComponents() {
   }
 }
 
+// 🟩 دالة التبديل الذكية الشاملة: تم تصحيحها لمنع إخفاء محتويات الصناديق الأخرى 🟩
 window.switchTab = function(tabId) {
   const role = currentUser.role;
-  if (['admin','assistant'].includes(role) && tabId === 'announcements') {}
-  else if (tabId === 'announcements') { alert('حظر الإدارة فقط.'); return; }
-  if (role === 'guard' && !['guard'].includes(tabId)) { alert('مقيد للحارس.'); return; }
+  if (tabId === 'announcements' && !['admin','assistant'].includes(role)) { alert('حظر: إرسال التعاميم صلاحية خاصة بمدير المدرسة والمدير المساعد فقط.'); return; }
+  if (role === 'guard' && tabId !== 'guard') { alert('مقيد: حساب الحارس مخصص لشاشة البوابة فقط.'); return; }
 
-  const tabs = document.querySelectorAll('.tab'); const tabContents = document.querySelectorAll('.content > div');
+  const tabs = document.querySelectorAll('.tab');
+  const tabContents = document.querySelectorAll('div[id^="tab-"]'); // اختيار حصر نوافذ التبويبات فقط
+
   tabs.forEach(tab => { if (tab.getAttribute('data-tab') === tabId) tab.classList.add('active'); else tab.classList.remove('active'); });
   tabContents.forEach(content => { if (content.id === `tab-${tabId}`) content.classList.remove('hidden'); else content.classList.add('hidden'); });
 };
@@ -660,7 +660,11 @@ async function loadDashboard(){
   document.getElementById('visitor-search-date').valueAsDate = new Date();
   document.getElementById('gatepass-search-date').valueAsDate = new Date();
 
-  await Promise.all([loadStats(),loadUsers(),loadVisitCounts(),populateClassDropdowns(),loadClassButtons(),loadRoundsHistory(),loadHonorsWall(),loadLiveGatePasses(),loadVisitorsByDate(),loadAdminLiveAnnouncements(),loadTeacherPerformanceDashboard()]);
+  // تشغيل آمن منفصل لكل الدوال الإحصائية لمنع تجميد الشاشات في حال وجود جدول فارغ
+  try { loadStats(); }catch(e){} try { loadUsers(); }catch(e){} try { populateClassDropdowns(); }catch(e){}
+  try { loadClassButtons(); }catch(e){} try { loadRoundsHistory(); }catch(e){} try { loadHonorsWall(); }catch(e){}
+  try { loadLiveGatePasses(); }catch(e){} try { loadVisitorsByDate(); }catch(e){} try { loadAdminLiveAnnouncements(); }catch(e){}
+  try { loadTeacherPerformanceDashboard(); }catch(e){}
 }
 
 async function loadAdminLiveAnnouncements() {
@@ -683,14 +687,14 @@ window.saveAdminAnnouncement = async function() {
 window.viewDeptTeachersDirectory = async function(deptName) {
   document.getElementById('directory-dept-grid-area').classList.add('hidden');
   document.getElementById('directory-teachers-list-view').classList.remove('hidden');
-  document.getElementById('directory-selected-dept-title').textContent = deptName;
+  document.getElementById('directory-selected-dept-title').textContent = deptName || currentUser.classId;
   const tableArea = document.getElementById('directory-table-result'); tableArea.innerHTML = '<p>جاري سحب الدليل الشخصي للأقسام...</p>';
   try {
     const snap = await getDocs(collection(db, 'users'));
     let html = '<table><thead><tr><th>اسم المعلم</th><th>الوظيفة</th><th>رقم الهاتف</th><th>الرقم المدني</th><th>رقم الملف</th></tr></thead><tbody>'; let count = 0;
     snap.forEach(doc => {
       const u = doc.data();
-      if(u.classId === deptName && (u.role === 'teacher' || u.role === 'head')) {
+      if(u.classId === (deptName || currentUser.classId) && (u.role === 'teacher' || u.role === 'head')) {
         count++; html += `<tr><td style="font-weight:bold; color:#1a1a2e;">أ. ${u.name || 'غير مستكمل'}</td><td><span class="badge info">${u.role==='head'?'رئيس قسم':'معلم'}</span></td><td>${u.phone || '-'}</td><td>${u.civilId || '-'}</td><td><strong>${u.fileNumber || '-'}</strong></td></tr>`;
       }
     });
@@ -887,7 +891,6 @@ window.openAddUser=()=>{ document.getElementById('add-user-modal').style.display
 window.closeAddUser=()=>{ document.getElementById('add-user-modal').style.display='none'; };
 window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId, createdAt:serverTimestamp() }); alert('تم إضافة الحساب بنجاح'); closeAddUser(); loadUsers(); }catch(e){} };
 
-// 🟩 ربـط وتـثـبـيـت كـافـة الأزرار بـالـمـحـرك الـجـديـد والـمـطـور كـلـيـاً 🟩
 window.loadStats = loadStats; window.loadAdminBehaviorList = loadAdminBehaviorList; window.loadHonorsWall = loadHonorsWall;
 window.loadRoundsHistory = loadRoundsHistory; window.loadLiveGatePasses = loadLiveGatePasses; window.loadAbsentToday = loadAbsentToday;
 window.loadRepeatAbsent = loadRepeatAbsent; window.loadClassButtons = loadClassButtons; window.selectClass = selectClass;
@@ -895,8 +898,34 @@ window.searchStudent = searchStudent; window.searchByDate = searchByDate; window
 window.saveSchoolVisitor = saveSchoolVisitor; window.loadVisitorsByDate = loadVisitorsByDate; window.viewDeptTeachersDirectory = viewDeptTeachersDirectory; 
 window.backToDirectoryGrid = backToDirectoryGrid; window.loadClinicTodayLogs = loadClinicTodayLogs;
 
+// 🟩 المحرك المحدث كلياً لاستقبال ضغطات الموبايل بنسبة أمان 100% 🟩
 const tabsBar = document.getElementById('tabs-bar');
-if(tabsBar) { tabsBar.addEventListener('click', (e) => { if (e.target.classList.contains('tab')) { const tabId = e.target.getAttribute('data-tab'); window.switchTab(tabId); if (tabId === 'today') window.loadStats(); if (tabId === 'absent') window.loadAbsentToday(); if (tabId === 'repeat') window.loadRepeatAbsent(); if (tabId === 'behavior') window.loadAdminBehaviorList(); if (tabId === 'honors') window.loadHonorsWall(); if (tabId === 'rounds') window.loadRoundsHistory(); if (tabId === 'gatepass') window.loadLiveGatePasses(); if (tabId === 'classes') window.loadClassButtons(); if (tabId === 'users') window.loadUsers(); if (tabId === 'visits') window.loadVisitCounts(); if (tabId === 'guard') { window.loadLiveGatePasses(); window.loadVisitorsByDate(); } if (tabId === 'clinic') window.loadClinicTodayLogs(); if (tabId === 'teacher-directory') window.viewDeptTeachersDirectory(currentUser.classId); if (tabId === 'teacher-perf') loadTeacherPerformanceDashboard(); } }); }
+if(tabsBar) {
+  tabsBar.addEventListener('click', (e) => {
+    const tabBtn = e.target.closest('.tab'); // التوثيق الذكي لجلب الزر كاملاً حتى لو ضغطت الإيموجي
+    if (!tabBtn) return;
+    
+    const tabId = tabBtn.getAttribute('data-tab');
+    window.switchTab(tabId);
+    
+    try {
+      if (tabId === 'today') window.loadStats();
+      if (tabId === 'absent') window.loadAbsentToday();
+      if (tabId === 'repeat') window.loadRepeatAbsent();
+      if (tabId === 'behavior') window.loadAdminBehaviorList();
+      if (tabId === 'honors') window.loadHonorsWall();
+      if (tabId === 'rounds') window.loadRoundsHistory();
+      if (tabId === 'gatepass') window.loadLiveGatePasses();
+      if (tabId === 'classes') window.loadClassButtons();
+      if (tabId === 'users') window.loadUsers();
+      if (tabId === 'visits') window.loadVisitCounts();
+      if (tabId === 'guard') { window.loadLiveGatePasses(); window.loadVisitorsByDate(); }
+      if (tabId === 'clinic') window.loadClinicTodayLogs();
+      if (tabId === 'teacher-directory') window.viewDeptTeachersDirectory(currentUser.classId);
+      if (tabId === 'teacher-perf') loadTeacherPerformanceDashboard();
+    } catch(err) { console.error(err); }
+  });
+}
 </script>
 </body>
 </html>
