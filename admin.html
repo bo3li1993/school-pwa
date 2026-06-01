@@ -944,4 +944,4 @@ const tabsBar = document.getElementById('tabs-bar');
 if(tabsBar) { tabsBar.addEventListener('click', (e) => { if (e.target.classList.contains('tab')) { const tabId = e.target.getAttribute('data-tab'); window.switchTab(tabId); if (tabId === 'today') window.loadStats(); if (tabId === 'absent') window.loadAbsentToday(); if (tabId === 'repeat') window.loadRepeatAbsent(); if (tabId === 'behavior') window.loadAdminBehaviorList(); if (tabId === 'honors') window.loadHonorsWall(); if (tabId === 'rounds') window.loadRoundsHistory(); if (tabId === 'gatepass') window.loadLiveGatePasses(); if (tabId === 'classes') window.loadClassButtons(); if (tabId === 'users') window.loadUsers(); if (tabId === 'visits') window.loadVisitCounts(); if (tabId === 'guard') { window.loadLiveGatePasses(); window.loadVisitorsByDate(); } if (tabId === 'clinic') window.loadClinicTodayLogs(); if (tabId === 'teacher-directory') buildDirectoryGrid(); if (tabId === 'teacher-perf') loadTeacherPerformanceDashboard(); } }); }
 </script>
 </body>
-</html>
+</html> 
