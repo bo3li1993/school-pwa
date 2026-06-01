@@ -7,7 +7,6 @@
 <title>لوحة التحكم الشاملة الموحدة - مدرسة سالم الحسينان المتوسطة</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<!-- مكتبات توليد الـ PDF وقراءة ملفات الإكسيل للرفع الجماعي ومنع الحظر -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -91,7 +90,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
 </div>
 
 <div class="content">
-  <!-- اليوم -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
@@ -100,7 +98,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- الفصول -->
   <div id="tab-classes" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">اختر الفصل</h2>
@@ -109,7 +106,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     <div id="class-detail" class="hidden"></div>
   </div>
 
-  <!-- الغائبون -->
   <div id="tab-absent" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">🔴 كشف غياب الطلاب اليومي (مزود بنظام الرادار الطبي التحذيري حياً)</h2>
@@ -117,7 +113,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- غياب متكرر -->
   <div id="tab-repeat" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
@@ -125,7 +120,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- كشف الجزاءات والسلوكيات + نظام البطاقات السريعة الملونة -->
   <div id="tab-behavior" class="hidden">
     <div class="card" style="background: #fffbfa; border: 1px solid #fcdbd2;">
       <h3 style="margin-bottom:1rem; color: #c0392b;"><i class="bi bi-lightning-charge-fill"></i> لوحة البطاقات السريعة الملونة لرصد المخالفات الفورية</h3>
@@ -145,7 +139,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- حقيبة الاستئذان والمغادرة الرقمية الذكية -->
   <div id="tab-gatepass" class="hidden">
     <div class="card" id="gatepass-form-area" style="background:#fffde6; border:1px solid #e6db55;">
       <h2 style="margin-bottom:1rem; color:#d4af37;"><i class="bi bi-ticket-perforated-fill"></i> إصدار تصريح خروج واستئذان طالب أثناء الدوام الرسمي</h2>
@@ -164,7 +157,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- واجهة إدارة واستيراد الطلاب الجماعي للعام الدراسي الجديد عبر الـ Excel -->
   <div id="tab-students-manage" class="hidden">
     <div class="card" style="background:#eef9ff; border:1px solid #bce1f5;">
       <h2 style="margin-bottom:1rem; color:#1a5a80;"><i class="bi bi-file-earmark-excel-fill"></i> الرفع الجماعي والذكي لطلاب السنة الدراسية الجديدة</h2>
@@ -179,7 +171,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- بحث طالب الشامل -->
   <div id="tab-student" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">👤 بحث ملف الطالب الشامل</h2>
@@ -195,7 +186,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- جولة الجناح لمشرفي الأجنحة والإدارة -->
   <div id="tab-rounds" class="hidden">
     <div class="card" id="supervisor-round-form-area">
       <h2 style="margin-bottom:1rem; color:#1a1a2e;"><i class="bi bi-clipboard-check"></i> استمارة الجولة الميدانية اليومية لمشرف الجناح</h2>
@@ -241,7 +231,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- لوحة الشرف المتميزة الرقمية وطباعة الشهادات التلقائية -->
   <div id="tab-honors" class="hidden">
     <div class="card">
       <h2>🏆 لوحة شرف الفائقين والمتميزين سلوكياً وبالمواظبة الرقمية</h2>
@@ -250,7 +239,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- بحث بتاريخ -->
   <div id="tab-date" class="hidden">
     <div class="card">
       <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
@@ -263,7 +251,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- الزيارات الفنية المقيدة للمدير والمساعد ورئيس القسم بقسمه فقط -->
   <div id="tab-visits" class="hidden">
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
@@ -293,7 +280,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
     </div>
   </div>
 
-  <!-- المستخدمون -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -305,7 +291,6 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle;}
   </div>
 </div>
 
-<!-- Modals -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
@@ -407,7 +392,9 @@ window.switchTab = function(tabId) {
   const tabs = document.querySelectorAll('.tab');
   const tabContents = document.querySelectorAll('.content > div');
   tabs.forEach(tab => { if (tab.getAttribute('data-tab') === tabId) { tab.classList.add('active'); } else { tab.classList.remove('active'); } });
-  tabContents.forEach(content => { if (content.id === `tab-${tabId}`) { content.classList.remove('hidden'); } else { content.add('hidden'); } });
+  
+  // 🟩 تم تصحيح السطر هنا بإضافة classList لمنع الـ TypeError 🟩
+  tabContents.forEach(content => { if (content.id === `tab-${tabId}`) { content.classList.remove('hidden'); } else { content.classList.add('hidden'); } });
 };
 
 async function loadDashboard(){
@@ -481,7 +468,7 @@ async function importStudentsFromExcel() {
 }
 
 async function clearAllStudents() {
-  if (!confirm('🚨 تحذير: هل أنت متأكد من حذف جميع الطلاب؟ لا يمكن التراجع!')) return;
+  if (!confirm('🚨 تحذير: هل أنت متأكد من حذف جميع الطلاب? لا يمكن التراجع!')) return;
   try {
     const snap = await getDocs(collection(db, 'students'));
     for (let dDoc of snap.docs) { await deleteDoc(doc(db, 'students', dDoc.id)); }
