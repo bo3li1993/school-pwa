@@ -393,7 +393,6 @@ window.switchTab = function(tabId) {
   const tabContents = document.querySelectorAll('.content > div');
   tabs.forEach(tab => { if (tab.getAttribute('data-tab') === tabId) { tab.classList.add('active'); } else { tab.classList.remove('active'); } });
   
-  // 🟩 تم تصحيح السطر هنا بإضافة classList لمنع الـ TypeError 🟩
   tabContents.forEach(content => { if (content.id === `tab-${tabId}`) { content.classList.remove('hidden'); } else { content.classList.add('hidden'); } });
 };
 
@@ -468,7 +467,7 @@ async function importStudentsFromExcel() {
 }
 
 async function clearAllStudents() {
-  if (!confirm('🚨 تحذير: هل أنت متأكد من حذف جميع الطلاب? لا يمكن التراجع!')) return;
+  if (!confirm('🚨 تحذير: هل أنت متأكد من حذف جميع الطلاب؟ لا يمكن التراجع!')) return;
   try {
     const snap = await getDocs(collection(db, 'students'));
     for (let dDoc of snap.docs) { await deleteDoc(doc(db, 'students', dDoc.id)); }
@@ -714,22 +713,132 @@ async function loadVisitCounts(){
 window.openNewVisit=()=>{ document.getElementById('visit-form-modal').style.display='flex'; document.getElementById('visit-date').valueAsDate=new Date(); const dSel = document.getElementById('visit-dept'); if (currentUser.role === 'head') { dSel.value = currentUser.classId; dSel.disabled = true; window.loadVisitCriteria(); } else { dSel.disabled = false; } };
 window.closeVisitForm=()=>{ document.getElementById('visit-form-modal').style.display='none'; document.getElementById('visit-dept').value=''; document.getElementById('visit-criteria-list').innerHTML=''; };
 window.loadVisitCriteria=()=>{ const dept=document.getElementById('visit-dept').value; const list=document.getElementById('visit-criteria-list'); if(!dept){list.innerHTML='';return} const criteria=visitCriteria[dept]||[]; let html=''; criteria.forEach((c,i)=>{ html+=`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:0.5px solid #ddd"><span>${c}</span><select id="score${i}" style="width:120px;"><option value="5">ممتاز</option><option value="4">جيد جداً</option></select></div>`; }); list.innerHTML=html; };
-window.saveVisit=async()=>{ const dept=document.getElementById('visit-dept').value; const teacher=document.getElementById('visit-teacher').value; const className=document.getElementById('visit-class').value; const period=document.getElementById('visit-period').value; const date=document.getElementById('visit-date').value.split('-').reverse().join('/'); if(!dept||!teacher||!className){ alert('الرجاء تعبئة البيانات الأساسية للتقرير الفني!'); return; } try{ await addDoc(collection(db,'visits'),{ dept, teacherName:teacher, className, period, date, createdAt:serverTimestamp(), createdBy:currentUser.userId }); alert('✓ تم ترحيل التقرير الفني للزيارة بنجاح كلي!'); closeVisitForm(); loadVisitCounts(); }catch(e){ alert('خطأ: '+e.message); } };
+
+// 🟩 دالة الحفظ المحدثة: تقوم بسحب كافة درجات المعايير والملاحظات وتخزينها رسمياً 🟩
+window.saveVisit=async()=>{ 
+  const dept=document.getElementById('visit-dept').value; 
+  const teacher=document.getElementById('visit-teacher').value.trim(); 
+  const className=document.getElementById('visit-class').value.trim(); 
+  const period=document.getElementById('visit-period').value; 
+  const date=document.getElementById('visit-date').value.split('-').reverse().join('/'); 
+  const notes=document.getElementById('visit-notes').value.trim(); 
+  
+  if(!dept||!teacher||!className){ alert('الرجاء تعبئة البيانات الأساسية للتقرير الفني!'); return; } 
+  
+  const criteria = visitCriteria[dept] || [];
+  const scores = [];
+  criteria.forEach((c, i) => {
+    const scoreEl = document.getElementById(`score${i}`);
+    if(scoreEl) { scores.push({ criterion: c, score: scoreEl.value }); }
+  });
+
+  try{ 
+    await addDoc(collection(db,'visits'),{ 
+      dept, 
+      teacherName:teacher, 
+      className, 
+      period, 
+      date, 
+      notes,
+      scores,
+      createdAt:serverTimestamp(), 
+      createdBy:currentUser.userId 
+    }); 
+    alert('✓ تم ترحيل التقرير الفني للزيارة بنجاح كلي وثابت!'); 
+    closeVisitForm(); 
+    document.getElementById('visit-teacher').value = '';
+    document.getElementById('visit-class').value = '';
+    document.getElementById('visit-period').value = '';
+    document.getElementById('visit-notes').value = '';
+    loadVisitCounts(); 
+  }catch(e){ alert('خطأ أثناء الحفظ: '+e.message); } 
+};
 
 let selectedDept=''; window.selectDept=async dept=>{ if (currentUser.role === 'head' && dept !== currentUser.classId) { alert('خطأ أمني: غير مصرح لك بتصفح تقارير هذا القسم.'); return; } selectedDept=dept; document.getElementById('dept-list').style.display='none'; document.getElementById('dept-visits').classList.remove('hidden'); document.getElementById('selected-dept-name').textContent=dept; await loadDeptVisits(dept); };
 window.backToDepts=()=>{ document.getElementById('dept-visits').classList.add('hidden'); document.getElementById('dept-list').style.display='block'; };
 
+// 🟩 دالة العرض المحدثة: تسترجع الدرجات والملاحظات وتوفر زر طباعة تقرير منفرد لكل مادة 🟩
 async function loadDeptVisits(dept){
   const list=document.getElementById('visits-list'); list.innerHTML='<p style="text-align:center;color:#666;">جاري تحميل سجلات التفتيش الفني للقسم الدراسي...</p>';
   try{
-    const q=query(collection(db,'visits'),where('dept','==',dept),orderBy('createdAt','desc')); const snap=await getDocs(q);
+    // حذف الـ orderBy لإلغاء قيود الفهرسة المعقدة بالسيرفر وحل مشكلة الاختفاء
+    const q=query(collection(db,'visits'),where('dept','==',dept)); 
+    const snap=await getDocs(q);
     if(snap.empty){ list.innerHTML='<p style="text-align:center;color:#666;">لا توجد زيارات فنية مسجلة لهذا القسم.</p>'; return; }
-    let html=''; snap.forEach(doc=>{ const v=doc.data(); let canSee = (currentUser.role === 'admin') || (currentUser.role === 'assistant' && v.createdBy === currentUser.userId) || (currentUser.role === 'head' && v.dept === currentUser.classId); if (!canSee) return; html+=`<div style="background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:1rem;margin-bottom:12px"><strong>${v.teacherName}</strong> - الصف ${v.className} • الحصة ${v.period} • التاريخ ${v.date}</div>`; });
+    
+    let visitsList = [];
+    snap.forEach(doc => { visitsList.push({ id: doc.id, ...doc.data() }); });
+    
+    // فرز البيانات برمجياً وبشكل مستقر داخل المتصفح من الأحدث للأقدم
+    visitsList.sort((a, b) => {
+      const tA = a.createdAt ? (typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(a.createdAt).getTime()) : 0;
+      const tB = b.createdAt ? (typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(b.createdAt).getTime()) : 0;
+      return tB - tA;
+    });
+
+    let html=''; 
+    visitsList.forEach(v=>{ 
+      let canSee = (currentUser.role === 'admin') || (currentUser.role === 'assistant' && v.createdBy === currentUser.userId) || (currentUser.role === 'head' && v.dept === currentUser.classId); 
+      if (!canSee) return; 
+      
+      let scoresHtml = '';
+      if (v.scores && v.scores.length > 0) {
+        scoresHtml = '<div style="margin-top:8px; background:#f9f9f9; padding:8px; border-radius:4px; border:1px solid #eee;"><strong>📋 بنود تقييم المعايير:</strong><ul style="padding-right:20px; margin-top:4px; font-size:13px; color:#444;">';
+        v.scores.forEach(s => {
+          scoresHtml += `<li style="margin-bottom:2px;">${s.criterion}: <span style="color:#27ae60; font-weight:bold;">${s.score === '5' ? 'ممتاز (5/5)' : 'جيد جداً (4/5)'}</span></li>`;
+        });
+        scoresHtml += '</ul></div>';
+      }
+      
+      let notesHtml = v.notes ? `<div style="margin-top:8px; font-size:13px; color:#555; background:#fffdec; padding:8px; border-right:4px solid #e67e22; border-radius:4px;"><strong>📝 توجيهات وملاحظات المقيم:</strong><p style="margin-top:2px;">${v.notes}</p></div>` : '';
+
+      html+=`
+        <div class="card" id="print-visit-${v.id}" style="background:#fff; border:1px solid #ddd; border-radius:8px; padding:1.2rem; margin-bottom:1rem; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+          <div style="display:flex; justify-content:between; align-items:center; border-bottom:2px solid #1a1a2e; padding-bottom:6px; margin-bottom:10px;">
+            <div>
+              <span style="font-size:16px; font-weight:bold; color:#1a1a2e;">👨‍🏫 المعلم: ${v.teacherName}</span>
+              <span class="badge secondary" style="margin-right:6px; background:#e2e5ff; color:#4a00e0;">الصف ${v.className}</span>
+              <span class="badge info" style="background:#d1ecf1; color:#0c5460;">الحصة ${v.period || '-'}</span>
+            </div>
+            <span style="font-size:13px; font-weight:bold; color:#666;">📅 ${v.date}</span>
+          </div>
+          <div>
+            <p style="font-size:14px;"><strong>🏫 القسم التابع له:</strong> قسم ${v.dept}</p>
+            ${scoresHtml}
+            ${notesHtml}
+          </div>
+          <div style="margin-top:12px; text-align:left;" class="no-print-area">
+            <button onclick="window.printSingleVisit('${v.id}', '${v.teacherName}')" style="background:#27ae60; color:#fff; font-size:12px; padding:6px 12px; border-radius:4px; border:none;"><i class="bi bi-printer-fill"></i> 📥 طباعة التقرير الفني PDF</button>
+          </div>
+        </div>
+      `;
+    }); 
     list.innerHTML = (html === '') ? '<p style="text-align:center;color:#c0392b;">سجلات فنية مقيدة الصلاحية لأمن المدرسة.</p>' : html;
-  }catch(e){ list.innerHTML='<p style="text-align:center;color:red;">خطأ في تحميل زيارات القسم</p>'; }
+  }catch(e){ console.error(e); list.innerHTML='<p style="text-align:center;color:red;">خطأ في تحميل زيارات القسم</p>'; }
 }
 
-const visitCriteria = { 'اللغة العربية': ['ترتيب طاولات ومقاعد الطلاب وتنظيم القاعة','تنسيق السبورة اللغوية وجودة الخط العربي للدرس','إعداد الدرس والتحضير الذهني والتمكين العلمي الصحيح','متابعة الأعمال التحريرية وكراسات الطلاب والتصحيح المقنن'], 'العلوم': ['تجهيز ونظافة مختبر العلوم والأدوات التفاعلية','تنفيذ التجربة العملية المخبرية بسلاسة وبأمان كامل','عرض واستيعاب المفاهيم ومخرجات المنهج الميداني برصانة'] };
+// 🟩 دالة معالجة الطباعة المخصصة لتقارير التوجيه الفني 🟩
+window.printSingleVisit = function(visitId, teacherName) {
+  const element = document.getElementById(`print-visit-${visitId}`);
+  if (!element) return;
+  const btnArea = element.querySelector('.no-print-area');
+  if (btnArea) btnArea.style.display = 'none';
+  
+  html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+    if (btnArea) btnArea.style.display = 'block';
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new window.jspdf.jsPDF('p', 'mm', 'a4');
+    pdf.addImage(imgData, 'PNG', 5, 5, 200, (canvas.height * 200) / canvas.width);
+    pdf.save(`تقرير_زيارة_${teacherName}.pdf`);
+  });
+};
+
+const visitCriteria = { 
+  'اللغة العربية': ['ترتيب طاولات ومقاعد الطلاب وتنظيم القاعة','تنسيق السبورة اللغوية وجودة الخط العربي للدرس','إعداد الدرس والتحضير الذهني والتمكين العلمي الصحيح','متابعة الأعمال التحريرية وكراسات الطلاب والتصحيح المقنن'], 
+  'العلوم': ['تجهيز ونظافة مختبر العلوم والأدوات التفاعلية','تنفيذ التجربة العملية المخبرية بسلاسة وبأمان كامل','عرض واستيعاب المفاهيم ومخرجات المنهج الميداني برصانة'],
+  'الرياضيات': ['استخدام استراتيجيات التدريس الحديثة ومراعاة الفروق الفردية','جودة تطبيقات الحساب الذهني وتفعيل السبورة','الالتزام بخطة توزيع المنهج المدرسي المقررة'],
+  'التربية الإسلامية': ['صحة القراءة والاستشهاد بالآيات والأحاديث الشريفة','الربط القيمي والتربوي والسلوكي بالدرس المعروض','متابعة تقويم الطلاب والواجبات المنزلية المقررة']
+};
 
 async function loadUsers(){
   const list=document.getElementById('users-list'); list.innerHTML='<p style="text-align:center;color:#666">جاري التحميل...</p>';
@@ -741,10 +850,10 @@ async function loadUsers(){
 
 window.openAddUser=()=>{ document.getElementById('add-user-modal').style.display='flex'; };
 window.closeAddUser=()=>{ document.getElementById('add-user-modal').style.display='none'; };
-window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); if(!name||!userId||!pass||!role){ alert('يرجى ملء كل الحقول المطلوبة لتخزين الصلاحيات الحسابية!'); return; } try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId:(role==='teacher'||role==='head')?classId:'', createdAt:serverTimestamp() }); alert('تم إضافة الحساب الجديد بنجاح ملموس'); closeAddUser(); loadUsers(); }catch(e){ alert('خطأ: '+e.message); } };
+window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); if(!name||!userId||!pass||!role){ alert('يرجى ملء كل الحقول المطلوبة لثبوت الصلاحيات الحسابية!'); return; } try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId:(role==='teacher'||role==='head')?classId:'', createdAt:serverTimestamp() }); alert('تم إضافة الحساب الجديد بنجاح ملموس'); closeAddUser(); loadUsers(); }catch(e){ alert('خطأ: '+e.message); } };
 window.deleteUser=async id=>{ if(!confirm('هل أنت متأكد من حذف هذا الحساب؟'))return; try{ await deleteDoc(doc(db,'users',id)); alert('تم الحذف بنجاح'); loadUsers(); }catch(e){ alert('خطأ: '+e.message); } };
 
-// 🟩 القفل الحديدي: إشهار كافة دوال التحديث وربطها بالنافذة العامة للتخلص من حظر الأسلوب الجزئي الموديولي 🟩
+// القفل الحديدي العام للتبويبات والوظائف الفورية بالمتصفح
 window.loadStats = loadStats;
 window.loadAdminBehaviorList = loadAdminBehaviorList;
 window.loadHonorsWall = loadHonorsWall;
