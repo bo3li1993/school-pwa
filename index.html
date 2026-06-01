@@ -18,15 +18,15 @@
     <div class="login-form">
       <h2>تسجيل الدخول</h2>
       <form>
-        <div class="input-group" style="position: relative; display: flex; align-items: center;">
-          <i class="bi bi-person-fill" style="position: absolute; right: 10px; color: #666; font-size: 1.2rem;"></i>
-          <input type="text" id="username" placeholder="رقم المستخدم" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="padding-right: 35px; width: 100%;">
+        <div class="input-group" style="position: relative; margin-bottom: 15px;">
+          <i class="bi bi-person-fill" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #666; font-size: 1.2rem; pointer-events: none;"></i>
+          <input type="text" id="username" placeholder="رقم المستخدم" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="padding-right: 40px; padding-left: 12px; width: 100%; box-sizing: border-box;">
         </div>
         
-        <div class="input-group" style="position: relative; display: flex; align-items: center; margin-top: 15px;">
-          <i class="bi bi-lock-fill" style="position: absolute; right: 10px; color: #666; font-size: 1.2rem;"></i>
-          <input type="password" id="password" placeholder="كلمة المرور" autocomplete="off" style="-webkit-text-security:disc; padding-right: 35px; padding-left: 45px; width: 100%;">
-          <button type="button" class="toggle-pass" onclick="togglePassword('password',this)" style="position: absolute; left: 10px; background: transparent; border: none; cursor: pointer;">👁️</button>
+        <div class="input-group" style="position: relative;">
+          <i class="bi bi-lock-fill" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #666; font-size: 1.2rem; pointer-events: none;"></i>
+          <input type="password" id="password" placeholder="كلمة المرور" autocomplete="off" style="-webkit-text-security:disc; padding-right: 40px; padding-left: 45px; width: 100%; box-sizing: border-box;">
+          <button type="button" class="toggle-pass" onclick="togglePassword('password',this)" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; z-index: 10; padding: 0; font-size: 1.2rem;">👁️</button>
         </div>
         
         <div class="checkbox" style="margin-top: 15px;">
