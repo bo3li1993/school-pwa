@@ -78,25 +78,26 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
   </div>
 </div>
 
+<!-- شريط التبويبات المحدث بالربط المباشر لحل مشكلة اللمس والموبايل كلياً -->
 <div class="tabs" id="tabs-bar">
-  <button class="tab active" data-tab="today" id="tab-btn-today">📊 اليوم والمؤشرات</button>
-  <button class="tab" data-tab="announcements" id="tab-btn-announcements">📢 إرسال تعميم</button>
-  <button class="tab" data-tab="teacher-directory" id="tab-btn-teacher-directory">📇 دليل المعلمين</button>
-  <button class="tab" data-tab="teacher-perf" id="tab-btn-teacher-perf">📈 كفاءة الأداء</button>
-  <button class="tab" data-tab="clinic" id="tab-btn-clinic">🩺 العيادة المدرسية</button>
-  <button class="tab" data-tab="classes" id="tab-btn-classes">🏫 الفصول</button>
-  <button class="tab" data-tab="absent" id="tab-btn-absent">🔴 الغائبون</button>
-  <button class="tab" data-tab="repeat" id="tab-btn-repeat">⚠️ متكرر</button>
-  <button class="tab" data-tab="behavior" id="tab-btn-behavior">📑 سلوك الطلاب</button>
-  <button class="tab" data-tab="gatepass" id="tab-btn-gatepass">🎫 حقيبة الاستئذان</button>
-  <button class="tab" data-tab="guard" id="tab-btn-guard">🚪 بوابة الحارس</button>
-  <button class="tab" data-tab="student" id="tab-btn-student">👤 طالب</button>
-  <button class="tab" data-tab="students-manage" id="tab-btn-students-manage">📁 إدارة الطلاب</button>
-  <button class="tab" data-tab="rounds" id="tab-btn-rounds">📋 جولة الجناح</button>
-  <button class="tab" data-tab="honors" id="tab-btn-honors">🏆 لوحة الشرف</button>
-  <button class="tab" data-tab="date" id="tab-btn-date">📅 تاريخ</button>
-  <button class="tab" data-tab="visits" id="tab-btn-visits">🏫 الزيارات</button>
-  <button class="tab" data-tab="users" id="tab-btn-users">👥 المستخدمون والأقسام</button>
+  <button class="tab active" data-tab="today" id="tab-btn-today" onclick="window.switchTab('today')">📊 اليوم والمؤشرات</button>
+  <button class="tab" data-tab="announcements" id="tab-btn-announcements" onclick="window.switchTab('announcements')">📢 إرسال تعميم</button>
+  <button class="tab" data-tab="teacher-directory" id="tab-btn-teacher-directory" onclick="window.switchTab('teacher-directory')">📇 دليل المعلمين</button>
+  <button class="tab" data-tab="teacher-perf" id="tab-btn-teacher-perf" onclick="window.switchTab('teacher-perf')">📈 كفاءة الأداء</button>
+  <button class="tab" data-tab="clinic" id="tab-btn-clinic" onclick="window.switchTab('clinic')">🩺 العيادة المدرسية</button>
+  <button class="tab" data-tab="classes" id="tab-btn-classes" onclick="window.switchTab('classes')">🏫 الفصول</button>
+  <button class="tab" data-tab="absent" id="tab-btn-absent" onclick="window.switchTab('absent')">🔴 الغائبون</button>
+  <button class="tab" data-tab="repeat" id="tab-btn-repeat" onclick="window.switchTab('repeat')">⚠️ متكرر</button>
+  <button class="tab" data-tab="behavior" id="tab-btn-behavior" onclick="window.switchTab('behavior')">📑 سلوك الطلاب</button>
+  <button class="tab" data-tab="gatepass" id="tab-btn-gatepass" onclick="window.switchTab('gatepass')">🎫 حقيبة الاستئذان</button>
+  <button class="tab" data-tab="guard" id="tab-btn-guard" onclick="window.switchTab('guard')">🚪 بوابة الحارس</button>
+  <button class="tab" data-tab="student" id="tab-btn-student" onclick="window.switchTab('student')">👤 طالب</button>
+  <button class="tab" data-tab="students-manage" id="tab-btn-students-manage" onclick="window.switchTab('students-manage')">📁 إدارة الطلاب</button>
+  <button class="tab" data-tab="rounds" id="tab-btn-rounds" onclick="window.switchTab('rounds')">📋 جولة الجناح</button>
+  <button class="tab" data-tab="honors" id="tab-btn-honors" onclick="window.switchTab('honors')">🏆 لوحة الشرف</button>
+  <button class="tab" data-tab="date" id="tab-btn-date" onclick="window.switchTab('date')">📅 تاريخ</button>
+  <button class="tab" data-tab="visits" id="tab-btn-visits" onclick="window.switchTab('visits')">🏫 الزيارات</button>
+  <button class="tab" data-tab="users" id="tab-btn-users" onclick="window.switchTab('users')">👥 المستخدمون والأقسام</button>
 </div>
 
 <div class="content">
@@ -120,7 +121,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     <div class="card" style="background:#fffde6; border:1px solid #e6db55;">
       <h2>📢 بث تعميم وتوجيه إداري لجميع المستخدمين بالمدرسة</h2>
       <textarea id="announcement-input-text" rows="4" placeholder="اكتب نص التعميم الإداري هنا..."></textarea>
-      <button onclick="saveAdminAnnouncement()" style="background:#e67e22; width:100%; font-weight:bold;">🚀 نشر وتعميم التوجيه على المنظومة حياً</button>
+      <button onclick="window.saveAdminAnnouncement()" style="background:#e67e22; width:100%; font-weight:bold;">🚀 نشر وتعميم التوجيه على المنظومة حياً</button>
     </div>
   </div>
 
@@ -131,7 +132,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
       <div class="dept-grid" id="directory-cards-container"></div>
     </div>
     <div id="directory-teachers-list-view" class="hidden">
-      <button class="back-btn" onclick="backToDirectoryGrid()">← رجوع للأقسام</button>
+      <button class="back-btn" onclick="window.backToDirectoryGrid()">← رجوع للأقسام</button>
       <div class="card">
         <h2>دليل معلمي: <span id="directory-selected-dept-title"></span></h2>
         <div id="directory-table-result"></div>
@@ -161,7 +162,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
           <option value="حالة طارئة: يحتاج استدعاء ولي أمر ومغادرة طبية فوراً 🚨">حالة طارئة: يحتاج استدعاء ولي أمر ومغادرة طبية فوراً 🚨</option>
         </select>
       </div>
-      <button onclick="saveClinicLog()" style="background:#c0392b; width:100%; font-weight:bold;">📥 ترحيل وتوثيق الحالة الصحية بملف الطالب</button>
+      <button onclick="window.saveClinicLog()" style="background:#c0392b; width:100%; font-weight:bold;">📥 ترحيل وتوثيق الحالة الصحية بملف الطالب</button>
     </div>
     <div class="card">
       <h3>📅 الأرشيف الطبي اليومي لعيادة المدرسة</h3>
@@ -226,13 +227,13 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
         <input type="text" id="gatepass-phone" placeholder="رقم هاتف ولي الأمر المستلم">
         <input type="text" id="gatepass-reason" placeholder="سبب الاستئذان أو المغادرة الطارئة">
       </div>
-      <button onclick="saveGatePass()" style="background:#e67e22; width:100%; font-weight:bold;">🎫 حفظ وإصدار تصريح الخروج الرقمي فوراً لبوابة المدرسة</button>
+      <button onclick="window.saveGatePass()" style="background:#e67e22; width:100%; font-weight:bold;">🎫 حفظ وإصدار تصريح الخروج الرقمي فوراً لبوابة المدرسة</button>
     </div>
     <div class="card">
       <h3>🔍 الأرشيف التاريخي والبحث عن تصاريح المغادرة</h3>
       <div style="display:flex; gap:10px; margin-top:0.5rem;">
         <input type="date" id="gatepass-search-date" style="margin-bottom:0;">
-        <button onclick="searchGatePassByDate()" style="background:#1a1a2e;">بحث بالتاريخ</button>
+        <button onclick="window.searchGatePassByDate()" style="background:#1a1a2e;">بحث بالتاريخ</button>
       </div>
       <div id="gatepass-archive-results"></div>
     </div>
@@ -252,13 +253,13 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
         <input type="text" id="visitor-phone" placeholder="رقم هاتف الزائر">
         <input type="text" id="visitor-reason" placeholder="سبب الزيارة / الجهة المقصودة">
       </div>
-      <button onclick="saveSchoolVisitor()" style="background:#1e7e34; width:100%; font-weight:bold;">📝 توثيق وحفظ بيانات الزائر في سجل المنشأة</button>
+      <button onclick="window.saveSchoolVisitor()" style="background:#1e7e34; width:100%; font-weight:bold;">📝 توثيق وحفظ بيانات الزائر في سجل المنشأة</button>
     </div>
     <div class="card">
       <h3>📅 سجل التدقيق والمراقبة التاريخية لدفتر الضيوف والزوار</h3>
       <div style="display:flex; gap:10px; margin-bottom:1rem;">
         <input type="date" id="visitor-search-date" style="margin-bottom:0;">
-        <button onclick="loadVisitorsByDate()" style="background:#1a1a2e;">بحث في دفتر الزوار</button>
+        <button onclick="window.loadVisitorsByDate()" style="background:#1a1a2e;">بحث في دفتر الزوار</button>
       </div>
       <div id="visitor-logs-table"></div>
     </div>
@@ -277,7 +278,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
         <select id="search-student"><option value="">اختر الطالب</option></select>
       </div>
       <div style="display:flex; gap:10px;">
-        <button onclick="searchStudent()" style="flex:1;">بحث</button>
+        <button onclick="window.searchStudent()" style="flex:1;">بحث</button>
         <button id="btn-download-pdf" onclick="window.downloadStudentPDF()" class="secondary hidden" style="background:#28a745; color:#fff; border:none;">📥 تحميل ملف الطالب PDF</button>
       </div>
       <div id="student-result" style="margin-top:1.5rem"></div>
@@ -289,7 +290,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     <div class="card" style="background:#eef9ff; border:1px solid #bce1f5;">
       <h2>📁 الرفع الجماعي لطلاب السنة الدراسية الجديدة</h2>
       <input type="file" id="students-excel-input" accept=".xlsx, .xls">
-      <button onclick="importStudentsFromExcel()" style="background:#1a5a80; width:100%; margin-top:8px;">بدء الرفع السحابي لقاعدة البيانات</button>
+      <button onclick="window.importStudentsFromExcel()" style="background:#1a5a80; width:100%; margin-top:8px;">بدء الرفع السحابي لقاعدة البيانات</button>
     </div>
     <div class="card" style="background:#fff5f5; border:1px solid #fabebe;">
       <button onclick="window.clearAllStudents()" style="background:#c0392b; border:none;">مسح وإفراغ سجل الطلاب الحاليين نهائياً</button>
@@ -340,7 +341,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
         <select id="date-class"><option value="">اختر الفصل</option></select>
         <input type="date" id="date-search">
       </div>
-      <button onclick="searchByDate()">بحث</button>
+      <button onclick="window.searchByDate()">بحث</button>
       <div id="date-result" style="margin-top:1.5rem"></div>
     </div>
   </div>
@@ -369,8 +370,8 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
       <h3 style="color:#d35400;"><i class="bi bi-folder-plus"></i> لوحة إدارة الأقسام الدراسية للمدرسة (صلاحية المدير)</h3>
       <p style="font-size:12px; color:#666; margin-bottom:10px;">قم بكتابة اسم أي قسم دراسي جديد هنا ليدمج حياً في كافة أنظمة الرصد والمودالات بالموقع.</p>
       <div style="display:flex; gap:10px;">
-        <input type="text" id="new-department-name" placeholder="اسم القسم الجديد (مثال: الحاسوب، التربية البدنية، الكهرباء)" style="margin-bottom:0;">
-        <button onclick="addNewSchoolDepartment()" style="background:#f39c12; font-weight:bold; white-space:nowrap;">➕ إضافة القسم</button>
+        <input type="text" id="new-department-name" placeholder="اسم القسم الجديد" style="margin-bottom:0;">
+        <button onclick="window.addNewSchoolDepartment()" style="background:#f39c12; font-weight:bold; white-space:nowrap;">➕ إضافة القسم</button>
       </div>
       <div id="admin-departments-list-chips" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;"></div>
     </div>
@@ -378,7 +379,7 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
         <h2>👥 إدارة مستخدمي المنصة وصلاحياتهم</h2>
-        <button onclick="openAddUser()">+ إضافة مستخدم</button>
+        <button onclick="window.openAddUser()">+ إضافة مستخدم</button>
       </div>
       <div id="users-list"></div>
     </div>
@@ -396,11 +397,11 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     <input type="text" id="setup-user-phone" placeholder="رقم الهاتف النقال">
     <input type="text" id="setup-user-civilid" placeholder="الرقم المدني المكون من 12 خانة">
     <input type="text" id="setup-user-filenumber" placeholder="رقم الملف الدراسي والوظيفي الخاص بك">
-    <button onclick="saveMandatoryProfileData()" style="background:#1a1a2e; width:100%; font-weight:bold; padding:12px; margin-top:8px;">💾 حفظ وتوثيق البيانات الحالية</button>
+    <button onclick="window.saveMandatoryProfileData()" style="background:#1a1a2e; width:100%; font-weight:bold; padding:12px; margin-top:8px;">💾 حفظ وتوثيق البيانات الحالية</button>
   </div>
 </div>
 
-<!-- Modals -->
+<!-- Modals الخروج والإدخال -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
     <h2>تسجيل زيارة جديدة</h2>
@@ -439,8 +440,8 @@ table td{padding:12px;border-bottom:1px solid #eee;vertical-align:middle}
     </select>
     <input type="text" id="new-user-class" placeholder="القسم (لإداري ورئيس قسم - مثل: اللغة العربية)">
     <div style="display:flex;gap:12px;margin-top:1rem">
-      <button onclick="addUser()" style="flex:1">إضافة</button>
-      <button onclick="closeAddUser()" class="secondary" style="flex:1">إلغاء</button>
+      <button onclick="window.addUser()" style="flex:1">إضافة</button>
+      <button onclick="window.closeAddUser()" class="secondary" style="flex:1">إلغاء</button>
     </div>
   </div>
 </div>
@@ -537,7 +538,7 @@ window.submitQuickBehavior = async function(behaviorType) {
   try {
     await addDoc(collection(db, 'behavior'), { classId: cls, studentId: stuId, studentName: stuName, behaviorType, recordedBy: currentUser.name, createdAt: serverTimestamp() });
     alert('✓ تم رصد المخالفة السلوكية فوراً بالبطاقة الملونة وتم المزامنة سحابياً!');
-    loadAdminBehaviorList();
+    window.loadAdminBehaviorList();
   } catch(e) { alert('خطأ: ' + e.message); }
 };
 
@@ -576,14 +577,14 @@ window.downloadStudentPDF = function() { window.print(); };
 window.importStudentsFromExcel = function() { alert('تم استلام كشف الـ Excel وجاري ربطه بجداول المزامنة الأساسية للمدرسة.'); };
 window.clearAllStudents = async function() {
   if(!confirm('🚨 هل أنت متأكد تماماً من مسح قاعدة بيانات الطلاب بالكامل؟ لا يمكن التراجع!')) return;
-  try { const snap = await getDocs(collection(db, 'students')); for(let docItem of snap.docs) { await deleteDoc(doc(db, 'students', docItem.id)); } alert('✓ تم مسح السجل بالكامل.'); loadStats(); } catch(e) {}
+  try { const snap = await getDocs(collection(db, 'students')); for(let docItem of snap.docs) { await deleteDoc(doc(db, 'students', docItem.id)); } alert('✓ تم مسح السجل بالكامل.'); window.loadStats(); } catch(e) {}
 };
 window.saveSupervisorRound = async function() {
   const wing = document.getElementById('round-wing').value; const noise = document.getElementById('round-noise').value;
   const teachers = document.getElementById('round-teachers') ? document.getElementById('round-teachers').value : 'التزام كامل';
   const clean = document.getElementById('round-clean') ? document.getElementById('round-clean').value : 'ممتازة';
   const notes = document.getElementById('round-notes').value.trim();
-  try { await addDoc(collection(db, 'rounds'), { wing, noise, teachers, clean, notes, date: new Date().toLocaleDateString('en-CA'), recordedBy: currentUser.name, createdAt: serverTimestamp() }); alert('✓ تم إرسال تقرير الجولة بنجاح!'); document.getElementById('round-notes').value = ''; loadRoundsHistory(); } catch(e) {}
+  try { await addDoc(collection(db, 'rounds'), { wing, noise, teachers, clean, notes, date: new Date().toLocaleDateString('en-CA'), recordedBy: currentUser.name, createdAt: serverTimestamp() }); alert('✓ تم إرسال تقرير الجولة بنجاح!'); document.getElementById('round-notes').value = ''; window.loadRoundsHistory(); } catch(e) {}
 };
 
 async function loadSchoolDepartments() {
@@ -629,17 +630,43 @@ function updateDepartmentsUIComponents() {
   }
 }
 
-// 🟩 دالة التبديل الذكية الشاملة: تم تصحيحها لمنع إخفاء محتويات الصناديق الأخرى 🟩
+// 🟩 مـحـرك الـتـنـقـل والـفـتـح الـقـوي الـمـوجـه مـبـاشـرة مـن الـمـنـظـوّمـة (حـل نـهـائـي) 🟩
 window.switchTab = function(tabId) {
-  const role = currentUser.role;
+  const role = currentUser ? currentUser.role : '';
   if (tabId === 'announcements' && !['admin','assistant'].includes(role)) { alert('حظر: إرسال التعاميم صلاحية خاصة بمدير المدرسة والمدير المساعد فقط.'); return; }
-  if (role === 'guard' && tabId !== 'guard') { alert('مقيد: حساب الحارس مخصص لشاشة البوابة فقط.'); return; }
+  if (role === 'guard' && tabId !== 'guard') { alert('مقيد لحساب الحارس الخاص بالبوابة.'); return; }
 
+  // 1. إدارة تفاعل الأزرار حياً وتفعيل الزر الحالي
   const tabs = document.querySelectorAll('.tab');
-  const tabContents = document.querySelectorAll('div[id^="tab-"]'); // اختيار حصر نوافذ التبويبات فقط
-
   tabs.forEach(tab => { if (tab.getAttribute('data-tab') === tabId) tab.classList.add('active'); else tab.classList.remove('active'); });
-  tabContents.forEach(content => { if (content.id === `tab-${tabId}`) content.classList.remove('hidden'); else content.classList.add('hidden'); });
+
+  // 2. التحكم الشامل بحصر النوافذ وإخفاء كل شيء عدا النافذة المحددة بدقة واضحة
+  const tabSections = ['today', 'announcements', 'teacher-directory', 'teacher-perf', 'clinic', 'classes', 'absent', 'repeat', 'behavior', 'gatepass', 'guard', 'student', 'students-manage', 'rounds', 'honors', 'date', 'visits', 'users'];
+  tabSections.forEach(id => {
+    const el = document.getElementById(`tab-${id}`);
+    if (el) {
+      if (id === tabId) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    }
+  });
+
+  // 3. سحب تلقائي فوري للمعلومات حسب التبويب المفتوح منعاً لتعليق الذاكرة
+  try {
+    if (tabId === 'today') window.loadStats();
+    if (tabId === 'absent') window.loadAbsentToday();
+    if (tabId === 'repeat') window.loadRepeatAbsent();
+    if (tabId === 'behavior') window.loadAdminBehaviorList();
+    if (tabId === 'honors') window.loadHonorsWall();
+    if (tabId === 'rounds') window.loadRoundsHistory();
+    if (tabId === 'gatepass') window.loadLiveGatePasses();
+    if (tabId === 'classes') window.loadClassButtons();
+    if (tabId === 'users') window.loadUsers();
+    if (tabId === 'visits') window.loadVisitCounts();
+    if (tabId === 'guard') { window.loadLiveGatePasses(); window.loadVisitorsByDate(); }
+    if (tabId === 'clinic') window.loadClinicTodayLogs();
+    if (tabId === 'teacher-directory') window.viewDeptTeachersDirectory(currentUser ? currentUser.classId : '');
+    if (tabId === 'teacher-perf') window.loadTeacherPerformanceDashboard();
+  } catch(err) { console.error(err); }
 };
 
 async function loadDashboard(){
@@ -651,7 +678,7 @@ async function loadDashboard(){
 
   if(role === 'guard') {
     document.querySelectorAll('.tab').forEach(t => { if(t.getAttribute('data-tab')!=='guard') t.classList.add('hidden'); });
-    window.switchTab('guard'); window.loadLiveGatePasses(); window.loadVisitorsByDate(); return;
+    window.switchTab('guard'); return;
   }
   if(!['admin', 'assistant'].includes(role)) { if(tAnnounce) tAnnounce.classList.add('hidden'); }
   if(!['admin', 'assistant', 'head'].includes(role)) { if(tDir) tDir.classList.add('hidden'); if(tPerf) tPerf.classList.add('hidden'); if(tVisits) tVisits.classList.add('hidden'); }
@@ -660,11 +687,10 @@ async function loadDashboard(){
   document.getElementById('visitor-search-date').valueAsDate = new Date();
   document.getElementById('gatepass-search-date').valueAsDate = new Date();
 
-  // تشغيل آمن منفصل لكل الدوال الإحصائية لمنع تجميد الشاشات في حال وجود جدول فارغ
-  try { loadStats(); }catch(e){} try { loadUsers(); }catch(e){} try { populateClassDropdowns(); }catch(e){}
-  try { loadClassButtons(); }catch(e){} try { loadRoundsHistory(); }catch(e){} try { loadHonorsWall(); }catch(e){}
-  try { loadLiveGatePasses(); }catch(e){} try { loadVisitorsByDate(); }catch(e){} try { loadAdminLiveAnnouncements(); }catch(e){}
-  try { loadTeacherPerformanceDashboard(); }catch(e){}
+  try { window.loadStats(); }catch(e){} try { window.loadUsers(); }catch(e){} try { populateClassDropdowns(); }catch(e){}
+  try { window.loadClassButtons(); }catch(e){} try { window.loadRoundsHistory(); }catch(e){} try { window.loadHonorsWall(); }catch(e){}
+  try { window.loadLiveGatePasses(); }catch(e){} try { window.loadVisitorsByDate(); }catch(e){} try { loadAdminLiveAnnouncements(); }catch(e){}
+  try { window.loadTeacherPerformanceDashboard(); }catch(e){}
 }
 
 async function loadAdminLiveAnnouncements() {
@@ -685,16 +711,17 @@ window.saveAdminAnnouncement = async function() {
 };
 
 window.viewDeptTeachersDirectory = async function(deptName) {
+  const targetDept = deptName || currentUser.classId;
   document.getElementById('directory-dept-grid-area').classList.add('hidden');
   document.getElementById('directory-teachers-list-view').classList.remove('hidden');
-  document.getElementById('directory-selected-dept-title').textContent = deptName || currentUser.classId;
+  document.getElementById('directory-selected-dept-title').textContent = targetDept;
   const tableArea = document.getElementById('directory-table-result'); tableArea.innerHTML = '<p>جاري سحب الدليل الشخصي للأقسام...</p>';
   try {
     const snap = await getDocs(collection(db, 'users'));
     let html = '<table><thead><tr><th>اسم المعلم</th><th>الوظيفة</th><th>رقم الهاتف</th><th>الرقم المدني</th><th>رقم الملف</th></tr></thead><tbody>'; let count = 0;
     snap.forEach(doc => {
       const u = doc.data();
-      if(u.classId === (deptName || currentUser.classId) && (u.role === 'teacher' || u.role === 'head')) {
+      if(u.classId === targetDept && (u.role === 'teacher' || u.role === 'head')) {
         count++; html += `<tr><td style="font-weight:bold; color:#1a1a2e;">أ. ${u.name || 'غير مستكمل'}</td><td><span class="badge info">${u.role==='head'?'رئيس قسم':'معلم'}</span></td><td>${u.phone || '-'}</td><td>${u.civilId || '-'}</td><td><strong>${u.fileNumber || '-'}</strong></td></tr>`;
       }
     });
@@ -706,7 +733,7 @@ window.backToDirectoryGrid = function() {
   if(currentUser.role === 'head') return; document.getElementById('directory-teachers-list-view').classList.add('hidden'); document.getElementById('directory-dept-grid-area').classList.remove('hidden');
 };
 
-async function loadTeacherPerformanceDashboard() {
+window.loadTeacherPerformanceDashboard = async function() {
   const tableArea = document.getElementById('perf-metrics-result-table'); if(!tableArea) return;
   try {
     const [vSnap, bSnap] = await Promise.all([getDocs(collection(db, 'visits')), getDocs(collection(db, 'behavior'))]);
@@ -729,7 +756,7 @@ function renderAttendancePieChart(present, absent) {
   attendancePieChart = new Chart(ctx, { type: 'pie', data: { labels: ['حاضرون', 'غائبون'], datasets: [{ data: [present, absent], backgroundColor: ['#2ecc71', '#e74c3c'], borderWidth: 1 }] }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } } });
 }
 
-async function loadStats(){
+window.loadStats = async function(){
   const today = new Date().toLocaleDateString('en-CA'); const studentsSnap = await getDocs(collection(db,'students')); const totalStudents = studentsSnap.size;
   const todayQuery = query(collection(db, 'attendance'), where('date', '==', today.replace(/-/g,'/'))); const attendanceSnap = await getDocs(todayQuery);
   globalTodayAttendance = []; let absentToday = 0; const classesRegistered = new Set();
@@ -739,7 +766,7 @@ async function loadStats(){
     document.getElementById('stats-cards').innerHTML = `<div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي طلاب المدرسة</p></div><div class="stat-card"><h3>${presentToday}</h3><p>حاضرون اليوم</p></div><div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div><div class="stat-card"><h3>${classesRegistered.size} / 15</h3><p>فصول رُصدت</p></div>`; 
     renderAttendancePieChart(presentToday, absentToday);
   }
-  let statusHTML = `<div style="margin-bottom:1rem;"><div style="display:flex; gap:8px; overflow-x:auto;">${[1,2,3,4,5,6,7].map(hNum => `<button type="button" class="period-tab-item" id="p-tab-btn-${hNum}" onclick="viewPeriodStatus(${hNum})" style="padding:10px 18px; font-weight:bold; background:#e9ecef; border:1px solid #ddd; border-radius:4px;">الحصة ${hNum}</button>`).join('')}</div></div><div id="period-status-table-result"></div>`;
+  let statusHTML = `<div style="margin-bottom:1rem;"><div style="display:flex; gap:8px; overflow-x:auto;">${[1,2,3,4,5,6,7].map(hNum => `<button type="button" class="period-tab-item" id="p-tab-btn-${hNum}" onclick="window.viewPeriodStatus(${hNum})" style="padding:10px 18px; font-weight:bold; background:#e9ecef; border:1px solid #ddd; border-radius:4px;">الحصة ${hNum}</button>`).join('')}</div></div><div id="period-status-table-result"></div>`;
   if(document.getElementById('class-status')) document.getElementById('class-status').innerHTML = statusHTML;
 }
 
@@ -761,7 +788,7 @@ async function populateClassDropdowns(){
   });
 }
 
-async function saveGatePass() {
+window.saveGatePass = async function() {
   const cls = document.getElementById('gatepass-class').value; const stuSel = document.getElementById('gatepass-student');
   const stuId = stuSel.value; const stuName = stuSel.options[stuSel.selectedIndex] ? stuSel.options[stuSel.selectedIndex].getAttribute('data-name') : '';
   const parent = document.getElementById('gatepass-parent').value.trim(); const civilId = document.getElementById('gatepass-civilid').value.trim();
@@ -769,7 +796,7 @@ async function saveGatePass() {
   if(!cls || !stuId || !parent || !civilId) return;
   try {
     await addDoc(collection(db, 'gatepasses'), { classId: cls, studentId: stuId, studentName: stuName, parentName: parent, parentCivilId: civilId, parentPhone: phone, reason: reason, issuedBy: currentUser.name, date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}), createdAt: serverTimestamp() });
-    alert('✓ تم إصدار تصريح الخروج بنجاح!'); document.getElementById('gatepass-parent').value = ''; document.getElementById('gatepass-civilid').value = ''; loadLiveGatePasses();
+    alert('✓ تم إصدار تصريح الخروج بنجاح!'); document.getElementById('gatepass-parent').value = ''; document.getElementById('gatepass-civilid').value = ''; window.loadLiveGatePasses();
   } catch(e) {}
 }
 
@@ -784,7 +811,7 @@ window.searchGatePassByDate = async function() {
   } catch(e) { area.innerHTML = '<p>خطأ أثناء جلب الأرشيف</p>'; }
 };
 
-async function loadLiveGatePasses() {
+window.loadLiveGatePasses = async function() {
   const container = document.getElementById('gatepass-live-list'); const guardView = document.getElementById('guard-gatepass-live-view'); const today = new Date().toLocaleDateString('en-CA');
   try {
     const snap = await getDocs(collection(db, 'gatepasses')); let activeList = []; snap.forEach(doc => { if(doc.data().date === today) activeList.push(doc.data()); });
@@ -798,7 +825,7 @@ async function loadLiveGatePasses() {
 window.saveSchoolVisitor = async function() {
   const name = document.getElementById('visitor-name').value.trim(); const civil = document.getElementById('visitor-civilid').value.trim();
   const phone = document.getElementById('visitor-phone').value.trim(); const reason = document.getElementById('visitor-reason').value.trim(); if(!name || !civil || !phone) return;
-  try { await addDoc(collection(db, 'visitors'), { name, civilId: civil, phone, reason, date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}), recordedBy: currentUser.name, createdAt: serverTimestamp() }); alert('✓ تم توثيق بيانات الزائر بنجاح!'); document.getElementById('visitor-name').value = ''; loadVisitorsByDate(); } catch(e) {}
+  try { await addDoc(collection(db, 'visitors'), { name, civilId: civil, phone, reason, date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}), recordedBy: currentUser.name, createdAt: serverTimestamp() }); alert('✓ تم توثيق بيانات الزائر بنجاح!'); document.getElementById('visitor-name').value = ''; window.loadVisitorsByDate(); } catch(e) {}
 };
 
 window.loadVisitorsByDate = async function() {
@@ -811,7 +838,7 @@ window.loadVisitorsByDate = async function() {
   } catch(e) {}
 };
 
-async function searchByDate() {
+window.searchByDate = async function() {
   var cls=document.getElementById('date-class').value; var date=document.getElementById('date-search').value; var result=document.getElementById('date-result'); if(!cls||!date) return;
   var formattedDate=date.replace(/-/g,'/'); result.innerHTML = '<p>جاري الترتيب هجائياً...</p>';
   var studentsSnap=await getDocs(collection(db,'students')); var classStudents=[]; studentsSnap.forEach(function(doc){ var d=doc.data(); if(d.classId===cls)classStudents.push(d); });
@@ -821,7 +848,7 @@ async function searchByDate() {
   let html = '<table><thead><tr><th>اسم الطالب (مرتب هجائياً)</th><th>الحالة اليومية</th></tr></thead><tbody>'; classStudents.forEach(function(s){ html+='<tr><td><strong>'+s.name+'</strong></td><td>'+(absentIds.has(s.studentId)?'<span class="badge danger">غائب</span>':'<span class="badge success">حاضر ✓</span>')+'</td></tr>'; }); result.innerHTML=html+'</tbody></table>';
 }
 
-async function searchStudent(){
+window.searchStudent = async function(){
   var cls=document.getElementById('search-class').value; var stuId=document.getElementById('search-student').value; var result=document.getElementById('student-result'); var pdfBtn=document.getElementById('btn-download-pdf'); if(!cls||!stuId) return;
   result.innerHTML='<p>جاري سحب الملف الموحد...</p>';
   var stuName=''; var snap1=await getDocs(collection(db,'students')); snap1.forEach(function(doc){var d=doc.data();if(d.studentId===stuId)stuName=d.name});
@@ -832,12 +859,12 @@ async function searchStudent(){
   result.innerHTML=html+'</div>'; pdfBtn.classList.remove('hidden');
 }
 
-function loadClassButtons(){
+window.loadClassButtons = function(){
   var allClasses=['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','9/1','9/2','9/3','9/4']; var html='';
-  allClasses.forEach(function(cls){ html+='<button onclick="selectClass(\''+cls+'\')" style="padding:1rem;background:#f8f9fa;color:#333;border:1px solid #ddd;border-radius:8px;">'+cls+'</button>'; });
+  allClasses.forEach(function(cls){ html+='<button onclick="window.selectClass(\''+cls+'\')" style="padding:1rem;background:#f8f9fa;color:#333;border:1px solid #ddd;border-radius:8px;">'+cls+'</button>'; });
   document.getElementById('classes-list').innerHTML=html;
 }
-async function selectClass(cls){
+window.selectClass = async function(cls){
   var detail=document.getElementById('class-detail'); detail.classList.remove('hidden'); detail.innerHTML='<div class="card"><p>جاري التحميل...</p></div>';
   var snap=await getDocs(collection(db,'students')); var students=[]; snap.forEach(function(doc){ var d=doc.data(); if(d.classId===cls)students.push(d); });
   students.sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ar')});
@@ -845,7 +872,7 @@ async function selectClass(cls){
   students.forEach(function(s,i){ html+='<tr><td>'+(i+1)+'</td><td>'+s.name+'</td><td>'+(s.studentId||'-')+'</td></tr>'; });
   detail.innerHTML=html+'</tbody></table></div>';
 }
-async function loadAbsentToday() {
+window.loadAbsentToday = async function() {
   const list = document.getElementById('absent-list'); if(!list) return; const today = new Date().toLocaleDateString('en-CA').replace(/-/g,'/');
   const q = query(collection(db, 'attendance'), where('date', '==', today), where('status', '==', 'absent')); const snap = await getDocs(q);
   if (snap.empty) { list.innerHTML = '<div style="padding:1rem;text-align:center;">كل الطلاب حضور اليوم ✓</div>'; return; }
@@ -853,79 +880,68 @@ async function loadAbsentToday() {
   snap.forEach(doc => { const d = doc.data(); html += `<tr><td>${counter++}</td><td>${d.studentName || 'غير محدد'}</td><td><span class="badge secondary">${d.classId || '-'}</span></td></tr>`; });
   list.innerHTML = html + '</tbody></table>';
 }
-async function loadRepeatAbsent() {
+window.loadRepeatAbsent = async function() {
   const list = document.getElementById('repeat-list'); if(!list) return; const snap = await getDocs(collection(db, 'attendance')); const counts = {}; const info = {};
   snap.forEach(doc => { const d = doc.data(); if(d.status === 'absent') { const key = d.studentId || d.studentName; if(key) { counts[key] = (counts[key] || 0) + 1; info[key] = { name: d.studentName, classId: d.classId }; } } });
   let html = '<table><thead><tr><th>اسم الطالب</th><th>الفصل</th><th>أيام الغياب</th></tr></thead><tbody>'; let hasData = false;
   for(let key in counts) { if(counts[key] >= 5) { hasData = true; html += `<tr><td>${info[key].name}</td><td>${info[key].classId}</td><td><strong style="color:red;">${counts[key]} أيام غياب</strong></td></tr>`; } }
   list.innerHTML = hasData ? html + '</tbody></table>' : '<div style="text-align:center; padding:1rem;">لا يوجد غياب متكرر يتجاوز الـ 5 أيام.</div>';
 }
-async function loadVisitCounts(){
+window.loadVisitCounts = async function(){
   try{ const visitsSnap=await getDocs(collection(db,'visits')); } catch(e){}
 }
-async function loadAdminBehaviorList() {
+window.loadAdminBehaviorList = async function() {
   const list = document.getElementById('admin-behavior-list'); if(!list) return; const q = query(collection(db, 'behavior'), orderBy('createdAt', 'desc')); const snap = await getDocs(q);
   if (snap.empty) { list.innerHTML = '<div style="text-align:center; color:#777;">لا توجد مخالفات مرصودة حالياً.</div>'; return; }
   let html = '<table><thead><tr><th>الطالب</th><th>الفصل</th><th>المخالفة</th><th>الراصد</th></tr></thead><tbody>';
   snap.forEach(doc => { const b = doc.data(); html += `<tr><td>${b.studentName}</td><td>${b.classId}</td><td>${b.behaviorType}</td><td>${b.recordedBy}</td></tr>`; });
   list.innerHTML = html + '</tbody></table>';
 }
-async function loadUsers(){
+window.loadUsers = async function(){
   const list=document.getElementById('users-list'); if(!list) return; const snap=await getDocs(collection(db,'users'));
   let html = '<table><thead><tr><th>الاسم الكامل</th><th>رقم المستخدم</th><th>الوظيفة والصلاحية</th></tr></thead><tbody>';
   snap.forEach(doc=>{ const u=doc.data(); html+=`<tr><td>${u.name||'-'}</td><td>${u.userId}</td><td><span class="badge info">${u.role}</span></td></tr>`; }); list.innerHTML=html+'</tbody></table>';
 }
-async function loadRoundsHistory() {
+window.loadRoundsHistory = async function() {
   const container = document.getElementById('rounds-history-list'); if(!container) return; const q = query(collection(db, 'rounds'), orderBy('createdAt', 'desc')); const snap = await getDocs(q);
   if(snap.empty) { container.innerHTML = '<p style="text-align:center;">لا توجد جولات ميدانية مسجلة.</p>'; return; }
   let html = '<table><thead><tr><th>التاريخ</th><th>المشرف</th><th>الجناح</th></tr></thead><tbody>';
   snap.forEach(doc => { const r = doc.data(); html += `<tr><td>${r.date}</td><td>أ. ${r.recordedBy}</td><td>${r.wing}</td></tr>`; }); container.innerHTML = html + '</tbody></table>';
 }
-async function loadHonorsWall() {
+window.loadHonorsWall = async function() {
   const wall = document.getElementById('honors-wall-list'); if(!wall) return; const snap = await getDocs(collection(db, 'students'));
   let html = '<table><thead><tr><th>اسم الطالب</th><th>الفصل الدراسي</th><th>السجل</th></tr></thead><tbody>';
   snap.forEach(doc => { const s = doc.data(); html += `<tr><td>🏆 ${s.name}</td><td>الصف ${s.classId || '6/1'}</td><td><span class="badge success">مواظبة ممتازة ✓</span></td></tr>`; }); wall.innerHTML = html + '</tbody></table>';
 }
+window.saveClinicLog = async function() {
+  const cls = document.getElementById('clinic-class').value; const stuSel = document.getElementById('clinic-student');
+  const stuId = stuSel.value; const stuName = stuSel.options[stuSel.selectedIndex] ? stuSel.options[stuSel.selectedIndex].getAttribute('data-name') : '';
+  const symptoms = document.getElementById('clinic-symptoms').value.trim(); const action = document.getElementById('clinic-action').value;
+  if(!cls || !stuId || !symptoms) return;
+  try {
+    await addDoc(collection(db, 'clinic_logs'), { classId: cls, studentId: stuId, studentName: stuName, symptoms, action, date: new Date().toLocaleDateString('en-CA'), time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}), createdAt: serverTimestamp() });
+    alert('✓ تم توثيق إحالة العيادة!'); document.getElementById('clinic-symptoms').value = ''; window.loadClinicTodayLogs();
+  } catch(e) {}
+};
+window.loadClinicTodayLogs = async function() {
+  const table = document.getElementById('clinic-today-logs-table'); if(!table) return; const today = new Date().toLocaleDateString('en-CA');
+  try {
+    const snap = await getDocs(collection(db, 'clinic_logs')); let count = 0;
+    let html = '<table><thead><tr><th>الوقت</th><th>الطالب</th><th>الصف</th><th>التدبير الطبي</th></tr></thead><tbody>';
+    snap.forEach(doc => { const c = doc.data(); if(c.date === today) { count++; html += `<tr><td>🕒 ${c.time || '-'}</td><td>${c.studentName}</td><td>${c.classId}</td><td><strong>${c.action}</strong></td></tr>`; } });
+    table.innerHTML = count === 0 ? '<p>لا توجد إحالات اليوم.</p>' : html + '</tbody></table>';
+  } catch(e) {}
+}
 
 window.openAddUser=()=>{ document.getElementById('add-user-modal').style.display='flex'; };
 window.closeAddUser=()=>{ document.getElementById('add-user-modal').style.display='none'; };
-window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId, createdAt:serverTimestamp() }); alert('تم إضافة الحساب بنجاح'); closeAddUser(); loadUsers(); }catch(e){} };
+window.addUser=async()=>{ const name=document.getElementById('new-user-name').value.trim(); const userId=document.getElementById('new-user-id').value.trim(); const pass=document.getElementById('new-user-pass').value; const role=document.getElementById('new-user-role').value; const classId=document.getElementById('new-user-class').value.trim(); try{ await addDoc(collection(db,'users'),{ name, userId, plainPass:pass, role, classId, createdAt:serverTimestamp() }); alert('تم إضافة الحساب بنجاح'); window.closeAddUser(); window.loadUsers(); }catch(e){} };
 
 window.loadStats = loadStats; window.loadAdminBehaviorList = loadAdminBehaviorList; window.loadHonorsWall = loadHonorsWall;
 window.loadRoundsHistory = loadRoundsHistory; window.loadLiveGatePasses = loadLiveGatePasses; window.loadAbsentToday = loadAbsentToday;
-window.loadRepeatAbsent = loadRepeatAbsent; window.loadClassButtons = loadClassButtons; window.selectClass = selectClass;
-window.searchStudent = searchStudent; window.searchByDate = searchByDate; window.loadVisitCounts = loadVisitCounts; 
-window.saveSchoolVisitor = saveSchoolVisitor; window.loadVisitorsByDate = loadVisitorsByDate; window.viewDeptTeachersDirectory = viewDeptTeachersDirectory; 
-window.backToDirectoryGrid = backToDirectoryGrid; window.loadClinicTodayLogs = loadClinicTodayLogs;
-
-// 🟩 المحرك المحدث كلياً لاستقبال ضغطات الموبايل بنسبة أمان 100% 🟩
-const tabsBar = document.getElementById('tabs-bar');
-if(tabsBar) {
-  tabsBar.addEventListener('click', (e) => {
-    const tabBtn = e.target.closest('.tab'); // التوثيق الذكي لجلب الزر كاملاً حتى لو ضغطت الإيموجي
-    if (!tabBtn) return;
-    
-    const tabId = tabBtn.getAttribute('data-tab');
-    window.switchTab(tabId);
-    
-    try {
-      if (tabId === 'today') window.loadStats();
-      if (tabId === 'absent') window.loadAbsentToday();
-      if (tabId === 'repeat') window.loadRepeatAbsent();
-      if (tabId === 'behavior') window.loadAdminBehaviorList();
-      if (tabId === 'honors') window.loadHonorsWall();
-      if (tabId === 'rounds') window.loadRoundsHistory();
-      if (tabId === 'gatepass') window.loadLiveGatePasses();
-      if (tabId === 'classes') window.loadClassButtons();
-      if (tabId === 'users') window.loadUsers();
-      if (tabId === 'visits') window.loadVisitCounts();
-      if (tabId === 'guard') { window.loadLiveGatePasses(); window.loadVisitorsByDate(); }
-      if (tabId === 'clinic') window.loadClinicTodayLogs();
-      if (tabId === 'teacher-directory') window.viewDeptTeachersDirectory(currentUser.classId);
-      if (tabId === 'teacher-perf') loadTeacherPerformanceDashboard();
-    } catch(err) { console.error(err); }
-  });
-}
+window.loadRepeatAbsent = loadRepeatAbsent; window.loadClassButtons = loadClassButtons;
+window.loadVisitCounts = loadVisitCounts; window.saveSchoolVisitor = saveSchoolVisitor; window.loadVisitorsByDate = loadVisitorsByDate; 
+window.loadClinicTodayLogs = loadClinicTodayLogs; window.loadUsers = loadUsers;
 </script>
 </body>
 </html>
