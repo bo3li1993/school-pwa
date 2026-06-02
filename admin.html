@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم المنظومة الرقمية الموحدة - مدرسة سالم الحسينان</title>
+  <title>لوحة تحكم المنظومة الرقمية الشاملة - مدرسة سالم الحسينان</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
@@ -17,7 +17,7 @@
     .user-info p { font-size: 11px; opacity: 0.8; }
     .btn-logout { background: #e74c3c; color: #fff; border: none; padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
 
-    /* شريط التبويبات الستة المطور لمنع الاختفاء والقابل للسحب الأفقي المريح */
+    /* 🛡️ حل مشكلة اختفاء الأزرار: شريط التبويبات السبعة الكامل واللّدن للسحب الأفقي */
     .nav-tabs-container { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 999; }
     .nav-tabs { max-width: 1200px; margin: 0 auto; display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding: 5px 0; }
     .nav-tabs::-webkit-scrollbar { height: 5px; }
@@ -25,9 +25,9 @@
     .nav-tabs::-webkit-scrollbar-thumb { background: #e67e22; border-radius: 10px; }
 
     .tab-btn { 
-      flex: 0 0 auto; 
+      flex: 0 0 auto; /* منع انضغاط أو اختفاء الأزرار نهائياً على الموبايل */
       text-align: center; 
-      padding: 12px 20px; 
+      padding: 12px 18px; 
       background: none; 
       border: none; 
       color: #555; 
@@ -60,7 +60,7 @@
     .stat-card .num { font-size: 26px; font-weight: 900; color: #1a1a2e; }
 
     .table-container { width: 100%; overflow-x: auto; border: 1px solid #eee; border-radius: 6px; background: #fff; }
-    table { width: 100%; border-collapse: collapse; text-align: right; min-width: 700px; }
+    table { width: 100%; border-collapse: collapse; text-align: right; min-width: 750px; }
     th { background: #f8f9fa; color: #1a1a2e; padding: 12px; font-size: 13px; font-weight: bold; border-bottom: 2px solid #ddd; }
     td { padding: 12px; font-size: 13px; border-bottom: 1px solid #eee; color: #444; }
 
@@ -98,6 +98,7 @@
       <button class="tab-btn active" onclick="switchTab(event, 'panel-dashboard')"><i class="bi bi-speedometer2"></i> اليوم والمؤشرات</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-attendance')"><i class="bi bi-calendar-x"></i> رصد الغياب</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-behavior')"><i class="bi bi-exclamation-triangle"></i> رصد السلوك</button>
+      <button class="tab-btn" onclick="switchTab(event, 'panel-clinic')"><i class="bi bi-heart-pulse"></i> العيادة الذكية</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-security')"><i class="bi bi-shield-lock"></i> بوابة الأمن</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-search')"><i class="bi bi-search"></i> بحث الطالب الشامل</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-tour')"><i class="bi bi-clipboard-check"></i> جولة الجناح</button>
@@ -116,9 +117,8 @@
         <h3><i class="bi bi-table"></i> رصد غياب الفصول اليومي بحسب الحصص السبع</h3>
         <div class="table-container">
           <table>
-            <thead><tr><th>الفصل</th><th>حالة الرصد</th><th>حـ 1</th><th>حـ 2</th><th>حـ 3</th><th>حـ 4</th><th>حـ 5</th><th>حـ 6</th><th>حـ 7</th></tr></thead>
-            <tbody id="attendance-grid-body">
-              </tbody>
+            <thead><tr><th>الفصل</th><th>حالة الرصد اليومي</th><th>حـ 1</th><th>حـ 2</th><th>حـ 3</th><th>حـ 4</th><th>حـ 5</th><th>حـ 6</th><th>حـ 7</th></tr></thead>
+            <tbody id="attendance-grid-body"></tbody>
           </table>
         </div>
       </div>
@@ -132,7 +132,7 @@
             <div class="form-group">
               <label>اختر الفصل</label>
               <select id="att-class" class="form-control" onchange="loadStudentsForInput('att-class', 'att-student')">
-                <option value="">-- اختر الفصل من الـ 15 صفاً --</option>
+                <option value="">-- اختر الفصل من الـ 16 صفاً كاملة --</option>
                 <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
                 <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
                 <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
@@ -170,7 +170,7 @@
             <div class="form-group">
               <label>اختر الفصل</label>
               <select id="beh-class" class="form-control" onchange="loadStudentsForInput('beh-class', 'beh-student')">
-                <option value="">-- اختر الفصل من الـ 15 صفاً --</option>
+                <option value="">-- اختر الفصل من الـ 16 صفاً كاملة --</option>
                 <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
                 <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
                 <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
@@ -186,15 +186,54 @@
             <div class="form-group">
               <label>نوع الإجراء والبطاقة المرصودة</label>
               <select id="beh-violation" class="form-control">
-                <option>بطاقة صفراء - تنبيه أول</option><option>بطاقة حمراء - حجز هاتف</option><option>تأخر متكرر عن الطابور</option><option>سلوك غير انضباطي بالساحة</option>
+                <option>بطاقة صفراء - تنبيه أول</option><option>بطاقة برتقالية - إنذار سلوكي ثاني</option><option>بطاقة حمراء - حجز هاتف ومخالفة</option><option>تأخر متكرر عن طابور الصباح</option>
               </select>
             </div>
             <div class="form-group">
               <label>الإجراء المتخذ الفوري</label>
-              <input type="text" id="beh-action" class="form-control" placeholder="مثال: استدعاء ولي أمر / تعهد خطي">
+              <input type="text" id="beh-action" class="form-control" placeholder="مثال: تعهد خطي / استدعاء ولي أمر الطالب">
             </div>
           </div>
           <button type="submit" class="btn-submit" id="btn-save-beh" style="background:#e67e22;"><i class="bi bi-shield-alert"></i> اعتماد وترحيل المخالفة السلوكية</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="panel-clinic" class="app-panel">
+      <div class="card-section">
+        <h3><i class="bi bi-heart-pulse-fill text-danger"></i> سجل أرشفة وزيارات العيادة المدرسية الذكية</h3>
+        <form id="form-add-clinic" onsubmit="saveClinicLog(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>اختر الفصل</label>
+              <select id="cln-class" class="form-control" onchange="loadStudentsForInput('cln-class', 'cln-student')">
+                <option value="">-- اختر الفصل من الـ 16 صفاً كاملة --</option>
+                <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
+                <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
+                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>اسم الطالب المريض</label>
+              <select id="cln-student" class="form-control"><option value="">اختر الفصل أولاً لتظهر الأسماء المعتمدة...</option></select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>التشخيص / الأعراض المشكو منها</label>
+              <input type="text" id="cln-symptoms" class="form-control" placeholder="مثال: ارتفاع حرارة / صداع / إصابة ملاعب">
+            </div>
+            <div class="form-group">
+              <label>الإجراء الطبي والإحالة</label>
+              <select id="cln-action" class="form-control">
+                <option>إعطاء علاج مسكن وعودة للفصل</option>
+                <option>إخلاء طبي طارئ واستدعاء ولي الأمر</option>
+                <option>راحة في غرفة العيادة المدرسية</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="btn-save-cln" style="background:#c0392b;"><i class="bi bi-capsule"></i> توثيق الزيارة الطبية وترحيلها سحابياً</button>
         </form>
       </div>
     </div>
@@ -207,7 +246,7 @@
             <div class="form-group">
               <label>الفصل الدراسي</label>
               <select id="ex-class" class="form-control" onchange="loadStudentsForInput('ex-class', 'ex-student')">
-                <option value="">-- اختر الفصل من الـ 15 صفاً --</option>
+                <option value="">-- اختر الفصل من الـ 16 صفاً كاملة --</option>
                 <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
                 <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
                 <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
@@ -222,28 +261,28 @@
           <div class="grid-2">
             <div class="form-group">
               <label>سبب الاستئذان والخروج</label>
-              <input type="text" id="ex-reason" class="form-control" placeholder="مثال: موعد طبي / عارض عائلي">
+              <input type="text" id="ex-reason" class="form-control" placeholder="مثال: موعد طبي / عارض عائلي وخروج مبكر">
             </div>
             <div class="form-group">
               <label>هوية واسم المستلم (ولي الأمر)</label>
-              <input type="text" id="ex-recipient" class="form-control" placeholder="أدخل اسم ولي الأمر ورقم مدنيته">
+              <input type="text" id="ex-recipient" class="form-control" placeholder="أدخل اسم ولي الأمر ورقم بطاقته المدنية">
             </div>
           </div>
-          <button type="submit" class="btn-submit" id="btn-save-ex" style="background:#34495e;"><i class="bi bi-lock-fill"></i> توثيق حركة الخروج وفتح البوابة</button>
+          <button type="submit" class="btn-submit" id="btn-save-ex" style="background:#34495e;"><i class="bi bi-lock-fill"></i> توثيق حركة الخروج وفتح تصريح البوابة للحارس</button>
         </form>
       </div>
     </div>
 
     <div id="panel-search" class="app-panel">
       <div class="card-section">
-        <h3><i class="bi bi-person-bounding-box"></i> نظام الاستعلام والالملف الشامل للطالب</h3>
-        <p style="font-size:12px; color:#666; margin-bottom:15px;">اختر الفصل لتظهر لك أسماء الطلاب المعتمدين فوراً دون كتابة يدوية، ثم حدد الاسم لجلب الأرشيف التراكمي الموحد.</p>
+        <h3><i class="bi bi-person-bounding-box"></i> نظام الاستعلام والملف الشامل والرباعي للطالب</h3>
+        <p style="font-size:12px; color:#666; margin-bottom:15px;">اختر الفصل لتظهر لك أسماء الطلاب المعتمدين فوراً، ثم حدد الاسم لجلب الأرشيف الكامل حياً.</p>
         
         <div class="grid-2">
           <div class="form-group">
             <label>1. اختر الصف المراد بحثه</label>
             <select id="search-class-select" class="form-control" onchange="loadStudentsForSearch()">
-              <option value="">-- حدد الصف المدرسي من الـ 15 صفاً --</option>
+              <option value="">-- حدد الصف المدرسي من الـ 16 فصلاً --</option>
               <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
               <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
               <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
@@ -271,9 +310,14 @@
             <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-exclamation-octagon-fill text-danger"></i> 2. المخالفات السلوكية وبطاقات الانضباط الملونة:</h5>
             <div class="table-container"><table><thead><tr><th>التاريخ</th><th>نوع البطاقة المرصودة</th><th>الإجراء المتبع بالملف</th><th>المعلم الراصد</th></tr></thead><tbody id="t-body-behavior"></tbody></table></div>
           </div>
+
+          <div style="margin-bottom:20px;">
+            <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-heart-pulse-fill text-success"></i> 3. أرشيف مراجعات وزيارات العيادة المدرسية:</h5>
+            <div class="table-container"><table><thead><tr><th>التاريخ والوقت</th><th>الأعراض والتشخيص</th><th>الإجراء الطبي الموثق</th></tr></thead><tbody id="t-body-clinic"></tbody></table></div>
+          </div>
           
           <div>
-            <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-shield-lock-fill text-warning"></i> 3. تصاريح الخروج والاستئذان الموثقة من بوابة الحارس:</h5>
+            <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-shield-lock-fill text-warning"></i> 4. تصاريح الخروج والاستئذان الموثقة من بوابة الحارس:</h5>
             <div class="table-container"><table><thead><tr><th>التاريخ</th><th>وقت المغادرة</th><th>سبب الخروج الرسمي</th><th>اسم ولي الأمر المستلم</th></tr></thead><tbody id="t-body-exits"></tbody></table></div>
           </div>
         </div>
@@ -338,7 +382,7 @@
     const db = getFirestore(app);
     let currentUser = null;
 
-    // مصفوفة فصول المدرسة الـ 15 كاملة وموحدة في كل النظام
+    // 🔒 المصفوفات الحاكمة للـ 16 فصلاً كاملاً لربط أمني متكامل
     const fullSchoolClasses = ['6/1', '6/2', '6/3', '6/4', '7/1', '7/2', '7/3', '7/4', '8/1', '8/2', '8/3', '8/4', '9/1', '9/2', '9/3', '9/4'];
     const periodKeys = ['الحصة الأولى', 'الحصة الثانية', 'الحصة الثالثة', 'الحصة الرابعة', 'الحصة الخامسة', 'الحصة السادسة', 'الحصة السابعة'];
 
@@ -347,7 +391,7 @@
       if (!savedUser) { window.location.href = 'login.html'; }
       else {
         currentUser = JSON.parse(savedUser);
-        document.getElementById('welcome-title').innerHTML = `<i class="bi bi-person-circle"></i> مرحباً، أ. ${currentUser.name || currentUser.fullName || 'حسين إسماعيل'}`;
+        document.getElementById('welcome-title').innerHTML = `<i class="bi bi-person-circle"></i> مرحباً، أ. ${currentUser.fullName || currentUser.name || 'حسين إسماعيل'}`;
         document.getElementById('live-date').textContent = new Date().toLocaleDateString('ar-KW', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         loadDashboardStatsAndGrid();
       }
@@ -363,7 +407,7 @@
 
     window.handleLogout = function() { localStorage.removeItem('hs_user'); window.location.href = 'login.html'; };
 
-    // جلب ذكي وحصين للأسماء يغطي حقول (class / classId) لضمان عدم ظهور القائمة بيضاء أبداً
+    // 🌟 دالة فرز وجلب الأسماء التلقائي الذكي لمعالجة تداخل المجموعات بمرونة
     async function fetchStudentsByClass(classValue) {
       if (!classValue) return [];
       try {
@@ -388,7 +432,7 @@
       const sSelect = document.getElementById(studentSelectId);
       sSelect.innerHTML = '<option value="">جاري سحب قائمة الأسماء الحية سحابياً...</option>';
       const students = await fetchStudentsByClass(cls);
-      sSelect.innerHTML = students.length ? '<option value="">-- اختر اسم الطالب من القائمة --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('') : '<option value="">لا يوجد طلاب مسجلين في قاعدة هذا الفصل</option>';
+      sSelect.innerHTML = students.length ? '<option value="">-- اختر اسم الطالب من القائمة المفلترة --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('') : '<option value="">لا يوجد طلاب مسجلين في هذا الفصل</option>';
     };
 
     window.loadStudentsForSearch = async function() {
@@ -403,12 +447,10 @@
       try {
         const todayStr = new Date().toLocaleDateString('ar-KW');
         
-        // 1. جلب إجمالي الطلاب الفعلي المسجل
         const studentsSnap = await getDocs(collection(db, 'students'));
         const totalStudentsCount = studentsSnap.size || 380;
         document.getElementById('stat-total').textContent = totalStudentsCount;
 
-        // 2. جلب غيابات اليوم لمطابقة الحالات حياً
         const qAtt = query(collection(db, 'attendance'), where('date', '==', todayStr));
         const attSnap = await getDocs(qAtt);
         
@@ -430,25 +472,21 @@
           }
         });
 
-        // تحديث كروت الأعداد الحية بناءً على الفايربيز
         const absentCount = uniqueAbsentStudents.size;
         document.getElementById('stat-absent').textContent = absentCount;
         document.getElementById('stat-present').textContent = (totalStudentsCount - absentCount);
 
-        // 3. بناء الجدول الحقيقي الـ 15 فصلاً كاملاً زنزانة زنزانة
         gridBody.innerHTML = '';
         fullSchoolClasses.forEach(cls => {
           const tr = document.createElement('tr');
           let rowHtml = `<td><strong>${cls}</strong></td>`;
           
-          // تشخيص حالة رصد الفصل حياً
           if (attendanceMap[cls]) {
             rowHtml += `<td><span class="badge green">تم الرصد ✓</span></td>`;
           } else {
             rowHtml += `<td><span class="badge red">لم يُرصد ✗</span></td>`;
           }
 
-          // بناء أعمدة الحصص السبع بدقة متناهية
           periodKeys.forEach(pKey => {
             if (attendanceMap[cls] && attendanceMap[cls][pKey]) {
               const type = attendanceMap[cls][pKey];
@@ -464,12 +502,11 @@
         });
 
       } catch (err) {
-        console.error(err);
         gridBody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:red;">خطأ أثناء الاتصال بالخادم السحابي.</td></tr>';
       }
     }
 
-    // الاستعلام الشامل الموحد لملف الطالب التراكمي
+    // 🔍 محرك البحث الاستعلامي الشامل والرباعي التراكمي للطالب المختار
     window.executeStudentSearch = async function() {
       const nameInput = document.getElementById('search-student-select').value;
       if (!nameInput) { alert('يرجى اختيار اسم الطالب من القائمة أولاً لإنشاء التقرير الموحد!'); return; }
@@ -478,26 +515,32 @@
       resultsArea.style.display = 'block';
       document.getElementById('target-student-title').innerHTML = `<i class="bi bi-info-circle-fill"></i> الملف الموحد المستدعى للطالب سحابياً: <span style="color:#1a1a2e; font-weight:900;">${nameInput}</span>`;
 
-      // 1. أرشيف غيابات الحصص
+      // 1. أرشيف غيابات وتأخير الحصص
       const snapAtt = await getDocs(query(collection(db, 'attendance'), where('studentName', '==', nameInput)));
       const bAtt = document.getElementById('t-body-attendance'); bAtt.innerHTML = '';
       if (!snapAtt.empty) snapAtt.forEach(doc => { const d = doc.data(); bAtt.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.period || '-'}</td><td><span class="badge red">${d.type || 'غياب'}</span></td></tr>`; });
       else bAtt.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الملف سليم ولا توجد غيابات أو تأخير حصص مسجل اليوم.</td></tr>`;
 
-      // 2. المخالفات والبطاقات السلوكية
+      // 2. السجل السلوكي والبطاقات
       const snapBeh = await getDocs(query(collection(db, 'behavior'), where('studentName', '==', nameInput)));
       const bBeh = document.getElementById('t-body-behavior'); bBeh.innerHTML = '';
       if (!snapBeh.empty) snapBeh.forEach(doc => { const d = doc.data(); bBeh.innerHTML += `<tr><td>${d.date || '-'}</td><td><span class="badge orange">${d.violation || '-'}</span></td><td>${d.action || '-'}</td><td>أ. ${d.teacherName || 'المشرف'}</td></tr>`; });
       else bBeh.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">الملف السلوكي نظيف تماماً وخالي من بطاقات الموبايل والمخالفات.</td></tr>`;
 
-      // 3. تصاريح البوابة والأمن
+      // 3. زيارات العيادة المدرسية
+      const snapCln = await getDocs(query(collection(db, 'clinic'), where('studentName', '==', nameInput)));
+      const bCln = document.getElementById('t-body-clinic'); bCln.innerHTML = '';
+      if (!snapCln.empty) snapCln.forEach(doc => { const d = doc.data(); bCln.innerHTML += `<tr><td>${d.date || '-'} ${d.time || ''}</td><td><strong>${d.symptoms || '-'}</strong></td><td><span class="badge blue">${d.action || '-'}</span></td></tr>`; });
+      else bCln.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الطالب لم يقم بزيارة العيادة المدرسية مسبقاً، سجل صحي سليم.</td></tr>`;
+
+      // 4. حركات البوابة وتوثيق الحارس
       const snapEx = await getDocs(query(collection(db, 'exits'), where('studentName', '==', nameInput)));
       const bEx = document.getElementById('t-body-exits'); bEx.innerHTML = '';
       if (!snapEx.empty) snapEx.forEach(doc => { const d = doc.data(); bEx.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.time || '-'}</td><td>${d.reason || '-'}</td><td>${d.recipientName || '-'}</td></tr>`; });
       else bEx.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">الطالب ملتزم بالدوام ولم تسجل له أي حركات خروج أو استئذان عبر البوابة.</td></tr>`;
     };
 
-    // حفظ وترحيل غياب الحصة وتحديث الواجهة تلقائياً دون إنعاش
+    // 💾 ترحيل وحفظ غرف الإدخال المتكاملة الخمسة للفايربيز
     window.saveAttendance = async function(e) {
       e.preventDefault();
       const sVal = document.getElementById('att-student').value;
@@ -512,7 +555,7 @@
           date: new Date().toLocaleDateString('ar-KW'),
           timestamp: new Date().toISOString()
         });
-        alert('✓ تم رصد وحفظ غياب الحصة بنجاح في النظام السحابي.');
+        alert('✓ تم رصد وحفظ غياب الحصة بنجاح في النظام السحابي وثوب اللوحة الحية.');
         document.getElementById('form-add-attendance').reset();
         loadDashboardStatsAndGrid();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
@@ -529,12 +572,32 @@
           class: document.getElementById('beh-class').value,
           violation: document.getElementById('beh-violation').value,
           action: document.getElementById('beh-action').value,
-          teacherName: currentUser ? (currentUser.name || currentUser.fullName) : 'حسين إسماعيل',
+          teacherName: currentUser ? (currentUser.fullName || currentUser.name) : 'حسين إسماعيل',
           date: new Date().toLocaleDateString('ar-KW'),
           timestamp: new Date().toISOString()
         });
         alert('✓ تم ترحيل البطاقة السلوكية المخالفة وتوثيقها فوراً بالملف الموحد.');
         document.getElementById('form-add-behavior').reset();
+      } catch(err) { alert(err.message); } finally { btn.disabled = false; }
+    };
+
+    window.saveClinicLog = async function(e) {
+      e.preventDefault();
+      const sVal = document.getElementById('cln-student').value;
+      if(!sVal){ alert('الرجاء اختيار اسم الطالب أولاً لتسجيل الحالة الطبية!'); return; }
+      const btn = document.getElementById('btn-save-cln'); btn.disabled = true;
+      try {
+        await addDoc(collection(db, 'clinic'), {
+          studentName: sVal,
+          class: document.getElementById('cln-class').value,
+          symptoms: document.getElementById('cln-symptoms').value,
+          action: document.getElementById('cln-action').value,
+          date: new Date().toLocaleDateString('ar-KW'),
+          time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}),
+          timestamp: new Date().toISOString()
+        });
+        alert('✓ تم توثيق وحفظ الإحالة والتقرير الطبي للعيادة الذكية بنجاح.');
+        document.getElementById('form-add-clinic').reset();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
     };
 
@@ -568,7 +631,7 @@
           acCheck: document.getElementById('chk-ac').checked ? 'سليم' : 'عطل',
           teachersCheck: document.getElementById('chk-teachers').checked ? 'ملتزم' : 'تأخير ممرات',
           additionalNotes: document.getElementById('tour-notes').value,
-          inspectorName: currentUser ? (currentUser.name || currentUser.fullName) : 'حسين إسماعيل',
+          inspectorName: currentUser ? (currentUser.fullName || currentUser.name) : 'حسين إسماعيل',
           timestamp: new Date().toISOString()
         });
         alert('✓ تم ترحيل تقرير جولة الجناح وتوثيق المؤشرات اللوجستية بنجاح للادارة.');
