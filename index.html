@@ -3,138 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="manifest" href="manifest.json">
-  <title>بوابة الدخول الذكية - متوسطة سالم الحسينان</title>
-  <link rel="stylesheet" href="style.css">
+  <title>بوابة المنظومة الرقمية الشاملة - مدرسة سالم الحسينان</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+    body { background: #f8f9fa; color: #333; min-height: 100vh; display: flex; flex-direction: column; }
+    
+    /* الهيرو والترحيب العلوي */
+    .hero-section { background: linear-gradient(135deg, #1a1a2e 0%, #2e2e54 100%); color: #fff; text-align: center; padding: 4rem 1.5rem; border-bottom: 5px solid #e67e22; }
+    .hero-section h1 { font-size: 32px; font-weight: 900; margin-bottom: 10px; }
+    .hero-section p { font-size: 16px; opacity: 0.9; max-width: 600px; margin: 0 auto 2rem auto; line-height: 1.8; }
+    
+    /* أزرار الإجراءات الرئيسية */
+    .btn-group { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+    .btn-main { padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .btn-primary-custom { background: #e67e22; color: #fff; border: none; box-shadow: 0 4px 15px rgba(230,126,34,0.3); }
+    .btn-primary-custom:hover { background: #d35400; transform: translateY(-2px); }
+    .btn-secondary-custom { background: transparent; color: #fff; border: 2px solid #fff; }
+    .btn-secondary-custom:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+    
+    /* المحتوى الرئيسي للمميزات */
+    .main-content { max-width: 1000px; margin: -2rem auto 2rem auto; padding: 0 1rem; width: 100%; }
+    .quick-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+    @media (max-width: 768px) { .quick-features { grid-template-columns: 1fr; } }
+    
+    .feature-card { background: #fff; border-radius: 8px; padding: 1.5rem; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 4px solid #1a1a2e; }
+    .feature-card .icon-box { font-size: 36px; color: #e67e22; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 16px; color: #1a1a2e; margin-bottom: 8px; }
+    .feature-card p { font-size: 13px; color: #666; line-height: 1.6; }
+    
+    /* 📌 قسم الإعلانات والتعاميم المضاف حديثاً */
+    .announcements-box { background: #fff; border-radius: 8px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-right: 5px solid #e67e22; }
+    .announcements-box h2 { font-size: 20px; color: #1a1a2e; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    .announcements-box h2 i { color: #e67e22; }
+    
+    .announcement-list { display: flex; flex-direction: column; gap: 1rem; }
+    .announcement-item { display: flex; align-items: flex-start; gap: 15px; padding: 12px 15px; background: #f8f9fa; border-radius: 6px; border: 1px solid #edf1f5; }
+    .announcement-meta { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1a1a2e; color: #fff; padding: 8px 12px; border-radius: 6px; min-width: 80px; text-align: center; }
+    .announcement-meta .day { font-size: 18px; font-weight: bold; line-height: 1; }
+    .announcement-meta .month { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+    
+    .announcement-details { flex: 1; }
+    .announcement-details h4 { font-size: 15px; color: #1a1a2e; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .announcement-details p { font-size: 13px; color: #555; line-height: 1.5; }
+    
+    .badge-custom { padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #fff; }
+    .badge-danger { background: #e74c3c; }
+    .badge-info { background: #3498db; }
+    
+    /* الفوتر السفلي */
+    footer { background: #1a1a2e; color: rgba(255,255,255,0.7); text-align: center; padding: 1rem; font-size: 12px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <img src="logo.png" alt="شعار متوسطة سالم الحسينان" class="logo">
-      <h1>بوابة الدخول الذكية</h1>
-    </div>
+
+  <!-- واجهة الترحيب العلوية -->
+  <div class="hero-section">
+    <h1>المنظومة الرقمية الشاملة الموحدة</h1>
+    <p>مدرسة سالم الحسينان المتوسطة بنين</p>
+    <p>مرحباً بك في البوابة الإلكترونية المطورة لإدارة العمليات الميدانية، رصد المؤشرات الحية، وضبط أمن وسلامة البيئة المدرسية سحابياً.</p>
     
-    <div class="login-form">
-      <h2>تسجيل الدخول</h2>
-      <form>
-        <div class="input-group" style="position: relative; margin-bottom: 15px;">
-          <i class="bi bi-person-fill" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #666; font-size: 1.2rem; pointer-events: none;"></i>
-          <input type="text" id="username" placeholder="رقم المستخدم" autocomplete="off" inputmode="numeric" pattern="[0-9]*" style="padding-right: 40px; padding-left: 12px; width: 100%; box-sizing: border-box;">
-        </div>
-        
-        <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
-          
-          <div style="position: relative; flex: 1;">
-            <i class="bi bi-lock-fill" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #666; font-size: 1.2rem; pointer-events: none;"></i>
-            <input type="password" id="password" placeholder="كلمة المرور" autocomplete="off" style="-webkit-text-security:disc; padding-right: 40px; padding-left: 12px; width: 100%; box-sizing: border-box;">
-          </div>
-          
-          <button type="button" class="toggle-pass" onclick="togglePassword('password',this)" style="background: #f0f2f5; border: 1px solid #ddd; cursor: pointer; border-radius: 6px; height: 42px; min-width: 45px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; padding: 0; margin: 0;">👁️</button>
-        </div>
-        
-        <div class="checkbox" style="margin-top: 15px;">
-          <input type="checkbox" id="remember">
-          <label for="remember">تذكرني</label>
-        </div>
-        
-        <button type="submit" style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
-          دخول <i class="bi bi-arrow-left-short" style="font-size: 1.3rem;"></i>
-        </button>
-      </form>
-      
-      <div class="links">
-        <a href="#">نسيت كلمة المرور؟</a>
-        <a href="#">تسجيل حساب جديد</a>
-      </div>
+    <div class="btn-group">
+      <!-- يوجه المستخدم إلى صفحة الدخول المحدثة -->
+      <a href="login.html" class="btn-main btn-primary-custom">
+        <i class="bi bi-box-arrow-in-left"></i> الدخول للمنظومة الرقمية
+      </a>
+      <!-- يوجه الزائر إلى بروشور المميزات وطباعة الـ PDF -->
+      <a href="guide.html" class="btn-main btn-secondary-custom">
+        <i class="bi bi-file-earmark-pdf"></i> دليل مميزات المنصة وطباعته
+      </a>
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script>
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-      authDomain: "hosainan-school.firebaseapp.com",
-      projectId: "hosainan-school",
-    };
+  <!-- المحتوى الرئيسي السفلي -->
+  <div class="main-content">
     
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    <!-- عرض سريع للمميزات الثلاثية -->
+    <div class="quick-features">
+      <div class="feature-card">
+        <div class="icon-box"><i class="bi bi-speedometer2"></i></div>
+        <h3>رصد ومؤشرات لحظية</h3>
+        <p>متابعة نسب حضور وغياب الطلاب للفصول حياً بحسب الحصص السبع على مدار اليوم الدراسي لمعالجة الهدر اللوجستي فوراً.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="icon-box"><i class="bi bi-shield-check"></i></div>
+        <h3>أمن البوابة والاستئذان</h3>
+        <p>ربط سحابي محكم وتصاريح خروج رقمية فورية موجهة لبوابة حارس المنشأة تضمن سلامة الطلاب وتوثق هوية المستلم بالكامل.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="icon-box"><i class="bi bi-activity"></i></div>
+        <h3>العيادة والسلوك الذكي</h3>
+        <p>البطاقات الملونة السريعة لرصد المخالفات السلوكية من الموبايل، مع أرشفة طبية دقيقة لكافة إحالات العيادة المدرسية.</p>
+      </div>
+    </div>
 
-    const loginForm = document.querySelector('form');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
+    <!-- 📌 لوحة التعاميم العامة المفتوحة للجميع (القسم الجديد) -->
+    <div class="announcements-box">
+      <h2><i class="bi bi-megaphone-fill"></i> لوحة الإعلانات والتعاميم العامة الحالية</h2>
+      
+      <div class="announcement-list">
+        <!-- الإعلان الأول -->
+        <div class="announcement-item">
+          <div class="announcement-meta">
+            <span class="day">25</span>
+            <span class="month">مايو 2026</span>
+          </div>
+          <div class="announcement-details">
+            <h4>تنبيه هام بشأن رصد درجات الفترات <span class="badge-custom badge-danger">عاجل جداً</span></h4>
+            <p>يرجى من جميع السادة رؤساء الأقسام وأعضاء الهيئة التعليمية الالتزام التام بإنهاء كافة بنود التقييم التراكمي في المنظومة الرقمية قبل نهاية دوام الأسبوع الحالي المعتمد.</p>
+          </div>
+        </div>
 
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+        <!-- الإعلان الثاني -->
+        <div class="announcement-item">
+          <div class="announcement-meta">
+            <span class="day">18</span>
+            <span class="month">مايو 2026</span>
+          </div>
+          <div class="announcement-details">
+            <h4>تحديثات أمن البوابة وحقيبة الاستئذان <span class="badge-custom badge-info">إداري</span></h4>
+            <p>بناءً على التوجيهات الجديدة، تم إيقاف العمل بالخروج الورقي نهائياً. يرجى ترحيل أي مغادرة طبية أو عائلية للطلاب عبر تصاريح البوابة الإلكترونية لتوثيق هوية المستلم فوراً.</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value.trim();
+  </div>
 
-      try {
-        const snapshot = await db.collection('users').where('userId', '==', username).where('plainPass', '==', password).get();
+  <!-- حقوق المنصة -->
+  <footer>
+    حقوق الطبع والتطوير محفوظة © مدرسة سالم الحسينان المتوسطة بنين
+  </footer>
 
-        if (snapshot.empty) {
-          console.log('No matching user found');
-          alert('اسم المستخدم أو كلمة المرور غير صحيحة');
-          return;
-        }
-
-        const userDoc = snapshot.docs[0];
-        const userData = userDoc.data();
-
-        const found = {
-          id: userDoc.id,
-          name: userData.name || '',
-          role: userData.role || '',
-          classId: userData.classId || '',
-          userId: userData.userId
-        };
-
-        localStorage.setItem('hs_user', JSON.stringify(found));
-
-        console.log('Found user role:', found.role);
-        console.log('Redirecting user role:', found.role);
-
-        const targetPage = found.role === 'admin' ? 'admin.html' : 'teacher.html';
-        sessionStorage.setItem('hs_redirect', targetPage);
-
-        setTimeout(function() {
-          window.location.replace(targetPage);
-        }, 800);
-
-        setTimeout(function() {
-          if (window.location.href.indexOf('index.html') !== -1 || window.location.pathname === '/school-pwa/' || window.location.pathname === '/school-pwa/index.html') {
-            window.location.replace(targetPage);
-          }
-        }, 2500);
-
-      } catch (error) {
-        console.error('Error logging in:', error);
-        alert('حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.');
-      }
-    });
-
-    const pendingRedirect = sessionStorage.getItem('hs_redirect');
-    const hasUser = localStorage.getItem('hs_user');
-    if (pendingRedirect && hasUser) {
-      sessionStorage.removeItem('hs_redirect');
-      window.location.replace(pendingRedirect);
-    }
-
-    // دالة التبديل الذكية لزر العين الخارجي
-    function togglePassword(id, btn) {
-      const input = document.getElementById(id);
-      if (input.style.webkitTextSecurity === 'disc' || input.style.webkitTextSecurity === '') {
-        input.style.webkitTextSecurity = 'none';
-        btn.textContent = '🙈';
-      } else {
-        input.style.webkitTextSecurity = 'disc';
-        btn.textContent = '👁️';
-      }
-    }
-  </script>
 </body>
 </html>
