@@ -3,177 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم المنظومة الرقمية الشاملة - مدرسة سالم الحسينان</title>
-  <!-- مكتبة الأيقونات الرسمية والخطوط -->
+  <title>لوحة تحكم المنظومة الرقمية الموحدة - مدرسة سالم الحسينان</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
     
-    /* تصفير الهوامش وضبط الأبعاد لمنع أي انحراف جانبي */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-    
-    body { 
-      background-color: #f4f6f9; 
-      color: #333; 
-      min-height: 100vh; 
-      display: flex; 
-      flex-direction: column;
-      overflow-x: hidden; /* منع التمدد الأفقي المزعج على الموبايل */
-    }
+    body { background-color: #f4f6f9; color: #333; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-    /* الهيدر العلوي الذكي */
-    header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #2e2e54 100%);
-      color: #fff;
-      padding: 15px 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-bottom: 4px solid #e67e22;
-    }
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    header { background: linear-gradient(135deg, #1a1a2e 0%, #2e2e54 100%); color: #fff; padding: 15px 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-bottom: 4px solid #e67e22; }
+    .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .user-info h2 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
     .user-info p { font-size: 11px; opacity: 0.8; }
-    .header-actions { display: flex; align-items: center; gap: 10px; }
-    .btn-logout { background: #e74c3c; color: #fff; border: none; padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; }
-    .btn-logout:hover { background: #c0392b; }
+    .btn-logout { background: #e74c3c; color: #fff; border: none; padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
 
-    /* شريط التنقل السريع الفخم بين الأقسام (Tabs) */
-    .nav-tabs-container {
-      background: #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      border-bottom: 1px solid #ddd;
-      position: sticky;
-      top: 0;
-      z-index: 999;
-    }
-    .nav-tabs {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      overflow-x: auto; /* دعم السحب الأفقي المريح للأزرار على الموبايل */
-      white-space: nowrap;
-      scroll-behavior: smooth;
-    }
+    /* شريط الأزرار الستة المتكامل والمتجاوب بالسحب على الموبايل */
+    .nav-tabs-container { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 999; }
+    .nav-tabs { max-width: 1200px; margin: 0 auto; display: flex; overflow-x: auto; white-space: nowrap; scroll-behavior: smooth; }
     .nav-tabs::-webkit-scrollbar { height: 4px; }
-    .tab-btn {
-      flex: 1;
-      text-align: center;
-      padding: 15px 20px;
-      background: none;
-      border: none;
-      color: #555;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
-    }
-    .tab-btn i { font-size: 16px; }
-    .tab-btn.active {
-      color: #1a1a2e;
-      border-bottom-color: #e67e22;
-      background: rgba(230, 126, 34, 0.05);
-      font-weight: 700;
-    }
+    .tab-btn { flex: 1; text-align: center; padding: 15px 18px; background: none; border: none; color: #555; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .tab-btn.active { color: #1a1a2e; border-bottom-color: #e67e22; background: rgba(230, 126, 34, 0.05); font-weight: 700; }
 
-    /* الحاوية الرئيسية للمحتوى */
-    .main-content {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 15px;
-      width: 100%;
-      flex: 1;
-    }
-
-    /* كروت الأقسام الرئيسية */
-    .app-panel { display: none; width: 100%; animation: fadeIn 0.3s ease-in-out; }
+    .main-content { max-width: 1200px; margin: 20px auto; padding: 0 15px; width: 100%; flex: 1; }
+    .app-panel { display: none; width: 100%; animation: fadeIn 0.25s ease-in-out; }
     .app-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .card-section { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 25px; border-top: 4px solid #1a1a2e; }
+    .card-section h3 { font-size: 17px; color: #1a1a2e; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-    .card-section {
-      background: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-      margin-bottom: 25px;
-      border-top: 4px solid #1a1a2e;
-    }
-    .card-section h3 { font-size: 18px; color: #1a1a2e; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-
-    /* شبكة المؤشرات والإحصائيات الحية */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-    .stat-card {
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-      text-align: center;
-      border-bottom: 4px solid #ddd;
-    }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); text-align: center; border-bottom: 4px solid #ddd; }
     .stat-card.total { border-bottom-color: #3498db; }
     .stat-card.present { border-bottom-color: #27ae60; }
     .stat-card.absent { border-bottom-color: #e74c3c; }
     .stat-card h4 { font-size: 13px; color: #666; margin-bottom: 5px; }
-    .stat-card .num { font-size: 28px; font-weight: 900; color: #1a1a2e; }
+    .stat-card .num { font-size: 26px; font-weight: 900; color: #1a1a2e; }
 
-    /* تصميم مرن للجداول المتجاوبة 100% بدون سحق المحتوى */
     .table-container { width: 100%; overflow-x: auto; border: 1px solid #eee; border-radius: 6px; background: #fff; }
     table { width: 100%; border-collapse: collapse; text-align: right; min-width: 600px; }
     th { background: #f8f9fa; color: #1a1a2e; padding: 12px; font-size: 13px; font-weight: bold; border-bottom: 2px solid #ddd; }
-    td { padding: 12px; font-size: 13px; border-bottom: 1px solid #eee; color: #444; vertical-align: middle; }
-    tr:hover { background-color: #fafafa; }
+    td { padding: 12px; font-size: 13px; border-bottom: 1px solid #eee; color: #444; }
 
-    /* حقول الإدخال والفورم المطور */
     .form-group { margin-bottom: 15px; text-align: right; }
     .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: #1a1a2e; }
-    .form-control { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: #fff; outline: none; transition: 0.2s; }
-    .form-control:focus { border-color: #e67e22; box-shadow: 0 0 5px rgba(230,126,34,0.2); }
-    
+    .form-control { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; background: #fff; outline: none; }
+    .form-control:focus { border-color: #e67e22; }
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
 
-    /* أزرار مخصصة وعالية الفخامة */
-    .btn-submit { width: 100%; background: #27ae60; color: #fff; border: none; padding: 12px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-    .btn-submit:hover { background: #219653; transform: translateY(-1px); }
-    .btn-search { background: #1a1a2e; color: #fff; border: none; padding: 10px 25px; font-weight: bold; border-radius: 6px; cursor: pointer; }
-    
-    /* الـ Badges الملونة للحالات */
+    .btn-submit { width: 100%; background: #27ae60; color: #fff; border: none; padding: 12px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-search { width: 100%; background: #1a1a2e; color: #fff; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 15px; margin-top: 10px; }
     .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #fff; display: inline-block; }
-    .badge.red { background: #e74c3c; }
-    .badge.green { background: #27ae60; }
-    .badge.orange { background: #e67e22; }
-    .badge.blue { background: #3498db; }
-
-    /* خيارات التشيك بوكس في الجولة */
-    .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 13px; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #edf1f5; cursor: pointer; }
-    .checkbox-item input { width: 16px; height: 16px; accent-color: #27ae60; }
-
-    /* الفوتر */
+    .badge.red { background: #e74c3c; } .badge.green { background: #27ae60; } .badge.orange { background: #e67e22; } .badge.blue { background: #3498db; }
+    .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 13px; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #edf1f5; }
     footer { background: #1a1a2e; color: rgba(255,255,255,0.6); text-align: center; padding: 15px; font-size: 12px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto; }
   </style>
 </head>
 <body>
 
-  <!-- الهيدر العلوي الموحد -->
   <header>
     <div class="header-container">
       <div class="user-info">
@@ -187,196 +74,217 @@
     </div>
   </header>
 
-  <!-- شريط التبديل السريع والمتجاوب على الموبايل -->
+  <!-- شريط التبويب الشامل المكتمل بجميع الأزرار الستة الرافعة للرأس -->
   <div class="nav-tabs-container">
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab(event, 'panel-dashboard')"><i class="bi bi-speedometer2"></i> اليوم والمؤشرات</button>
+      <button class="tab-btn" onclick="switchTab(event, 'panel-attendance')"><i class="bi bi-calendar-x"></i> رصد الغياب</button>
+      <button class="tab-btn" onclick="switchTab(event, 'panel-behavior')"><i class="bi bi-exclamation-triangle"></i> رصد السلوك</button>
+      <button class="tab-btn" onclick="switchTab(event, 'panel-security')"><i class="bi bi-shield-lock"></i> بوابة الأمن</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-search')"><i class="bi bi-search"></i> بحث الطالب الشامل</button>
-      <button class="tab-btn" onclick="switchTab(event, 'panel-tour')"><i class="bi bi-clipboard-check"></i> جولة مشرف الجناح</button>
+      <button class="tab-btn" onclick="switchTab(event, 'panel-tour')"><i class="bi bi-clipboard-check"></i> جولة الجناح</button>
     </div>
   </div>
 
-  <!-- الحاوية الرئيسية لكافة الصفحات المدمجة -->
   <div class="main-content">
 
-    <!-- 📊 القسم الأول: لوحة المؤشرات وحالة غياب الفصول الحية -->
+    <!-- 📊 تّاب 1: لوحة المؤشرات وحالة غياب الفصول -->
     <div id="panel-dashboard" class="app-panel active">
       <div class="stats-grid">
-        <div class="stat-card total">
-          <h4>إجمالي طلاب المدرسة</h4>
-          <div class="num" id="stat-total">380</div>
-        </div>
-        <div class="stat-card present">
-          <h4>حاضرون اليوم حياً</h4>
-          <div class="num" id="stat-present">365</div>
-        </div>
-        <div class="stat-card absent">
-          <h4>غائبون اليوم التراكمي</h4>
-          <div class="num" id="stat-absent">15</div>
-        </div>
+        <div class="stat-card total"><h4>إجمالي طلاب المدرسة</h4><div class="num" id="stat-total">380</div></div>
+        <div class="stat-card present"><h4>حاضرون اليوم حياً</h4><div class="num" id="stat-present">365</div></div>
+        <div class="stat-card absent"><h4>غائبون اليوم التراكمي</h4><div class="num" id="stat-absent">15</div></div>
       </div>
-
       <div class="card-section">
         <h3><i class="bi bi-table"></i> رصد غياب الفصول اليومي بحسب الحصص السبع</h3>
         <div class="table-container">
           <table>
-            <thead>
-              <tr>
-                <th>الفصل</th>
-                <th>حالة الرصد</th>
-                <th>حـ 1</th>
-                <th>حـ 2</th>
-                <th>حـ 3</th>
-                <th>حـ 4</th>
-                <th>حـ 5</th>
-                <th>حـ 6</th>
-                <th>حـ 7</th>
-              </tr>
-            </thead>
-            <tbody id="attendance-grid-body">
-              <!-- سيتم ملؤها برمجياً لجميع فصول سادس وسابع وثامن وتاسع -->
-            </tbody>
+            <thead><tr><th>الفصل</th><th>حالة الرصد</th><th>حـ 1</th><th>حـ 2</th><th>حـ 3</th><th>حـ 4</th><th>حـ 5</th><th>حـ 6</th><th>حـ 7</th></tr></thead>
+            <tbody id="attendance-grid-body"></tbody>
           </table>
         </div>
       </div>
     </div>
 
+    <!-- 📝 تّاب 2: غرفة رصد غياب الحصص اليومي -->
+    <div id="panel-attendance" class="app-panel">
+      <div class="card-section">
+        <h3><i class="bi bi-calendar-plus"></i> تسجيل ورصد غياب الحصص الفوري</h3>
+        <form id="form-add-attendance" onsubmit="saveAttendance(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>اختر الفصل</label>
+              <select id="att-class" class="form-control" onchange="loadStudentsForInput('att-class', 'att-student')">
+                <option value="">-- اختر الفصل --</option>
+                <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="7/1">7/1</option><option value="8/1">8/1</option><option value="9/1">9/1</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>اسم الطالب</label>
+              <select id="att-student" class="form-control"><option value="">اختر الفصل أولاً...</option></select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>الحصة الحالية</label>
+              <select id="att-period" class="form-control">
+                <option>الحصة الأولى</option><option>الحصة الثانية</option><option>الحصة الثالثة</option><option>الحصة الرابعة</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>حالة رصد الطالب</label>
+              <select id="att-type" class="form-control"><option>غياب حصة</option><option>تأخير عن حصة</option></select>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="btn-save-att"><i class="bi bi-check-circle"></i> ترحيل وحفظ الغياب سحابياً</button>
+        </form>
+      </div>
+    </div>
 
-    <!-- 🔍 القسم الثاني: بحث ملف الطالب الشامل المطور (حضور + سلوك + استئذان) -->
+    <!-- ⚠️ تّاب 3: غرفة رصد السلوك والبطاقات الملونة -->
+    <div id="panel-behavior" class="app-panel">
+      <div class="card-section">
+        <h3><i class="bi bi-exclamation-octagon"></i> رصد المخالفات السلوكية وبطاقات الموبايل السريعة</h3>
+        <form id="form-add-behavior" onsubmit="saveBehavior(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>اختر الفصل</label>
+              <select id="beh-class" class="form-control" onchange="loadStudentsForInput('beh-class', 'beh-student')">
+                <option value="">-- اختر الفصل --</option>
+                <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="7/1">7/1</option><option value="8/1">8/1</option><option value="9/1">9/1</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>اسم الطالب المخالف</label>
+              <select id="beh-student" class="form-control"><option value="">اختر الفصل أولاً...</option></select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>نوع الإجراء والبطاقة المرصودة</label>
+              <select id="beh-violation" class="form-control">
+                <option>بطاقة صفراء - تنبيه أول</option><option>بطاقة حمراء - حجز هاتف</option><option>تأخر متكرر عن الطابور</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الإجراء المتخذ الفوري</label>
+              <input type="text" id="beh-action" class="form-control" placeholder="مثال: استدعاء ولي أمر / تعهد خطي">
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="btn-save-beh" style="background:#e67e22;"><i class="bi bi-shield-alert"></i> اعتماد وترحيل المخالفة السلوكية</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 🛡️ تّاب 4: بوابة الأمن وتصاريح الاستئذانات الحية -->
+    <div id="panel-security" class="app-panel">
+      <div class="card-section">
+        <h3><i class="bi bi-door-open-fill"></i> سجل حركة البوابة والاستئذانات الرسمية (أمن الحارس)</h3>
+        <form id="form-add-exit" onsubmit="saveExitLog(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>الفصل الدراسي</label>
+              <select id="ex-class" class="form-control" onchange="loadStudentsForInput('ex-class', 'ex-student')">
+                <option value="">-- اختر الفصل --</option>
+                <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="7/1">7/1</option><option value="8/1">8/1</option><option value="9/1">9/1</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>اسم الطالب المغادر</label>
+              <select id="ex-student" class="form-control"><option value="">اختر الفصل أولاً...</option></select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>سبب الاستئذان والخروج</label>
+              <input type="text" id="ex-reason" class="form-control" placeholder="مثال: موعد طبي / عارض عائلي">
+            </div>
+            <div class="form-group">
+              <label>هوية واسم المستلم (ولي الأمر)</label>
+              <input type="text" id="ex-recipient" class="form-control" placeholder="أدخل اسم ولي الأمر ورقم مدنيته">
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="btn-save-ex" style="background:#34495e;"><i class="bi bi-lock-fill"></i> توثيق حركة الخروج وفتح البوابة</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 🔍 تّاب 5: بحث ملف الطالب الشامل (تصفية بالصف ثم اختيار الاسم) -->
     <div id="panel-search" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-person-bounding-box"></i> نظام الاستعلام والملف الشامل للطالب</h3>
-        <p style="font-size:12px; color:#666; margin-bottom:15px;">أدخل اسم الطالب الثلاثي لاستدعاء كامل سجلات غيابه، بطاقاته السلوكية المرصودة، وتصاريح أمن البوابة سحابياً.</p>
+        <p style="font-size:12px; color:#666; margin-bottom:15px;">اختر الفصل لتظهر لك أسماء الطلاب مباشرة، ثم حدد الاسم لجلب الأرشيف الكامل حياً.</p>
         
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
-          <input type="text" id="search-student-name" class="form-control" placeholder="اكتب اسم الطالب كاملاً هنا...">
-          <button class="btn-search" onclick="executeStudentSearch()"><i class="bi bi-search"></i> بحث</button>
+        <!-- تعديل الفلترة الذكية والربط السحابي المريح لرفع الراس -->
+        <div class="grid-2">
+          <div class="form-group">
+            <label>1. اختر الصف المراد بحثه</label>
+            <select id="search-class-select" class="form-control" onchange="loadStudentsForSearch()">
+              <option value="">-- حدد الصف المدرسّي --</option>
+              <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
+              <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
+              <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option>
+              <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>2. اختر اسم الطالب من القائمة</label>
+            <select id="search-student-select" class="form-control">
+              <option value="">اختر الصف بالأول لتظهر الأسماء هنا...</option>
+            </select>
+          </div>
         </div>
+        <button class="btn-search" onclick="executeStudentSearch()"><i class="bi bi-search"></i> جلب السجلات والملف الموحد</button>
 
-        <!-- أوعية عرض جداول البيانات الشاملة الثلاثية المضافة حديثاً والتنسيق يرفع الراس -->
-        <div id="search-results-area" style="display:none;">
+        <div id="search-results-area" style="display:none; margin-top:25px;">
           <h4 id="target-student-title" style="color:#e67e22; margin-bottom:20px; font-size:15px; border-bottom:1px solid #eee; padding-bottom:8px;"></h4>
           
-          <!-- 1. جدول رصد الحضور -->
-          <div style="margin-bottom:25px;">
+          <div style="margin-bottom:20px;">
             <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-calendar2-x-fill text-primary"></i> 1. أرشيف غيابات الحصص المسجلة:</h5>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr><th>التاريخ</th><th>الحصة</th><th>نوع الغياب</th><th>المادة</th></tr>
-                </thead>
-                <tbody id="t-body-attendance"><tr><td colspan="4" style="text-align:center; color:#999;">لا توجد غيابات مسجلة للطالب.</td></tr></tbody>
-              </table>
-            </div>
+            <div class="table-container"><table><thead><tr><th>التاريخ</th><th>الحصة</th><th>نوع الغياب</th></tr></thead><tbody id="t-body-attendance"></tbody></table></div>
           </div>
-
-          <!-- 2. جدول رصد البطاقات السلوكية -->
-          <div style="margin-bottom:25px;">
-            <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-exclamation-octagon-fill text-danger"></i> 2. المخالفات السلوكية وبطاقات الموبايل السريعة:</h5>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr><th>التاريخ</th><th>نوع البطاقة / المخالفة</th><th>الإجراء المتبع</th><th>المعلم الراصد</th></tr>
-                </thead>
-                <tbody id="t-body-behavior"><tr><td colspan="4" style="text-align:center; color:#999;">الملف السلوكي نظيف ولا توجد مخالفات مرصودة.</td></tr></tbody>
-              </table>
-            </div>
+          <div style="margin-bottom:20px;">
+            <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-exclamation-octagon-fill text-danger"></i> 2. المخالفات السلوكية والبطاقات المرصودة:</h5>
+            <div class="table-container"><table><thead><tr><th>التاريخ</th><th>نوع البطاقة</th><th>الإجراء المتبع</th><th>الراصد</th></tr></thead><tbody id="t-body-behavior"></tbody></table></div>
           </div>
-
-          <!-- 3. جدول تصاريح حركة البوابة والأمن -->
           <div>
-            <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-shield-lock-fill text-warning"></i> 3. الاستئذانات الرسمية وتوثيق الخروج من بوابة الحارس:</h5>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr><th>التاريخ</th><th>وقت المغادرة</th><th>سبب الاستئذان</th><th>اسم وتوثيق هوية المستلم</th></tr>
-                </thead>
-                <tbody id="t-body-exits"><tr><td colspan="4" style="text-align:center; color:#999;">لا توجد تصاريح خروج أو استئذان مسبق لهذا الطالب.</td></tr></tbody>
-              </table>
-            </div>
+            <h5 style="font-size:13px; color:#1a1a2e; margin-bottom:8px;"><i class="bi bi-shield-lock-fill text-warning"></i> 3. توثيق الخروج والاستئذان من بوابة الحارس:</h5>
+            <div class="table-container"><table><thead><tr><th>التاريخ</th><th>وقت المغادرة</th><th>السبب</th><th>المستلم</th></tr></thead><tbody id="t-body-exits"></tbody></table></div>
           </div>
         </div>
       </div>
     </div>
 
-
-    <!-- 📋 القسم الثالث: استمارة المتابعة الميدانية المكتملة لمشرف الجناح -->
+    <!-- 📋 تّاب 6: استمارة المتابعة الميدانية لمشرف الجناح -->
     <div id="panel-tour" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-clipboard-check-fill"></i> استمارة جودة المتابعة الميدانية الشاملة</h3>
-        
         <form id="wing-tour-form" onsubmit="saveWingTour(event)">
           <div class="grid-2">
-            <div class="form-group">
-              <label>الجناح والصف المستهدف</label>
-              <select id="tour-wing" class="form-control">
-                <option>الجناح الأرضي - الصف السادس</option>
-                <option>الجناح الأول - الصف السابع</option>
-                <option>الجناح الثاني - الصف الثامن</option>
-                <option>الجناح الثالث - الصف التاسع</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>مؤشر الهدوء والانضباط العام بالممرات</label>
-              <select id="tour-quiet" class="form-control">
-                <option value="هادئ ومنضبط تماماً ✓">هادئ ومنضبط تماماً ✓</option>
-                <option value="حركة متوسطة للطلاب">حركة متوسطة للطلاب</option>
-                <option value="صخب وضوضاء غير منضبطة">صخب وضوضاء غير منضبطة</option>
-              </select>
-            </div>
+            <div class="form-group"><label>الجناح والصف المستهدف</label><select id="tour-wing" class="form-control"><option>الجناح الأرضي - الصف السادس</option><option>الجناح الأول - الصف السابع</option></select></div>
+            <div class="form-group"><label>مؤشر الانضباط</label><select id="tour-quiet" class="form-control"><option>هادئ ومنضبط تماماً ✓</option><option>حركة متوسطة</option></select></div>
           </div>
-
-          <!-- البنود الفنية المضافة بدقة لرفع رأس العمل الميداني -->
-          <div class="form-group" style="margin-top:10px;">
-            <label style="margin-bottom:10px; color:#e67e22;"><i class="bi bi-check2-all"></i> فحص سلامة وتوافر عناصر البيئة التعليمية في الجناح:</label>
+          <div class="form-group">
+            <label style="color:#e67e22; margin-bottom:8px;">فحص عناصر البيئة التعليمية في الجناح:</label>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:10px;">
-              <label class="checkbox-item"><input type="checkbox" id="chk-ac" checked> سلامة وكفاءة أجهزة التكييف والإضاءة بالفصول</label>
-              <label class="checkbox-item"><input type="checkbox" id="chk-teachers" checked> التزام المعلمين بالتواجد الفعلي الفوري بالفصول</label>
-              <label class="checkbox-item"><input type="checkbox" id="chk-substitute"> تم تغطية كافة فصول الاحتياط بالكامل</label>
-              <label class="checkbox-item"><input type="checkbox" id="chk-clean" checked> جودة ونظافة الممرات والبيئة المدرسية بالجناح</label>
+              <label class="checkbox-item"><input type="checkbox" id="chk-ac" checked> سلامة التكييف والإضاءة بالفصول</label>
+              <label class="checkbox-item"><input type="checkbox" id="chk-teachers" checked> التزام المعلمين بالتواجد الفوري</label>
             </div>
           </div>
-
-          <div class="form-group" style="margin-top:15px;">
-            <label>ملاحظات إضافية، أعطال لوجستية، أو أسماء المعلمين المتأخرين</label>
-            <textarea id="tour-notes" class="form-control" rows="4" placeholder="اكتب تفاصيل الجولة بدقة ليتم إرسالها للادارة العليا فوراً..."></textarea>
-          </div>
-
-          <button type="submit" class="btn-submit" id="tour-btn-submit">
-            <i class="bi bi-cloud-arrow-up-fill"></i> ترحيل التقرير الميداني واعتماده سحابياً
-          </button>
+          <div class="form-group"><label>ملاحظات إضافية</label><textarea id="tour-notes" class="form-control" rows="3"></textarea></div>
+          <button type="submit" class="btn-submit" id="tour-btn-submit"><i class="bi bi-cloud-arrow-up-fill"></i> ترحيل التقرير الميداني</button>
         </form>
-      </div>
-
-      <!-- أرشيف الجولات المسجلة حياً -->
-      <div class="card-section">
-        <h3><i class="bi bi-clock-history"></i> السجل التاريخي لجولات الجناح الميدانية اليوم</h3>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr><th>الوقت والتاريخ</th><th>المشرف الراصد</th><th>الجناح</th><th>مؤشر الانضباط</th><th>الملاحظات المرصودة</th></tr>
-            </thead>
-            <tbody id="wing-tours-logs-body">
-              <tr><td colspan="5" style="text-align:center; color:#999;">جاري مزامنة وسحب تقارير الجولات الحية...</td></tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
 
   </div>
 
-  <!-- فوتر حقوق المنصة الموحد والمطور لعام 2026 -->
-  <footer>
-    المنظومة الرقمية الشاملة الموحدة © 2026 | تطوير أ. حسين إسماعيل - مدرسة سالم الحسينان المتوسطة بنين
-  </footer>
+  <footer>المنظومة الرقمية الشاملة الموحدة © 2026 | تطوير أ. حسين إسماعيل - مدرسة سالم الحسينان المتوسطة بنين</footer>
 
-  <!-- حزمة أكواد السيرفر السحابي والفايربيز الذكية -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
     import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-    // إعدادات قواعد بيانات مدرسة سالم الحسينان
     const firebaseConfig = {
       apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
       authDomain: "hosainan-school.firebaseapp.com",
@@ -389,187 +297,155 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
     let currentUser = null;
 
-    // 🔒 التحقق الفوري من أمان وصحة جلسة المستخدم قبل أي شيء
     window.onload = function() {
       const savedUser = localStorage.getItem('hs_user');
-      if (!savedUser) {
-        window.location.href = 'login.html';
-      } else {
+      if (!savedUser) { window.location.href = 'login.html'; }
+      else {
         currentUser = JSON.parse(savedUser);
         document.getElementById('welcome-title').innerHTML = `<i class="bi bi-person-circle"></i> مرحباً، أ. ${currentUser.fullName || 'حسين إسماعيل'}`;
-        setupSystemDates();
+        document.getElementById('live-date').textContent = new Date().toLocaleDateString('ar-KW', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         generateAttendanceGrid();
-        loadRecentWingTours();
       }
     };
 
-    // إعداد وضبط التواريخ الحية في اللوحة
-    function setupSystemDates() {
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('live-date').textContent = new Date().toLocaleDateString('ar-KW', options);
-    }
-
-    // التنقل الذكي والسلس والآمن بين التابات
     window.switchTab = function(event, tabId) {
       document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      
       document.getElementById(tabId).classList.add('active');
       event.currentTarget.classList.add('active');
     };
 
-    // عملية تسجيل الخروج ومسح التوكن محلياً
-    window.handleLogout = function() {
-      localStorage.removeItem('hs_user');
-      window.location.href = 'login.html';
-    };
+    window.handleLogout = function() { localStorage.removeItem('hs_user'); window.location.href = 'login.html'; };
 
-    // 📊 توليد شبكة الفصول الافتراضية والمنسقة 100% للمؤشرات
-    function generateAttendanceGrid() {
-      const gridBody = document.getElementById('attendance-grid-body');
-      gridBody.innerHTML = '';
-      const grades = ['6/1', '6/2', '6/3', '6/4', '7/1', '7/2', '7/3', '7/4', '8/1', '8/2', '8/3', '9/1', '9/2', '9/3'];
-      
-      grades.forEach(cls => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong>${cls}</strong></td>
-          <td><span class="badge green">مكتمل الرصد ✓</span></td>
-          <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-        `;
-        gridBody.appendChild(tr);
-      });
+    // 🌟 جلب الطلاب الحركي والتلقائي عند اختيار الصف في شاشات الإدخال والبحث
+    async function fetchStudentsByClass(classValue) {
+      if (!classValue) return [];
+      try {
+        const q = query(collection(db, 'students'), where('class', '==', classValue));
+        const snap = await getDocs(q);
+        let list = [];
+        snap.forEach(doc => { list.push(doc.data().studentName || doc.data().fullName); });
+        return list;
+      } catch (e) { return []; }
     }
 
-    // 🔍 معالج البحث الاستعلامي المدمج لجلب ملف الطالب الثلاثي من السيرفر
+    window.loadStudentsForInput = async function(classSelectId, studentSelectId) {
+      const cls = document.getElementById(classSelectId).value;
+      const sSelect = document.getElementById(studentSelectId);
+      sSelect.innerHTML = '<option value="">جاري جلب قائمة الطلاب الحية...</option>';
+      const students = await fetchStudentsByClass(cls);
+      sSelect.innerHTML = students.length ? '<option value="">-- اختر اسم الطالب --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('') : '<option value="">لا يوجد طلاب مسجلين</option>';
+    };
+
+    window.loadStudentsForSearch = async function() {
+      await loadStudentsForInput('search-class-select', 'search-student-select');
+    };
+
+    // 🔍 معالج الاستعلام الموحد وعرض الملف التراكمي للطالب
     window.executeStudentSearch = async function() {
-      const nameInput = document.getElementById('search-student-name').value.trim();
-      if (!nameInput) { alert('يرجى كتابة اسم الطالب أولاً للبحث!'); return; }
+      const nameInput = document.getElementById('search-student-select').value;
+      if (!nameInput) { alert('يرجى اختيار اسم الطالب من القائمة أولاً!'); return; }
 
       const resultsArea = document.getElementById('search-results-area');
       resultsArea.style.display = 'block';
       document.getElementById('target-student-title').innerHTML = `<i class="bi bi-info-circle-fill"></i> الملف الموحد المستدعى للطالب: <span style="color:#1a1a2e; font-weight:900;">${nameInput}</span>`;
 
-      // 1. جلب بيانات غياب الحصص
-      const qAtt = query(collection(db, 'attendance'), where('studentName', '==', nameInput));
-      const snapAtt = await getDocs(qAtt);
-      const bAtt = document.getElementById('t-body-attendance');
-      bAtt.innerHTML = '';
-      if (!snapAtt.empty) {
-        snapAtt.forEach(doc => {
-          const d = doc.data();
-          bAtt.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.period || '-'}</td><td><span class="badge red">${d.type || 'غياب حصة'}</span></td><td>${d.subject || '-'}</td></tr>`;
-        });
-      } else {
-        bAtt.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">لا توجد غيابات مسجلة لهذا الطالب اليوم.</td></tr>`;
-      }
+      // 1. غيابات
+      const snapAtt = await getDocs(query(collection(db, 'attendance'), where('studentName', '==', nameInput)));
+      const bAtt = document.getElementById('t-body-attendance'); bAtt.innerHTML = '';
+      if (!snapAtt.empty) snapAtt.forEach(doc => { const d = doc.data(); bAtt.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.period || '-'}</td><td><span class="badge red">${d.type || 'غياب'}</span></td></tr>`; });
+      else bAtt.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الملف سليم ولا توجد غيابات اليوم.</td></tr>`;
 
-      // 2. جلب بيانات السلوك والمخالفات
-      const qBeh = query(collection(db, 'behavior'), where('studentName', '==', nameInput));
-      const snapBeh = await getDocs(qBeh);
-      const bBeh = document.getElementById('t-body-behavior');
-      bBeh.innerHTML = '';
-      if (!snapBeh.empty) {
-        snapBeh.forEach(doc => {
-          const d = doc.data();
-          bBeh.innerHTML += `<tr><td>${d.date || '-'}</td><td><span class="badge orange">${d.violation || '-'}</span></td><td>${d.action || 'تنبيه شفوي'}</td><td>أ. ${d.teacherName || 'مشرف الجناح'}</td></tr>`;
-        });
-      } else {
-        bBeh.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">الملف السلوكي نظيف ولا توجد مخالفات مرصودة.</td></tr>`;
-      }
+      // 2. سلوك
+      const snapBeh = await getDocs(query(collection(db, 'behavior'), where('studentName', '==', nameInput)));
+      const bBeh = document.getElementById('t-body-behavior'); bBeh.innerHTML = '';
+      if (!snapBeh.empty) snapBeh.forEach(doc => { const d = doc.data(); bBeh.innerHTML += `<tr><td>${d.date || '-'}</td><td><span class="badge orange">${d.violation || '-'}</span></td><td>${d.action || '-'}</td><td>أ. ${d.teacherName || 'المشرف'}</td></tr>`; });
+      else bBeh.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">السجل السلوكي نظيف تماماً.</td></tr>`;
 
-      // 3. جلب حركات البوابة والاستئذان الموثقة
-      const qEx = query(collection(db, 'exits'), where('studentName', '==', nameInput));
-      const snapEx = await getDocs(qEx);
-      const bEx = document.getElementById('t-body-exits');
-      bEx.innerHTML = '';
-      if (!snapEx.empty) {
-        snapEx.forEach(doc => {
-          const d = doc.data();
-          bEx.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.time || '-'}</td><td>${d.reason || '-'}</td><td>${d.recipientName || '-'} (تم التحقق البصري الموحد)</td></tr>`;
-        });
-      } else {
-        bEx.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">لا توجد تصاريح خروج أو استئذان مسجلة عبر بوابة الأمن.</td></tr>`;
-      }
+      // 3. بوابة الأمن
+      const snapEx = await getDocs(query(collection(db, 'exits'), where('studentName', '==', nameInput)));
+      const bEx = document.getElementById('t-body-exits'); bEx.innerHTML = '';
+      if (!snapEx.empty) snapEx.forEach(doc => { const d = doc.data(); bEx.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.time || '-'}</td><td>${d.reason || '-'}</td><td>${d.recipientName || '-'}</td></tr>`; });
+      else bEx.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">لا توجد استئذانات خروج موثقة للبوابة.</td></tr>`;
     };
 
-    // 📋 ترحيل وحفظ استمارة الجولة الميدانية المكتملة لـ Firebase
-    window.saveWingTour = async function(event) {
-      event.preventDefault();
-      const btn = document.getElementById('tour-btn-submit');
-      
-      const wing = document.getElementById('tour-wing').value;
-      const quiet = document.getElementById('tour-quiet').value;
-      const notes = document.getElementById('tour-notes').value.trim();
-      
-      // جلب قيم مؤشرات الفحص الجديدة المضافة لرفع الرأس
-      const acStatus = document.getElementById('chk-ac').checked ? 'سليم' : 'يوجد أعطال بالتكييف';
-      const teacherStatus = document.getElementById('chk-teachers').checked ? 'ملتزمون' : 'يوجد تأخير فصول';
-      const subStatus = document.getElementById('chk-substitute').checked ? 'مغطى بالكامل' : 'لا يوجد احتياط شاغر';
-      const cleanStatus = document.getElementById('chk-clean').checked ? 'ممتازة' : 'تحتاج توجيه للنظافة';
+    // عمليات حفظ البيانات سحابياً (الغياب - السلوك - الأمن)
+    window.saveAttendance = async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-att'); btn.disabled = true;
+      try {
+        await addDoc(collection(db, 'attendance'), {
+          studentName: document.getElementById('att-student').value,
+          class: document.getElementById('att-class').value,
+          period: document.getElementById('att-period').value,
+          type: document.getElementById('att-type').value,
+          date: new Date().toLocaleDateString('ar-KW'),
+          timestamp: new Date().toISOString()
+        });
+        alert('✓ تم رصد وحفظ الغياب بنجاح في السيرفر السحابي.');
+        document.getElementById('form-add-attendance').reset();
+      } catch(err) { alert(err.message); } finally { btn.disabled = false; }
+    };
 
-      btn.disabled = true;
-      btn.textContent = 'جاري ترحيل التقرير الميداني سحابياً...';
+    window.saveBehavior = async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-beh'); btn.disabled = true;
+      try {
+        await addDoc(collection(db, 'behavior'), {
+          studentName: document.getElementById('beh-student').value,
+          class: document.getElementById('beh-class').value,
+          violation: document.getElementById('beh-violation').value,
+          action: document.getElementById('beh-action').value,
+          teacherName: currentUser ? currentUser.fullName : 'حسين إسماعيل',
+          date: new Date().toLocaleDateString('ar-KW'),
+          timestamp: new Date().toISOString()
+        });
+        alert('✓ تم ترحيل المخالفة السلوكية واعتمادها فوراً.');
+        document.getElementById('form-add-behavior').reset();
+      } catch(err) { alert(err.message); } finally { btn.disabled = false; }
+    };
 
+    window.saveExitLog = async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-ex'); btn.disabled = true;
+      try {
+        await addDoc(collection(db, 'exits'), {
+          studentName: document.getElementById('ex-student').value,
+          class: document.getElementById('ex-class').value,
+          reason: document.getElementById('ex-reason').value,
+          recipientName: document.getElementById('ex-recipient').value,
+          date: new Date().toLocaleDateString('ar-KW'),
+          time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}),
+          timestamp: new Date().toISOString()
+        });
+        alert('✓ تم توثيق حركة الخروج من المدرسة بنجاح وأمن البوابة.');
+        document.getElementById('form-add-exit').reset();
+      } catch(err) { alert(err.message); } finally { btn.disabled = false; }
+    };
+
+    window.saveWingTour = async function(e) {
+      e.preventDefault();
       try {
         await addDoc(collection(db, 'wing_tours'), {
-          wing: wing,
-          quietIndicator: quiet,
-          acCheck: acStatus,
-          teachersCheck: teacherStatus,
-          substituteCheck: subStatus,
-          cleanCheck: cleanStatus,
-          additionalNotes: notes,
+          wing: document.getElementById('tour-wing').value,
+          quietIndicator: document.getElementById('tour-quiet').value,
+          additionalNotes: document.getElementById('tour-notes').value,
           inspectorName: currentUser ? currentUser.fullName : 'حسين إسماعيل',
-          timestamp: new Date().toISOString(),
-          dateString: new Date().toLocaleDateString('ar-KW')
+          timestamp: new Date().toISOString()
         });
-
-        alert('✓ تم ترحيل تقرير جولة الجناح الميدانية بنجاح، وتوثيق المؤشرات الفنية للإدارة العليا الموحدة.');
+        alert('✓ تم ترحيل تقرير جولة الجناح بنجاح.');
         document.getElementById('wing-tour-form').reset();
-        loadRecentWingTours();
-      } catch (err) {
-        alert('خطأ في الاتصال بقاعدة البيانات السحابية: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill"></i> ترحيل التقرير الميداني واعتماده سحابياً';
-      }
+      } catch(err) { alert(err.message); }
     };
 
-    // سحب وتحديث السجل التاريخي لجولات اليوم الميدانية حياً
-    async function loadRecentWingTours() {
-      const logsBody = document.getElementById('wing-tours-logs-body');
-      try {
-        const q = query(collection(db, 'wing_tours'), orderBy('timestamp', 'desc'), limit(10));
-        const snap = await getDocs(q);
-        logsBody.innerHTML = '';
-        
-        if (!snap.empty) {
-          snap.forEach(doc => {
-            const d = doc.data();
-            const timeStr = d.timestamp ? new Date(d.timestamp).toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}) : '';
-            logsBody.innerHTML += `
-              <tr>
-                <td>${d.dateString || ''} - ${timeStr}</td>
-                <td><strong>أ. ${d.inspectorName || ''}</strong></td>
-                <td><span class="badge blue">${d.wing || ''}</span></td>
-                <td><span class="badge orange">${d.quietIndicator || ''}</span></td>
-                <td style="font-size:12px; color:#555;">
-                  التكييف: ${d.acCheck || ''} | المعلمون: ${d.teachersCheck || ''} | النظافة: ${d.cleanCheck || ''} <br>
-                  <span style="color:#e67e22;">ملاحظات:</span> ${d.additionalNotes || 'لا توجد'}
-                </td>
-              </tr>
-            `;
-          });
-        } else {
-          logsBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999;">لم يتم تسجيل جولات ميدانية حتى الآن اليوم.</td></tr>`;
-        }
-      } catch (err) {
-        logsBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#c0392b;">تنبيه: فعل خاصية الـ Indexes في الفايربيز للترتيب التنازلي، أو انتظر التحديث.</td></tr>`;
-      }
+    function generateAttendanceGrid() {
+      const gridBody = document.getElementById('attendance-grid-body'); gridBody.innerHTML = '';
+      const grades = ['6/1', '6/2', '7/1', '8/1', '9/1'];
+      grades.forEach(cls => {
+        gridBody.innerHTML += `<tr><td><strong>${cls}</strong></td><td><span class="badge green">مكتمل الرصد ✓</span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>`;
+      });
     }
   </script>
 </body>
