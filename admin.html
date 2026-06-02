@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم المنظومة الرقمية الشاملة - مدرسة سالم الحسينان</title>
+  <title>لوحة عمليات المنظومة الرقمية الشاملة - مدرسة سالم الحسينان</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
@@ -17,7 +17,7 @@
     .user-info p { font-size: 11px; opacity: 0.8; }
     .btn-logout { background: #e74c3c; color: #fff; border: none; padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
 
-    /* 🛡️ حل مشكلة اختفاء الأزرار: شريط التبويبات السبعة الكامل واللّدن للسحب الأفقي */
+    /* تأمين الأزرار الثمانية كاملة من الاختفاء أو السحق على الموبايل */
     .nav-tabs-container { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 999; }
     .nav-tabs { max-width: 1200px; margin: 0 auto; display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding: 5px 0; }
     .nav-tabs::-webkit-scrollbar { height: 5px; }
@@ -25,9 +25,9 @@
     .nav-tabs::-webkit-scrollbar-thumb { background: #e67e22; border-radius: 10px; }
 
     .tab-btn { 
-      flex: 0 0 auto; /* منع انضغاط أو اختفاء الأزرار نهائياً على الموبايل */
+      flex: 0 0 auto; 
       text-align: center; 
-      padding: 12px 18px; 
+      padding: 12px 16px; 
       background: none; 
       border: none; 
       color: #555; 
@@ -93,6 +93,7 @@
     </div>
   </header>
 
+  <!-- 🌟 شريط التبويب الشامل المكتمل بـ 8 أزرار كاملة بدون أي نقص أو سحق -->
   <div class="nav-tabs-container">
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab(event, 'panel-dashboard')"><i class="bi bi-speedometer2"></i> اليوم والمؤشرات</button>
@@ -100,13 +101,16 @@
       <button class="tab-btn" onclick="switchTab(event, 'panel-behavior')"><i class="bi bi-exclamation-triangle"></i> رصد السلوك</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-clinic')"><i class="bi bi-heart-pulse"></i> العيادة الذكية</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-security')"><i class="bi bi-shield-lock"></i> بوابة الأمن</button>
+      <button class="tab-btn" onclick="switchTab(event, 'panel-visits')"><i class="bi bi-people"></i> سجل الزيارات</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-search')"><i class="bi bi-search"></i> بحث الطالب الشامل</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-tour')"><i class="bi bi-clipboard-check"></i> جولة الجناح</button>
+      <button class="tab-btn" onclick="switchTab(event, 'panel-settings')"><i class="bi bi-gear"></i> إضافة مستخدم وطالب</button>
     </div>
   </div>
 
   <div class="main-content">
 
+    <!-- 📊 تّاب 1: لوحة المؤشرات وحالة غياب الفصول الحقيقية من الفايربيز -->
     <div id="panel-dashboard" class="app-panel active">
       <div class="stats-grid">
         <div class="stat-card total"><h4>إجمالي طلاب المدرسة</h4><div class="num" id="stat-total">0</div></div>
@@ -124,6 +128,7 @@
       </div>
     </div>
 
+    <!-- 📝 تّاب 2: غرفة رصد غياب الحصص اليومي المكتملة الفصول -->
     <div id="panel-attendance" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-calendar-plus"></i> تسجيل ورصد غياب الحصص الفوري</h3>
@@ -162,6 +167,7 @@
       </div>
     </div>
 
+    <!-- ⚠️ تّاب 3: غرفة رصد السلوك والبطاقات الملونة المكتملة الفصول -->
     <div id="panel-behavior" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-exclamation-octagon"></i> رصد المخالفات السلوكية وبطاقات الموبايل السريعة</h3>
@@ -199,6 +205,7 @@
       </div>
     </div>
 
+    <!-- 🩺 تّاب 4: غرفة العيادة المدرسية الذكية -->
     <div id="panel-clinic" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-heart-pulse-fill text-danger"></i> سجل أرشفة وزيارات العيادة المدرسية الذكية</h3>
@@ -238,6 +245,7 @@
       </div>
     </div>
 
+    <!-- 🛡️ تّاب 5: بوابة الأمن وتصاريح الاستئذانات المكتملة الفصول -->
     <div id="panel-security" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-door-open-fill"></i> سجل حركة البوابة والاستئذانات الرسمية (أمن الحارس)</h3>
@@ -273,6 +281,42 @@
       </div>
     </div>
 
+    <!-- 👥 تّاب 6: سجل الزيارات المدرسية والضيوف الرسميين (مستعادة) -->
+    <div id="panel-visits" class="app-panel">
+      <div class="card-section">
+        <h3><i class="bi bi-people-fill text-success"></i> سجل رصد وأرشفة زيارات وضيوف المدرسة</h3>
+        <form id="form-add-visitor" onsubmit="saveVisitorLog(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>اسم الزائر / المراجع</label>
+              <input type="text" id="vis-name" class="form-control" placeholder="اكتب اسم الضيف أو ولي الأمر بالكامل" required>
+            </div>
+            <div class="form-group">
+              <label>رقم الهوية / الهاتف</label>
+              <input type="text" id="vis-phone" class="form-control" placeholder="رقم البطاقة المدنية أو رقم الاتصال" required>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>الغرض من الزيارة</label>
+              <select id="vis-purpose" class="form-control">
+                <option>مراجعة شؤون الطلبة</option>
+                <option>مقابلة مدير المدرسة / المدير المساعد</option>
+                <option>زيارة موجه فني / مسؤول وزارة</option>
+                <option>أخرى - مراجع خارجي</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الموظف المستهدف بالزيارة</label>
+              <input type="text" id="vis-host" class="form-control" placeholder="اسم المعلم أو الإداري المراد مقابلته" required>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" id="btn-save-vis" style="background:#27ae60;"><i class="bi bi-person-check-fill"></i> توثيق الزيارة وحفظها بالأرشيف السحابي</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 🔍 تّاب 7: ملف الطالب الشامل المطور رباعي السجلات -->
     <div id="panel-search" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-person-bounding-box"></i> نظام الاستعلام والملف الشامل والرباعي للطالب</h3>
@@ -324,6 +368,7 @@
       </div>
     </div>
 
+    <!-- 📋 تّاب 8: استمارة المتابعة الميدانية المكتملة لمشرف الجناح -->
     <div id="panel-tour" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-clipboard-check-fill"></i> استمارة جودة المتابعة الميدانية المكتملة لمشرف الجناح</h3>
@@ -360,6 +405,54 @@
       </div>
     </div>
 
+    <!-- ⚙️ تّاب 9: إدارة المنظومة وإضافة مستخدم أو طالب جديد (مستعادة وجاهزة للمدير) -->
+    <div id="panel-settings" class="app-panel">
+      <div class="card-section">
+        <h3><i class="bi bi-person-plus-fill text-primary"></i> لوحة التحكم وإضافة الطلاب والمستخدمين الجدد</h3>
+        <p style="font-size:12px; color:#666; margin-bottom:15px;">من هنا تستطيع تسجيل طالب جديد وتسكينه في فصله ليعمل فوراً في القوائم المنسدلة، أو تسجيل حساب معلم جديد للمنظومة.</p>
+        
+        <form id="form-add-system-user" onsubmit="saveNewStudentOrUser(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>نوع السجل المراد إضافته</label>
+              <select id="set-type" class="form-control" onchange="toggleSettingsFormFields()">
+                <option value="student">طالب جديد في المدرسة</option>
+                <option value="teacher">حساب معلم / إداري جديد</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الاسم بالكامل (ثلاثي أو رباعي)</label>
+              <input type="text" id="set-name" class="form-control" placeholder="اكتب اسم الشخص بدقة" required>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <!-- حقل خاص بالطالب -->
+            <div class="form-group" id="set-group-class">
+              <label>الفصل الدراسي المستهدف</label>
+              <select id="set-class" class="form-control">
+                <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
+                <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
+                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
+              </select>
+            </div>
+            <!-- حقول خاصة بالمعلم -->
+            <div class="form-group" id="set-group-username" style="display:none;">
+              <label>اسم المستخدم للدخول (Username)</label>
+              <input type="text" id="set-username" class="form-control" placeholder="مثال: ahmad2026">
+            </div>
+            <div class="form-group" id="set-group-password" style="display:none;">
+              <label>كلمة المرور الافتراضية</label>
+              <input type="password" id="set-password" class="form-control" placeholder="أدخل كلمة مرور قوية">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="btn-save-settings" style="background:#1a1a2e;"><i class="bi bi-node-plus-fill"></i> حقن واعتماد السجل في النظام سحابياً</button>
+        </form>
+      </div>
+    </div>
+
   </div>
 
   <footer>المنظومة الرقمية الشاملة الموحدة © 2026 | تطوير أ. حسين إسماعيل - مدرسة سالم الحسينان المتوسطة بنين</footer>
@@ -382,7 +475,6 @@
     const db = getFirestore(app);
     let currentUser = null;
 
-    // 🔒 المصفوفات الحاكمة للـ 16 فصلاً كاملاً لربط أمني متكامل
     const fullSchoolClasses = ['6/1', '6/2', '6/3', '6/4', '7/1', '7/2', '7/3', '7/4', '8/1', '8/2', '8/3', '8/4', '9/1', '9/2', '9/3', '9/4'];
     const periodKeys = ['الحصة الأولى', 'الحصة الثانية', 'الحصة الثالثة', 'الحصة الرابعة', 'الحصة الخامسة', 'الحصة السادسة', 'الحصة السابعة'];
 
@@ -407,7 +499,19 @@
 
     window.handleLogout = function() { localStorage.removeItem('hs_user'); window.location.href = 'login.html'; };
 
-    // 🌟 دالة فرز وجلب الأسماء التلقائي الذكي لمعالجة تداخل المجموعات بمرونة
+    window.toggleSettingsFormFields = function() {
+      const type = document.getElementById('set-type').value;
+      if(type === 'student') {
+        document.getElementById('set-group-class').style.display = 'block';
+        document.getElementById('set-group-username').style.display = 'none';
+        document.getElementById('set-group-password').style.display = 'none';
+      } else {
+        document.getElementById('set-group-class').style.display = 'none';
+        document.getElementById('set-group-username').style.display = 'block';
+        document.getElementById('set-group-password').style.display = 'block';
+      }
+    };
+
     async function fetchStudentsByClass(classValue) {
       if (!classValue) return [];
       try {
@@ -430,7 +534,7 @@
     window.loadStudentsForInput = async function(classSelectId, studentSelectId) {
       const cls = document.getElementById(classSelectId).value;
       const sSelect = document.getElementById(studentSelectId);
-      sSelect.innerHTML = '<option value="">جاري سحب قائمة الأسماء الحية سحابياً...</option>';
+      sSelect.innerHTML = '<option value="">جاري سحب قائمة الأسماء حياً...</option>';
       const students = await fetchStudentsByClass(cls);
       sSelect.innerHTML = students.length ? '<option value="">-- اختر اسم الطالب من القائمة المفلترة --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('') : '<option value="">لا يوجد طلاب مسجلين في هذا الفصل</option>';
     };
@@ -439,7 +543,6 @@
       await loadStudentsForInput('search-class-select', 'search-student-select');
     };
 
-    // 📊 دالة الرصد الحي الحقيقي وإحصائيات الكروت بدون تزييف
     async function loadDashboardStatsAndGrid() {
       const gridBody = document.getElementById('attendance-grid-body');
       gridBody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:#666;">جاري التحقق الفوري من عمليات الرصد السحابية اليوم...</td></tr>';
@@ -506,41 +609,39 @@
       }
     }
 
-    // 🔍 محرك البحث الاستعلامي الشامل والرباعي التراكمي للطالب المختار
     window.executeStudentSearch = async function() {
       const nameInput = document.getElementById('search-student-select').value;
-      if (!nameInput) { alert('يرجى اختيار اسم الطالب من القائمة أولاً لإنشاء التقرير الموحد!'); return; }
+      if (!nameInput) { alert('يرجى اختيار اسم الطالب من القائمة أولاً!'); return; }
 
       const resultsArea = document.getElementById('search-results-area');
       resultsArea.style.display = 'block';
       document.getElementById('target-student-title').innerHTML = `<i class="bi bi-info-circle-fill"></i> الملف الموحد المستدعى للطالب سحابياً: <span style="color:#1a1a2e; font-weight:900;">${nameInput}</span>`;
 
-      // 1. أرشيف غيابات وتأخير الحصص
+      // 1. غيابات
       const snapAtt = await getDocs(query(collection(db, 'attendance'), where('studentName', '==', nameInput)));
       const bAtt = document.getElementById('t-body-attendance'); bAtt.innerHTML = '';
       if (!snapAtt.empty) snapAtt.forEach(doc => { const d = doc.data(); bAtt.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.period || '-'}</td><td><span class="badge red">${d.type || 'غياب'}</span></td></tr>`; });
-      else bAtt.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الملف سليم ولا توجد غيابات أو تأخير حصص مسجل اليوم.</td></tr>`;
+      else bAtt.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الملف سليم ولا توجد غيابات مسجلة اليوم.</td></tr>`;
 
-      // 2. السجل السلوكي والبطاقات
+      // 2. سلوك
       const snapBeh = await getDocs(query(collection(db, 'behavior'), where('studentName', '==', nameInput)));
       const bBeh = document.getElementById('t-body-behavior'); bBeh.innerHTML = '';
       if (!snapBeh.empty) snapBeh.forEach(doc => { const d = doc.data(); bBeh.innerHTML += `<tr><td>${d.date || '-'}</td><td><span class="badge orange">${d.violation || '-'}</span></td><td>${d.action || '-'}</td><td>أ. ${d.teacherName || 'المشرف'}</td></tr>`; });
-      else bBeh.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">الملف السلوكي نظيف تماماً وخالي من بطاقات الموبايل والمخالفات.</td></tr>`;
+      else bBeh.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">الملف السلوكي نظيف تماماً وخالي من بطاقات المخالفات.</td></tr>`;
 
-      // 3. زيارات العيادة المدرسية
+      // 3. العيادة
       const snapCln = await getDocs(query(collection(db, 'clinic'), where('studentName', '==', nameInput)));
       const bCln = document.getElementById('t-body-clinic'); bCln.innerHTML = '';
       if (!snapCln.empty) snapCln.forEach(doc => { const d = doc.data(); bCln.innerHTML += `<tr><td>${d.date || '-'} ${d.time || ''}</td><td><strong>${d.symptoms || '-'}</strong></td><td><span class="badge blue">${d.action || '-'}</span></td></tr>`; });
-      else bCln.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الطالب لم يقم بزيارة العيادة المدرسية مسبقاً، سجل صحي سليم.</td></tr>`;
+      else bCln.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الطالب لم يقم بزيارة العيادة المدرسية مسبقاً.</td></tr>`;
 
-      // 4. حركات البوابة وتوثيق الحارس
+      // 4. البوابة
       const snapEx = await getDocs(query(collection(db, 'exits'), where('studentName', '==', nameInput)));
       const bEx = document.getElementById('t-body-exits'); bEx.innerHTML = '';
       if (!snapEx.empty) snapEx.forEach(doc => { const d = doc.data(); bEx.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.time || '-'}</td><td>${d.reason || '-'}</td><td>${d.recipientName || '-'}</td></tr>`; });
-      else bEx.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">الطالب ملتزم بالدوام ولم تسجل له أي حركات خروج أو استئذان عبر البوابة.</td></tr>`;
+      else bEx.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">لم تسجل أي حركات خروج أو استئذان عبر البوابة لهذا الطالب.</td></tr>`;
     };
 
-    // 💾 ترحيل وحفظ غرف الإدخال المتكاملة الخمسة للفايربيز
     window.saveAttendance = async function(e) {
       e.preventDefault();
       const sVal = document.getElementById('att-student').value;
@@ -555,7 +656,7 @@
           date: new Date().toLocaleDateString('ar-KW'),
           timestamp: new Date().toISOString()
         });
-        alert('✓ تم رصد وحفظ غياب الحصة بنجاح في النظام السحابي وثوب اللوحة الحية.');
+        alert('✓ تم رصد وحفظ غياب الحصة بنجاح.');
         document.getElementById('form-add-attendance').reset();
         loadDashboardStatsAndGrid();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
@@ -576,7 +677,7 @@
           date: new Date().toLocaleDateString('ar-KW'),
           timestamp: new Date().toISOString()
         });
-        alert('✓ تم ترحيل البطاقة السلوكية المخالفة وتوثيقها فوراً بالملف الموحد.');
+        alert('✓ تم ترحيل البطاقة السلوكية بنجاح.');
         document.getElementById('form-add-behavior').reset();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
     };
@@ -584,7 +685,7 @@
     window.saveClinicLog = async function(e) {
       e.preventDefault();
       const sVal = document.getElementById('cln-student').value;
-      if(!sVal){ alert('الرجاء اختيار اسم الطالب أولاً لتسجيل الحالة الطبية!'); return; }
+      if(!sVal){ alert('الرجاء اختيار اسم الطالب أولاً!'); return; }
       const btn = document.getElementById('btn-save-cln'); btn.disabled = true;
       try {
         await addDoc(collection(db, 'clinic'), {
@@ -596,7 +697,7 @@
           time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}),
           timestamp: new Date().toISOString()
         });
-        alert('✓ تم توثيق وحفظ الإحالة والتقرير الطبي للعيادة الذكية بنجاح.');
+        alert('✓ تم توثيق الحالة المرضية بالعيادة بنجاح.');
         document.getElementById('form-add-clinic').reset();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
     };
@@ -616,8 +717,26 @@
           time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}),
           timestamp: new Date().toISOString()
         });
-        alert('✓ تم توثيق حركة الخروج وفتح تصريح البوابة الرقمية للحارس بنجاح.');
+        alert('✓ تم توثيق حركة خروج الطالب وفتح تصريح الحارس.');
         document.getElementById('form-add-exit').reset();
+      } catch(err) { alert(err.message); } finally { btn.disabled = false; }
+    };
+
+    window.saveVisitorLog = async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-vis'); btn.disabled = true;
+      try {
+        await addDoc(collection(db, 'visitors'), {
+          visitorName: document.getElementById('vis-name').value,
+          phoneOrCivilID: document.getElementById('vis-phone').value,
+          purpose: document.getElementById('vis-purpose').value,
+          hostEmployee: document.getElementById('vis-host').value,
+          date: new Date().toLocaleDateString('ar-KW'),
+          time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}),
+          timestamp: new Date().toISOString()
+        });
+        alert('✓ تم تسجيل وثيقة بيانات المراجع والزائر بنجاح في قاعدة البيانات.');
+        document.getElementById('form-add-visitor').reset();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
     };
 
@@ -629,14 +748,49 @@
           wing: document.getElementById('tour-wing').value,
           quietIndicator: document.getElementById('tour-quiet').value,
           acCheck: document.getElementById('chk-ac').checked ? 'سليم' : 'عطل',
-          teachersCheck: document.getElementById('chk-teachers').checked ? 'ملتزم' : 'تأخير ممرات',
+          teachersCheck: document.getElementById('chk-teachers').checked ? 'ملتزم' : 'تأخير',
           additionalNotes: document.getElementById('tour-notes').value,
           inspectorName: currentUser ? (currentUser.fullName || currentUser.name) : 'حسين إسماعيل',
           timestamp: new Date().toISOString()
         });
-        alert('✓ تم ترحيل تقرير جولة الجناح وتوثيق المؤشرات اللوجستية بنجاح للادارة.');
+        alert('✓ تم ترحيل تقرير جولة الجناح بنجاح.');
         document.getElementById('wing-tour-form').reset();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
+    };
+
+    window.saveNewStudentOrUser = async function(e) {
+      e.preventDefault();
+      const type = document.getElementById('set-type').value;
+      const name = document.getElementById('set-name').value.trim();
+      const btn = document.getElementById('btn-save-settings');
+      btn.disabled = true;
+
+      try {
+        if(type === 'student') {
+          const cls = document.getElementById('set-class').value;
+          await addDoc(collection(db, 'students'), {
+            studentName: name,
+            class: cls,
+            timestamp: new Date().toISOString()
+          });
+          alert(`✓ تم تسجيل الطالب: (${name}) وتسكينه بنجاح في فصل ${cls}.`);
+        } else {
+          const user = document.getElementById('set-username').value.trim();
+          const pass = document.getElementById('set-password').value;
+          if(!user || !pass) { alert('يرجى ملء اسم المستخدم وكلمة المرور للحساب الجديد!'); btn.disabled = false; return; }
+          await addDoc(collection(db, 'users'), {
+            fullName: name,
+            username: user,
+            password: pass,
+            role: 'teacher',
+            timestamp: new Date().toISOString()
+          });
+          alert(`✓ تم إنشاء حساب المعلم: (${name}) بنظام الدخول السحابي الموحد.`);
+        }
+        document.getElementById('form-add-system-user').reset();
+        toggleSettingsFormFields();
+        loadDashboardStatsAndGrid();
+      } catch(err) { alert('خطأ أثناء عملية الحفظ: ' + err.message); } finally { btn.disabled = false; }
     };
   </script>
 </body>
