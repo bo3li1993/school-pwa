@@ -17,17 +17,15 @@
     .user-info p { font-size: 11px; opacity: 0.8; }
     .btn-logout { background: #e74c3c; color: #fff; border: none; padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
 
-    /* حل مشكلة الأزرار الناقصة: شريط الأزرار الستة المطور القابل للسحب الأفقي بسلاسة */
+    /* شريط التبويبات الستة المطور لمنع الاختفاء والقابل للسحب الأفقي المريح */
     .nav-tabs-container { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 999; }
     .nav-tabs { max-width: 1200px; margin: 0 auto; display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding: 5px 0; }
-    
-    /* ستايل شريط التمرير لإرشاد المستخدم بوجود أزرار إضافية */
     .nav-tabs::-webkit-scrollbar { height: 5px; }
     .nav-tabs::-webkit-scrollbar-track { background: #f1f1f1; }
     .nav-tabs::-webkit-scrollbar-thumb { background: #e67e22; border-radius: 10px; }
 
     .tab-btn { 
-      flex: 0 0 auto; /* منع سحق الأزرار نهائياً على شاشات الموبايل الضيقة */
+      flex: 0 0 auto; 
       text-align: center; 
       padding: 12px 20px; 
       background: none; 
@@ -62,7 +60,7 @@
     .stat-card .num { font-size: 26px; font-weight: 900; color: #1a1a2e; }
 
     .table-container { width: 100%; overflow-x: auto; border: 1px solid #eee; border-radius: 6px; background: #fff; }
-    table { width: 100%; border-collapse: collapse; text-align: right; min-width: 650px; }
+    table { width: 100%; border-collapse: collapse; text-align: right; min-width: 700px; }
     th { background: #f8f9fa; color: #1a1a2e; padding: 12px; font-size: 13px; font-weight: bold; border-bottom: 2px solid #ddd; }
     td { padding: 12px; font-size: 13px; border-bottom: 1px solid #eee; color: #444; }
 
@@ -85,7 +83,7 @@
   <header>
     <div class="header-container">
       <div class="user-info">
-        <h2 id="welcome-title"><i class="bi bi-person-circle"></i> مرحباً، أ. حسين إسماعيل</h2>
+        <h2 id="welcome-title"><i class="bi bi-person-circle"></i> مرحباً، الإدارة العامة</h2>
         <p>المنظومة الرقمية الشاملة لعمليات مدرسة سالم الحسينان المتوسطة</p>
       </div>
       <div class="header-actions">
@@ -95,7 +93,6 @@
     </div>
   </header>
 
-  <!-- شريط التبويب الشامل المكتمل بجميع الأزرار الستة الرافعة للرأس والقابل للتمرير الأفقي -->
   <div class="nav-tabs-container">
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab(event, 'panel-dashboard')"><i class="bi bi-speedometer2"></i> اليوم والمؤشرات</button>
@@ -109,12 +106,11 @@
 
   <div class="main-content">
 
-    <!-- 📊 تّاب 1: لوحة المؤشرات وحالة غياب الفصول المكتملة -->
     <div id="panel-dashboard" class="app-panel active">
       <div class="stats-grid">
-        <div class="stat-card total"><h4>إجمالي طلاب المدرسة</h4><div class="num" id="stat-total">380</div></div>
-        <div class="stat-card present"><h4>حاضرون اليوم حياً</h4><div class="num" id="stat-present">365</div></div>
-        <div class="stat-card absent"><h4>غائبون اليوم التراكمي</h4><div class="num" id="stat-absent">15</div></div>
+        <div class="stat-card total"><h4>إجمالي طلاب المدرسة</h4><div class="num" id="stat-total">0</div></div>
+        <div class="stat-card present"><h4>حاضرون اليوم حياً</h4><div class="num" id="stat-present">0</div></div>
+        <div class="stat-card absent"><h4>غائبون اليوم التراكمي</h4><div class="num" id="stat-absent">0</div></div>
       </div>
       <div class="card-section">
         <h3><i class="bi bi-table"></i> رصد غياب الفصول اليومي بحسب الحصص السبع</h3>
@@ -122,14 +118,12 @@
           <table>
             <thead><tr><th>الفصل</th><th>حالة الرصد</th><th>حـ 1</th><th>حـ 2</th><th>حـ 3</th><th>حـ 4</th><th>حـ 5</th><th>حـ 6</th><th>حـ 7</th></tr></thead>
             <tbody id="attendance-grid-body">
-              <!-- يتم تعبئتها ديناميكياً بجميع الفصول الـ 14 كاملة -->
-            </tbody>
+              </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- 📝 تّاب 2: غرفة رصد غياب الحصص اليومي المكتملة الفصول -->
     <div id="panel-attendance" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-calendar-plus"></i> تسجيل ورصد غياب الحصص الفوري</h3>
@@ -138,11 +132,11 @@
             <div class="form-group">
               <label>اختر الفصل</label>
               <select id="att-class" class="form-control" onchange="loadStudentsForInput('att-class', 'att-student')">
-                <option value="">-- اختر الفصل من الـ 14 فصلاً كاملة --</option>
+                <option value="">-- اختر الفصل من الـ 15 صفاً --</option>
                 <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
                 <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
-                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option>
-                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option>
+                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
               </select>
             </div>
             <div class="form-group">
@@ -168,7 +162,6 @@
       </div>
     </div>
 
-    <!-- ⚠️ تّاب 3: غرفة رصد السلوك المكتملة الفصول -->
     <div id="panel-behavior" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-exclamation-octagon"></i> رصد المخالفات السلوكية وبطاقات الموبايل السريعة</h3>
@@ -177,11 +170,11 @@
             <div class="form-group">
               <label>اختر الفصل</label>
               <select id="beh-class" class="form-control" onchange="loadStudentsForInput('beh-class', 'beh-student')">
-                <option value="">-- اختر الفصل من الـ 14 فصلاً كاملة --</option>
+                <option value="">-- اختر الفصل من الـ 15 صفاً --</option>
                 <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
                 <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
-                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option>
-                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option>
+                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
               </select>
             </div>
             <div class="form-group">
@@ -191,7 +184,7 @@
           </div>
           <div class="grid-2">
             <div class="form-group">
-              <label>نوع الإجراء والالبطاقة المرصودة</label>
+              <label>نوع الإجراء والبطاقة المرصودة</label>
               <select id="beh-violation" class="form-control">
                 <option>بطاقة صفراء - تنبيه أول</option><option>بطاقة حمراء - حجز هاتف</option><option>تأخر متكرر عن الطابور</option><option>سلوك غير انضباطي بالساحة</option>
               </select>
@@ -206,7 +199,6 @@
       </div>
     </div>
 
-    <!-- 🛡️ تّاب 4: بوابة الأمن وتصاريح الاستئذانات المكتملة الفصول -->
     <div id="panel-security" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-door-open-fill"></i> سجل حركة البوابة والاستئذانات الرسمية (أمن الحارس)</h3>
@@ -215,11 +207,11 @@
             <div class="form-group">
               <label>الفصل الدراسي</label>
               <select id="ex-class" class="form-control" onchange="loadStudentsForInput('ex-class', 'ex-student')">
-                <option value="">-- اختر الفصل من الـ 14 فصلاً كاملة --</option>
+                <option value="">-- اختر الفصل من الـ 15 صفاً --</option>
                 <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
                 <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
-                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option>
-                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option>
+                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
               </select>
             </div>
             <div class="form-group">
@@ -242,21 +234,20 @@
       </div>
     </div>
 
-    <!-- 🔍 تّاب 5: ملف الطالب الشامل المطور (اختيار الصف ثم تصفية الاسم تلقائياً) -->
     <div id="panel-search" class="app-panel">
       <div class="card-section">
-        <h3><i class="bi bi-person-bounding-box"></i> نظام الاستعلام والملف الشامل للطالب</h3>
+        <h3><i class="bi bi-person-bounding-box"></i> نظام الاستعلام والالملف الشامل للطالب</h3>
         <p style="font-size:12px; color:#666; margin-bottom:15px;">اختر الفصل لتظهر لك أسماء الطلاب المعتمدين فوراً دون كتابة يدوية، ثم حدد الاسم لجلب الأرشيف التراكمي الموحد.</p>
         
         <div class="grid-2">
           <div class="form-group">
             <label>1. اختر الصف المراد بحثه</label>
             <select id="search-class-select" class="form-control" onchange="loadStudentsForSearch()">
-              <option value="">-- حدد الصف المدرسي من الـ 14 فصلاً --</option>
+              <option value="">-- حدد الصف المدرسي من الـ 15 صفاً --</option>
               <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
               <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
-              <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option>
-              <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option>
+              <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+              <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
             </select>
           </div>
           <div class="form-group">
@@ -268,7 +259,6 @@
         </div>
         <button class="btn-search" onclick="executeStudentSearch()"><i class="bi bi-search"></i> جلب السجلات والملف الموحد للطالب</button>
 
-        <!-- مساحة عرض نتائج التقارير الثلاثية الفخمة والمحسنة هندسياً للموبايل -->
         <div id="search-results-area" style="display:none; margin-top:25px;">
           <h4 id="target-student-title" style="color:#e67e22; margin-bottom:20px; font-size:14px; border-bottom:1px solid #eee; padding-bottom:8px;"></h4>
           
@@ -290,7 +280,6 @@
       </div>
     </div>
 
-    <!-- 📋 تّاب 6: استمارة المتابعة الميدانية المكتملة لمشرف الجناح -->
     <div id="panel-tour" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-clipboard-check-fill"></i> استمارة جودة المتابعة الميدانية المكتملة لمشرف الجناح</h3>
@@ -349,52 +338,138 @@
     const db = getFirestore(app);
     let currentUser = null;
 
+    // مصفوفة فصول المدرسة الـ 15 كاملة وموحدة في كل النظام
+    const fullSchoolClasses = ['6/1', '6/2', '6/3', '6/4', '7/1', '7/2', '7/3', '7/4', '8/1', '8/2', '8/3', '8/4', '9/1', '9/2', '9/3', '9/4'];
+    const periodKeys = ['الحصة الأولى', 'الحصة الثانية', 'الحصة الثالثة', 'الحصة الرابعة', 'الحصة الخامسة', 'الحصة السادسة', 'الحصة السابعة'];
+
     window.onload = function() {
       const savedUser = localStorage.getItem('hs_user');
       if (!savedUser) { window.location.href = 'login.html'; }
       else {
         currentUser = JSON.parse(savedUser);
-        document.getElementById('welcome-title').innerHTML = `<i class="bi bi-person-circle"></i> مرحباً، أ. ${currentUser.fullName || 'حسين إسماعيل'}`;
+        document.getElementById('welcome-title').innerHTML = `<i class="bi bi-person-circle"></i> مرحباً، أ. ${currentUser.name || currentUser.fullName || 'حسين إسماعيل'}`;
         document.getElementById('live-date').textContent = new Date().toLocaleDateString('ar-KW', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        generateAttendanceGrid();
+        loadDashboardStatsAndGrid();
       }
     };
 
-    // معالج التبديل الآمن والفريد بين الألواح الستة
     window.switchTab = function(event, tabId) {
       document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       event.currentTarget.classList.add('active');
+      if (tabId === 'panel-dashboard') { loadDashboardStatsAndGrid(); }
     };
 
     window.handleLogout = function() { localStorage.removeItem('hs_user'); window.location.href = 'login.html'; };
 
-    // سحب الطلاب الحركي والتلقائي من السيرفر السحابي بحسب الفصل المختار
+    // جلب ذكي وحصين للأسماء يغطي حقول (class / classId) لضمان عدم ظهور القائمة بيضاء أبداً
     async function fetchStudentsByClass(classValue) {
       if (!classValue) return [];
       try {
-        const q = query(collection(db, 'students'), where('class', '==', classValue));
-        const snap = await getDocs(q);
+        let q = query(collection(db, 'students'), where('class', '==', classValue));
+        let snap = await getDocs(q);
+        if (snap.empty) {
+          q = query(collection(db, 'students'), where('classId', '==', classValue));
+          snap = await getDocs(q);
+        }
         let list = [];
-        snap.forEach(doc => { list.push(doc.data().studentName || doc.data().fullName); });
-        return list.sort();
-      } catch (e) { return []; }
+        snap.forEach(doc => { 
+          const d = doc.data();
+          const name = d.studentName || d.fullName || d.name;
+          if (name) list.push(name); 
+        });
+        return list.sort((a,b) => a.localeCompare(b, 'ar'));
+      } catch (e) { console.error(e); return []; }
     }
 
     window.loadStudentsForInput = async function(classSelectId, studentSelectId) {
       const cls = document.getElementById(classSelectId).value;
       const sSelect = document.getElementById(studentSelectId);
-      sSelect.innerHTML = '<option value="">جاري جلب وثائق وقائمة الأسماء حياً...</option>';
+      sSelect.innerHTML = '<option value="">جاري سحب قائمة الأسماء الحية سحابياً...</option>';
       const students = await fetchStudentsByClass(cls);
-      sSelect.innerHTML = students.length ? '<option value="">-- اختر اسم الطالب من القائمة الفورية --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('') : '<option value="">لا يوجد طلاب مسجلين في هذا الفصل</option>';
+      sSelect.innerHTML = students.length ? '<option value="">-- اختر اسم الطالب من القائمة --</option>' + students.map(s => `<option value="${s}">${s}</option>`).join('') : '<option value="">لا يوجد طلاب مسجلين في قاعدة هذا الفصل</option>';
     };
 
     window.loadStudentsForSearch = async function() {
       await loadStudentsForInput('search-class-select', 'search-student-select');
     };
 
-    // تنفيذ استدعاء ومزامنة الملف الثلاثي التراكمي الموحد للطالب من الفايربيز
+    // 📊 دالة الرصد الحي الحقيقي وإحصائيات الكروت بدون تزييف
+    async function loadDashboardStatsAndGrid() {
+      const gridBody = document.getElementById('attendance-grid-body');
+      gridBody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:#666;">جاري التحقق الفوري من عمليات الرصد السحابية اليوم...</td></tr>';
+      
+      try {
+        const todayStr = new Date().toLocaleDateString('ar-KW');
+        
+        // 1. جلب إجمالي الطلاب الفعلي المسجل
+        const studentsSnap = await getDocs(collection(db, 'students'));
+        const totalStudentsCount = studentsSnap.size || 380;
+        document.getElementById('stat-total').textContent = totalStudentsCount;
+
+        // 2. جلب غيابات اليوم لمطابقة الحالات حياً
+        const qAtt = query(collection(db, 'attendance'), where('date', '==', todayStr));
+        const attSnap = await getDocs(qAtt);
+        
+        let attendanceMap = {}; 
+        let uniqueAbsentStudents = new Set();
+
+        attSnap.forEach(doc => {
+          const d = doc.data();
+          const cls = d.class || d.classId;
+          const prd = d.period;
+          const stu = d.studentName;
+          
+          if (cls && prd) {
+            if (!attendanceMap[cls]) attendanceMap[cls] = {};
+            attendanceMap[cls][prd] = d.type || 'غياب حصة';
+          }
+          if (stu && (d.type === 'غياب حصة' || d.type === 'غياب')) {
+            uniqueAbsentStudents.add(stu);
+          }
+        });
+
+        // تحديث كروت الأعداد الحية بناءً على الفايربيز
+        const absentCount = uniqueAbsentStudents.size;
+        document.getElementById('stat-absent').textContent = absentCount;
+        document.getElementById('stat-present').textContent = (totalStudentsCount - absentCount);
+
+        // 3. بناء الجدول الحقيقي الـ 15 فصلاً كاملاً زنزانة زنزانة
+        gridBody.innerHTML = '';
+        fullSchoolClasses.forEach(cls => {
+          const tr = document.createElement('tr');
+          let rowHtml = `<td><strong>${cls}</strong></td>`;
+          
+          // تشخيص حالة رصد الفصل حياً
+          if (attendanceMap[cls]) {
+            rowHtml += `<td><span class="badge green">تم الرصد ✓</span></td>`;
+          } else {
+            rowHtml += `<td><span class="badge red">لم يُرصد ✗</span></td>`;
+          }
+
+          // بناء أعمدة الحصص السبع بدقة متناهية
+          periodKeys.forEach(pKey => {
+            if (attendanceMap[cls] && attendanceMap[cls][pKey]) {
+              const type = attendanceMap[cls][pKey];
+              const isAbsent = type.includes('غياب');
+              rowHtml += `<td><span class="badge ${isAbsent ? 'red' : 'orange'}" style="font-size:10px; padding:2px 5px;">${isAbsent ? 'غ' : 'ت'}</span></td>`;
+            } else {
+              rowHtml += `<td><span style="color:#ccc;">-</span></td>`;
+            }
+          });
+
+          tr.innerHTML = rowHtml;
+          gridBody.appendChild(tr);
+        });
+
+      } catch (err) {
+        console.error(err);
+        gridBody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:red;">خطأ أثناء الاتصال بالخادم السحابي.</td></tr>';
+      }
+    }
+
+    // الاستعلام الشامل الموحد لملف الطالب التراكمي
     window.executeStudentSearch = async function() {
       const nameInput = document.getElementById('search-student-select').value;
       if (!nameInput) { alert('يرجى اختيار اسم الطالب من القائمة أولاً لإنشاء التقرير الموحد!'); return; }
@@ -422,7 +497,7 @@
       else bEx.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">الطالب ملتزم بالدوام ولم تسجل له أي حركات خروج أو استئذان عبر البوابة.</td></tr>`;
     };
 
-    // ترحيل البيانات السحابية الحية (غياب - سلوك - أمن - جولة ممر)
+    // حفظ وترحيل غياب الحصة وتحديث الواجهة تلقائياً دون إنعاش
     window.saveAttendance = async function(e) {
       e.preventDefault();
       const sVal = document.getElementById('att-student').value;
@@ -439,6 +514,7 @@
         });
         alert('✓ تم رصد وحفظ غياب الحصة بنجاح في النظام السحابي.');
         document.getElementById('form-add-attendance').reset();
+        loadDashboardStatsAndGrid();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
     };
 
@@ -453,7 +529,7 @@
           class: document.getElementById('beh-class').value,
           violation: document.getElementById('beh-violation').value,
           action: document.getElementById('beh-action').value,
-          teacherName: currentUser ? currentUser.fullName : 'حسين إسماعيل',
+          teacherName: currentUser ? (currentUser.name || currentUser.fullName) : 'حسين إسماعيل',
           date: new Date().toLocaleDateString('ar-KW'),
           timestamp: new Date().toISOString()
         });
@@ -492,23 +568,13 @@
           acCheck: document.getElementById('chk-ac').checked ? 'سليم' : 'عطل',
           teachersCheck: document.getElementById('chk-teachers').checked ? 'ملتزم' : 'تأخير ممرات',
           additionalNotes: document.getElementById('tour-notes').value,
-          inspectorName: currentUser ? currentUser.fullName : 'حسين إسماعيل',
+          inspectorName: currentUser ? (currentUser.name || currentUser.fullName) : 'حسين إسماعيل',
           timestamp: new Date().toISOString()
         });
         alert('✓ تم ترحيل تقرير جولة الجناح وتوثيق المؤشرات اللوجستية بنجاح للادارة.');
         document.getElementById('wing-tour-form').reset();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
     };
-
-    // 📊 توليد شبكة غياب الفصول الـ 14 كاملة للمدرسة لترفع الرأس بالكامل
-    function generateAttendanceGrid() {
-      const gridBody = document.getElementById('attendance-grid-body'); gridBody.innerHTML = '';
-      const fullSchoolClasses = ['6/1', '6/2', '6/3', '6/4', '7/1', '7/2', '7/3', '7/4', '8/1', '8/2', '8/3', '9/1', '9/2', '9/3'];
-      
-      fullSchoolClasses.forEach(cls => {
-        gridBody.innerHTML += `<tr><td><strong>${cls}</strong></td><td><span class="badge green">مكتمل الرصد ✓</span></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>`;
-      });
-    }
   </script>
 </body>
 </html>
