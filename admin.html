@@ -17,7 +17,7 @@
     .user-info p { font-size: 11px; opacity: 0.8; }
     .btn-logout { background: #e74c3c; color: #fff; border: none; padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
 
-    /* تأمين الأزرار الثمانية كاملة من الاختفاء أو السحق على الموبايل */
+    /* تأمين الأزرار كاملة من الاختفاء: شريط تبويبات مرن لدن للسحب الأفقي على الموبايل */
     .nav-tabs-container { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 999; }
     .nav-tabs { max-width: 1200px; margin: 0 auto; display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; padding: 5px 0; }
     .nav-tabs::-webkit-scrollbar { height: 5px; }
@@ -93,7 +93,7 @@
     </div>
   </header>
 
-  <!-- 🌟 شريط التبويب الشامل المكتمل بـ 8 أزرار كاملة بدون أي نقص أو سحق -->
+  <!-- 🌟 شريط التبويب الشامل المكتمل بجميع الغرف والأقسام الموجهة للمدير -->
   <div class="nav-tabs-container">
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab(event, 'panel-dashboard')"><i class="bi bi-speedometer2"></i> اليوم والمؤشرات</button>
@@ -102,6 +102,7 @@
       <button class="tab-btn" onclick="switchTab(event, 'panel-clinic')"><i class="bi bi-heart-pulse"></i> العيادة الذكية</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-security')"><i class="bi bi-shield-lock"></i> بوابة الأمن</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-visits')"><i class="bi bi-people"></i> سجل الزيارات</button>
+      <button class="tab-btn" onclick="switchTab(event, 'panel-manager-visits')"><i class="bi bi-journal-check"></i> زيارات المدير للمعلمين</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-search')"><i class="bi bi-search"></i> بحث الطالب الشامل</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-tour')"><i class="bi bi-clipboard-check"></i> جولة الجناح</button>
       <button class="tab-btn" onclick="switchTab(event, 'panel-settings')"><i class="bi bi-gear"></i> إضافة مستخدم وطالب</button>
@@ -281,7 +282,7 @@
       </div>
     </div>
 
-    <!-- 👥 تّاب 6: سجل الزيارات المدرسية والضيوف الرسميين (مستعادة) -->
+    <!-- 👥 تّاب 6: سجل الزيارات المدرسية والضيوف الرسميين -->
     <div id="panel-visits" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-people-fill text-success"></i> سجل رصد وأرشفة زيارات وضيوف المدرسة</h3>
@@ -316,7 +317,59 @@
       </div>
     </div>
 
-    <!-- 🔍 تّاب 7: ملف الطالب الشامل المطور رباعي السجلات -->
+    <!-- 👔 تّاب 7: سجل زيارات المدير للمعلمين (المضافة حديثاً لتبييض الوجه أمام المدير) -->
+    <div id="panel-manager-visits" class="app-panel">
+      <div class="card-section">
+        <h3><i class="bi bi-journal-check text-success"></i> سجل رصد وزيارات مدير المدرسة الفنية للمعلمين بالفصول</h3>
+        <p style="font-size:12px; color:#666; margin-bottom:15px;">خاص بمدير المدرسة لتوثيق وتأريخ زيارات الفصول الدراسية، متابعة أداء المعلمين حياً، ورصد التوصيات التوجيهية الصادرة سحابياً.</p>
+        
+        <form id="form-add-manager-visit" onsubmit="saveManagerVisit(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>اسم المعلم المـُزار</label>
+              <input type="text" id="mvis-teacher" class="form-control" placeholder="اكتب اسم المعلم بالكامل" required>
+            </div>
+            <div class="form-group">
+              <label>المادة الدراسية</label>
+              <input type="text" id="mvis-subject" class="form-control" placeholder="مثال: الرياضيات / التربية الإسلامية" required>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>الفصل الدراسي المستهدف</label>
+              <select id="mvis-class" class="form-control">
+                <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
+                <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
+                <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+                <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الحصة المزارة</label>
+              <select id="mvis-period" class="form-control">
+                <option>الحصة الأولى</option><option>الحصة الثانية</option><option>الحصة الثالثة</option><option>الحصة الرابعة</option>
+                <option>الحصة الخامسة</option><option>الحصة السادسة</option><option>الحصة السابعة</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>نوع الزيارة الفنية الإدارية</label>
+            <select id="mvis-type" class="form-control">
+              <option>زيارة استطلاعية / تشخيصية</option>
+              <option>زيارة توجيهية وتقويمية (نموذجية)</option>
+              <option>زيارة مفاجئة لمتابعة سير الخطة الدراسية</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>أبرز التوصيات الصادرة، نقاط القوة، أو الملاحظات الفنية لمدير المدرسة</label>
+            <textarea id="mvis-notes" class="form-control" rows="4" placeholder="اكتب التوجيهات والتوصيات الصادرة من المدير بدقة للمتابعة السحابية..."></textarea>
+          </div>
+          <button type="submit" class="btn-submit" id="btn-save-mvis" style="background:#1a1a2e;"><i class="bi bi-file-earmark-check-fill"></i> حقن وتوثيق الزيارة الفنية للمدير</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 🔍 تّاب 8: ملف الطالب الشامل المطور رباعي السجلات -->
     <div id="panel-search" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-person-bounding-box"></i> نظام الاستعلام والملف الشامل والرباعي للطالب</h3>
@@ -368,7 +421,7 @@
       </div>
     </div>
 
-    <!-- 📋 تّاب 8: استمارة المتابعة الميدانية المكتملة لمشرف الجناح -->
+    <!-- 📋 تّاب 9: استمارة المتابعة الميدانية المكتملة لمشرف الجناح -->
     <div id="panel-tour" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-clipboard-check-fill"></i> استمارة جودة المتابعة الميدانية المكتملة لمشرف الجناح</h3>
@@ -405,7 +458,7 @@
       </div>
     </div>
 
-    <!-- ⚙️ تّاب 9: إدارة المنظومة وإضافة مستخدم أو طالب جديد (مستعادة وجاهزة للمدير) -->
+    <!-- ⚙️ تّاب 10: لوحة التحكم وإضافة مستخدم أو طالب جديد -->
     <div id="panel-settings" class="app-panel">
       <div class="card-section">
         <h3><i class="bi bi-person-plus-fill text-primary"></i> لوحة التحكم وإضافة الطلاب والمستخدمين الجدد</h3>
@@ -427,7 +480,6 @@
           </div>
 
           <div class="grid-2">
-            <!-- حقل خاص بالطالب -->
             <div class="form-group" id="set-group-class">
               <label>الفصل الدراسي المستهدف</label>
               <select id="set-class" class="form-control">
@@ -437,7 +489,6 @@
                 <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
               </select>
             </div>
-            <!-- حقول خاصة بالمعلم -->
             <div class="form-group" id="set-group-username" style="display:none;">
               <label>اسم المستخدم للدخول (Username)</label>
               <input type="text" id="set-username" class="form-control" placeholder="مثال: ahmad2026">
@@ -611,31 +662,27 @@
 
     window.executeStudentSearch = async function() {
       const nameInput = document.getElementById('search-student-select').value;
-      if (!nameInput) { alert('يرجى اختيار اسم الطالب من القائمة أولاً!'); return; }
+      if (!nameInput) { alert('يرجى اختيار اسم الطالب من القائمة أولاً لإنشاء التقرير الموحد!'); return; }
 
       const resultsArea = document.getElementById('search-results-area');
       resultsArea.style.display = 'block';
       document.getElementById('target-student-title').innerHTML = `<i class="bi bi-info-circle-fill"></i> الملف الموحد المستدعى للطالب سحابياً: <span style="color:#1a1a2e; font-weight:900;">${nameInput}</span>`;
 
-      // 1. غيابات
       const snapAtt = await getDocs(query(collection(db, 'attendance'), where('studentName', '==', nameInput)));
       const bAtt = document.getElementById('t-body-attendance'); bAtt.innerHTML = '';
       if (!snapAtt.empty) snapAtt.forEach(doc => { const d = doc.data(); bAtt.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.period || '-'}</td><td><span class="badge red">${d.type || 'غياب'}</span></td></tr>`; });
       else bAtt.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الملف سليم ولا توجد غيابات مسجلة اليوم.</td></tr>`;
 
-      // 2. سلوك
       const snapBeh = await getDocs(query(collection(db, 'behavior'), where('studentName', '==', nameInput)));
       const bBeh = document.getElementById('t-body-behavior'); bBeh.innerHTML = '';
       if (!snapBeh.empty) snapBeh.forEach(doc => { const d = doc.data(); bBeh.innerHTML += `<tr><td>${d.date || '-'}</td><td><span class="badge orange">${d.violation || '-'}</span></td><td>${d.action || '-'}</td><td>أ. ${d.teacherName || 'المشرف'}</td></tr>`; });
       else bBeh.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">الملف السلوكي نظيف تماماً وخالي من بطاقات المخالفات.</td></tr>`;
 
-      // 3. العيادة
       const snapCln = await getDocs(query(collection(db, 'clinic'), where('studentName', '==', nameInput)));
       const bCln = document.getElementById('t-body-clinic'); bCln.innerHTML = '';
       if (!snapCln.empty) snapCln.forEach(doc => { const d = doc.data(); bCln.innerHTML += `<tr><td>${d.date || '-'} ${d.time || ''}</td><td><strong>${d.symptoms || '-'}</strong></td><td><span class="badge blue">${d.action || '-'}</span></td></tr>`; });
       else bCln.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">الطالب لم يقم بزيارة العيادة المدرسية مسبقاً.</td></tr>`;
 
-      // 4. البوابة
       const snapEx = await getDocs(query(collection(db, 'exits'), where('studentName', '==', nameInput)));
       const bEx = document.getElementById('t-body-exits'); bEx.innerHTML = '';
       if (!snapEx.empty) snapEx.forEach(doc => { const d = doc.data(); bEx.innerHTML += `<tr><td>${d.date || '-'}</td><td>${d.time || '-'}</td><td>${d.reason || '-'}</td><td>${d.recipientName || '-'}</td></tr>`; });
@@ -735,9 +782,30 @@
           time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}),
           timestamp: new Date().toISOString()
         });
-        alert('✓ تم تسجيل وثيقة بيانات المراجع والزائر بنجاح في قاعدة البيانات.');
+        alert('✓ تم تسجيل وثيقة بيانات المراجع والزائر بنجاح.');
         document.getElementById('form-add-visitor').reset();
       } catch(err) { alert(err.message); } finally { btn.disabled = false; }
+    };
+
+    // 👔 دالة حفظ وترحيل سجل زيارات المدير الفنية للمعلمين بالفصول (Firebase)
+    window.saveManagerVisit = async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-mvis'); btn.disabled = true;
+      try {
+        await addDoc(collection(db, 'manager_visits'), {
+          teacherName: document.getElementById('mvis-teacher').value.trim(),
+          subject: document.getElementById('mvis-subject').value.trim(),
+          class: document.getElementById('mvis-class').value,
+          period: document.getElementById('mvis-period').value,
+          visitType: document.getElementById('mvis-type').value,
+          notes: document.getElementById('mvis-notes').value.trim(),
+          date: new Date().toLocaleDateString('ar-KW'),
+          time: new Date().toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}),
+          timestamp: new Date().toISOString()
+        });
+        alert('✓ تم رصد وتوثيق زيارة المدير الفنية للمعلم بنجاح في السيرفر السحابي الموحد.');
+        document.getElementById('form-add-manager-visit').reset();
+      } catch(err) { alert('حدث خطأ أثناء الاتصال: ' + err.message); } finally { btn.disabled = false; }
     };
 
     window.saveWingTour = async function(e) {
