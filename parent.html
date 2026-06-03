@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<title>بوابة ولي الأمر الإلكترونية - مدرسة سالم الحسينان</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+:root {
+    --primary-color: #1a1a2e;     /* الكحلي الملكي للمدرسة */
+    --accent-color: #e67e22;      /* البرتقالي الحيوي */
+    --bg-light: #f5f6fa;
+    --card-bg: #ffffff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box; font-family: 'Cairo', Arial, sans-serif;}
+body{background: var(--bg-light); color:#333; min-height: 100vh; display: flex; flex-direction: column;}
+
+/* هيدر بوابة ولي الأمر */
+.parent-header{background: var(--primary-color); color:#fff; padding:1.2rem; text-align: center; border-bottom: 4px solid var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+.parent-header h1{font-size:18px; font-weight: 900;}
+
+.container{max-width:500px; margin:0 auto; padding:1.2rem; width:100%; flex: 1;}
+.card{background: var(--card-bg); border-radius:12px; padding:1.5rem; margin-bottom:1.2rem; box-shadow:0 4px 6px rgba(0,0,0,.03); border-top: 4px solid var(--primary-color); position: relative;}
+
+/* نموذج تسجيل الدخول الخاص بالأب */
+.login-box { text-align: center; padding: 1.5rem 1rem; }
+.login-icon { font-size: 50px; color: var(--accent-color); margin-bottom: 10px; }
+.form-group { position: relative; margin-bottom: 1.2rem; text-align: right; }
+.form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--primary-color); margin-bottom: 6px; }
+.form-group i { position: absolute; right: 12px; bottom: 12px; color: #a0a0a0; font-size: 16px; }
+input { width:100%; padding:11px 38px 11px 12px; border:1px solid #dcdde1; border-radius:6px; font-size:14px; background:#fff; outline:none; font-weight:600; }
+input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(230,126,34,0.1); }
+
+button.btn-block { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+button.btn-block:hover { background: var(--accent-color); }
+button.btn-block:disabled { background: #6c757d; cursor: not-allowed; }
+
+.error-message { background: #fff5f5; border: 1px solid #fabebe; color: #c0392b; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 1.2rem; display: none; text-align: right; align-items: center; gap: 6px; }
+
+/* لوحة تحكم الطالب التفاعلية */
+.student-profile { background: linear-gradient(135deg, var(--primary-color) 0%, #2c2c54 100%); color: white; padding: 1.2rem; border-radius: 10px; text-align: right; margin-bottom: 1.5rem; }
+.student-profile h2 { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
+.student-profile p { font-size: 13px; opacity: 0.9; font-weight: 600; }
+
+/* شريط تبويبات مريح لموبايل الأب */
+.parent-tabs { display: flex; background: #fff; border-radius: 8px; padding: 6px; margin-bottom: 1.2rem; gap: 4px; border: 1px solid #e1e2e6; }
+.p-tab { flex: 1; padding: 8px 4px; border: none; background: transparent; color: var(--primary-color); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; }
+.p-tab i { font-size: 16px; }
+.p-tab.active { background: var(--primary-color); color: white; }
+
+/* الجداول والقوائم الناعمة */
+.log-item { background: #f8f9fa; border-right: 4px solid var(--primary-color); padding: 10px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; }
+.log-item.danger { border-right-color: #e74c3c; }
+.log-item.warning { border-right-color: var(--accent-color); }
+.log-item .date { font-size: 11px; color: #777; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; color: #fff; }
+.badge.danger { background: #e74c3c; }
+.badge.success { background: #27ae60; }
+
+.hidden { display: none !important; }
+footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-align: center; padding: 12px; font-size: 11px; font-weight: 600; border-top: 3px solid var(--accent-color); }
+</style>
+</head>
+<body>
+
+<div class="parent-header">
+  <h1><i class="bi bi-shield-lock-fill"></i> بوابة ولي الأمر الذكية</h1>
+</div>
+
+<div class="container">
+
+  <!-- 🔐 شاشة تسجيل الدخول المبتكرة لولي الأمر -->
+  <div id="parent-login-view" class="card login-box">
+    <div class="login-icon"><i class="bi bi-person-vcard-fill"></i></div>
+    <h3 style="color: var(--primary-color); font-weight:900; margin-bottom:5px;">سجل دخول لمتابعة ابنك</h3>
+    <p style="font-size:12px; color:#666; margin-bottom:1.5rem; font-weight:600;">يرجى إدخال البيانات المعتمدة بملف الطالب</p>
+
+    <div id="login-error" class="error-message">
+      <i class="bi bi-exclamation-triangle-fill"></i> <span id="error-text">تأكد من الرقم المدني أو الاسم الأول!</span>
+    </div>
+
+    <form onsubmit="window.handleParentLogin(event)">
+      <div class="form-group">
+        <label>الرقم المدني للطالب</label>
+        <input type="text" id="parent-civil-id" placeholder="أدخل الرقم المدني المكون من 12 خانة" required>
+        <i class="bi bi-card-text"></i>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label>الاسم الأول للولد (باللغة العربية)</label>
+        <input type="text" id="parent-first-name" placeholder="مثال: محمد / علي / أحمد" required autocomplete="off">
+        <i class="bi bi-type"></i>
+      </div>
+
+      <button type="submit" id="login-btn" class="btn-block">
+        <span id="btn-text">تحقق واستدعاء ملف الطالب</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- 📊 لوحة البيانات الفورية للولد بعد نجاح التحقق -->
+  <div id="parent-dashboard-view" class="hidden">
+    <div class="student-profile">
+      <h2 id="view-student-name">اسم الطالب بالكامل</h2>
+      <p id="view-student-class">الصف: -</p>
+      <p style="font-size:11px; margin-top:5px; opacity:0.8;"><i class="bi bi-clock-history"></i> تحديث فوري مباشر من نظام المدرسة</p>
+    </div>
+
+    <!-- شريط التنقل السفلي للأب -->
+    <div class="parent-tabs">
+      <button class="p-tab active" onclick="window.switchParentTab('att')"><i class="bi bi-calendar-x"></i>الغياب</button>
+      <button class="p-tab" onclick="window.switchParentTab('clinic')"><i class="bi bi-heart-pulse"></i>العيادة</button>
+      <button class="p-tab" onclick="window.switchParentTab('beh')"><i class="bi bi-exclamation-triangle"></i>السلوك</button>
+      <button class="p-tab" onclick="window.switchParentTab('chat')"><i class="bi bi-chat-dots"></i>مراسلة</button>
+    </div>
+
+    <!-- تبويب 1: سجل الغياب -->
+    <div id="p-sec-att" class="card">
+      <h3 style="font-size:14px; margin-bottom:10px; color:var(--primary-color);">📊 كشف الغيابات وتأخير الحصص اليومية</h3>
+      <div id="parent-att-logs-area"></div>
+    </div>
+
+    <!-- تبويب 2: سجل العيادة الطبية -->
+    <div id="p-sec-clinic" class="card hidden">
+      <h3 style="font-size:14px; margin-bottom:10px; color:var(--primary-color);">🩺 أرشيف الإحالات والزيارات الطبية لعيادة المدرسة</h3>
+      <div id="parent-clinic-logs-area"></div>
+    </div>
+
+    <!-- تبويب 3: المخالفات والبطاقات الملونة -->
+    <div id="p-sec-beh" class="card hidden">
+      <h3 style="font-size:14px; margin-bottom:10px; color:var(--primary-color);">🟨 بطاقات الانضباط السلوكي وتنبيهات الأخصائي</h3>
+      <div id="parent-beh-logs-area"></div>
+    </div>
+
+    <!-- تبويب 4: مراسلة الإدارة والأخصائي حياً -->
+    <div id="p-sec-chat" class="card hidden">
+      <h3 style="font-size:14px; margin-bottom:10px; color:var(--primary-color);">💬 مراسلة الإدارة والأخصائي الاجتماعي مباشرة</h3>
+      <div style="background:#eef9ff; padding:10px; border-radius:6px; font-size:12px; font-weight:bold; color:#1a5a80; margin-bottom:12px;">
+        يمكنك إرسال استفسارك أو إرفاق سبب غياب ابنك، وسيقوم الأخصائي بالرد عليك بالسيستم.
+      </div>
+      <textarea id="parent-msg-text" rows="3" placeholder="اكتب رسالتك أو مبرر الغياب هني واضغط إرسال..."></textarea>
+      <button onclick="window.sendParentMessage()" class="btn-block" style="background:#27ae60;"><i class="bi bi-send"></i> إرسال الرسالة للإدارة</button>
+      <div id="parent-chat-history-area" style="margin-top:15px; max-height:200px; overflow-y:auto;"></div>
+    </div>
+
+    <button onclick="window.logoutParent()" class="btn-block secondary" style="background:#fff; color:#333; border:1px solid #ddd; margin-top:1.5rem; padding:8px;">خروج آمن من ملف الطالب</button>
+  </div>
+
+</div>
+
+<footer>المنظومة الرقمية الموحدة © 2026 | مدرسة سالم الحسينان المتوسطة</footer>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import {getFirestore,collection,getDocs,query,where,addDoc,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+const firebaseConfig={apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"};
+const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+
+let targetStudent = null;
+
+// التحقق الفوري الذكي من هوية الأب بالرقم المدني والاسم الأول للولد
+window.handleParentLogin = async function(e) {
+  e.preventDefault();
+  const civilId = document.getElementById('parent-civil-id').value.trim();
+  const firstNameInput = document.getElementById('parent-first-name').value.trim();
+  const errBox = document.getElementById('login-error'); const txtBtn = document.getElementById('btn-text');
+  
+  errBox.style.display = 'none'; txtBtn.textContent = 'جاري التحقق والمزامنة حياً...';
+  
+  try {
+    // استعلام سحابي آمن يبحث بمطابقة الرقم المدني للطالب بالسيستم
+    const q = query(collection(db, 'students'), where('civilId', '==', civilId));
+    const snap = await getDocs(q);
+    
+    if(snap.empty) { throw new Error('الرقم المدني هذا غير مسجل في منظومة الطلاب!'); }
+    
+    let matchedDoc = null;
+    snap.forEach(doc => {
+      const data = doc.data();
+      const fullName = data.name || data.studentName || '';
+      // تفكيك الاسم الكامل لاستخراج الاسم الأول للولد بدقة
+      const dbFirstName = fullName.split(' ')[0].trim();
+      
+      if(dbFirstName === firstNameInput) { matchedDoc = data; }
+    });
+    
+    if(!matchedDoc) { throw new Error('الاسم الأول للولد غير مطابق للرقم المدني!'); }
+    
+    // نجاح الدخول وحفظ الجلسة محلياً بالمتصفح
+    targetStudent = matchedDoc;
+    document.getElementById('parent-login-view').classList.add('hidden');
+    document.getElementById('parent-dashboard-view').classList.remove('hidden');
+    
+    document.getElementById('view-student-name').textContent = targetStudent.name || targetStudent.studentName;
+    document.getElementById('view-student-class').textContent = 'الصف الدراسي: ' + (targetStudent.classId || targetStudent.class);
+    
+    // جلب ملف البيانات الرباعي للولد فوري
+    loadStudentDataForParent();
+    
+  } catch(err) {
+    document.getElementById('error-text').textContent = err.message;
+    errBox.style.display = 'flex'; txtBtn.textContent = 'تحقق واستدعاء ملف الطالب';
+  }
+};
+
+// محرك السحب السحابي الشامل لملفات وجداول الطالب المعني
+async function loadStudentDataForParent() {
+  const sName = targetStudent.name || targetStudent.studentName;
+  
+  // 1. جلب كشف الغياب والحضور
+  const attArea = document.getElementById('parent-att-logs-area'); attArea.innerHTML = '<p>جاري مزامنة كشف الحضور...</p>';
+  const attSnap = await getDocs(collection(db, 'attendance')); let attHtml = ''; let attCount = 0;
+  attSnap.forEach(doc => { const d = doc.data(); if(d.studentName === sName && d.status === 'absent') { attCount++; attHtml += `<div class="log-item danger"><div><i class="bi bi-calendar-x-fill" style="color:#e74c3c; margin-left:6px;"></i> غياب كامل للدوام</div><span class="date">${d.date}</span></div>`; } });
+  attArea.innerHTML = attCount === 0 ? '<div style="color:green; font-weight:bold; text-align:center; padding:10px;">ابنكم ملتزم بالحضور اليومي وخالي تماماً من الغيابات ✓</div>' : attHtml;
+
+  // 2. أرشيف مراجعات وزيارات العيادة المدرسية
+  const clnArea = document.getElementById('parent-clinic-logs-area'); clnArea.innerHTML = '<p>جاري جلب السجل الصحي...</p>';
+  const clnSnap = await getDocs(collection(db, 'clinic_logs')); let clnHtml = ''; let clnCount = 0;
+  clnSnap.forEach(doc => { const c = doc.data(); if(c.studentName === sName) { clnCount++; clnHtml += `<div class="log-item style="border-right-color:#3498db;"><div><strong>التشخيص:</strong> ${c.symptoms}<br><small style="color:#27ae60;">القرار الطبي: ${c.action}</small></div><span class="date">${c.date || '-'}</span></div>`; } });
+  clnArea.innerHTML = clnCount === 0 ? '<div style="color:#555; text-align:center; padding:10px;">لم يتم تسجيل أي زيارات للعيادة الطبية بالمدرسة مسبقاً.</div>' : clnHtml;
+
+  // 3. سجل السلوك والمخالفات المرصودة للولد
+  const behArea = document.getElementById('parent-beh-logs-area'); behArea.innerHTML = '<p>جاري تدقيق السجل السلوكي...</p>';
+  const behSnap = await getDocs(collection(db, 'behavior')); let behHtml = ''; let behCount = 0;
+  behSnap.forEach(doc => { const b = doc.data(); if(b.studentName === sName) { behCount++; behHtml += `<div class="log-item warning"><div><i class="bi bi-exclamation-triangle-fill" style="color:#e67e22; margin-left:6px;"></i> ${b.behaviorType}</div></div>`; } });
+  behArea.innerHTML = behCount === 0 ? '<div style="color:green; font-weight:bold; text-align:center; padding:10px;">السجل السلوكي لابنكم نظيف تماماً وملتزم بالانضباط المدرسي ✓</div>' : behHtml;
+
+  // 4. تحميل أرشيف المحادثات والمراسلات السابقة
+  loadChatHistory();
+}
+
+// إرسال رسالة فورية ومباشرة للأخصائي والمسؤولين بالسيرفر
+window.sendParentMessage = async function() {
+  const msgText = document.getElementById('parent-msg-text').value.trim(); if(!msgText) return;
+  const sName = targetStudent.name || targetStudent.studentName;
+  try {
+    await addDoc(collection(db, 'chats'), { studentName: sName, classId: (targetStudent.classId || targetStudent.class), sender: 'parent', message: msgText, createdAt: serverTimestamp() });
+    document.getElementById('parent-msg-text').value = ''; loadChatHistory();
+  } catch(e) {}
+};
+
+async function loadChatHistory() {
+  const area = document.getElementById('parent-chat-history-area'); if(!area) return;
+  const sName = targetStudent.name || targetStudent.studentName;
+  try {
+    const snap = await getDocs(collection(db, 'chats')); let html = '';
+    snap.forEach(doc => {
+      const c = doc.data();
+      if(c.studentName === sName) {
+        const bg = c.sender === 'parent' ? '#eef9ff' : '#fff3cd'; const label = c.sender === 'parent' ? 'أنت' : 'الأخصائي الاجتماعي';
+        html += `<div style="background:${bg}; padding:8px; border-radius:6px; margin-bottom:6px; font-size:12px; text-align:right;"><strong>${label}:</strong> ${c.message}</div>`;
+      }
+    });
+    area.innerHTML = html;
+  } catch(e) {}
+}
+
+// آلية التنقل السلس والذكي لموبايل ولي الأمر بدون إعادة تحميل الشاشات
+window.switchParentTab = function(tabId) {
+  document.querySelectorAll('.p-tab').forEach(t => { if(t.getAttribute('onclick').includes(tabId)) t.classList.add('active'); else t.classList.remove('active'); });
+  ['att', 'clinic', 'beh', 'chat'].forEach(id => {
+    const el = document.getElementById(`p-sec-${id}`); if(el) { if(id === tabId) el.classList.remove('hidden'); else el.classList.add('hidden'); }
+  });
+};
+
+window.logoutParent = function() { targetStudent = null; window.location.reload(); };
+</script>
+</body>
+</html>
