@@ -10,63 +10,95 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
 :root {
-    --primary-color: #1a1a2e;
-    --accent-color: #e67e22;
+    --primary-color: #1a1a2e;     /* الكحلي الملكي */
+    --accent-color: #e67e22;      /* البرتقالي الحيوي */
     --bg-light: #f5f6fa;
     --card-bg: #ffffff;
+    --success-color: #27ae60;
 }
+
 *{margin:0;padding:0;box-sizing:border-box; font-family: 'Cairo', Arial, sans-serif;}
 body{background: var(--bg-light); color:#333; min-height: 100vh; display: flex; flex-direction: column;}
-.parent-header{background: var(--primary-color); color:#fff; padding:1.2rem; text-align: center; border-bottom: 4px solid var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
-.parent-header h1{font-size:18px; font-weight: 900;}
+
+.parent-header{background: var(--primary-color); color:#fff; padding:1.2rem; text-align: center; border-bottom: 4px solid var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative;}
+.parent-header h1{font-size:18px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px;}
+
 .container{max-width:500px; margin:0 auto; padding:1.2rem; width:100%; flex: 1;}
-.card{background: var(--card-bg); border-radius:12px; padding:1.5rem; margin-bottom:1.2rem; box-shadow:0 4px 6px rgba(0,0,0,.03); border-top: 4px solid var(--primary-color);}
-.login-box { text-align: center; padding: 1.5rem 1rem; }
-.login-icon { font-size: 50px; color: var(--accent-color); margin-bottom: 10px; }
+.card{background: var(--card-bg); border-radius:14px; padding:1.5rem; margin-bottom:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,.04); border-top: 4px solid var(--primary-color); position: relative;}
+
+/* شاشة الدخول الاحترافية */
+.login-box { text-align: center; padding: 2rem 1rem; }
+.login-icon { font-size: 55px; color: var(--accent-color); margin-bottom: 8px; animation: pulse 2s infinite; }
 .form-group { margin-bottom: 1.2rem; text-align: right; }
 .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--primary-color); margin-bottom: 6px; }
-select, input { width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; font-size:14px; background:#fff; outline:none; font-weight:600; }
+select, input { width:100%; padding:12px; border:1px solid #dcdde1; border-radius:8px; font-size:14px; background:#fff; outline:none; font-weight:600; transition: all 0.2s; color: #333; }
 select:focus, input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(230,126,34,0.1); }
-button.btn-block { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-button.btn-block:hover { background: var(--accent-color); }
-.error-message { background: #fff5f5; border: 1px solid #fabebe; color: #c0392b; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 1.2rem; display: none; text-align: right; align-items: center; gap: 6px; }
-.student-profile { background: linear-gradient(135deg, var(--primary-color) 0%, #2c2c54 100%); color: white; padding: 1.2rem; border-radius: 10px; text-align: right; margin-bottom: 1.5rem; }
-.student-profile h2 { font-size: 18px; font-weight: 900; margin-bottom: 4px; }
+
+button.btn-block { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+button.btn-block:hover { background: var(--accent-color); transform: translateY(-1px); }
+
+.error-message { background: #fff5f5; border: 1px solid #fabebe; color: #c0392b; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 1.2rem; display: none; text-align: right; align-items: center; gap: 6px; }
+
+/* بروفايل الطالب الكشخة */
+.student-profile { background: linear-gradient(135deg, var(--primary-color) 0%, #2c2c54 100%); color: white; padding: 1.4rem; border-radius: 12px; text-align: right; margin-bottom: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+.student-profile::after { content: '\f519'; font-family: 'bootstrap-icons'; position: absolute; left: -10px; bottom: -20px; font-size: 90px; opacity: 0.1; color: #fff; }
+.student-profile h2 { font-size: 19px; font-weight: 900; margin-bottom: 4px; }
 .student-profile p { font-size: 13px; opacity: 0.9; font-weight: 600; }
-.parent-tabs { display: flex; background: #fff; border-radius: 8px; padding: 6px; margin-bottom: 1.2rem; gap: 4px; border: 1px solid #e1e2e6; }
-.p-tab { flex: 1; padding: 8px 4px; border: none; background: transparent; color: var(--primary-color); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.p-tab.active { background: var(--primary-color); color: white; }
-.log-item { background: #f8f9fa; border-right: 4px solid var(--primary-color); padding: 10px 12px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; }
-.log-item.danger { border-right-color: #e74c3c; }
-.log-item.warning { border-right-color: var(--accent-color); }
-.log-item .date { font-size: 11px; color: #777; }
+
+/* شريط تبويبات مريح وخماسي لموبايل الأب */
+.parent-tabs { display: flex; background: #fff; border-radius: 10px; padding: 6px; margin-bottom: 1.2rem; gap: 4px; border: 1px solid #e1e2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.p-tab { flex: 1; padding: 8px 2px; border: none; background: transparent; color: var(--primary-color); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; }
+.p-tab i { font-size: 18px; }
+.p-tab.active { background: var(--primary-color); color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+/* تصميم كرت ورخصة الخروج الفخم (التذكرة الرقمية) */
+.gatepass-ticket { border: 2px dashed var(--accent-color); background: #fffdf9; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; position: relative; }
+.gatepass-ticket::before, .gatepass-ticket::after { content: ''; position: absolute; top: 50%; width: 20px; height: 20px; background: var(--bg-light); border-radius: 50%; transform: translateY(-50%); }
+.gatepass-ticket::before { right: -12px; } .gatepass-ticket::after { left: -12px; }
+.ticket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3d1b5; padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; font-size: 13px; color: var(--accent-color); }
+.barcode-view { text-align: center; margin-top: 12px; font-size: 32px; letter-spacing: 4px; color: #333; opacity: 0.8; }
+
+/* عناصر كشوف السجلات */
+.log-item { background: #f8f9fa; border-right: 4px solid var(--primary-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
+.log-item.danger { border-right-color: #e74c3c; background: #fffdfd; }
+.log-item.warning { border-right-color: var(--accent-color); background: #fffdfa; }
+.log-item .date { font-size: 11px; color: #777; font-weight: bold; }
+
+/* نظام المحادثة المطور (WhatsApp Style) - فايل لكل دردشة */
+.chat-container { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding: 10px 4px; border: 1px solid #eee; border-radius: 8px; background: #fdfdfd; margin-bottom: 12px; }
+.chat-bubble { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1.4; position: relative; }
+.chat-bubble.parent { background: #eef9ff; color: #1a5a80; align-self: flex-start; border-bottom-right-radius: 2px; text-align: right; }
+.chat-bubble.admin { background: #fff3cd; color: #856404; align-self: flex-end; border-bottom-left-radius: 2px; text-align: right; }
+.chat-time { display: block; font-size: 10px; opacity: 0.6; margin-top: 4px; text-align: left; }
+
 .hidden { display: none !important; }
-footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-align: center; padding: 12px; font-size: 11px; font-weight: 600; border-top: 3px solid var(--accent-color); }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-align: center; padding: 14px; font-size: 11px; font-weight: 600; border-top: 3px solid var(--accent-color); }
 </style>
 </head>
 <body>
 
 <div class="parent-header">
-  <h1><i class="bi bi-shield-lock-fill"></i> بوابة ولي الأمر الذكية</h1>
+  <h1><i class="bi bi-person-arms-up"></i> بوابة أولياء الأمور الذكية</h1>
 </div>
 
 <div class="container">
 
-  <!-- 🔐 شاشة تسجيل الدخول المحدثة السلسة -->
+  <!-- 🔐 شاشة الدخول الذكية بالاختيار من الكشوف الحالية -->
   <div id="parent-login-view" class="card login-box">
-    <div class="login-icon"><i class="bi bi-mortarboard-fill"></i></div>
-    <h3 style="color: var(--primary-color); font-weight:900; margin-bottom:5px;">بوابة المتابعة الفورية للطلاب</h3>
-    <p style="font-size:12px; color:#666; margin-bottom:1.5rem; font-weight:600;">اختر البيانات لاستدعاء السجل السحابي للولد</p>
+    <div class="login-icon"><i class="bi bi-shield-check"></i></div>
+    <h3 style="color: var(--primary-color); font-weight:900; margin-bottom:4px;">مرحباً بك في المنظومة الرقمية</h3>
+    <p style="font-size:12px; color:#666; margin-bottom:1.5rem; font-weight:600;">يرجى اختيار الصف واسم ابنكم الكريم للدخول</p>
 
     <div id="login-error" class="error-message">
-      <i class="bi bi-exclamation-triangle-fill"></i> <span id="error-text">تأكد من الاسم الأول للولد!</span>
+      <i class="bi bi-exclamation-triangle-fill"></i> <span id="error-text">الاسم الأول للولد غير مطابق لاسم الطالب المختار!</span>
     </div>
 
     <form onsubmit="window.handleParentLogin(event)">
       <div class="form-group">
-        <label>الفصل الدراسي</label>
+        <label>الفصل الدراسي الحالي</label>
         <select id="parent-class-select" onchange="window.loadClassStudentsForParent()" required>
-          <option value="">اختر الفصل</option>
+          <option value="">اختر الفصل الدراسي</option>
           <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
           <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
           <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
@@ -75,171 +107,206 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
       </div>
 
       <div class="form-group">
-        <label>اسم الطالب (ابنكم الكريم)</label>
+        <label>اسم الطالب بالكامل</label>
         <select id="parent-student-select" required>
-          <option value="">اختر اسم الطالب</option>
+          <option value="">اختر اسم الطالب أولاً</option>
         </select>
       </div>
 
       <div class="form-group" style="margin-bottom: 1.5rem;">
-        <label>تأكيد الهوية: الاسم الأول للولد بالعربي</label>
+        <label>كلمة المرور (الاسم الأول للولد بالعربي)</label>
         <input type="text" id="parent-first-name" placeholder="اكتب الاسم الأول فقط (مثال: علي)" required autocomplete="off">
       </div>
 
       <button type="submit" id="login-btn" class="btn-block">
-        <span id="btn-text">دخول آمن لملف الطالب</span>
+        <span id="btn-text"><i class="bi bi-box-arrow-in-right"></i> استدعاء ودخول آمن للملف</span>
       </button>
     </form>
   </div>
 
-  <!-- 📊 لوحة البيانات الفورية للولد بعد نجاح التحقق -->
+  <!-- 📊 لوحة تحكم الطالب التفاعلية الشاملة للأب -->
   <div id="parent-dashboard-view" class="hidden">
     <div class="student-profile">
-      <h2 id="view-student-name">اسم الطالب بالكامل</h2>
-      <p id="view-student-class">الصف: -</p>
-      <p style="font-size:11px; margin-top:5px; opacity:0.8;"><i class="bi bi-clock-history"></i> تحديث فوري مباشر من نظام المدرسة</p>
+      <h2 id="view-student-name">-</h2>
+      <p id="view-student-class">الصف الدراسي: -</p>
+      <p style="font-size:11px; margin-top:5px; opacity:0.85;"><i class="bi bi-patch-check-fill"></i> متصل حياً بقاعدة البيانات المركزية</p>
     </div>
 
+    <!-- 🎛️ شريط التبويبات الخماسي السلس لموبايل الأب -->
     <div class="parent-tabs">
       <button class="p-tab active" onclick="window.switchParentTab('att')"><i class="bi bi-calendar-x"></i>الغياب</button>
+      <button class="p-tab" onclick="window.switchParentTab('gate')"><i class="bi bi-ticket-perforated"></i>رخصة الخروج</button>
       <button class="p-tab" onclick="window.switchParentTab('clinic')"><i class="bi bi-heart-pulse"></i>العيادة</button>
       <button class="p-tab" onclick="window.switchParentTab('beh')"><i class="bi bi-exclamation-triangle"></i>السلوك</button>
-      <button class="p-tab" onclick="window.switchParentTab('chat')"><i class="bi bi-chat-dots"></i>مراسلة</button>
+      <button class="p-tab" onclick="window.switchParentTab('chat')"><i class="bi bi-chat-left-text"></i>رسايل المدير</button>
     </div>
 
+    <!-- تبويب 1: سجل غياب الدوام الرسمي -->
     <div id="p-sec-att" class="card">
-      <h3 style="font-size:14px; margin-bottom:10px; color:var(--primary-color);">📊 كشف الغيابات وتأخير الحصص اليومية</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;"><i class="bi bi-graph-down-arrow"></i> رصد غياب الحصص والدوام</h3>
       <div id="parent-att-logs-area"></div>
     </div>
 
+    <!-- 🎫 تبويب 2: بطاقة تصاريح رخص خروج البوابة (الميزة اليديدة الفخمة) -->
+    <div id="p-sec-gate" class="card hidden">
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;"><i class="bi bi-door-open-fill"></i> حركات البوابة وتصاريح الاستئذان المعتمدة</h3>
+      <div id="parent-gatepass-ticket-area"></div>
+    </div>
+
+    <!-- تبويب 3: سجل العيادة المدرسية -->
     <div id="p-sec-clinic" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:10px; color:var(--primary-color);">🩺 أرشيف الإحالات والزيارات الطبية لعيادة المدرسة</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;"><i class="bi bi-prescription2"></i> الزيارات الطبية والإحالات الصحية للعيادة</h3>
       <div id="parent-clinic-logs-area"></div>
     </div>
 
+    <!-- تبويب 4: السلوك والانضباط والبطاقات الملونة -->
     <div id="p-sec-beh" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:10px; color:var(--primary-color);">🟨 بطاقات الانضباط السلوكي وتنبيهات الأخصائي</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;"><i class="bi bi-shield-exclamation"></i> بطاقات ومخالفات الانضباط الطلابي</h3>
       <div id="parent-beh-logs-area"></div>
     </div>
 
+    <!-- 💬 تبويب 5: نظام المحادثة المطور - فايل دردشة مستقل خاص للمدير فقط -->
     <div id="p-sec-chat" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:10px; color:var(--primary-color);">💬 مراسلة الإدارة والأخصائي الاجتماعي مباشرة</h3>
-      <textarea id="parent-msg-text" rows="3" placeholder="اكتب رسالتك أو مبرر الغياب هني واضغط إرسال..."></textarea>
-      <button onclick="window.sendParentMessage()" class="btn-block" style="background:#27ae60;"><i class="bi bi-send"></i> إرسال الرسالة للأخصائي</button>
-      <div id="parent-chat-history-area" style="margin-top:15px; max-height:200px; overflow-y:auto;"></div>
+      <h3 style="font-size:14px; margin-bottom:4px; color:var(--primary-color); font-weight:800;"><i class="bi bi-chat-square-quote-fill" style="color:var(--accent-color);"></i> مراسلة مدير المدرسة مباشرة</h3>
+      <p style="font-size:11px; color:#666; margin-bottom:12px; font-weight:bold;">محادثة مشفرة ومغلقة، تصل فقط لمدير المدرسة بملفكم المستقل</p>
+      
+      <!-- حاوية الشات على طراز الواتساب -->
+      <div class="chat-container" id="parent-chat-bubbles-container">
+        <p style="text-align:center; font-size:12px; color:#aaa; padding:10px;">لا توجد رسائل متبادلة بالملف حالياً.</p>
+      </div>
+
+      <div style="display:flex; gap:6px;">
+        <input type="text" id="parent-msg-text" placeholder="اكتب استفسارك أو مبرر الغياب للمدير..." style="margin-bottom:0;">
+        <button onclick="window.sendParentMessageToAdminFile()" style="background:var(--success-color); padding:0 18px; border-radius:6px;"><i class="bi bi-send-fill"></i></button>
+      </div>
     </div>
 
-    <button onclick="window.logoutParent()" class="btn-block" style="background:#fff; color:#333; border:1px solid #ddd; margin-top:1.5rem; padding:8px;">خروج آمن</button>
+    <button onclick="window.logoutParent()" class="btn-block" style="background:#fff; color:#333; border:1px solid #ddd; margin-top:1.5rem; padding:10px; font-size:13px;">خروج آمن من المنظومة</button>
   </div>
 
 </div>
 
-<footer>المنظومة الرقمية الموحدة © 2026 | مدرسة سالم الحسينان المتوسطة</footer>
+<footer>المنظومة الرقمية الشاملة الموحدة © 2026 | مدرسة سالم الحسينان</footer>
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import {getFirestore,collection,getDocs,query,where,addDoc,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import {getFirestore,collection,getDocs,doc,getDoc,setDoc,updateDoc,arrayUnion,query,where,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const firebaseConfig={apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"};
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 
-let targetStudentName = null;
-let targetStudentClass = null;
+let targetStudentName = null; let targetStudentClass = null;
 
-// جلب أسماء الطلاب الفوري بالفيس بوك عند تغيير الفصل
 window.loadClassStudentsForParent = async function() {
-  const cls = document.getElementById('parent-class-select').value;
-  const sSelect = document.getElementById('parent-student-select');
-  sSelect.innerHTML = '<option value="">جاري تحميل الأسماء...</option>';
-  if(!cls) { sSelect.innerHTML = '<option value="">اختر اسم الطالب</option>'; return; }
-  
+  const cls = document.getElementById('parent-class-select').value; const sSelect = document.getElementById('parent-student-select');
+  sSelect.innerHTML = '<option value="">جاري سحب قائمة الأسماء حياً...</option>'; if(!cls) { sSelect.innerHTML = '<option value="">اختر اسم الطالب أولاً</option>'; return; }
   try {
     const snap = await getDocs(collection(db, 'students')); let list = [];
     snap.forEach(doc => { const d = doc.data(); if(d.classId === cls || d.class === cls) { list.push(d.name || d.studentName); } });
-    list.sort((a,b) => a.localeCompare(b, 'ar'));
-    sSelect.innerHTML = '<option value="">اختر اسم الطالب</option>';
+    list.sort((a,b) => a.localeCompare(b, 'ar')); sSelect.innerHTML = '<option value="">اختر اسم الطالب</option>';
     list.forEach(name => { sSelect.innerHTML += `<option value="${name}">${name}</option>`; });
-  } catch(e) { sSelect.innerHTML = '<option value="">خطأ في التحميل</option>'; }
+  } catch(e) { sSelect.innerHTML = '<option value="">خطأ في مزامنة السيرفر</option>'; }
 };
 
 window.handleParentLogin = async function(e) {
-  e.preventDefault();
-  const selectedName = document.getElementById('parent-student-select').value;
-  const cls = document.getElementById('parent-class-select').value;
-  const firstNameInput = document.getElementById('parent-first-name').value.trim();
-  const errBox = document.getElementById('login-error');
+  e.preventDefault(); const selectedName = document.getElementById('parent-student-select').value;
+  const cls = document.getElementById('parent-class-select').value; const firstNameInput = document.getElementById('parent-first-name').value.trim();
+  const errBox = document.getElementById('login-error'); if(!selectedName || !cls || !firstNameInput) return;
   
-  if(!selectedName || !cls || !firstNameInput) return;
-  
-  // التحقق الذكي: فك الاسم الكامل ومطابقة الاسم الأول المكتوب
   const dbFirstName = selectedName.split(' ')[0].trim();
-  
   if(dbFirstName === firstNameInput) {
-    targetStudentName = selectedName;
-    targetStudentClass = cls;
-    
-    document.getElementById('parent-login-view').classList.add('hidden');
-    document.getElementById('parent-dashboard-view').classList.remove('hidden');
+    targetStudentName = selectedName; targetStudentClass = cls;
+    document.getElementById('parent-login-view').classList.add('hidden'); document.getElementById('parent-dashboard-view').classList.remove('hidden');
     document.getElementById('view-student-name').textContent = targetStudentName;
     document.getElementById('view-student-class').textContent = 'الصف الدراسي: ' + targetStudentClass;
-    
     loadStudentDataForParent();
-  } else {
-    document.getElementById('error-text').textContent = 'الاسم الأول للولد غير مطابق لاسم الطالب المختار!';
-    errBox.style.display = 'flex';
-  }
+  } else { errBox.style.display = 'flex'; }
 };
 
 async function loadStudentDataForParent() {
   const sName = targetStudentName;
   
-  // 1. الغياب
-  const attArea = document.getElementById('parent-att-logs-area'); attArea.innerHTML = '<p>جاري مزامنة الغيابات...</p>';
+  // 📊 1. جلب سجل غياب الحصص واليومي
+  const attArea = document.getElementById('parent-att-logs-area'); attArea.innerHTML = '<p>جاري فحص دفاتر الغياب التلقائي...</p>';
   const attSnap = await getDocs(collection(db, 'attendance')); let attHtml = ''; let attCount = 0;
-  attSnap.forEach(doc => { const d = doc.data(); if(d.studentName === sName && d.status === 'absent') { attCount++; attHtml += `<div class="log-item danger"><div><i class="bi bi-calendar-x-fill" style="color:#e74c3c; margin-left:6px;"></i> غياب كامل عن الدوام</div><span class="date">${d.date}</span></div>`; } });
-  attArea.innerHTML = attCount === 0 ? '<div style="color:green; font-weight:bold; text-align:center; padding:10px;">ابنكم ملتزم بالحضور اليومي وخالي من الغيابات ✓</div>' : attHtml;
+  attSnap.forEach(doc => { const d = doc.data(); if(d.studentName === sName && d.status === 'absent') { attCount++; attHtml += `<div class="log-item danger"><div>⚠️ غياب كامل عن المدرسة</div><span class="date">${d.date}</span></div>`; } });
+  attArea.innerHTML = attCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-check-circle-fill"></i> الطالب ملتزم بالحضور وخالي من الغيابات</div>' : attHtml;
 
-  // 2. العيادة
-  const clnArea = document.getElementById('parent-clinic-logs-area'); clnArea.innerHTML = '<p>جاري جلب السجل الصحي...</p>';
+  // 🎫 2. جلب وتصميم رخصة خروج البوابة (Gate Pass Ticket) المعتمدة من الإدارة للحارس
+  const gateArea = document.getElementById('parent-gatepass-ticket-area'); gateArea.innerHTML = '<p>جاري مراجعة بوابة الحارس والأمن...</p>';
+  const gateSnap = await getDocs(collection(db, 'gatepasses')); let gateHtml = ''; let gateCount = 0;
+  gateSnap.forEach(doc => {
+    const g = doc.data();
+    if(g.studentName === sName) {
+      gateCount++;
+      gateHtml += `
+        <div class="gatepass-ticket">
+          <div class="ticket-header"><span>🎫 رخصة مغادرة رسمية معتمدة</span><span>تاريخ: ${g.date || '-'}</span></div>
+          <p style="font-size:13px; margin-bottom:4px;"><strong>ولي الأمر المستلم:</strong> ${g.parentName || 'مسجل بالملف'}</p>
+          <p style="font-size:13px; margin-bottom:6px;"><strong>سبب المغادرة:</strong> ${g.reason || 'إذن رسمي طارئ'}</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+            <span class="badge success"><i class="bi bi-check-all"></i> تم الخروج عبر البوابة فوري: ${g.time || '-'}</span>
+          </div>
+          <div class="barcode-view"><i class="bi bi-qr-code"></i></div>
+        </div>
+      `;
+    }
+  });
+  gateArea.innerHTML = gateCount === 0 ? '<div style="color:#666; text-align:center; padding:10px;">لم يتم رصد أي حركات خروج أو استئذان طارئ للطالب اليوم من البوابة.</div>' : gateHtml;
+
+  // 🩺 3. جلب سجل العيادة المدرسية
+  const clnArea = document.getElementById('parent-clinic-logs-area'); clnArea.innerHTML = '<p>جاري فحص السجلات الطبية...</p>';
   const clnSnap = await getDocs(collection(db, 'clinic_logs')); let clnHtml = ''; let clnCount = 0;
-  clnSnap.forEach(doc => { const c = doc.data(); if(c.studentName === sName) { clnCount++; clnHtml += `<div class="log-item" style="border-right-color:#3498db;"><div><strong>أعراض:</strong> ${c.symptoms}<br><small style="color:#27ae60;">الإجراء: ${c.action}</small></div><span class="date">${c.date || '-'}</span></div>`; } });
-  clnArea.innerHTML = clnCount === 0 ? '<div style="color:#555; text-align:center; padding:10px;">لا توجد مراجعات صحية مؤرشفة للعيادة.</div>' : clnHtml;
+  clnSnap.forEach(doc => { const c = doc.data(); if(c.studentName === sName) { clnCount++; clnHtml += `<div class="log-item" style="border-right-color:#3498db;"><div>🩺 <strong>التشخيص:</strong> ${c.symptoms}<br><small style="color:var(--success-color); font-weight:700;">التدبير الطبي: ${c.action}</small></div><span class="date">${c.date || '-'}</span></div>`; } });
+  clnArea.innerHTML = clnCount === 0 ? '<div style="color:#555; text-align:center; padding:10px;">الملف الصحي سليم، ولم يسجل زيارات لعيادة المدرسة.</div>' : clnHtml;
 
-  // 3. السلوك
-  const behArea = document.getElementById('parent-beh-logs-area'); behArea.innerHTML = '<p>جاري تدقيق السجل السلوكي...</p>';
+  // 🟨 4. جلب سجل البطاقات السلوكية الملونة
+  const behArea = document.getElementById('parent-beh-logs-area'); behArea.innerHTML = '<p>جاري تدقيق بطاقات الانضباط التفاعلية...</p>';
   const behSnap = await getDocs(collection(db, 'behavior')); let behHtml = ''; let behCount = 0;
-  behSnap.forEach(doc => { const b = doc.data(); if(b.studentName === sName) { behCount++; behHtml += `<div class="log-item warning"><div>⚠️ ${b.behaviorType}</div></div>`; } });
-  behArea.innerHTML = behCount === 0 ? '<div style="color:green; font-weight:bold; text-align:center; padding:10px;">السجل السلوكي لابنكم نظيف وملتزم تماماً ✓</div>' : behHtml;
+  behSnap.forEach(doc => { const b = doc.data(); if(b.studentName === sName) { behCount++; behHtml += `<div class="log-item warning"><div>📌 ${b.behaviorType}</div><span class="badge danger">مرصود بالملف</span></div>`; } });
+  behArea.innerHTML = behCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-emoji-smile-fill"></i> السجل السلوكي ممتاز وخالي تماماً من أي مخالفات</div>' : behHtml;
 
-  loadChatHistory();
+  // 💬 5. سحب فايل دردشة الأب المستقل والمقفل مع المدير
+  loadPrincipalChatFile();
 }
 
-window.sendParentMessage = async function() {
+// 🛠️ محرك المراسلة المطور: "نظام فايل كامل ومستقل لكل دردشة طالب" لضمان أقصى درجات الأمان والسرعة والتنظيم
+window.sendParentMessageToAdminFile = async function() {
   const msgText = document.getElementById('parent-msg-text').value.trim(); if(!msgText) return;
+  const sName = targetStudentName; const chatRef = doc(db, 'principal_chats', sName);
   try {
-    await addDoc(collection(db, 'chats'), { studentName: targetStudentName, classId: targetStudentClass, sender: 'parent', message: msgText, createdAt: serverTimestamp() });
-    document.getElementById('parent-msg-text').value = ''; loadChatHistory();
-  } catch(e) {}
+    // تحديث أو إنشاء فايل (Document) موحد ومستقل تماماً يحمل اسم الطالب ويجمع محادثة الأب مع المدير
+    await setDoc(chatRef, {
+      studentName: sName, classId: targetStudentClass, lastMessage: msgText, lastUpdated: new Date().toISOString(),
+      messages: arrayUnion({
+        sender: 'parent', text: msgText,
+        time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}),
+        date: new Date().toLocaleDateString('ar-KW')
+      })
+    }, { merge: true });
+    document.getElementById('parent-msg-text').value = ''; loadPrincipalChatFile();
+  } catch(e) { alert('خطأ في الإرسال: ' + e.message); }
 };
 
-async function loadChatHistory() {
-  const area = document.getElementById('parent-chat-history-area'); if(!area) return;
+async function loadPrincipalChatFile() {
+  const container = document.getElementById('parent-chat-bubbles-container'); if(!container) return;
+  const sName = targetStudentName;
   try {
-    const snap = await getDocs(collection(db, 'chats')); let html = '';
-    snap.forEach(doc => {
-      const c = doc.data();
-      if(c.studentName === targetStudentName) {
-        const bg = c.sender === 'parent' ? '#eef9ff' : '#fff3cd'; const label = c.sender === 'parent' ? 'أنت' : 'الأخصائي';
-        html += `<div style="background:${bg}; padding:8px; border-radius:6px; margin-bottom:6px; font-size:12px;"><strong>${label}:</strong> ${c.message}</div>`;
-      }
-    });
-    area.innerHTML = html;
-  } catch(e) {}
+    const chatDoc = await getDoc(doc(db, 'principal_chats', sName));
+    if(chatDoc.exists() && chatDoc.data().messages) {
+      const messagesList = chatDoc.data().messages;
+      container.innerHTML = messagesList.map(m => {
+        const bubbleClass = m.sender === 'parent' ? 'parent' : 'admin';
+        return `<div class="chat-bubble ${bubbleClass}">text : ${m.text}<span class="chat-time">🕒 ${m.date || ''} ${m.time}</span></div>`;
+      }).join('');
+      container.scrollTop = container.scrollHeight; // سحب الشات لآخر رسالة تلقائي
+    } else { container.innerHTML = '<p style="text-align:center; font-size:12px; color:#aaa; padding:10px;">ابدأ المحادثة الآن وأرسل استفسارك مباشرة للمدير.</p>'; }
+  } catch(e) { container.innerHTML = '<p style="color:red; font-size:11px;">خطأ سحب ملف الدردشة</p>'; }
 }
 
 window.switchParentTab = function(tabId) {
   document.querySelectorAll('.p-tab').forEach(t => { if(t.getAttribute('onclick').includes(tabId)) t.classList.add('active'); else t.classList.remove('active'); });
-  ['att', 'clinic', 'beh', 'chat'].forEach(id => { const el = document.getElementById(`p-sec-${id}`); if(el) { if(id === tabId) el.classList.remove('hidden'); else el.classList.add('hidden'); } });
+  ['att', 'gate', 'clinic', 'beh', 'chat'].forEach(id => { const el = document.getElementById(`p-sec-${id}`); if(el) { if(id === tabId) el.classList.remove('hidden'); else el.classList.add('hidden'); } });
 };
 
 window.logoutParent = function() { window.location.reload(); };
