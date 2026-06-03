@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
-<title>بوابة ولي الأمر الإلكترونية - مدرسة سالم الحسينان</title>
+<title>بوابة أولياء الأمور الإلكترونية - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
@@ -27,7 +27,7 @@ body{background: var(--bg-light); color:#333; min-height: 100vh; display: flex; 
 .container{max-width:500px; margin:0 auto; padding:1.2rem; width:100%; flex: 1;}
 .card{background: var(--card-bg); border-radius:14px; padding:1.5rem; margin-bottom:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,.04); border-top: 4px solid var(--primary-color); position: relative;}
 
-/* شاشة الدخول */
+/* واجهة تسجيل الدخول الرسمية */
 .login-box { text-align: center; padding: 2rem 1rem; }
 .login-icon { font-size: 55px; color: var(--accent-color); margin-bottom: 8px; }
 .form-group { margin-bottom: 1.2rem; text-align: right; }
@@ -40,30 +40,30 @@ button.btn-block:hover { background: var(--accent-color); }
 
 .error-message { background: #fff5f5; border: 1px solid #fabebe; color: #c0392b; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 1.2rem; display: none; text-align: right; align-items: center; gap: 6px; }
 
-/* بروفايل الطالب */
+/* بيانات الطالب الشخصية */
 .student-profile { background: linear-gradient(135deg, var(--primary-color) 0%, #2c2c54 100%); color: white; padding: 1.4rem; border-radius: 12px; text-align: right; margin-bottom: 1.2rem; }
 .student-profile h2 { font-size: 19px; font-weight: 900; margin-bottom: 4px; }
 .student-profile p { font-size: 13px; opacity: 0.9; font-weight: 600; }
 
-/* 🛞 شريط التبويبات الخماسي الذكي مع عدادات التنبيهات الحمراء */
+/* شريط التبويبات الرئيسي للولي الأمر */
 .parent-tabs { display: flex; background: #fff; border-radius: 10px; padding: 6px; margin-bottom: 1.2rem; gap: 4px; border: 1px solid #e1e2e6; }
 .p-tab { flex: 1; padding: 8px 2px; border: none; background: transparent; color: var(--primary-color); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
 .p-tab i { font-size: 18px; }
 .p-tab.active { background: var(--primary-color); color: white; }
 .tab-badge { position: absolute; top: 2px; right: 8px; background: var(--danger-color); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; }
 
-/* كروت السجلات */
+/* عناصر قوائم التقارير */
 .log-item { background: #f8f9fa; border-right: 4px solid var(--primary-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; }
 .log-item.danger { border-right-color: var(--danger-color); }
 .log-item.warning { border-right-color: var(--accent-color); }
 .log-item .date { font-size: 11px; color: #777; }
 
-/* التوقيع والإقرار الرقمي المطور للمخالفات */
+/* صندوق الاعتماد الرقمي للمخالفات */
 .sign-box { background: #fff0eb; border: 1px solid #ffcab8; padding: 10px; border-radius: 8px; margin-top: 8px; text-align: center; }
-.btn-sign { background: var(--accent-color); color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.btn-sign { background: var(--accent-color); color: white; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 .sign-done-text { color: var(--success-color); font-weight: bold; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
 
-/* صندوق البريد الذكي والمواضيع منفصلة */
+/* كروت تذاكر الصندوق البريدي */
 .email-item { background: #ffffff; border: 1px solid #e1e2e6; border-right: 5px solid var(--accent-color); padding: 14px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; text-align: right; }
 .email-item:hover { background: #fdfdfd; border-color: var(--primary-color); transform: translateX(-2px); }
 .email-title { font-size: 14px; font-weight: 800; color: var(--primary-color); margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
@@ -73,14 +73,14 @@ button.btn-block:hover { background: var(--accent-color); }
 .btn-new-topic { background: var(--success-color); color: white; padding: 10px; border-radius: 8px; border: none; font-weight: bold; width: 100%; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .back-mail-btn { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
 
-/* حاوية الشات والردود */
+/* حاوية الرسائل والمحادثة الرسمية */
 .chat-container { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding: 10px 6px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; margin-bottom: 12px; }
 .chat-bubble { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1.4; }
 .chat-bubble.parent { background: #eef9ff; color: #1a5a80; align-self: flex-start; border-bottom-right-radius: 2px; text-align: right; }
 .chat-bubble.admin { background: #fff3cd; color: #856404; align-self: flex-end; border-bottom-left-radius: 2px; text-align: right; }
 .chat-time { display: block; font-size: 10px; opacity: 0.75; margin-top: 6px; text-align: left; font-weight: bold; color: #555; border-top: 1px dashed rgba(0,0,0,0.05); padding-top: 4px; }
 
-/* تذكرة الخروج */
+/* وثيقة تصريح الخروج */
 .gatepass-ticket { border: 2px dashed var(--accent-color); background: #fffdf9; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; }
 .ticket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3d1b5; padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; font-size: 13px; color: var(--accent-color); }
 
@@ -97,19 +97,19 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
 <body>
 
 <div class="parent-header">
-  <h1><i class="bi bi-person-arms-up"></i> بوابة أولياء الأمور الذكية المطورّة</h1>
+  <h1><i class="bi bi-person-check-fill"></i> بوابة أولياء الأمور الإلكترونية</h1>
 </div>
 
 <div class="container">
 
-  <!-- 🔐 شاشة الدخول الذكية -->
+  <!-- 🔐 شاشة تسجيل الدخول المعتمدة -->
   <div id="parent-login-view" class="card login-box">
-    <div class="login-icon"><i class="bi bi-shield-check"></i></div>
-    <h3 style="color: var(--primary-color); font-weight:900; margin-bottom:4px;">مرحباً بك في المنظومة الرقمية</h3>
-    <p style="font-size:12px; color:#666; margin-bottom:1.5rem; font-weight:600;">يرجى اختيار الصف واسم ابنكم الكريم للدخول</p>
+    <div class="login-icon"><i class="bi bi-shield-lock-fill"></i></div>
+    <h3 style="color: var(--primary-color); font-weight:900; margin-bottom:4px;">نظام المتابعة الرقمي الموحد</h3>
+    <p style="font-size:12px; color:#666; margin-bottom:1.5rem; font-weight:600;">يرجى تحديد الصف واسم الطالب لاستدعاء البيانات</p>
 
     <div id="login-error" class="error-message">
-      <i class="bi bi-exclamation-triangle-fill"></i> <span id="error-text">الاسم الأول للولد غير مطابق لاسم الطالب المختار!</span>
+      <i class="bi bi-exclamation-triangle-fill"></i> <span id="error-text">اسم الطالب المكتوب غير مطابق للاسم المعتمد بالسجلات!</span>
     </div>
 
     <form onsubmit="window.handleParentLogin(event)">
@@ -125,126 +125,126 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
       </div>
 
       <div class="form-group">
-        <label>اسم الطالب بالكامل</label>
+        <label>اسم الطالب (بحسب السجل الرسمي)</label>
         <select id="parent-student-select" required>
-          <option value="">اختر اسم الطالب أولاً</option>
+          <option value="">يرجى اختيار الفصل أولاً</option>
         </select>
       </div>
 
       <div class="form-group" style="margin-bottom: 1.5rem;">
-        <label>كلمة المرور (الاسم الأول للولد بالعربي)</label>
-        <input type="text" id="parent-first-name" placeholder="اكتب الاسم الأول فقط (مثال: علي)" required autocomplete="off">
+        <label>كلمة المرور (الاسم الأول للطالب باللغة العربية)</label>
+        <input type="text" id="parent-first-name" placeholder="أدخل الاسم الأول فقط (مثال: أحمد / علي)" required autocomplete="off">
       </div>
 
       <button type="submit" id="login-btn" class="btn-block">
-        <span><i class="bi bi-box-arrow-in-right"></i> استدعاء ودخول آمن للملف</span>
+        <span><i class="bi bi-box-arrow-in-right"></i> تسجيل الدخول وعرض ملف الطالب</span>
       </button>
     </form>
   </div>
 
-  <!-- 📊 لوحة تحكم الطالب التفاعلية الشاملة للأب -->
+  <!-- 📊 لوحة البيانات الفورية المعتمدة -->
   <div id="parent-dashboard-view" class="hidden">
     <div class="student-profile">
       <h2 id="view-student-name">-</h2>
-      <p id="view-student-class">الصف الدراسي: -</p>
+      <p id="view-student-class">الفصل الدراسي: -</p>
     </div>
 
-    <!-- 🎛️ شريط التبويبات الخماسي السلس مع عدادات التنبيهات المباشرة الحية -->
+    <!-- 🎛️ شريط التبويبات الرسمي والمعتمد -->
     <div class="parent-tabs">
       <button class="p-tab active" onclick="window.switchParentTab('att')">
-        <i class="bi bi-calendar-x"></i>الغياب
+        <i class="bi bi-calendar-x"></i>سجل الغياب
         <span class="tab-badge hidden" id="badge-att">0</span>
       </button>
-      <button class="p-tab" onclick="window.switchParentTab('gate')"><i class="bi bi-ticket-perforated"></i>رخصة الخروج</button>
-      <button class="p-tab" onclick="window.switchParentTab('clinic')"><i class="bi bi-heart-pulse"></i>العيادة</button>
+      <button class="p-tab" onclick="window.switchParentTab('gate')"><i class="bi bi-ticket-perforated"></i>تصاريح الخروج</button>
+      <button class="p-tab" onclick="window.switchParentTab('clinic')"><i class="bi bi-heart-pulse"></i>العيادة الطبية</button>
       <button class="p-tab" onclick="window.switchParentTab('beh')">
-        <i class="bi bi-exclamation-triangle"></i>السلوك
+        <i class="bi bi-exclamation-triangle"></i>السجل السلوكي
         <span class="tab-badge hidden" id="badge-beh">0</span>
       </button>
-      <button class="p-tab" onclick="window.switchParentTab('chat')"><i class="bi bi-envelope-paper-fill"></i>الطلبات والمراسلات</button>
+      <button class="p-tab" onclick="window.switchParentTab('chat')"><i class="bi bi-envelope-paper-fill"></i>المراسلات والطلبات</button>
     </div>
 
     <!-- تبويب 1: سجل غياب الدوام الرسمي -->
     <div id="p-sec-att" class="card">
-      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">📊 رصد غياب الحصص والدوام</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">📊 رصد حالات غياب الطالب</h3>
       <div id="parent-att-logs-area"></div>
     </div>
 
     <!-- تبويب 2: رخصة خروج البوابة -->
     <div id="p-sec-gate" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🚪 حركات البوابة وتصاريح الاستئذان</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🚪 تصاريح ومغادرات البوابة الأمنية</h3>
       <div id="parent-gatepass-ticket-area"></div>
     </div>
 
     <!-- تبويب 3: سجل العيادة المدرسية -->
     <div id="p-sec-clinic" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🔬 الزيارات الطبية والإحالات الصحية</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🔬 التقارير والإحالات الطبية للعيادة</h3>
       <div id="parent-clinic-logs-area"></div>
     </div>
 
-    <!-- تبويب 4: السلوك والانضباط مع الإقرار والتوقيع السحابي المطور -->
+    <!-- تبويب 4: السلوك والانضباط مع الاعتماد الرقمي السحابي الموحد -->
     <div id="p-sec-beh" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">⚠️ بطاقات ومخالفات الانضباط الطلابي</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">⚠️ الإجراءات وبطاقات الانضباط المرصودة</h3>
       <div id="parent-beh-logs-area"></div>
     </div>
 
-    <!-- 💬 تبويب 5: نظام المراسلات المطور بصيغة التذاكر والإيميلات المنفصلة وحالاتها -->
+    <!-- 💬 تبويب 5: نظام المراسلات الرسمي والمؤرشف بالوقت والتاريخ -->
     <div id="p-sec-chat" class="card hidden">
       
       <!-- العرض الأول: صندوق البريد والمواضيع الحالية -->
       <div id="mail-inbox-view">
-        <h3 style="font-size:14px; color:var(--primary-color); font-weight:800; margin-bottom:10px;"><i class="bi bi-inbox-fill"></i> صندوق الطلبات والمراسلات المفتوحة</h3>
-        <button class="btn-new-topic" onclick="window.showCreateNewTopicForm()"><i class="bi bi-plus-circle-fill"></i> فتح موضوع / طلب جديد للمدرسة</button>
+        <h3 style="font-size:14px; color:var(--primary-color); font-weight:800; margin-bottom:10px;"><i class="bi bi-inbox-fill"></i> صندوق الطلبات والمراسلات الرسمية</h3>
+        <button class="btn-new-topic" onclick="window.showCreateNewTopicForm()"><i class="bi bi-plus-circle-fill"></i> إنشاء موضوع / طلب جديد للإدارة</button>
         <div id="parent-mailbox-container"></div>
       </div>
 
-      <!-- العرض الثاني: نموذج فتح موضوع يديد -->
+      <!-- العرض الثاني: نموذج فتح موضوع جديد -->
       <div id="mail-compose-view" class="hidden">
-        <button class="back-mail-btn" onclick="window.backToInboxView()">← رجوع للصندوق</button>
-        <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🆕 فتح موضوع رسمي جديد</h3>
+        <button class="back-mail-btn" onclick="window.backToInboxView()">← العودة للصندوق</button>
+        <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🆕 إنشاء طلب رسمي جديد</h3>
         <div class="form-group">
-          <label>توجيه الموضوع إلى:</label>
+          <label>جهة توجيه الطلب:</label>
           <select id="msg-target-role">
-            <option value="مدير المدرسة">مدير المدرسة 👔</option>
+            <option value="إدارة المدرسة">إدارة المدرسة 👔</option>
             <option value="الأخصائي الاجتماعي">الأخصائي الاجتماعي (شؤون الطلاب) 📋</option>
             <option value="معلم المادة">معلم مادة الفصل 🏫</option>
           </select>
         </div>
         <div class="form-group">
-          <label>عنوان الموضوع (بره الباب)</label>
-          <input type="text" id="msg-subject-input" placeholder="مثال: استفسار عن عذر طبي / طلب مقابلة">
+          <label>عنوان الموضوع</label>
+          <input type="text" id="msg-subject-input" placeholder="مثال: استفسار بشأن الغياب التراكمي / تقديم عذر طبي">
         </div>
         <div class="form-group">
           <label>تفاصيل الرسالة</label>
-          <textarea id="msg-body-input" rows="4" style="width:100%; padding:10px; border:1px solid #dcdde1; border-radius:8px; outline:none; font-weight:600;" placeholder="اكتب تفاصيل موضوعك هني للمدرسة..."></textarea>
+          <textarea id="msg-body-input" rows="4" style="width:100%; padding:10px; border:1px solid #dcdde1; border-radius:8px; outline:none; font-weight:600;" placeholder="يرجى كتابة تفاصيل الموضوع هنا بالكامل..."></textarea>
         </div>
-        <button onclick="window.createNewEmailThreadSubmit()" class="btn-block" style="background:var(--success-color);"><i class="bi bi-send-check-fill"></i> إرسال وتأسيس الفايل</button>
+        <button onclick="window.createNewEmailThreadSubmit()" class="btn-block" style="background:var(--success-color);"><i class="bi bi-send-check-fill"></i> إرسال الطلب وتأسيس ملف المراسلة</button>
       </div>
 
-      <!-- العرض الثالث: تفاصيل الموضوع المختار -->
+      <!-- العرض الثالث: تفاصيل الموضوع والردود -->
       <div id="mail-details-view" class="hidden">
-        <button class="back-mail-btn" onclick="window.backToInboxView()">← رجوع للبريد</button>
+        <button class="back-mail-btn" onclick="window.backToInboxView()">← العودة للصندوق</button>
         <div style="background:#f8f9fa; padding:10px; border-radius:8px; margin-bottom:12px; border-right:4px solid var(--primary-color);">
-          <h4 id="detail-thread-title" style="font-size:14px; color:var(--primary-color);">العنوان</h4>
-          <p id="detail-thread-meta" style="font-size:11px; color:#666; margin-top:2px;">الجهة: -</p>
+          <h4 id="detail-thread-title" style="font-size:14px; color:var(--primary-color);">الموضوع</h4>
+          <p id="detail-thread-meta" style="font-size:11px; color:#666; margin-top:2px;">الجهة المستلمة: -</p>
         </div>
         
         <div class="chat-container" id="thread-messages-bubbles-area"></div>
 
         <div style="display:flex; gap:6px;" id="thread-reply-form-wrapper">
-          <input type="text" id="thread-reply-text" placeholder="اكتب ردك هني داخل هالموضوع..." style="margin-bottom:0;">
+          <input type="text" id="thread-reply-text" placeholder="اكتب الرد الرسمي هنا..." style="margin-bottom:0;">
           <button onclick="window.submitReplyToThread()" style="background:var(--success-color); padding:0 18px; border-radius:8px; color:white; border:none; cursor:pointer;"><i class="bi bi-send-fill"></i></button>
         </div>
       </div>
 
     </div>
 
-    <button onclick="window.logoutParent()" class="btn-block" style="background:#fff; color:#333; border:1px solid #ddd; margin-top:1.5rem; padding:10px; font-size:13px;">خروج آمن من المنظومة</button>
+    <button onclick="window.logoutParent()" class="btn-block" style="background:#fff; color:#333; border:1px solid #ddd; margin-top:1.5rem; padding:10px; font-size:13px;">خروج آمن من النظام</button>
   </div>
 
 </div>
 
-<footer>المنظومة الرقمية الشاملة الموحدة التجارية © 2026 | مدرسة سالم الحسينان</footer>
+<footer>المنظومة الرقمية الشاملة الموحدة © 2026 | مدرسة سالم الحسينان</footer>
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -257,13 +257,13 @@ let targetStudentName = null; let targetStudentClass = null; let activeThreadId 
 
 window.loadClassStudentsForParent = async function() {
   const cls = document.getElementById('parent-class-select').value; const sSelect = document.getElementById('parent-student-select');
-  sSelect.innerHTML = '<option value="">جاري سحب قائمة الأسماء حياً...</option>'; if(!cls) { sSelect.innerHTML = '<option value="">اختر اسم الطالب أولاً</option>'; return; }
+  sSelect.innerHTML = '<option value="">جاري تحميل قائمة الأسماء من السيرفر...</option>'; if(!cls) { sSelect.innerHTML = '<option value="">اختر اسم الطالب</option>'; return; }
   try {
     const snap = await getDocs(collection(db, 'students')); let list = [];
     snap.forEach(doc => { const d = doc.data(); if(d.classId === cls || d.class === cls) { list.push(d.name || d.studentName); } });
     list.sort((a,b) => a.localeCompare(b, 'ar')); sSelect.innerHTML = '<option value="">اختر اسم الطالب</option>';
     list.forEach(name => { sSelect.innerHTML += `<option value="${name}">${name}</option>`; });
-  } catch(e) { sSelect.innerHTML = '<option value="">خطأ في مزامنة السيرفر</option>'; }
+  } catch(e) { sSelect.innerHTML = '<option value="">خطأ أثناء مزامنة البيانات</option>'; }
 };
 
 window.handleParentLogin = async function(e) {
@@ -276,7 +276,7 @@ window.handleParentLogin = async function(e) {
     targetStudentName = selectedName; targetStudentClass = cls;
     document.getElementById('parent-login-view').classList.add('hidden'); document.getElementById('parent-dashboard-view').classList.remove('hidden');
     document.getElementById('view-student-name').textContent = targetStudentName;
-    document.getElementById('view-student-class').textContent = 'الصف الدراسي: ' + targetStudentClass;
+    document.getElementById('view-student-class').textContent = 'الفصل الدراسي: ' + targetStudentClass;
     loadStudentDataForParent();
   } else { errBox.style.display = 'flex'; }
 };
@@ -284,30 +284,30 @@ window.handleParentLogin = async function(e) {
 async function loadStudentDataForParent() {
   const sName = targetStudentName;
   
-  // 1. الغياب والعداد الذكي
-  const attArea = document.getElementById('parent-att-logs-area'); attArea.innerHTML = '<p>جاري فحص دفاتر الغياب...</p>';
+  // 1. الغياب
+  const attArea = document.getElementById('parent-att-logs-area'); attArea.innerHTML = '<p>جاري فحص سجلات الغياب اليومية...</p>';
   const attSnap = await getDocs(collection(db, 'attendance')); let attHtml = ''; let attCount = 0;
-  attSnap.forEach(doc => { const d = doc.data(); if(d.studentName === sName && d.status === 'absent') { attCount++; attHtml += `<div class="log-item danger"><div>⚠️ غياب كامل عن المدرسة</div><span class="date">${d.date}</span></div>`; } });
-  attArea.innerHTML = attCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-check-circle-fill"></i> الطالب ملتزم بالحضور اليومي وخالي من الغيابات</div>' : attHtml;
+  attSnap.forEach(doc => { const d = doc.data(); if(d.studentName === sName && d.status === 'absent') { attCount++; attHtml += `<div class="log-item danger"><div>⚠️ غياب كامل عن اليوم الدراسي</div><span class="date">${d.date}</span></div>`; } });
+  attArea.innerHTML = attCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-check-circle-fill"></i> الطالب منتظم بالحضور الدراسي ولم يتم تسجيل غيابات حالية.</div>' : attHtml;
   
   if(attCount > 0) { document.getElementById('badge-att').textContent = attCount; document.getElementById('badge-att').classList.remove('hidden'); }
 
   // 2. رخصة الخروج
-  const gateArea = document.getElementById('parent-gatepass-ticket-area'); gateArea.innerHTML = '<p>جاري مراجعة بوابة الحارس...</p>';
+  const gateArea = document.getElementById('parent-gatepass-ticket-area'); gateArea.innerHTML = '<p>جاري مراجعة سجلات البوابة الأمنية...</p>';
   const gateSnap = await getDocs(collection(db, 'gatepasses')); let gateHtml = ''; let gateCount = 0;
   gateSnap.forEach(doc => {
-    const g = doc.data(); if(g.studentName === sName) { gateCount++; gateHtml += `<div class="gatepass-ticket"><div class="ticket-header"><span>🎫 رخصة مغادرة معتمدة</span><span>تاريخ: ${g.date || '-'}</span></div><p style="font-size:13px; margin-bottom:4px;"><strong>المستلم:</strong> ${g.parentName}</p><p style="font-size:13px;"><strong>السبب:</strong> ${g.reason || 'إذن رسمي'}</p><div style="margin-top:8px;"><span class="badge success">🕒 تم المرور: ${g.time || '-'}</span></div></div>`; }
+    const g = doc.data(); if(g.studentName === sName) { gateCount++; gateHtml += `<div class="gatepass-ticket"><div class="ticket-header"><span>🎫 وثيقة مغادرة رسمية معتمدة</span><span>التاريخ: ${g.date || '-'}</span></div><p style="font-size:13px; margin-bottom:4px;"><strong>ولي الأمر المستلم:</strong> ${g.parentName}</p><p style="font-size:13px;"><strong>السبب المعتمد:</strong> ${g.reason || 'إذن رسمي طارئ'}</p><div style="margin-top:8px;"><span class="badge success">🕒 توثيق وقت الخروج: ${g.time || '-'}</span></div></div>`; }
   });
-  gateArea.innerHTML = gateCount === 0 ? '<div style="color:#666; text-align:center; padding:10px;">لم يتم رصد حركات خروج للطالب اليوم من البوابة.</div>' : gateHtml;
+  gateArea.innerHTML = gateCount === 0 ? '<div style="color:#666; text-align:center; padding:10px;">لم يتم رصد حركات خروج أو استئذان للطالب عبر البوابة الأمنية اليوم.</div>' : gateHtml;
 
   // 3. العيادة
-  const clnArea = document.getElementById('parent-clinic-logs-area'); clnArea.innerHTML = '<p>جاري فحص السجلات الطبية...</p>';
+  const clnArea = document.getElementById('parent-clinic-logs-area'); clnArea.innerHTML = '<p>جاري تحميل السجلات الطبية المعتمدة...</p>';
   const clnSnap = await getDocs(collection(db, 'clinic_logs')); let clnHtml = ''; let clnCount = 0;
-  clnSnap.forEach(doc => { const c = doc.data(); if(c.studentName === sName) { clnCount++; clnHtml += `<div class="log-item" style="border-right-color:#3498db;"><div>🩺 <strong>التشخيص:</strong> ${c.symptoms}<br><small style="color:var(--success-color); font-weight:700;">التدبير: ${c.action}</small></div><span class="date">${c.date || '-'}</span></div>`; } });
-  clnArea.innerHTML = clnCount === 0 ? '<div style="color:#555; text-align:center; padding:10px;">الملف الصحي سليم تماماً والحمد لله.</div>' : clnHtml;
+  clnSnap.forEach(doc => { const c = doc.data(); if(c.studentName === sName) { clnCount++; clnHtml += `<div class="log-item" style="border-right-color:#3498db;"><div>🩺 <strong>التشخيص الطبي:</strong> ${c.symptoms}<br><small style="color:var(--success-color); font-weight:700;">الإجراء الطبي: ${c.action}</small></div><span class="date">${c.date || '-'}</span></div>`; } });
+  clnArea.innerHTML = clnCount === 0 ? '<div style="color:#555; text-align:center; padding:10px;">الملف الصحي سليم، ولم يتم تسجيل زيارات لعيادة المدرسة.</div>' : clnHtml;
 
-  // 4. السلوك مع الإقرار والتوقيع الرقمي المطور لحماية السجل
-  const behArea = document.getElementById('parent-beh-logs-area'); behArea.innerHTML = '<p>جاري تدقيق السجل السلوكي...</p>';
+  // 4. السلوك
+  const behArea = document.getElementById('parent-beh-logs-area'); behArea.innerHTML = '<p>جاري مراجعة سجلات الانضباط الطلابي...</p>';
   const behSnap = await getDocs(collection(db, 'behavior')); let behHtml = ''; let behCount = 0;
   behSnap.forEach(doc => {
     const b = doc.data();
@@ -315,37 +315,34 @@ async function loadStudentDataForParent() {
       behCount++;
       let signInterfaceHtml = '';
       if(b.parentAcknowledged) {
-        signInterfaceHtml = `<div class="sign-done-text"><i class="bi bi-patch-check-fill"></i> تم الاطلاع والإقرار الرقمي من ولي الأمر بقاعدة البيانات في: ${b.acknowledgedAt || ''}</div>`;
+        signInterfaceHtml = `<div class="sign-done-text"><i class="bi bi-patch-check-fill"></i> تم الاطلاع والاعتماد الرقمي من قبل ولي الأمر بتاريخ: ${b.acknowledgedAt || ''}</div>`;
       } else {
         signInterfaceHtml = `
           <div class="sign-box" id="sign-box-${doc.id}">
-            <p style="font-size:11px; color:#c0392b; margin-bottom:4px; font-weight:bold;">ملاحظة: هذا التنبيه يتطلب توقيع وإقرار ولي الأمر</p>
-            <button class="btn-sign" onclick="window.signBehaviorCardDigitalSubmit('${doc.id}')">✍️ اضغط هني لتأكيد الاطلاع والإقرار الرقمي</button>
+            <p style="font-size:11px; color:#c0392b; margin-bottom:4px; font-weight:bold;">تنبيه: هذا الإجراء يتطلب إقرار واطلاع ولي الأمر</p>
+            <button class="btn-sign" onclick="window.signBehaviorCardDigitalSubmit('${doc.id}')">✍️ اعتماد الاطلاع والإقرار الإلكتروني</button>
           </div>
         `;
       }
-      behHtml += `<div class="log-item warning" style="display:block; text-align:right;"><div style="margin-bottom:6px;">📌 <strong>المخالفة:</strong> ${b.behaviorType}</div>${signInterfaceHtml}</div>`;
+      behHtml += `<div class="log-item warning" style="display:block; text-align:right;"><div style="margin-bottom:6px;">📌 <strong>المخالفة المرصودة:</strong> ${b.behaviorType}</div>${signInterfaceHtml}</div>`;
     }
   });
-  behArea.innerHTML = behCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-emoji-smile-fill"></i> السجل السلوكي لابنكم نظيف وملتزم تماماً ✓</div>' : behHtml;
+  behArea.innerHTML = behCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-emoji-smile-fill"></i> السجل السلوكي للطالب سليم تماماً ومطابق لمعايير الانضباط.</div>' : behHtml;
   
   if(behCount > 0) { document.getElementById('badge-beh').textContent = behCount; document.getElementById('badge-beh').classList.remove('hidden'); }
 
   loadParentMailboxInbox();
 }
 
-// دالة التوقيع والإقرار السحابي الفوري من ولي الأمر
 window.signBehaviorCardDigitalSubmit = async function(docId) {
-  if(!confirm('هل تؤكد اطلاعك وإقرارك الرسمي على هذا التنبيه السلوكي؟')) return;
-  const timeStr = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}) + ' تاريخ ' + new Date().toLocaleDateString('ar-KW');
+  if(!confirm('هل تؤكد اطلاعك وإقرارك الرسمي على هذا التنبيه السلوكي المرصود؟')) return;
+  const timeStr = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}) + ' - تاريخ ' + new Date().toLocaleDateString('ar-KW');
   try {
     await updateDoc(doc(db, 'behavior', docId), { parentAcknowledged: true, acknowledgedAt: timeStr });
-    alert('✓ تم توقيع وحقن الإقرار الرقمي بالسيرفر بنجاح!');
-    loadStudentDataForParent(); // إنعاش اللوحة لإظهار علامة الجودة الخضراء
-  } catch(e) { alert('خطأ في التوقيع: ' + e.message); }
+    alert('✓ تم تسجيل وتوثيق الإقرار الرقمي بالنظام المركزي بنجاح.');
+    loadStudentDataForParent();
+  } catch(e) { alert('خطأ أثناء تحديث البيانات: ' + e.message); }
 };
-
-/* 📬 محرك البريد والمواضيع المنفصلة وحالاتها */
 
 window.showCreateNewTopicForm = function() {
   document.getElementById('mail-inbox-view').classList.add('hidden');
@@ -364,7 +361,7 @@ window.createNewEmailThreadSubmit = async function() {
   const targetRole = document.getElementById('msg-target-role').value;
   const subjectText = document.getElementById('msg-subject-input').value.trim();
   const bodyText = document.getElementById('msg-body-input').value.trim();
-  if(!subjectText || !bodyText) { alert('الرجاء كتابة العنوان والتفاصيل!'); return; }
+  if(!subjectText || !bodyText) { alert('يرجى ملء حقول العنوان وتفاصيل الرسالة الموجهة للإدارة!'); return; }
   
   const currentTime = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'});
   const currentDate = new Date().toLocaleDateString('ar-KW');
@@ -377,14 +374,14 @@ window.createNewEmailThreadSubmit = async function() {
     });
     document.getElementById('msg-subject-input').value = '';
     document.getElementById('msg-body-input').value = '';
-    alert('✓ تم إرسال وتأسيس فايل السالفة بنجاح!');
+    alert('✓ تم إرسال وتأسيس ملف المراسلة بنجاح بالمنظومة السحابية.');
     window.backToInboxView();
-  } catch(e) { alert('خطأ: ' + e.message); }
+  } catch(e) { alert('خطأ أثناء الاتصال بالسيرفر: ' + e.message); }
 };
 
 async function loadParentMailboxInbox() {
   const container = document.getElementById('parent-mailbox-container'); if(!container) return;
-  container.innerHTML = '<p style="font-size:12px; color:#666;">جاري تحديث صندوق المراسلات...</p>';
+  container.innerHTML = '<p style="font-size:12px; color:#666;">جاري تحديث صندوق المراسلات والطلبات الرسمية...</p>';
   try {
     const snap = await getDocs(collection(db, 'school_threads')); let html = ''; let count = 0;
     snap.forEach(doc => {
@@ -392,8 +389,6 @@ async function loadParentMailboxInbox() {
       if(t.studentName === targetStudentName) {
         count++;
         const totalMsgs = t.messages ? t.messages.length : 0;
-        
-        // فرز لون شارة الحالة بره بحسب نوع التذكرة
         let statusBadgeColor = 'warning';
         if(t.status === 'تم الرد') statusBadgeColor = 'success';
         if(t.status === 'مغلق') statusBadgeColor = 'danger';
@@ -405,18 +400,18 @@ async function loadParentMailboxInbox() {
               <span class="badge ${statusBadgeColor}">${t.status || 'قيد الانتظار'}</span>
             </div>
             <div class="email-meta">
-              <span>وجهة الرسالة: <strong style="color:var(--primary-color);">${t.targetRole}</strong></span>
-              <span class="badge info">${totalMsgs} رسائل</span>
+              <span>الجهة المستلمة: <strong style="color:var(--primary-color);">${t.targetRole}</strong></span>
+              <span class="badge info">${totalMsgs} رسائل موثقة</span>
             </div>
             <div style="text-align:left; margin-top:4px;">
-              <span class="email-time-badge"><i class="bi bi-clock-history"></i> الحركة: ${t.lastUpdatedDate || ''} الساعة ${t.lastUpdatedTime || ''}</span>
+              <span class="email-time-badge"><i class="bi bi-clock-history"></i> تاريخ ووقت الحركة: ${t.lastUpdatedDate || ''} - الساعة ${t.lastUpdatedTime || ''}</span>
             </div>
           </div>
         `;
       }
     });
-    container.innerHTML = count === 0 ? '<p style="text-align:center; font-size:12px; color:#aaa; padding:15px;">صندوق الوارد خالي.</p>' : html;
-  } catch(e) { container.innerHTML = '<p style="color:red;">خطأ سحب الصندوق</p>'; }
+    container.innerHTML = count === 0 ? '<p style="text-align:center; font-size:12px; color:#aaa; padding:15px;">صندوق الوارد خالي من المراسلات حالياً.</p>' : html;
+  } catch(e) { container.innerHTML = '<p style="color:red;">خطأ أثناء جلب ملفات صندوق الوارد</p>'; }
 }
 
 window.openSpecificThreadDetails = async function(threadId) {
@@ -426,30 +421,29 @@ window.openSpecificThreadDetails = async function(threadId) {
   document.getElementById('mail-details-view').classList.remove('hidden');
   
   const bubblesArea = document.getElementById('thread-messages-bubbles-area');
-  bubblesArea.innerHTML = '<p style="text-align:center;">جاري فتح الملف...</p>';
+  bubblesArea.innerHTML = '<p style="text-align:center;">جاري فتح ملف المراسلة المعتمد...</p>';
   
   try {
     const tDoc = await getDoc(doc(db, 'school_threads', threadId));
     if(tDoc.exists()) {
       const t = tDoc.data();
-      document.getElementById('detail-thread-title').innerHTML = `<i class="bi bi-chat-left-dots-fill"></i> موضوع: ${t.subject}`;
-      document.getElementById('detail-thread-meta').textContent = `الجهة الموجه لها: ${t.targetRole} | الحالة الحالية: ${t.status || 'مفتوح'}`;
+      document.getElementById('detail-thread-title').innerHTML = `<i class="bi bi-chat-left-dots-fill"></i> الموضوع: ${t.subject}`;
+      document.getElementById('detail-thread-meta').textContent = `الجهة المستلمة: ${t.targetRole} | حالة الطلب الحالية: ${t.status || 'مفتوح'}`;
       
-      // إخفاء قفل الإرسال إذا كان المدير مسكر السالفة ومسوي لها إغلاق نهائي
       if(t.status === 'مغلق') { document.getElementById('thread-reply-form-wrapper').classList.add('hidden'); }
       else { document.getElementById('thread-reply-form-wrapper').classList.remove('hidden'); }
 
       if(t.messages && t.messages.length > 0) {
         bubblesArea.innerHTML = t.messages.map((m, index) => {
           const bubbleClass = m.sender === 'parent' ? 'parent' : 'admin';
-          const senderLabel = m.sender === 'parent' ? 'أنت' : t.targetRole;
-          const stampLabel = index === 0 ? 'وقت الإرسال الأساسي' : 'وقت هذا الرد الفعلي';
-          return `<div class="chat-bubble ${bubbleClass}"><strong>${senderLabel}:</strong><br>${m.text}<span class="chat-time"><i class="bi bi-clock"></i> ${stampLabel}: ${m.date || ''} الساعة ${m.time || ''}</span></div>`;
+          const senderLabel = m.sender === 'parent' ? 'ولي الأمر' : t.targetRole;
+          const stampLabel = index === 0 ? 'وقت الإرسال المعتمد' : 'وقت الرد الفعلي';
+          return `<div class="chat-bubble ${bubbleClass}"><b>${senderLabel}:</b><br>${m.text}<span class="chat-time"><i class="bi bi-clock"></i> ${stampLabel}: ${m.date || ''} - الساعة ${m.time || ''}</span></div>`;
         }).join('');
         bubblesArea.scrollTop = bubblesArea.scrollHeight;
       }
     }
-  } catch(e) { bubblesArea.innerHTML = '<p style="color:red;">خطأ تحميل البيانات</p>'; }
+  } catch(e) { bubblesArea.innerHTML = '<p style="color:red;">خطأ أثناء تحميل الرسائل</p>'; }
 };
 
 window.submitReplyToThread = async function() {
@@ -461,12 +455,12 @@ window.submitReplyToThread = async function() {
   
   try {
     await updateDoc(threadRef, {
-      lastUpdatedTime: currentTime, lastUpdatedDate: currentDate, status: 'قيد الانتظار', // يرجع الانتظار أول ما الأب يرد عشان ينتبه له المدير
+      lastUpdatedTime: currentTime, lastUpdatedDate: currentDate, status: 'قيد الانتظار',
       messages: arrayUnion({ sender: 'parent', text: replyText, time: currentTime, date: currentDate })
     });
     document.getElementById('thread-reply-text').value = '';
     window.openSpecificThreadDetails(activeThreadId);
-  } catch(e) { alert('خطأ: ' + e.message); }
+  } catch(e) { alert('خطأ أثناء إرسال الرد الفوري: ' + e.message); }
 };
 
 window.switchParentTab = function(tabId) {
