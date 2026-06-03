@@ -15,6 +15,7 @@
     --bg-light: #f5f6fa;
     --card-bg: #ffffff;
     --success-color: #27ae60;
+    --danger-color: #e74c3c;
 }
 
 *{margin:0;padding:0;box-sizing:border-box; font-family: 'Cairo', Arial, sans-serif;}
@@ -32,7 +33,7 @@ body{background: var(--bg-light); color:#333; min-height: 100vh; display: flex; 
 .form-group { margin-bottom: 1.2rem; text-align: right; }
 .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--primary-color); margin-bottom: 6px; }
 select, input { width:100%; padding:12px; border:1px solid #dcdde1; border-radius:8px; font-size:14px; background:#fff; outline:none; font-weight:600; color: #333; }
-select:focus { border-color: var(--accent-color); }
+select:focus, input:focus { border-color: var(--accent-color); }
 
 button.btn-block { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
 button.btn-block:hover { background: var(--accent-color); }
@@ -44,55 +45,64 @@ button.btn-block:hover { background: var(--accent-color); }
 .student-profile h2 { font-size: 19px; font-weight: 900; margin-bottom: 4px; }
 .student-profile p { font-size: 13px; opacity: 0.9; font-weight: 600; }
 
-/* شريط التبويبات */
+/* 🛞 شريط التبويبات الخماسي الذكي مع عدادات التنبيهات الحمراء */
 .parent-tabs { display: flex; background: #fff; border-radius: 10px; padding: 6px; margin-bottom: 1.2rem; gap: 4px; border: 1px solid #e1e2e6; }
-.p-tab { flex: 1; padding: 8px 2px; border: none; background: transparent; color: var(--primary-color); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.p-tab { flex: 1; padding: 8px 2px; border: none; background: transparent; color: var(--primary-color); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative; }
 .p-tab i { font-size: 18px; }
 .p-tab.active { background: var(--primary-color); color: white; }
+.tab-badge { position: absolute; top: 2px; right: 8px; background: var(--danger-color); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; }
 
 /* كروت السجلات */
 .log-item { background: #f8f9fa; border-right: 4px solid var(--primary-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; }
-.log-item.danger { border-right-color: #e74c3c; }
+.log-item.danger { border-right-color: var(--danger-color); }
+.log-item.warning { border-right-color: var(--accent-color); }
 .log-item .date { font-size: 11px; color: #777; }
 
-/* تذكرة الخروج */
-.gatepass-ticket { border: 2px dashed var(--accent-color); background: #fffdf9; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; }
-.ticket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3d1b5; padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; font-size: 13px; color: var(--accent-color); }
+/* التوقيع والإقرار الرقمي المطور للمخالفات */
+.sign-box { background: #fff0eb; border: 1px solid #ffcab8; padding: 10px; border-radius: 8px; margin-top: 8px; text-align: center; }
+.btn-sign { background: var(--accent-color); color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.sign-done-text { color: var(--success-color); font-weight: bold; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; }
 
-/* ✉️ كروت صندوق البريد الذكي */
+/* صندوق البريد الذكي والمواضيع منفصلة */
 .email-item { background: #ffffff; border: 1px solid #e1e2e6; border-right: 5px solid var(--accent-color); padding: 14px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; text-align: right; }
 .email-item:hover { background: #fdfdfd; border-color: var(--primary-color); transform: translateX(-2px); }
-.email-title { font-size: 14px; font-weight: 800; color: var(--primary-color); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.email-title { font-size: 14px; font-weight: 800; color: var(--primary-color); margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
 .email-meta { font-size: 11px; color: #555; font-weight: 600; display: flex; justify-content: space-between; margin-bottom: 4px; }
 .email-time-badge { font-size: 11px; color: #e67e22; font-weight: bold; background: #fff4ec; padding: 2px 8px; border-radius: 4px; display: inline-block; }
 
 .btn-new-topic { background: var(--success-color); color: white; padding: 10px; border-radius: 8px; border: none; font-weight: bold; width: 100%; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .back-mail-btn { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
 
-/* حاوية الشات والردود المتتالية */
-.chat-container { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; padding: 10px 6px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; margin-bottom: 12px; }
-.chat-bubble { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+/* حاوية الشات والردود */
+.chat-container { display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; padding: 10px 6px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; margin-bottom: 12px; }
+.chat-bubble { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1.4; }
 .chat-bubble.parent { background: #eef9ff; color: #1a5a80; align-self: flex-start; border-bottom-right-radius: 2px; text-align: right; }
 .chat-bubble.admin { background: #fff3cd; color: #856404; align-self: flex-end; border-bottom-left-radius: 2px; text-align: right; }
-
-/* طابع وقت الإرسال ووقت الرد */
 .chat-time { display: block; font-size: 10px; opacity: 0.75; margin-top: 6px; text-align: left; font-weight: bold; color: #555; border-top: 1px dashed rgba(0,0,0,0.05); padding-top: 4px; }
 
+/* تذكرة الخروج */
+.gatepass-ticket { border: 2px dashed var(--accent-color); background: #fffdf9; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; }
+.ticket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3d1b5; padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; font-size: 13px; color: var(--accent-color); }
+
 .hidden { display: none !important; }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; color: #fff; }
-.badge.success { background: #27ae60; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 12px; font-size: 10px; font-weight: 700; color: #fff; }
+.badge.success { background: var(--success-color); }
+.badge.warning { background: var(--accent-color); }
+.badge.danger { background: var(--danger-color); }
+.badge.info { background: #3498db; }
+
 footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-align: center; padding: 14px; font-size: 11px; font-weight: 600; border-top: 3px solid var(--accent-color); }
 </style>
 </head>
 <body>
 
 <div class="parent-header">
-  <h1><i class="bi bi-person-arms-up"></i> بوابة أولياء الأمور الذكية</h1>
+  <h1><i class="bi bi-person-arms-up"></i> بوابة أولياء الأمور الذكية المطورّة</h1>
 </div>
 
 <div class="container">
 
-  <!-- 🔐 شاشة الدخول -->
+  <!-- 🔐 شاشة الدخول الذكية -->
   <div id="parent-login-view" class="card login-box">
     <div class="login-icon"><i class="bi bi-shield-check"></i></div>
     <h3 style="color: var(--primary-color); font-weight:900; margin-bottom:4px;">مرحباً بك في المنظومة الرقمية</h3>
@@ -132,19 +142,25 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
     </form>
   </div>
 
-  <!-- 📊 لوحة التحكم التفاعلية للأب -->
+  <!-- 📊 لوحة تحكم الطالب التفاعلية الشاملة للأب -->
   <div id="parent-dashboard-view" class="hidden">
     <div class="student-profile">
       <h2 id="view-student-name">-</h2>
       <p id="view-student-class">الصف الدراسي: -</p>
     </div>
 
-    <!-- 🎛️ شريط التبويبات الخماسي -->
+    <!-- 🎛️ شريط التبويبات الخماسي السلس مع عدادات التنبيهات المباشرة الحية -->
     <div class="parent-tabs">
-      <button class="p-tab active" onclick="window.switchParentTab('att')"><i class="bi bi-calendar-x"></i>الغياب</button>
+      <button class="p-tab active" onclick="window.switchParentTab('att')">
+        <i class="bi bi-calendar-x"></i>الغياب
+        <span class="tab-badge hidden" id="badge-att">0</span>
+      </button>
       <button class="p-tab" onclick="window.switchParentTab('gate')"><i class="bi bi-ticket-perforated"></i>رخصة الخروج</button>
       <button class="p-tab" onclick="window.switchParentTab('clinic')"><i class="bi bi-heart-pulse"></i>العيادة</button>
-      <button class="p-tab" onclick="window.switchParentTab('beh')"><i class="bi bi-exclamation-triangle"></i>السلوك</button>
+      <button class="p-tab" onclick="window.switchParentTab('beh')">
+        <i class="bi bi-exclamation-triangle"></i>السلوك
+        <span class="tab-badge hidden" id="badge-beh">0</span>
+      </button>
       <button class="p-tab" onclick="window.switchParentTab('chat')"><i class="bi bi-envelope-paper-fill"></i>الطلبات والمراسلات</button>
     </div>
 
@@ -166,13 +182,13 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
       <div id="parent-clinic-logs-area"></div>
     </div>
 
-    <!-- تبويب 4: السلوك والانضباط -->
+    <!-- تبويب 4: السلوك والانضباط مع الإقرار والتوقيع السحابي المطور -->
     <div id="p-sec-beh" class="card hidden">
       <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">⚠️ بطاقات ومخالفات الانضباط الطلابي</h3>
       <div id="parent-beh-logs-area"></div>
     </div>
 
-    <!-- 💬 تبويب 5: نظام المراسلات المطور بالكامل بالوقت والتاريخ الحقيقي لكل حركة -->
+    <!-- 💬 تبويب 5: نظام المراسلات المطور بصيغة التذاكر والإيميلات المنفصلة وحالاتها -->
     <div id="p-sec-chat" class="card hidden">
       
       <!-- العرض الأول: صندوق البريد والمواضيع الحالية -->
@@ -205,7 +221,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
         <button onclick="window.createNewEmailThreadSubmit()" class="btn-block" style="background:var(--success-color);"><i class="bi bi-send-check-fill"></i> إرسال وتأسيس الفايل</button>
       </div>
 
-      <!-- العرض الثالث: تفاصيل الموضوع المختار والدردشة المعزولة داخله -->
+      <!-- العرض الثالث: تفاصيل الموضوع المختار -->
       <div id="mail-details-view" class="hidden">
         <button class="back-mail-btn" onclick="window.backToInboxView()">← رجوع للبريد</button>
         <div style="background:#f8f9fa; padding:10px; border-radius:8px; margin-bottom:12px; border-right:4px solid var(--primary-color);">
@@ -213,10 +229,9 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
           <p id="detail-thread-meta" style="font-size:11px; color:#666; margin-top:2px;">الجهة: -</p>
         </div>
         
-        <!-- حاوية الرسائل الخاصة بهالموضوع بروح -->
         <div class="chat-container" id="thread-messages-bubbles-area"></div>
 
-        <div style="display:flex; gap:6px;">
+        <div style="display:flex; gap:6px;" id="thread-reply-form-wrapper">
           <input type="text" id="thread-reply-text" placeholder="اكتب ردك هني داخل هالموضوع..." style="margin-bottom:0;">
           <button onclick="window.submitReplyToThread()" style="background:var(--success-color); padding:0 18px; border-radius:8px; color:white; border:none; cursor:pointer;"><i class="bi bi-send-fill"></i></button>
         </div>
@@ -229,7 +244,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
 
 </div>
 
-<footer>المنظومة الرقمية الشاملة الموحدة © 2026 | مدرسة سالم الحسينان</footer>
+<footer>المنظومة الرقمية الشاملة الموحدة التجارية © 2026 | مدرسة سالم الحسينان</footer>
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -269,11 +284,13 @@ window.handleParentLogin = async function(e) {
 async function loadStudentDataForParent() {
   const sName = targetStudentName;
   
-  // 1. الغياب
+  // 1. الغياب والعداد الذكي
   const attArea = document.getElementById('parent-att-logs-area'); attArea.innerHTML = '<p>جاري فحص دفاتر الغياب...</p>';
   const attSnap = await getDocs(collection(db, 'attendance')); let attHtml = ''; let attCount = 0;
   attSnap.forEach(doc => { const d = doc.data(); if(d.studentName === sName && d.status === 'absent') { attCount++; attHtml += `<div class="log-item danger"><div>⚠️ غياب كامل عن المدرسة</div><span class="date">${d.date}</span></div>`; } });
   attArea.innerHTML = attCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-check-circle-fill"></i> الطالب ملتزم بالحضور اليومي وخالي من الغيابات</div>' : attHtml;
+  
+  if(attCount > 0) { document.getElementById('badge-att').textContent = attCount; document.getElementById('badge-att').classList.remove('hidden'); }
 
   // 2. رخصة الخروج
   const gateArea = document.getElementById('parent-gatepass-ticket-area'); gateArea.innerHTML = '<p>جاري مراجعة بوابة الحارس...</p>';
@@ -289,14 +306,46 @@ async function loadStudentDataForParent() {
   clnSnap.forEach(doc => { const c = doc.data(); if(c.studentName === sName) { clnCount++; clnHtml += `<div class="log-item" style="border-right-color:#3498db;"><div>🩺 <strong>التشخيص:</strong> ${c.symptoms}<br><small style="color:var(--success-color); font-weight:700;">التدبير: ${c.action}</small></div><span class="date">${c.date || '-'}</span></div>`; } });
   clnArea.innerHTML = clnCount === 0 ? '<div style="color:#555; text-align:center; padding:10px;">الملف الصحي سليم تماماً والحمد لله.</div>' : clnHtml;
 
-  // 4. السلوك
+  // 4. السلوك مع الإقرار والتوقيع الرقمي المطور لحماية السجل
   const behArea = document.getElementById('parent-beh-logs-area'); behArea.innerHTML = '<p>جاري تدقيق السجل السلوكي...</p>';
   const behSnap = await getDocs(collection(db, 'behavior')); let behHtml = ''; let behCount = 0;
-  behSnap.forEach(doc => { const b = doc.data(); if(b.studentName === sName) { behCount++; behHtml += `<div class="log-item warning"><div>📌 ${b.behaviorType}</div></div>`; } });
+  behSnap.forEach(doc => {
+    const b = doc.data();
+    if(b.studentName === sName) {
+      behCount++;
+      let signInterfaceHtml = '';
+      if(b.parentAcknowledged) {
+        signInterfaceHtml = `<div class="sign-done-text"><i class="bi bi-patch-check-fill"></i> تم الاطلاع والإقرار الرقمي من ولي الأمر بقاعدة البيانات في: ${b.acknowledgedAt || ''}</div>`;
+      } else {
+        signInterfaceHtml = `
+          <div class="sign-box" id="sign-box-${doc.id}">
+            <p style="font-size:11px; color:#c0392b; margin-bottom:4px; font-weight:bold;">ملاحظة: هذا التنبيه يتطلب توقيع وإقرار ولي الأمر</p>
+            <button class="btn-sign" onclick="window.signBehaviorCardDigitalSubmit('${doc.id}')">✍️ اضغط هني لتأكيد الاطلاع والإقرار الرقمي</button>
+          </div>
+        `;
+      }
+      behHtml += `<div class="log-item warning" style="display:block; text-align:right;"><div style="margin-bottom:6px;">📌 <strong>المخالفة:</strong> ${b.behaviorType}</div>${signInterfaceHtml}</div>`;
+    }
+  });
   behArea.innerHTML = behCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-emoji-smile-fill"></i> السجل السلوكي لابنكم نظيف وملتزم تماماً ✓</div>' : behHtml;
+  
+  if(behCount > 0) { document.getElementById('badge-beh').textContent = behCount; document.getElementById('badge-beh').classList.remove('hidden'); }
 
   loadParentMailboxInbox();
 }
+
+// دالة التوقيع والإقرار السحابي الفوري من ولي الأمر
+window.signBehaviorCardDigitalSubmit = async function(docId) {
+  if(!confirm('هل تؤكد اطلاعك وإقرارك الرسمي على هذا التنبيه السلوكي؟')) return;
+  const timeStr = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}) + ' تاريخ ' + new Date().toLocaleDateString('ar-KW');
+  try {
+    await updateDoc(doc(db, 'behavior', docId), { parentAcknowledged: true, acknowledgedAt: timeStr });
+    alert('✓ تم توقيع وحقن الإقرار الرقمي بالسيرفر بنجاح!');
+    loadStudentDataForParent(); // إنعاش اللوحة لإظهار علامة الجودة الخضراء
+  } catch(e) { alert('خطأ في التوقيع: ' + e.message); }
+};
+
+/* 📬 محرك البريد والمواضيع المنفصلة وحالاتها */
 
 window.showCreateNewTopicForm = function() {
   document.getElementById('mail-inbox-view').classList.add('hidden');
@@ -311,74 +360,65 @@ window.backToInboxView = function() {
   activeThreadId = null; loadParentMailboxInbox();
 };
 
-// 1. تأسيس وإرسال أول موضوع مع توثيق وقت الإرسال الأساسي بره وداخل المصفوفة
 window.createNewEmailThreadSubmit = async function() {
   const targetRole = document.getElementById('msg-target-role').value;
   const subjectText = document.getElementById('msg-subject-input').value.trim();
   const bodyText = document.getElementById('msg-body-input').value.trim();
+  if(!subjectText || !bodyText) { alert('الرجاء كتابة العنوان والتفاصيل!'); return; }
   
-  if(!subjectText || !bodyText) { alert('الرجاء كتابة عنوان الموضوع وتفاصيل الرسالة!'); return; }
-  
-  // توليد طابع الوقت والتاريخ الفوري المعتمد بالكويت
   const currentTime = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'});
   const currentDate = new Date().toLocaleDateString('ar-KW');
   
   try {
     await addDoc(collection(db, 'school_threads'), {
-      studentName: targetStudentName,
-      classId: targetStudentClass,
-      subject: subjectText,
-      targetRole: targetRole,
-      lastUpdatedTime: currentTime,
-      lastUpdatedDate: currentDate,
-      createdAt: serverTimestamp(),
-      messages: [{
-        sender: 'parent',
-        text: bodyText,
-        time: currentTime,
-        date: currentDate
-      }]
+      studentName: targetStudentName, classId: targetStudentClass, subject: subjectText, targetRole: targetRole,
+      lastUpdatedTime: currentTime, lastUpdatedDate: currentDate, status: 'قيد الانتظار', createdAt: serverTimestamp(),
+      messages: [{ sender: 'parent', text: bodyText, time: currentTime, date: currentDate }]
     });
-    
     document.getElementById('msg-subject-input').value = '';
     document.getElementById('msg-body-input').value = '';
     alert('✓ تم إرسال وتأسيس فايل السالفة بنجاح!');
     window.backToInboxView();
-  } catch(e) { alert('خطأ في الاتصال: ' + e.message); }
+  } catch(e) { alert('خطأ: ' + e.message); }
 };
 
-// 2. سحب المواضيع مع بيان وقت آخر حركة أو إرسال من الخارج
 async function loadParentMailboxInbox() {
   const container = document.getElementById('parent-mailbox-container'); if(!container) return;
   container.innerHTML = '<p style="font-size:12px; color:#666;">جاري تحديث صندوق المراسلات...</p>';
-  
   try {
     const snap = await getDocs(collection(db, 'school_threads')); let html = ''; let count = 0;
-    
     snap.forEach(doc => {
       const t = doc.data();
       if(t.studentName === targetStudentName) {
         count++;
         const totalMsgs = t.messages ? t.messages.length : 0;
+        
+        // فرز لون شارة الحالة بره بحسب نوع التذكرة
+        let statusBadgeColor = 'warning';
+        if(t.status === 'تم الرد') statusBadgeColor = 'success';
+        if(t.status === 'مغلق') statusBadgeColor = 'danger';
+        
         html += `
           <div class="email-item" onclick="window.openSpecificThreadDetails('${doc.id}')">
-            <div class="email-title"><i class="bi bi-envelope-fill" style="color:var(--accent-color);"></i> الموضوع: ${t.subject}</div>
+            <div class="email-title">
+              <span><i class="bi bi-envelope-fill" style="color:var(--accent-color);"></i> الموضوع: <strong>${t.subject}</strong></span>
+              <span class="badge ${statusBadgeColor}">${t.status || 'قيد الانتظار'}</span>
+            </div>
             <div class="email-meta">
               <span>وجهة الرسالة: <strong style="color:var(--primary-color);">${t.targetRole}</strong></span>
-              <span class="badge success">${totalMsgs} رسائل</span>
+              <span class="badge info">${totalMsgs} رسائل</span>
             </div>
             <div style="text-align:left; margin-top:4px;">
-              <span class="email-time-badge"><i class="bi bi-clock-history"></i> الإرسال/التحديث: ${t.lastUpdatedDate || ''} الساعة ${t.lastUpdatedTime || ''}</span>
+              <span class="email-time-badge"><i class="bi bi-clock-history"></i> الحركة: ${t.lastUpdatedDate || ''} الساعة ${t.lastUpdatedTime || ''}</span>
             </div>
           </div>
         `;
       }
     });
-    container.innerHTML = count === 0 ? '<p style="text-align:center; font-size:12px; color:#aaa; padding:15px;">صندوق الوارد خالي. اضغط على الزر فوق لفتح أول موضوع ومراسلة المدرسة.</p>' : html;
+    container.innerHTML = count === 0 ? '<p style="text-align:center; font-size:12px; color:#aaa; padding:15px;">صندوق الوارد خالي.</p>' : html;
   } catch(e) { container.innerHTML = '<p style="color:red;">خطأ سحب الصندوق</p>'; }
 }
 
-// 3. فتح فايل موضوع معين وبيان وقت الإرسال ووقت كل رد بالتفصيل
 window.openSpecificThreadDetails = async function(threadId) {
   activeThreadId = threadId;
   document.getElementById('mail-inbox-view').classList.add('hidden');
@@ -386,41 +426,34 @@ window.openSpecificThreadDetails = async function(threadId) {
   document.getElementById('mail-details-view').classList.remove('hidden');
   
   const bubblesArea = document.getElementById('thread-messages-bubbles-area');
-  bubblesArea.innerHTML = '<p style="font-size:12px; color:#666; text-align:center;">جاري فتح فايل السالفة والأوقات...</p>';
+  bubblesArea.innerHTML = '<p style="text-align:center;">جاري فتح الملف...</p>';
   
   try {
     const tDoc = await getDoc(doc(db, 'school_threads', threadId));
     if(tDoc.exists()) {
       const t = tDoc.data();
       document.getElementById('detail-thread-title').innerHTML = `<i class="bi bi-chat-left-dots-fill"></i> موضوع: ${t.subject}`;
-      document.getElementById('detail-thread-meta').textContent = `الجهة الموجه لها: ${t.targetRole}`;
+      document.getElementById('detail-thread-meta').textContent = `الجهة الموجه لها: ${t.targetRole} | الحالة الحالية: ${t.status || 'مفتوح'}`;
       
+      // إخفاء قفل الإرسال إذا كان المدير مسكر السالفة ومسوي لها إغلاق نهائي
+      if(t.status === 'مغلق') { document.getElementById('thread-reply-form-wrapper').classList.add('hidden'); }
+      else { document.getElementById('thread-reply-form-wrapper').classList.remove('hidden'); }
+
       if(t.messages && t.messages.length > 0) {
         bubblesArea.innerHTML = t.messages.map((m, index) => {
           const bubbleClass = m.sender === 'parent' ? 'parent' : 'admin';
           const senderLabel = m.sender === 'parent' ? 'أنت' : t.targetRole;
-          
-          // تحديد مسمى الحركة (وقت الإرسال الأساسي لأول رسالة، ووقت الرد لباقي الرسائل)
           const stampLabel = index === 0 ? 'وقت الإرسال الأساسي' : 'وقت هذا الرد الفعلي';
-          
-          return `
-            <div class="chat-bubble ${bubbleClass}">
-              <strong>${senderLabel}:</strong><br>
-              ${m.text}
-              <span class="chat-time"><i class="bi bi-clock"></i> ${stampLabel}: ${m.date || ''} الساعة ${m.time || ''}</span>
-            </div>
-          `;
+          return `<div class="chat-bubble ${bubbleClass}"><strong>${senderLabel}:</strong><br>${m.text}<span class="chat-time"><i class="bi bi-clock"></i> ${stampLabel}: ${m.date || ''} الساعة ${m.time || ''}</span></div>`;
         }).join('');
         bubblesArea.scrollTop = bubblesArea.scrollHeight;
-      } else { bubblesArea.innerHTML = '<p style="text-align:center; font-size:12px; color:#aaa;">لا توجد رسائل.</p>'; }
+      }
     }
-  } catch(e) { bubblesArea.innerHTML = '<p style="color:red;">خطأ في تحميل البيانات</p>'; }
+  } catch(e) { bubblesArea.innerHTML = '<p style="color:red;">خطأ تحميل البيانات</p>'; }
 };
 
-// 4. ضخ رد جديد وتحديث طابع الوقت والتاريخ لآخر حركة على رأس الفايل
 window.submitReplyToThread = async function() {
-  const replyText = document.getElementById('thread-reply-text').value.trim();
-  if(!replyText || !activeThreadId) return;
+  const replyText = document.getElementById('thread-reply-text').value.trim(); if(!replyText || !activeThreadId) return;
   
   const currentTime = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'});
   const currentDate = new Date().toLocaleDateString('ar-KW');
@@ -428,19 +461,12 @@ window.submitReplyToThread = async function() {
   
   try {
     await updateDoc(threadRef, {
-      lastUpdatedTime: currentTime,
-      lastUpdatedDate: currentDate,
-      messages: arrayUnion({
-        sender: 'parent',
-        text: replyText,
-        time: currentTime,
-        date: currentDate
-      })
+      lastUpdatedTime: currentTime, lastUpdatedDate: currentDate, status: 'قيد الانتظار', // يرجع الانتظار أول ما الأب يرد عشان ينتبه له المدير
+      messages: arrayUnion({ sender: 'parent', text: replyText, time: currentTime, date: currentDate })
     });
-    
     document.getElementById('thread-reply-text').value = '';
     window.openSpecificThreadDetails(activeThreadId);
-  } catch(e) { alert('خطأ أثناء إرسال الرد: ' + e.message); }
+  } catch(e) { alert('خطأ: ' + e.message); }
 };
 
 window.switchParentTab = function(tabId) {
