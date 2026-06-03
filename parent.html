@@ -10,8 +10,8 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
 :root {
-    --primary-color: #1a1a2e;     /* الكحلي الملكي */
-    --accent-color: #e67e22;      /* البرتقالي الحيوي */
+    --primary-color: #1a1a2e;     
+    --accent-color: #e67e22;      
     --bg-light: #f5f6fa;
     --card-bg: #ffffff;
     --success-color: #27ae60;
@@ -20,59 +20,67 @@
 *{margin:0;padding:0;box-sizing:border-box; font-family: 'Cairo', Arial, sans-serif;}
 body{background: var(--bg-light); color:#333; min-height: 100vh; display: flex; flex-direction: column;}
 
-.parent-header{background: var(--primary-color); color:#fff; padding:1.2rem; text-align: center; border-bottom: 4px solid var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative;}
-.parent-header h1{font-size:18px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px;}
+.parent-header{background: var(--primary-color); color:#fff; padding:1.2rem; text-align: center; border-bottom: 4px solid var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+.parent-header h1{font-size:18px; font-weight: 900;}
 
 .container{max-width:500px; margin:0 auto; padding:1.2rem; width:100%; flex: 1;}
 .card{background: var(--card-bg); border-radius:14px; padding:1.5rem; margin-bottom:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,.04); border-top: 4px solid var(--primary-color); position: relative;}
 
-/* شاشة الدخول الاحترافية */
+/* شاشة الدخول */
 .login-box { text-align: center; padding: 2rem 1rem; }
-.login-icon { font-size: 55px; color: var(--accent-color); margin-bottom: 8px; animation: pulse 2s infinite; }
+.login-icon { font-size: 55px; color: var(--accent-color); margin-bottom: 8px; }
 .form-group { margin-bottom: 1.2rem; text-align: right; }
 .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--primary-color); margin-bottom: 6px; }
-select, input { width:100%; padding:12px; border:1px solid #dcdde1; border-radius:8px; font-size:14px; background:#fff; outline:none; font-weight:600; transition: all 0.2s; color: #333; }
-select:focus, input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(230,126,34,0.1); }
+select, input { width:100%; padding:12px; border:1px solid #dcdde1; border-radius:8px; font-size:14px; background:#fff; outline:none; font-weight:600; color: #333; }
+select:focus { border-color: var(--accent-color); }
 
-button.btn-block { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-button.btn-block:hover { background: var(--accent-color); transform: translateY(-1px); }
+button.btn-block { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+button.btn-block:hover { background: var(--accent-color); }
 
 .error-message { background: #fff5f5; border: 1px solid #fabebe; color: #c0392b; padding: 11px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 1.2rem; display: none; text-align: right; align-items: center; gap: 6px; }
 
-/* بروفايل الطالب الكشخة */
-.student-profile { background: linear-gradient(135deg, var(--primary-color) 0%, #2c2c54 100%); color: white; padding: 1.4rem; border-radius: 12px; text-align: right; margin-bottom: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
-.student-profile::after { content: '\f519'; font-family: 'bootstrap-icons'; position: absolute; left: -10px; bottom: -20px; font-size: 90px; opacity: 0.1; color: #fff; }
+/* بروفايل الطالب */
+.student-profile { background: linear-gradient(135deg, var(--primary-color) 0%, #2c2c54 100%); color: white; padding: 1.4rem; border-radius: 12px; text-align: right; margin-bottom: 1.2rem; }
 .student-profile h2 { font-size: 19px; font-weight: 900; margin-bottom: 4px; }
 .student-profile p { font-size: 13px; opacity: 0.9; font-weight: 600; }
 
-/* شريط تبويبات مريح وخماسي لموبايل الأب */
-.parent-tabs { display: flex; background: #fff; border-radius: 10px; padding: 6px; margin-bottom: 1.2rem; gap: 4px; border: 1px solid #e1e2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-.p-tab { flex: 1; padding: 8px 2px; border: none; background: transparent; color: var(--primary-color); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; }
+/* شريط التبويبات */
+.parent-tabs { display: flex; background: #fff; border-radius: 10px; padding: 6px; margin-bottom: 1.2rem; gap: 4px; border: 1px solid #e1e2e6; }
+.p-tab { flex: 1; padding: 8px 2px; border: none; background: transparent; color: var(--primary-color); font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .p-tab i { font-size: 18px; }
-.p-tab.active { background: var(--primary-color); color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.p-tab.active { background: var(--primary-color); color: white; }
 
-/* تصميم كرت ورخصة الخروج الفخم (التذكرة الرقمية) */
-.gatepass-ticket { border: 2px dashed var(--accent-color); background: #fffdf9; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; position: relative; }
-.gatepass-ticket::before, .gatepass-ticket::after { content: ''; position: absolute; top: 50%; width: 20px; height: 20px; background: var(--bg-light); border-radius: 50%; transform: translateY(-50%); }
-.gatepass-ticket::before { right: -12px; } .gatepass-ticket::after { left: -12px; }
+/* كروت السجلات */
+.log-item { background: #f8f9fa; border-right: 4px solid var(--primary-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; }
+.log-item.danger { border-right-color: #e74c3c; }
+.log-item .date { font-size: 11px; color: #777; }
+
+/* تذكرة الخروج */
+.gatepass-ticket { border: 2px dashed var(--accent-color); background: #fffdf9; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; }
 .ticket-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3d1b5; padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; font-size: 13px; color: var(--accent-color); }
-.barcode-view { text-align: center; margin-top: 12px; font-size: 32px; letter-spacing: 4px; color: #333; opacity: 0.8; }
 
-/* عناصر كشوف السجلات */
-.log-item { background: #f8f9fa; border-right: 4px solid var(--primary-color); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.01); }
-.log-item.danger { border-right-color: #e74c3c; background: #fffdfd; }
-.log-item.warning { border-right-color: var(--accent-color); background: #fffdfa; }
-.log-item .date { font-size: 11px; color: #777; font-weight: bold; }
+/* ✉️ كروت صندوق البريد الذكي */
+.email-item { background: #ffffff; border: 1px solid #e1e2e6; border-right: 5px solid var(--accent-color); padding: 14px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; text-align: right; }
+.email-item:hover { background: #fdfdfd; border-color: var(--primary-color); transform: translateX(-2px); }
+.email-title { font-size: 14px; font-weight: 800; color: var(--primary-color); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.email-meta { font-size: 11px; color: #555; font-weight: 600; display: flex; justify-content: space-between; margin-bottom: 4px; }
+.email-time-badge { font-size: 11px; color: #e67e22; font-weight: bold; background: #fff4ec; padding: 2px 8px; border-radius: 4px; display: inline-block; }
 
-/* نظام المحادثة المطور (WhatsApp Style) - فايل لكل دردشة */
-.chat-container { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; padding: 10px 4px; border: 1px solid #eee; border-radius: 8px; background: #fdfdfd; margin-bottom: 12px; }
-.chat-bubble { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1.4; position: relative; }
+.btn-new-topic { background: var(--success-color); color: white; padding: 10px; border-radius: 8px; border: none; font-weight: bold; width: 100%; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.back-mail-btn { background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
+
+/* حاوية الشات والردود المتتالية */
+.chat-container { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; padding: 10px 6px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; margin-bottom: 12px; }
+.chat-bubble { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1.4; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
 .chat-bubble.parent { background: #eef9ff; color: #1a5a80; align-self: flex-start; border-bottom-right-radius: 2px; text-align: right; }
 .chat-bubble.admin { background: #fff3cd; color: #856404; align-self: flex-end; border-bottom-left-radius: 2px; text-align: right; }
-.chat-time { display: block; font-size: 10px; opacity: 0.6; margin-top: 4px; text-align: left; }
+
+/* طابع وقت الإرسال ووقت الرد */
+.chat-time { display: block; font-size: 10px; opacity: 0.75; margin-top: 6px; text-align: left; font-weight: bold; color: #555; border-top: 1px dashed rgba(0,0,0,0.05); padding-top: 4px; }
 
 .hidden { display: none !important; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; color: #fff; }
+.badge.success { background: #27ae60; }
 footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-align: center; padding: 14px; font-size: 11px; font-weight: 600; border-top: 3px solid var(--accent-color); }
 </style>
 </head>
@@ -84,7 +92,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
 
 <div class="container">
 
-  <!-- 🔐 شاشة الدخول الذكية بالاختيار من الكشوف الحالية -->
+  <!-- 🔐 شاشة الدخول -->
   <div id="parent-login-view" class="card login-box">
     <div class="login-icon"><i class="bi bi-shield-check"></i></div>
     <h3 style="color: var(--primary-color); font-weight:900; margin-bottom:4px;">مرحباً بك في المنظومة الرقمية</h3>
@@ -119,66 +127,101 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
       </div>
 
       <button type="submit" id="login-btn" class="btn-block">
-        <span id="btn-text"><i class="bi bi-box-arrow-in-right"></i> استدعاء ودخول آمن للملف</span>
+        <span><i class="bi bi-box-arrow-in-right"></i> استدعاء ودخول آمن للملف</span>
       </button>
     </form>
   </div>
 
-  <!-- 📊 لوحة تحكم الطالب التفاعلية الشاملة للأب -->
+  <!-- 📊 لوحة التحكم التفاعلية للأب -->
   <div id="parent-dashboard-view" class="hidden">
     <div class="student-profile">
       <h2 id="view-student-name">-</h2>
       <p id="view-student-class">الصف الدراسي: -</p>
-      <p style="font-size:11px; margin-top:5px; opacity:0.85;"><i class="bi bi-patch-check-fill"></i> متصل حياً بقاعدة البيانات المركزية</p>
     </div>
 
-    <!-- 🎛️ شريط التبويبات الخماسي السلس لموبايل الأب -->
+    <!-- 🎛️ شريط التبويبات الخماسي -->
     <div class="parent-tabs">
       <button class="p-tab active" onclick="window.switchParentTab('att')"><i class="bi bi-calendar-x"></i>الغياب</button>
       <button class="p-tab" onclick="window.switchParentTab('gate')"><i class="bi bi-ticket-perforated"></i>رخصة الخروج</button>
       <button class="p-tab" onclick="window.switchParentTab('clinic')"><i class="bi bi-heart-pulse"></i>العيادة</button>
       <button class="p-tab" onclick="window.switchParentTab('beh')"><i class="bi bi-exclamation-triangle"></i>السلوك</button>
-      <button class="p-tab" onclick="window.switchParentTab('chat')"><i class="bi bi-chat-left-text"></i>رسايل المدير</button>
+      <button class="p-tab" onclick="window.switchParentTab('chat')"><i class="bi bi-envelope-paper-fill"></i>الطلبات والمراسلات</button>
     </div>
 
     <!-- تبويب 1: سجل غياب الدوام الرسمي -->
     <div id="p-sec-att" class="card">
-      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;"><i class="bi bi-graph-down-arrow"></i> رصد غياب الحصص والدوام</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">📊 رصد غياب الحصص والدوام</h3>
       <div id="parent-att-logs-area"></div>
     </div>
 
-    <!-- 🎫 تبويب 2: بطاقة تصاريح رخص خروج البوابة (الميزة اليديدة الفخمة) -->
+    <!-- تبويب 2: رخصة خروج البوابة -->
     <div id="p-sec-gate" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;"><i class="bi bi-door-open-fill"></i> حركات البوابة وتصاريح الاستئذان المعتمدة</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🚪 حركات البوابة وتصاريح الاستئذان</h3>
       <div id="parent-gatepass-ticket-area"></div>
     </div>
 
     <!-- تبويب 3: سجل العيادة المدرسية -->
     <div id="p-sec-clinic" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;"><i class="bi bi-prescription2"></i> الزيارات الطبية والإحالات الصحية للعيادة</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🔬 الزيارات الطبية والإحالات الصحية</h3>
       <div id="parent-clinic-logs-area"></div>
     </div>
 
-    <!-- تبويب 4: السلوك والانضباط والبطاقات الملونة -->
+    <!-- تبويب 4: السلوك والانضباط -->
     <div id="p-sec-beh" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;"><i class="bi bi-shield-exclamation"></i> بطاقات ومخالفات الانضباط الطلابي</h3>
+      <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">⚠️ بطاقات ومخالفات الانضباط الطلابي</h3>
       <div id="parent-beh-logs-area"></div>
     </div>
 
-    <!-- 💬 تبويب 5: نظام المحادثة المطور - فايل دردشة مستقل خاص للمدير فقط -->
+    <!-- 💬 تبويب 5: نظام المراسلات المطور بالكامل بالوقت والتاريخ الحقيقي لكل حركة -->
     <div id="p-sec-chat" class="card hidden">
-      <h3 style="font-size:14px; margin-bottom:4px; color:var(--primary-color); font-weight:800;"><i class="bi bi-chat-square-quote-fill" style="color:var(--accent-color);"></i> مراسلة مدير المدرسة مباشرة</h3>
-      <p style="font-size:11px; color:#666; margin-bottom:12px; font-weight:bold;">محادثة مشفرة ومغلقة، تصل فقط لمدير المدرسة بملفكم المستقل</p>
       
-      <!-- حاوية الشات على طراز الواتساب -->
-      <div class="chat-container" id="parent-chat-bubbles-container">
-        <p style="text-align:center; font-size:12px; color:#aaa; padding:10px;">لا توجد رسائل متبادلة بالملف حالياً.</p>
+      <!-- العرض الأول: صندوق البريد والمواضيع الحالية -->
+      <div id="mail-inbox-view">
+        <h3 style="font-size:14px; color:var(--primary-color); font-weight:800; margin-bottom:10px;"><i class="bi bi-inbox-fill"></i> صندوق الطلبات والمراسلات المفتوحة</h3>
+        <button class="btn-new-topic" onclick="window.showCreateNewTopicForm()"><i class="bi bi-plus-circle-fill"></i> فتح موضوع / طلب جديد للمدرسة</button>
+        <div id="parent-mailbox-container"></div>
       </div>
 
-      <div style="display:flex; gap:6px;">
-        <input type="text" id="parent-msg-text" placeholder="اكتب استفسارك أو مبرر الغياب للمدير..." style="margin-bottom:0;">
-        <button onclick="window.sendParentMessageToAdminFile()" style="background:var(--success-color); padding:0 18px; border-radius:6px;"><i class="bi bi-send-fill"></i></button>
+      <!-- العرض الثاني: نموذج فتح موضوع يديد -->
+      <div id="mail-compose-view" class="hidden">
+        <button class="back-mail-btn" onclick="window.backToInboxView()">← رجوع للصندوق</button>
+        <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary-color); font-weight:800;">🆕 فتح موضوع رسمي جديد</h3>
+        <div class="form-group">
+          <label>توجيه الموضوع إلى:</label>
+          <select id="msg-target-role">
+            <option value="مدير المدرسة">مدير المدرسة 👔</option>
+            <option value="الأخصائي الاجتماعي">الأخصائي الاجتماعي (شؤون الطلاب) 📋</option>
+            <option value="معلم المادة">معلم مادة الفصل 🏫</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>عنوان الموضوع (بره الباب)</label>
+          <input type="text" id="msg-subject-input" placeholder="مثال: استفسار عن عذر طبي / طلب مقابلة">
+        </div>
+        <div class="form-group">
+          <label>تفاصيل الرسالة</label>
+          <textarea id="msg-body-input" rows="4" style="width:100%; padding:10px; border:1px solid #dcdde1; border-radius:8px; outline:none; font-weight:600;" placeholder="اكتب تفاصيل موضوعك هني للمدرسة..."></textarea>
+        </div>
+        <button onclick="window.createNewEmailThreadSubmit()" class="btn-block" style="background:var(--success-color);"><i class="bi bi-send-check-fill"></i> إرسال وتأسيس الفايل</button>
       </div>
+
+      <!-- العرض الثالث: تفاصيل الموضوع المختار والدردشة المعزولة داخله -->
+      <div id="mail-details-view" class="hidden">
+        <button class="back-mail-btn" onclick="window.backToInboxView()">← رجوع للبريد</button>
+        <div style="background:#f8f9fa; padding:10px; border-radius:8px; margin-bottom:12px; border-right:4px solid var(--primary-color);">
+          <h4 id="detail-thread-title" style="font-size:14px; color:var(--primary-color);">العنوان</h4>
+          <p id="detail-thread-meta" style="font-size:11px; color:#666; margin-top:2px;">الجهة: -</p>
+        </div>
+        
+        <!-- حاوية الرسائل الخاصة بهالموضوع بروح -->
+        <div class="chat-container" id="thread-messages-bubbles-area"></div>
+
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="thread-reply-text" placeholder="اكتب ردك هني داخل هالموضوع..." style="margin-bottom:0;">
+          <button onclick="window.submitReplyToThread()" style="background:var(--success-color); padding:0 18px; border-radius:8px; color:white; border:none; cursor:pointer;"><i class="bi bi-send-fill"></i></button>
+        </div>
+      </div>
+
     </div>
 
     <button onclick="window.logoutParent()" class="btn-block" style="background:#fff; color:#333; border:1px solid #ddd; margin-top:1.5rem; padding:10px; font-size:13px;">خروج آمن من المنظومة</button>
@@ -190,12 +233,12 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.5); text-al
 
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import {getFirestore,collection,getDocs,doc,getDoc,setDoc,updateDoc,arrayUnion,query,where,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import {getFirestore,collection,getDocs,addDoc,doc,getDoc,updateDoc,arrayUnion,query,where,orderBy,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const firebaseConfig={apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9"};
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 
-let targetStudentName = null; let targetStudentClass = null;
+let targetStudentName = null; let targetStudentClass = null; let activeThreadId = null;
 
 window.loadClassStudentsForParent = async function() {
   const cls = document.getElementById('parent-class-select').value; const sSelect = document.getElementById('parent-student-select');
@@ -226,87 +269,184 @@ window.handleParentLogin = async function(e) {
 async function loadStudentDataForParent() {
   const sName = targetStudentName;
   
-  // 📊 1. جلب سجل غياب الحصص واليومي
-  const attArea = document.getElementById('parent-att-logs-area'); attArea.innerHTML = '<p>جاري فحص دفاتر الغياب التلقائي...</p>';
+  // 1. الغياب
+  const attArea = document.getElementById('parent-att-logs-area'); attArea.innerHTML = '<p>جاري فحص دفاتر الغياب...</p>';
   const attSnap = await getDocs(collection(db, 'attendance')); let attHtml = ''; let attCount = 0;
   attSnap.forEach(doc => { const d = doc.data(); if(d.studentName === sName && d.status === 'absent') { attCount++; attHtml += `<div class="log-item danger"><div>⚠️ غياب كامل عن المدرسة</div><span class="date">${d.date}</span></div>`; } });
-  attArea.innerHTML = attCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-check-circle-fill"></i> الطالب ملتزم بالحضور وخالي من الغيابات</div>' : attHtml;
+  attArea.innerHTML = attCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-check-circle-fill"></i> الطالب ملتزم بالحضور اليومي وخالي من الغيابات</div>' : attHtml;
 
-  // 🎫 2. جلب وتصميم رخصة خروج البوابة (Gate Pass Ticket) المعتمدة من الإدارة للحارس
-  const gateArea = document.getElementById('parent-gatepass-ticket-area'); gateArea.innerHTML = '<p>جاري مراجعة بوابة الحارس والأمن...</p>';
+  // 2. رخصة الخروج
+  const gateArea = document.getElementById('parent-gatepass-ticket-area'); gateArea.innerHTML = '<p>جاري مراجعة بوابة الحارس...</p>';
   const gateSnap = await getDocs(collection(db, 'gatepasses')); let gateHtml = ''; let gateCount = 0;
   gateSnap.forEach(doc => {
-    const g = doc.data();
-    if(g.studentName === sName) {
-      gateCount++;
-      gateHtml += `
-        <div class="gatepass-ticket">
-          <div class="ticket-header"><span>🎫 رخصة مغادرة رسمية معتمدة</span><span>تاريخ: ${g.date || '-'}</span></div>
-          <p style="font-size:13px; margin-bottom:4px;"><strong>ولي الأمر المستلم:</strong> ${g.parentName || 'مسجل بالملف'}</p>
-          <p style="font-size:13px; margin-bottom:6px;"><strong>سبب المغادرة:</strong> ${g.reason || 'إذن رسمي طارئ'}</p>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-            <span class="badge success"><i class="bi bi-check-all"></i> تم الخروج عبر البوابة فوري: ${g.time || '-'}</span>
-          </div>
-          <div class="barcode-view"><i class="bi bi-qr-code"></i></div>
-        </div>
-      `;
-    }
+    const g = doc.data(); if(g.studentName === sName) { gateCount++; gateHtml += `<div class="gatepass-ticket"><div class="ticket-header"><span>🎫 رخصة مغادرة معتمدة</span><span>تاريخ: ${g.date || '-'}</span></div><p style="font-size:13px; margin-bottom:4px;"><strong>المستلم:</strong> ${g.parentName}</p><p style="font-size:13px;"><strong>السبب:</strong> ${g.reason || 'إذن رسمي'}</p><div style="margin-top:8px;"><span class="badge success">🕒 تم المرور: ${g.time || '-'}</span></div></div>`; }
   });
-  gateArea.innerHTML = gateCount === 0 ? '<div style="color:#666; text-align:center; padding:10px;">لم يتم رصد أي حركات خروج أو استئذان طارئ للطالب اليوم من البوابة.</div>' : gateHtml;
+  gateArea.innerHTML = gateCount === 0 ? '<div style="color:#666; text-align:center; padding:10px;">لم يتم رصد حركات خروج للطالب اليوم من البوابة.</div>' : gateHtml;
 
-  // 🩺 3. جلب سجل العيادة المدرسية
+  // 3. العيادة
   const clnArea = document.getElementById('parent-clinic-logs-area'); clnArea.innerHTML = '<p>جاري فحص السجلات الطبية...</p>';
   const clnSnap = await getDocs(collection(db, 'clinic_logs')); let clnHtml = ''; let clnCount = 0;
-  clnSnap.forEach(doc => { const c = doc.data(); if(c.studentName === sName) { clnCount++; clnHtml += `<div class="log-item" style="border-right-color:#3498db;"><div>🩺 <strong>التشخيص:</strong> ${c.symptoms}<br><small style="color:var(--success-color); font-weight:700;">التدبير الطبي: ${c.action}</small></div><span class="date">${c.date || '-'}</span></div>`; } });
-  clnArea.innerHTML = clnCount === 0 ? '<div style="color:#555; text-align:center; padding:10px;">الملف الصحي سليم، ولم يسجل زيارات لعيادة المدرسة.</div>' : clnHtml;
+  clnSnap.forEach(doc => { const c = doc.data(); if(c.studentName === sName) { clnCount++; clnHtml += `<div class="log-item" style="border-right-color:#3498db;"><div>🩺 <strong>التشخيص:</strong> ${c.symptoms}<br><small style="color:var(--success-color); font-weight:700;">التدبير: ${c.action}</small></div><span class="date">${c.date || '-'}</span></div>`; } });
+  clnArea.innerHTML = clnCount === 0 ? '<div style="color:#555; text-align:center; padding:10px;">الملف الصحي سليم تماماً والحمد لله.</div>' : clnHtml;
 
-  // 🟨 4. جلب سجل البطاقات السلوكية الملونة
-  const behArea = document.getElementById('parent-beh-logs-area'); behArea.innerHTML = '<p>جاري تدقيق بطاقات الانضباط التفاعلية...</p>';
+  // 4. السلوك
+  const behArea = document.getElementById('parent-beh-logs-area'); behArea.innerHTML = '<p>جاري تدقيق السجل السلوكي...</p>';
   const behSnap = await getDocs(collection(db, 'behavior')); let behHtml = ''; let behCount = 0;
-  behSnap.forEach(doc => { const b = doc.data(); if(b.studentName === sName) { behCount++; behHtml += `<div class="log-item warning"><div>📌 ${b.behaviorType}</div><span class="badge danger">مرصود بالملف</span></div>`; } });
-  behArea.innerHTML = behCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-emoji-smile-fill"></i> السجل السلوكي ممتاز وخالي تماماً من أي مخالفات</div>' : behHtml;
+  behSnap.forEach(doc => { const b = doc.data(); if(b.studentName === sName) { behCount++; behHtml += `<div class="log-item warning"><div>📌 ${b.behaviorType}</div></div>`; } });
+  behArea.innerHTML = behCount === 0 ? '<div style="color:var(--success-color); font-weight:bold; text-align:center; padding:10px;"><i class="bi bi-emoji-smile-fill"></i> السجل السلوكي لابنكم نظيف وملتزم تماماً ✓</div>' : behHtml;
 
-  // 💬 5. سحب فايل دردشة الأب المستقل والمقفل مع المدير
-  loadPrincipalChatFile();
+  loadParentMailboxInbox();
 }
 
-// 🛠️ محرك المراسلة المطور: "نظام فايل كامل ومستقل لكل دردشة طالب" لضمان أقصى درجات الأمان والسرعة والتنظيم
-window.sendParentMessageToAdminFile = async function() {
-  const msgText = document.getElementById('parent-msg-text').value.trim(); if(!msgText) return;
-  const sName = targetStudentName; const chatRef = doc(db, 'principal_chats', sName);
-  try {
-    // تحديث أو إنشاء فايل (Document) موحد ومستقل تماماً يحمل اسم الطالب ويجمع محادثة الأب مع المدير
-    await setDoc(chatRef, {
-      studentName: sName, classId: targetStudentClass, lastMessage: msgText, lastUpdated: new Date().toISOString(),
-      messages: arrayUnion({
-        sender: 'parent', text: msgText,
-        time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}),
-        date: new Date().toLocaleDateString('ar-KW')
-      })
-    }, { merge: true });
-    document.getElementById('parent-msg-text').value = ''; loadPrincipalChatFile();
-  } catch(e) { alert('خطأ في الإرسال: ' + e.message); }
+window.showCreateNewTopicForm = function() {
+  document.getElementById('mail-inbox-view').classList.add('hidden');
+  document.getElementById('mail-compose-view').classList.remove('hidden');
+  document.getElementById('mail-details-view').classList.add('hidden');
 };
 
-async function loadPrincipalChatFile() {
-  const container = document.getElementById('parent-chat-bubbles-container'); if(!container) return;
-  const sName = targetStudentName;
+window.backToInboxView = function() {
+  document.getElementById('mail-inbox-view').classList.remove('hidden');
+  document.getElementById('mail-compose-view').classList.add('hidden');
+  document.getElementById('mail-details-view').classList.add('hidden');
+  activeThreadId = null; loadParentMailboxInbox();
+};
+
+// 1. تأسيس وإرسال أول موضوع مع توثيق وقت الإرسال الأساسي بره وداخل المصفوفة
+window.createNewEmailThreadSubmit = async function() {
+  const targetRole = document.getElementById('msg-target-role').value;
+  const subjectText = document.getElementById('msg-subject-input').value.trim();
+  const bodyText = document.getElementById('msg-body-input').value.trim();
+  
+  if(!subjectText || !bodyText) { alert('الرجاء كتابة عنوان الموضوع وتفاصيل الرسالة!'); return; }
+  
+  // توليد طابع الوقت والتاريخ الفوري المعتمد بالكويت
+  const currentTime = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'});
+  const currentDate = new Date().toLocaleDateString('ar-KW');
+  
   try {
-    const chatDoc = await getDoc(doc(db, 'principal_chats', sName));
-    if(chatDoc.exists() && chatDoc.data().messages) {
-      const messagesList = chatDoc.data().messages;
-      container.innerHTML = messagesList.map(m => {
-        const bubbleClass = m.sender === 'parent' ? 'parent' : 'admin';
-        return `<div class="chat-bubble ${bubbleClass}">text : ${m.text}<span class="chat-time">🕒 ${m.date || ''} ${m.time}</span></div>`;
-      }).join('');
-      container.scrollTop = container.scrollHeight; // سحب الشات لآخر رسالة تلقائي
-    } else { container.innerHTML = '<p style="text-align:center; font-size:12px; color:#aaa; padding:10px;">ابدأ المحادثة الآن وأرسل استفسارك مباشرة للمدير.</p>'; }
-  } catch(e) { container.innerHTML = '<p style="color:red; font-size:11px;">خطأ سحب ملف الدردشة</p>'; }
+    await addDoc(collection(db, 'school_threads'), {
+      studentName: targetStudentName,
+      classId: targetStudentClass,
+      subject: subjectText,
+      targetRole: targetRole,
+      lastUpdatedTime: currentTime,
+      lastUpdatedDate: currentDate,
+      createdAt: serverTimestamp(),
+      messages: [{
+        sender: 'parent',
+        text: bodyText,
+        time: currentTime,
+        date: currentDate
+      }]
+    });
+    
+    document.getElementById('msg-subject-input').value = '';
+    document.getElementById('msg-body-input').value = '';
+    alert('✓ تم إرسال وتأسيس فايل السالفة بنجاح!');
+    window.backToInboxView();
+  } catch(e) { alert('خطأ في الاتصال: ' + e.message); }
+};
+
+// 2. سحب المواضيع مع بيان وقت آخر حركة أو إرسال من الخارج
+async function loadParentMailboxInbox() {
+  const container = document.getElementById('parent-mailbox-container'); if(!container) return;
+  container.innerHTML = '<p style="font-size:12px; color:#666;">جاري تحديث صندوق المراسلات...</p>';
+  
+  try {
+    const snap = await getDocs(collection(db, 'school_threads')); let html = ''; let count = 0;
+    
+    snap.forEach(doc => {
+      const t = doc.data();
+      if(t.studentName === targetStudentName) {
+        count++;
+        const totalMsgs = t.messages ? t.messages.length : 0;
+        html += `
+          <div class="email-item" onclick="window.openSpecificThreadDetails('${doc.id}')">
+            <div class="email-title"><i class="bi bi-envelope-fill" style="color:var(--accent-color);"></i> الموضوع: ${t.subject}</div>
+            <div class="email-meta">
+              <span>وجهة الرسالة: <strong style="color:var(--primary-color);">${t.targetRole}</strong></span>
+              <span class="badge success">${totalMsgs} رسائل</span>
+            </div>
+            <div style="text-align:left; margin-top:4px;">
+              <span class="email-time-badge"><i class="bi bi-clock-history"></i> الإرسال/التحديث: ${t.lastUpdatedDate || ''} الساعة ${t.lastUpdatedTime || ''}</span>
+            </div>
+          </div>
+        `;
+      }
+    });
+    container.innerHTML = count === 0 ? '<p style="text-align:center; font-size:12px; color:#aaa; padding:15px;">صندوق الوارد خالي. اضغط على الزر فوق لفتح أول موضوع ومراسلة المدرسة.</p>' : html;
+  } catch(e) { container.innerHTML = '<p style="color:red;">خطأ سحب الصندوق</p>'; }
 }
+
+// 3. فتح فايل موضوع معين وبيان وقت الإرسال ووقت كل رد بالتفصيل
+window.openSpecificThreadDetails = async function(threadId) {
+  activeThreadId = threadId;
+  document.getElementById('mail-inbox-view').classList.add('hidden');
+  document.getElementById('mail-compose-view').classList.add('hidden');
+  document.getElementById('mail-details-view').classList.remove('hidden');
+  
+  const bubblesArea = document.getElementById('thread-messages-bubbles-area');
+  bubblesArea.innerHTML = '<p style="font-size:12px; color:#666; text-align:center;">جاري فتح فايل السالفة والأوقات...</p>';
+  
+  try {
+    const tDoc = await getDoc(doc(db, 'school_threads', threadId));
+    if(tDoc.exists()) {
+      const t = tDoc.data();
+      document.getElementById('detail-thread-title').innerHTML = `<i class="bi bi-chat-left-dots-fill"></i> موضوع: ${t.subject}`;
+      document.getElementById('detail-thread-meta').textContent = `الجهة الموجه لها: ${t.targetRole}`;
+      
+      if(t.messages && t.messages.length > 0) {
+        bubblesArea.innerHTML = t.messages.map((m, index) => {
+          const bubbleClass = m.sender === 'parent' ? 'parent' : 'admin';
+          const senderLabel = m.sender === 'parent' ? 'أنت' : t.targetRole;
+          
+          // تحديد مسمى الحركة (وقت الإرسال الأساسي لأول رسالة، ووقت الرد لباقي الرسائل)
+          const stampLabel = index === 0 ? 'وقت الإرسال الأساسي' : 'وقت هذا الرد الفعلي';
+          
+          return `
+            <div class="chat-bubble ${bubbleClass}">
+              <strong>${senderLabel}:</strong><br>
+              ${m.text}
+              <span class="chat-time"><i class="bi bi-clock"></i> ${stampLabel}: ${m.date || ''} الساعة ${m.time || ''}</span>
+            </div>
+          `;
+        }).join('');
+        bubblesArea.scrollTop = bubblesArea.scrollHeight;
+      } else { bubblesArea.innerHTML = '<p style="text-align:center; font-size:12px; color:#aaa;">لا توجد رسائل.</p>'; }
+    }
+  } catch(e) { bubblesArea.innerHTML = '<p style="color:red;">خطأ في تحميل البيانات</p>'; }
+};
+
+// 4. ضخ رد جديد وتحديث طابع الوقت والتاريخ لآخر حركة على رأس الفايل
+window.submitReplyToThread = async function() {
+  const replyText = document.getElementById('thread-reply-text').value.trim();
+  if(!replyText || !activeThreadId) return;
+  
+  const currentTime = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'});
+  const currentDate = new Date().toLocaleDateString('ar-KW');
+  const threadRef = doc(db, 'school_threads', activeThreadId);
+  
+  try {
+    await updateDoc(threadRef, {
+      lastUpdatedTime: currentTime,
+      lastUpdatedDate: currentDate,
+      messages: arrayUnion({
+        sender: 'parent',
+        text: replyText,
+        time: currentTime,
+        date: currentDate
+      })
+    });
+    
+    document.getElementById('thread-reply-text').value = '';
+    window.openSpecificThreadDetails(activeThreadId);
+  } catch(e) { alert('خطأ أثناء إرسال الرد: ' + e.message); }
+};
 
 window.switchParentTab = function(tabId) {
   document.querySelectorAll('.p-tab').forEach(t => { if(t.getAttribute('onclick').includes(tabId)) t.classList.add('active'); else t.classList.remove('active'); });
   ['att', 'gate', 'clinic', 'beh', 'chat'].forEach(id => { const el = document.getElementById(`p-sec-${id}`); if(el) { if(id === tabId) el.classList.remove('hidden'); else el.classList.add('hidden'); } });
+  if(tabId === 'chat') window.backToInboxView();
 };
 
 window.logoutParent = function() { window.location.reload(); };
