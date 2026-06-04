@@ -112,7 +112,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <button class="tab" onclick="window.switchTab('student')">👤 ملف الطالب</button>
   <button class="tab" onclick="window.switchTab('students-manage')">📁 إدارة الطلاب</button>
   <button class="tab" onclick="window.switchTab('rounds')">📋 جولة الجناح</button>
-  <button class="tab" onclick="window.switchTab('honors')">🏆 لوحة الشرف</button>
+  <button class="tab" onclick="window.switchTab('honors')">🪙 بنك التميز الرقمي</button>
   <button class="tab" onclick="window.switchTab('date')">📅 بحث بتاريخ</button>
   <button class="tab" onclick="window.switchTab('visits')">🏫 الزيارات الفنية</button>
   <button class="tab" onclick="window.switchTab('users')">👥 إدارة المستخدمين</button>
@@ -265,7 +265,8 @@ window.switchTab = function(tabId) {
     import('./js/modules/rounds.js').then(m => { m.initRoundsModule(); });
   }
   if(tabId === 'honors') {
-    import('./js/modules/honors.js').then(m => { m.initHonorsModule(); });
+    /* 🪙 تم تحويل التبويب ليعمل بالكامل على محرك بنك التميز الرقمي المطور */
+    import('./js/modules/rewards.js').then(m => { m.initRewardsModule(); });
   }
   if(tabId === 'date') {
     import('./js/modules/date_search.js').then(m => { m.initDateSearchModule(); });
