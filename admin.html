@@ -184,7 +184,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <!-- باجي التبويبات الـ 17 سادة ونظيفة وجاهزة لحقن وظائفها لاحقاً من ملفاتها المنفصلة -->
   <div id="tab-teacher-directory" class="hidden"><div class="card"><h2>📇 دليل الهيكل الوظيفي للأقسام المدرسية</h2></div></div>
   <div id="tab-teacher-perf" class="hidden"><div class="card"><h2>📈 لوحة قياس كفاءة أداء الأقسام التراكمية</h2></div></div>
-  <div id="tab-clinic" class="hidden"><div class="card"><h2>🩺 الإحالات اليومية لعيادة المدرسة الطبية</h2></div></div>
+  <div id="tab-clinic" class="hidden"></div> <!-- شاشة العيادة المدرسية سيتم حقنها هني تلقائياً -->
   <div id="tab-classes" class="hidden"><div class="card"><h2>🏫 الفصول الدراسية والقوائم الفورية المعتمدة</h2></div></div>
   <div id="tab-absent" class="hidden"></div> <!-- شاشة الغياب اليومي سيتم حقنها هني تلقائياً -->
   <div id="tab-repeat" class="hidden"><div class="card"><h2>⚠️ متابعة الطلاب المتجاوزين لـ 5 أيام غياب تراكمي</h2></div></div>
@@ -284,6 +284,10 @@ window.switchTab = function(tabId) {
 
   if(tabId === 'absent') {
     import('./js/modules/attendance.js').then(module => { module.initAttendanceModule(); });
+  }
+
+  if(tabId === 'clinic') {
+    import('./js/modules/clinic.js').then(module => { module.initClinicModule(); });
   }
 };
 
