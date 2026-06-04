@@ -101,7 +101,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <button class="tab" onclick="window.switchTab('announcements')">✉️ المراسلات والطلبات الرسمية</button>
   <button class="tab" onclick="window.switchTab('teacher-directory')">📇 دليل المعلمين</button>
   <button class="tab" onclick="window.switchTab('teacher-perf')">📈 كفاءة الأداء</button>
-  <button class="tab" onclick="window.switchTab('clinic')">🩺 العيادة مدرسةية</button>
+  <button class="tab" onclick="window.switchTab('clinic')">🩺 العيادة المدرسية</button>
   <button class="tab" onclick="window.switchTab('classes')">🏫 الفصول</button>
   <button class="tab" onclick="window.switchTab('absent')">🔴 الغائبون اليوم</button>
   <button class="tab" onclick="window.switchTab('repeat')">⚠️ الغياب المتكرر</button>
@@ -142,8 +142,8 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <div id="tab-absent" class="hidden"></div> 
   <div id="tab-repeat" class="hidden"><div class="card"><h2>⚠️ متابعة الطلاب المتجاوزين لـ 5 أيام غياب تراكمي</h2></div></div>
   <div id="tab-behavior" class="hidden"></div> 
-  <div id="tab-gatepass" class="hidden"></div> <!-- شاشة تصاريح الاستئذان سيتم حقنها هني تلقائياً -->
-  <div id="tab-guard" class="hidden"><div class="card"><h2>🚪 بوابة الحارس والأمن - سجل توثيق مراجعات الضيوف</h2></div></div>
+  <div id="tab-gatepass" class="hidden"></div> 
+  <div id="tab-guard" class="hidden"></div> <!-- شاشة بوابة الحارس سيتم حقنها هني تلقائياً -->
   <div id="tab-manager-visits" class="hidden"><div class="card"><h2>👔 سجل توثيق زيارات مدير المدرسة الفنية وتقييم الحصص الدراسية</h2></div></div>
   <div id="tab-student" class="hidden"><div class="card"><h2>👤 بحث الملف الشامل والرباعي الموحد للطالب</h2></div></div>
   <div id="tab-students-manage" class="hidden"><div class="card"><h2>📁 إدارة وتفريغ ورفع قوائم الطلاب جماعياً عبر الـ Excel</h2></div></div>
@@ -224,6 +224,9 @@ window.switchTab = function(tabId) {
   }
   if(tabId === 'gatepass') {
     import('./js/modules/gatepass.js').then(m => { m.initGatepassModule(); });
+  }
+  if(tabId === 'guard') {
+    import('./js/modules/guard.js').then(m => { m.initGuardModule(); });
   }
 };
 
