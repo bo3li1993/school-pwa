@@ -141,7 +141,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <div id="tab-classes" class="hidden"><div class="card"><h2>🏫 الفصول الدراسية والقوائم الفورية المعتمدة</h2></div></div>
   <div id="tab-absent" class="hidden"></div> 
   <div id="tab-repeat" class="hidden"><div class="card"><h2>⚠️ متابعة الطلاب المتجاوزين لـ 5 أيام غياب تراكمي</h2></div></div>
-  <div id="tab-behavior" class="hidden"><div class="card"><h2>📑 سلوك الطلاب والبطاقات الملونة المرصودة</h2></div></div>
+  <div id="tab-behavior" class="hidden"></div> 
   <div id="tab-gatepass" class="hidden"><div class="card"><h2>🎫 إصدار رخصة تصريح استئذان وخروج طالب عبر البوابة الأمنية</h2></div></div>
   <div id="tab-guard" class="hidden"><div class="card"><h2>🚪 بوابة الحارس والأمن - سجل توثيق مراجعات الضيوف</h2></div></div>
   <div id="tab-manager-visits" class="hidden"><div class="card"><h2>👔 سجل توثيق زيارات مدير المدرسة الفنية وتقييم الحصص الدراسية</h2></div></div>
@@ -174,7 +174,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   </div>
 </div>
 
-<footer>المنظومة الرقمية الشاملة الموحدة التجاريّة © 2026 | مدرسة سالم الحسينان المتوسطة للبنين</footer>
+<footer>المنظومة الرقمية الشاملة الموحدة التجارية © 2026 | مدرسة سالم الحسينان المتوسطة للبنين</footer>
 
 <script type="module">
 // فحص جلسة دخول المسؤول وعرض التاريخ الرسمي بالصيغة الكويتية
@@ -218,6 +218,9 @@ window.switchTab = function(tabId) {
   }
   if(tabId === 'clinic') {
     import('./js/modules/clinic.js').then(m => { m.initClinicModule(); });
+  }
+  if(tabId === 'behavior') {
+    import('./js/modules/behavior.js').then(m => { m.initBehaviorModule(); });
   }
 };
 
