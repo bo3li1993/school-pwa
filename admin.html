@@ -7,6 +7,7 @@
 <title>لوحة التحكم الموحدة - المنظومة الرقمية الشاملة</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+<!-- مكتبات التقارير البيانية والـ PDF والإكسيل المعتمدة تجارياً -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -103,6 +104,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   </div>
 </div>
 
+<!-- 🗂️ شريط التبويبات الموحد والكامل للـ 19 زر الفورية للمدير -->
 <div class="tabs" id="tabs-bar">
   <button class="tab active" onclick="window.switchTab('today')">📊 اليوم والمؤشرات</button>
   <button class="tab" onclick="window.switchTab('announcements')">✉️ المراسلات والطلبات الرسمية</button>
@@ -127,6 +129,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
 
 <div class="content">
   
+  <!-- تبويب 1: اليوم والمؤشرات الشاملة -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards">
       <div class="stat-card"><h3>٥٢٠</h3><p>إجمالي طلاب المدرسة</p></div>
@@ -139,15 +142,18 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
     </div>
   </div>
 
+  <!-- ✉️ تبويب 2: صندوق المراسلات والطلبات الرسمية لأولياء الأمور -->
   <div id="tab-announcements" class="hidden">
     <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
       
+      <!-- نموذج نشر وتعميم توجيه إداري للمعلمين والشاشات -->
       <div class="card" style="background:#fffdf0; border-top: 4px solid var(--accent-color);">
         <h2><i class="bi bi-megaphone-fill" style="color:var(--accent-color);"></i> بث تعميم إداري موحد لجميع المعلمين والعاملين</h2>
         <textarea id="announcement-input-text" rows="3" placeholder="اكتب نص التوجيه الإداري المراد تعميمه هنا..."></textarea>
         <button onclick="window.saveAdminAnnouncement()" style="background:var(--accent-color); width:100%;">🚀 نشر وتعميم التوجيه الإداري فوراً</button>
       </div>
 
+      <!-- جدول استعراض الرسائل والطلبات المنفصلة -->
       <div class="card">
         <h2><i class="bi bi-inbox-fill" style="color:var(--primary-color);"></i> صندوق المراسلات والطلبات الرسمية الواردة من أولياء الأمور</h2>
         <p style="font-size: 12px; color: #666; margin-bottom: 15px; font-weight: bold;">نظام إدارة الملفات والتذاكر المنفصلة مفرز زمنياً وبحسب الحالات الإدارية مع توثيق الأوقات</p>
@@ -175,11 +181,12 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
     </div>
   </div>
 
+  <!-- باجي التبويبات الـ 17 سادة ونظيفة وجاهزة لحقن وظائفها لاحقاً من ملفاتها المنفصلة -->
   <div id="tab-teacher-directory" class="hidden"><div class="card"><h2>📇 دليل الهيكل الوظيفي للأقسام المدرسية</h2></div></div>
   <div id="tab-teacher-perf" class="hidden"><div class="card"><h2>📈 لوحة قياس كفاءة أداء الأقسام التراكمية</h2></div></div>
   <div id="tab-clinic" class="hidden"><div class="card"><h2>🩺 الإحالات اليومية لعيادة المدرسة الطبية</h2></div></div>
   <div id="tab-classes" class="hidden"><div class="card"><h2>🏫 الفصول الدراسية والقوائم الفورية المعتمدة</h2></div></div>
-  <div id="tab-absent" class="hidden"><div class="card"><h2>🔴 كشف الغائبين اليوم مع روابط تواصل ولي الأمر الرسمية</h2></div></div>
+  <div id="tab-absent" class="hidden"></div> <!-- شاشة الغياب اليومي سيتم حقنها هني تلقائياً -->
   <div id="tab-repeat" class="hidden"><div class="card"><h2>⚠️ متابعة الطلاب المتجاوزين لـ 5 أيام غياب تراكمي</h2></div></div>
   <div id="tab-behavior" class="hidden"><div class="card"><h2>📑 سلوك الطلاب والبطاقات الملونة المرصودة</h2></div></div>
   <div id="tab-gatepass" class="hidden"><div class="card"><h2>🎫 إصدار رخصة تصريح استئذان وخروج طالب عبر البوابة الأمنية</h2></div></div>
@@ -190,16 +197,20 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <div id="tab-rounds" class="hidden"><div class="card"><h2>📋 استمارة الجولة الميدانية لمشرف الجناح اليومية</h2></div></div>
   <div id="tab-honors" class="hidden"><div class="card"><h2>🏆 لوحة شرف الفائقين والمتميزين بالمواظبة الرقمية</h2></div></div>
   <div id="tab-date" class="hidden"><div class="card"><h2>📅 بحث ومطابقة كشوف الغياب بتاريخ محدد هجائياً</h2></div></div>
-  <div id="tab-visits" class="hidden"></div> <div id="tab-users" class="hidden"><div class="card"><h2>👥 إدارة مستخدمي المنظومة والصلاحيات المشتركة</h2></div></div>
+  <div id="tab-visits" class="hidden"></div> <!-- شاشة الاستمارة الـ 18 بند المعزولة سيتم حقنها هني تلقائياً -->
+  <div id="tab-users" class="hidden"><div class="card"><h2>👥 إدارة مستخدمي المنظومة والصلاحيات المشتركة</h2></div></div>
 </div>
 
+<!-- 📑 نافذة منبثقة رسمية لمراجعة ملف موضوع ولي الأمر والرد عليه بشكل مستقل -->
 <div id="admin-chat-modal" class="modal">
   <div class="modal-content" style="max-width: 600px; border-top: 6px solid var(--primary-color);">
     <h3 id="admin-modal-thread-title" style="color: var(--primary-color); font-weight: 900;"><i class="bi bi-envelope-open-fill"></i> ملف المراسلة الرسمي</h3>
     <p id="admin-modal-thread-meta" style="font-size: 12px; color: #666; margin-bottom: 12px; font-weight: bold; background: #f8f9fa; padding: 6px; border-radius: 4px;">الطالب: - | الفصل: -</p>
     
+    <!-- شات الردود التابع لهذا الملف بروح -->
     <div class="chat-container" id="admin-thread-messages-bubbles-area"></div>
     
+    <!-- واجهة رد الإدارة والإغلاق المعتمدة -->
     <div id="admin-reply-form-wrapper">
       <textarea id="admin-thread-reply-input" rows="3" placeholder="اكتب الرد الرسمي للإدارة هنا باللغة الفصحى المعتمدة..."></textarea>
       <div style="display: flex; gap: 8px;">
@@ -214,6 +225,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
 
 <footer>المنظومة الرقمية الشاملة الموحدة التجارية © 2026 | مدرسة سالم الحسينان المتوسطة للبنين</footer>
 
+<!-- 🚀 محرك المزامنة السحابي المودولر المطور والكامل بالأسفل لمنع المشاكل البرمجية -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, arrayUnion, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
@@ -268,6 +280,10 @@ window.switchTab = function(tabId) {
   
   if(tabId === 'visits') {
     import('./js/modules/visits.js').then(module => { module.initVisitsModule(); });
+  }
+
+  if(tabId === 'absent') {
+    import('./js/modules/attendance.js').then(module => { module.initAttendanceModule(); });
   }
 };
 
