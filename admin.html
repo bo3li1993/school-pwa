@@ -54,22 +54,10 @@ body{background: var(--bg-light); color:#333; line-height:1.6; overflow-x: hidde
 .stat-card h3{font-size:36px; margin-bottom:6px; font-weight: 900; color: #fff;}
 .stat-card p{font-size:13px; opacity:.8; font-weight: 600;}
 
-/* شبكة فرز الأقسام المدرسية */
-.dept-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px}
-.dept-card{background:#f8f9fa; border:1px solid #e1e2e6; border-radius:10px; padding:1.5rem; text-align:center; cursor:pointer; transition:all .2s}
-.dept-card:hover{background: var(--bg-light); border-color: var(--accent-color); transform:translateY(-3px);}
-.dept-card h3{font-size:14px; color: var(--primary-color); font-weight: 700;}
-
 /* أزرار وحقول إدخال موحدة النمط */
 button{background: var(--primary-color); color:#fff; border:none; padding:11px 22px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:700; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;}
 button:hover{background: var(--accent-color); box-shadow: 0 4px 8px rgba(0,0,0,0.1); transform: translateY(-1px);}
 input,select,textarea{width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; font-size:14px; margin-bottom:12px; background: #fff; outline: none; font-weight: 600; transition: border 0.2s; color: #333; text-align: right;}
-input:focus, select:focus, textarea:focus { border-color: var(--accent-color); }
-
-/* تصميم الجداول التنظيمية الرسمية */
-table{width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; text-align: right;}
-table th{background:#f8f9fa; padding:14px; border-bottom:3px solid #ddd; color: var(--primary-color); font-weight: 800;}
-table td{padding:12px; border-bottom:1px solid #eee; vertical-align:middle; font-weight: 600; color: #444;}
 
 /* نظام النوافذ المنبثقة (Modal) المطور */
 .modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; backdrop-filter: blur(4px);}
@@ -88,6 +76,9 @@ table td{padding:12px; border-bottom:1px solid #eee; vertical-align:middle; font
 .badge.danger{background: var(--danger-color);}
 .badge.info{background:#3498db;}
 .hidden{display:none!important}
+table{width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; text-align: right;}
+table th{background:#f8f9fa; padding:14px; border-bottom:3px solid #ddd; color: var(--primary-color); font-weight: 800;}
+table td{padding:12px; border-bottom:1px solid #eee; vertical-align:middle; font-weight: 600; color: #444;}
 footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-align: center; padding: 20px; font-size: 12px; border-top: 3px solid var(--accent-color); margin-top: 3rem; font-weight: 600; }
 </style>
 </head>
@@ -142,51 +133,13 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
     </div>
   </div>
 
-  <!-- ✉️ تبويب 2: صندوق المراسلات والطلبات الرسمية لأولياء الأمور -->
-  <div id="tab-announcements" class="hidden">
-    <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
-      
-      <!-- نموذج نشر وتعميم توجيه إداري للمعلمين والشاشات -->
-      <div class="card" style="background:#fffdf0; border-top: 4px solid var(--accent-color);">
-        <h2><i class="bi bi-megaphone-fill" style="color:var(--accent-color);"></i> بث تعميم إداري موحد لجميع المعلمين والعاملين</h2>
-        <textarea id="announcement-input-text" rows="3" placeholder="اكتب نص التوجيه الإداري المراد تعميمه هنا..."></textarea>
-        <button onclick="window.saveAdminAnnouncement()" style="background:var(--accent-color); width:100%;">🚀 نشر وتعميم التوجيه الإداري فوراً</button>
-      </div>
-
-      <!-- جدول استعراض الرسائل والطلبات المنفصلة -->
-      <div class="card">
-        <h2><i class="bi bi-inbox-fill" style="color:var(--primary-color);"></i> صندوق المراسلات والطلبات الرسمية الواردة من أولياء الأمور</h2>
-        <p style="font-size: 12px; color: #666; margin-bottom: 15px; font-weight: bold;">نظام إدارة الملفات والتذاكر المنفصلة مفرز زمنياً وبحسب الحالات الإدارية مع توثيق الأوقات</p>
-        
-        <div style="overflow-x: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>تاريخ وآخر حركة</th>
-                <th>اسم الطالب الدراسي</th>
-                <th>الفصل</th>
-                <th>العنوان والموضوع الرسمي</th>
-                <th>الجهة المستهدفة بالطلب</th>
-                <th>حالة الملف الحالية</th>
-                <th>إجراءات الإدارة والمسؤولين</th>
-              </tr>
-            </thead>
-            <tbody id="admin-threads-list-tbody">
-              <tr><td colspan="7" style="text-align:center; color:#aaa; font-weight:bold; padding:20px;">جاري سحب وفحص ملفات المراسلات من الخادم السحابي...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- باجي التبويبات الـ 17 سادة ونظيفة وجاهزة لحقن وظائفها لاحقاً من ملفاتها المنفصلة -->
+  <!-- 📥 حاويات فارغة ونظيفة؛ يتم شحنها وحقنها بالكامل من ملفات الـ Modules الخارجية تلقائياً عند الضغط -->
+  <div id="tab-announcements" class="hidden"></div> 
   <div id="tab-teacher-directory" class="hidden"><div class="card"><h2>📇 دليل الهيكل الوظيفي للأقسام المدرسية</h2></div></div>
   <div id="tab-teacher-perf" class="hidden"><div class="card"><h2>📈 لوحة قياس كفاءة أداء الأقسام التراكمية</h2></div></div>
-  <div id="tab-clinic" class="hidden"></div> <!-- شاشة العيادة المدرسية سيتم حقنها هني تلقائياً -->
+  <div id="tab-clinic" class="hidden"></div> 
   <div id="tab-classes" class="hidden"><div class="card"><h2>🏫 الفصول الدراسية والقوائم الفورية المعتمدة</h2></div></div>
-  <div id="tab-absent" class="hidden"></div> <!-- شاشة الغياب اليومي سيتم حقنها هني تلقائياً -->
+  <div id="tab-absent" class="hidden"></div> 
   <div id="tab-repeat" class="hidden"><div class="card"><h2>⚠️ متابعة الطلاب المتجاوزين لـ 5 أيام غياب تراكمي</h2></div></div>
   <div id="tab-behavior" class="hidden"><div class="card"><h2>📑 سلوك الطلاب والبطاقات الملونة المرصودة</h2></div></div>
   <div id="tab-gatepass" class="hidden"><div class="card"><h2>🎫 إصدار رخصة تصريح استئذان وخروج طالب عبر البوابة الأمنية</h2></div></div>
@@ -197,20 +150,18 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <div id="tab-rounds" class="hidden"><div class="card"><h2>📋 استمارة الجولة الميدانية لمشرف الجناح اليومية</h2></div></div>
   <div id="tab-honors" class="hidden"><div class="card"><h2>🏆 لوحة شرف الفائقين والمتميزين بالمواظبة الرقمية</h2></div></div>
   <div id="tab-date" class="hidden"><div class="card"><h2>📅 بحث ومطابقة كشوف الغياب بتاريخ محدد هجائياً</h2></div></div>
-  <div id="tab-visits" class="hidden"></div> <!-- شاشة الاستمارة الـ 18 بند المعزولة سيتم حقنها هني تلقائياً -->
+  <div id="tab-visits" class="hidden"></div> 
   <div id="tab-users" class="hidden"><div class="card"><h2>👥 إدارة مستخدمي المنظومة والصلاحيات المشتركة</h2></div></div>
 </div>
 
-<!-- 📑 نافذة منبثقة رسمية لمراجعة ملف موضوع ولي الأمر والرد عليه بشكل مستقل -->
+<!-- 📑 نافذة منبثقة مشتركة لمراجعة وتفنيد الردود مالت أولياء الأمور -->
 <div id="admin-chat-modal" class="modal">
   <div class="modal-content" style="max-width: 600px; border-top: 6px solid var(--primary-color);">
     <h3 id="admin-modal-thread-title" style="color: var(--primary-color); font-weight: 900;"><i class="bi bi-envelope-open-fill"></i> ملف المراسلة الرسمي</h3>
     <p id="admin-modal-thread-meta" style="font-size: 12px; color: #666; margin-bottom: 12px; font-weight: bold; background: #f8f9fa; padding: 6px; border-radius: 4px;">الطالب: - | الفصل: -</p>
     
-    <!-- شات الردود التابع لهذا الملف بروح -->
     <div class="chat-container" id="admin-thread-messages-bubbles-area"></div>
     
-    <!-- واجهة رد الإدارة والإغلاق المعتمدة -->
     <div id="admin-reply-form-wrapper">
       <textarea id="admin-thread-reply-input" rows="3" placeholder="اكتب الرد الرسمي للإدارة هنا باللغة الفصحى المعتمدة..."></textarea>
       <div style="display: flex; gap: 8px;">
@@ -223,38 +174,18 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   </div>
 </div>
 
-<footer>المنظومة الرقمية الشاملة الموحدة التجارية © 2026 | مدرسة سالم الحسينان المتوسطة للبنين</footer>
+<footer>المنظومة الرقمية الشاملة الموحدة التجاريّة © 2026 | مدرسة سالم الحسينان المتوسطة للبنين</footer>
 
-<!-- 🚀 محرك المزامنة السحابي المودولر المطور والكامل بالأسفل لمنع المشاكل البرمجية -->
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, arrayUnion, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
-// إعدادات ومفاتيح قواعد البيانات السحابية المعتمدة لمدرسة سالم الحسينان
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-let currentUser = null; let activeAdminThreadId = null;
-
-// فحص والتحقق من جلسة دخول الإدارة والمسؤولين
+// فحص جلسة دخول المسؤول وعرض التاريخ الرسمي بالصيغة الكويتية
 const savedUser = localStorage.getItem('hs_user');
 if(!savedUser){ 
   window.location.href='index.html'; 
 } else { 
-  currentUser = JSON.parse(savedUser); 
+  const currentUser = JSON.parse(savedUser); 
   document.getElementById('user-name').textContent = currentUser.name || 'المسؤول الإداري'; 
 }
 
-// عرض التاريخ الحالي بالصيغة الكويتية الرسمية المعتمدة
 document.getElementById('current-date').textContent = new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
 window.logout = function(){ 
@@ -262,7 +193,7 @@ window.logout = function(){
   window.location.href='index.html'; 
 };
 
-// الدالة السلسة والمطورة للتنقل الفوري بين شاشات الإدارة الـ 19 دون تحديث الصفحة
+// 🎛️ موجه ومستدعي المحركات الديناميكي الموحد (Modular Routing Engine)
 window.switchTab = function(tabId) {
   document.querySelectorAll('.tab').forEach(t => { 
     if(t.getAttribute('onclick').includes(tabId)) t.classList.add('active'); 
@@ -275,154 +206,29 @@ window.switchTab = function(tabId) {
     if(el){ if(id === tabId) el.classList.remove('hidden'); else el.classList.add('hidden'); } 
   });
   
-  // التشغيل والنداء التلقائي للمحركات المنفصلة (SaaS Modular Routing)
-  if(tabId === 'announcements') { window.loadAdminMailboxInboxThreads(); }
-  
+  // استدعاء فوري وبأجزاء من الثانية للملفات المعزولة عند ضغط التبويب المخصص لها
+  if(tabId === 'announcements') {
+    import('./js/modules/mailbox.js').then(m => { m.initMailboxModule(); });
+  }
   if(tabId === 'visits') {
-    import('./js/modules/visits.js').then(module => { module.initVisitsModule(); });
+    import('./js/modules/visits.js').then(m => { m.initVisitsModule(); });
   }
-
   if(tabId === 'absent') {
-    import('./js/modules/attendance.js').then(module => { module.initAttendanceModule(); });
+    import('./js/modules/attendance.js').then(m => { m.initAttendanceModule(); });
   }
-
   if(tabId === 'clinic') {
-    import('./js/modules/clinic.js').then(module => { module.initClinicModule(); });
+    import('./js/modules/clinic.js').then(m => { m.initClinicModule(); });
   }
 };
 
-/* ✉️ محرك إدارة واستعراض ملفات وتذاكر مراسلات أولياء الأمور للشاشات الإدارية */
-
-window.loadAdminMailboxInboxThreads = async function() {
-  const tbody = document.getElementById('admin-threads-list-tbody');
-  if(!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#666; font-weight:bold; padding:15px;">جاري فحص وتحديث صندوق المراسلات والطلبات...</td></tr>';
-  
-  try {
-    const snap = await getDocs(collection(db, 'school_threads'));
-    let html = ''; let count = 0;
-    
-    snap.forEach(docSnap => {
-      count++;
-      const t = docSnap.data();
-      
-      let badgeColorClass = 'warning';
-      if(t.status === 'تم الرد') badgeColorClass = 'success';
-      if(t.status === 'مغلق') badgeColorClass = 'danger';
-      
-      html += `
-        <tr>
-          <td><span class="badge info" style="background:#6c757d; font-size:10px;">${t.lastUpdatedDate || '-'} ${t.lastUpdatedTime || ''}</span></td>
-          <td><b>${t.studentName}</b></td>
-          <td><span class="badge info" style="background:var(--primary-color);">${t.classId || '-'}</span></td>
-          <td><span style="font-weight:700; color:var(--primary-color);">${t.subject}</span></td>
-          <td><small style="font-weight:700; color:#555;">${t.targetRole || 'الإدارة'}</small></td>
-          <td><span class="badge ${badgeColorClass}">${t.status || 'قيد الانتظار'}</span></td>
-          <td>
-            <button onclick="window.openAdminThreadChatModal('${docSnap.id}')" style="padding:5px 12px; font-size:11px; background:var(--primary-color); border-radius:4px;"><i class="bi bi-folder-symlink-fill"></i> مراجعة الملف</button>
-          </td>
-        </tr>
-      `;
-    });
-    
-    tbody.innerHTML = count === 0 ? '<tr><td colspan="7" style="text-align:center; color:#999; font-weight:bold; padding:20px;">صندوق الطلبات والمراسلات خالي من أي طلبات واردة حالياً.</td></tr>' : html;
-  } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--danger-color); font-weight:bold; padding:20px;">خطأ في الاتصال بالخادم الرقمي: ' + e.message + '</td></tr>';
-  }
-};
-
-window.openAdminThreadChatModal = async function(threadId) {
-  activeAdminThreadId = threadId;
-  document.getElementById('admin-chat-modal').style.display = 'flex';
-  const bubblesArea = document.getElementById('admin-thread-messages-bubbles-area');
-  bubblesArea.innerHTML = '<p style="text-align:center; font-size:12px; color:#666;">جاري سحب المحادثات والتوثيق الزمني...</p>';
-  
-  try {
-    const tDoc = await getDoc(doc(db, 'school_threads', threadId));
-    if(tDoc.exists()) {
-      const t = tDoc.data();
-      document.getElementById('admin-modal-thread-title').innerHTML = `<i class="bi bi-folder2-open"></i> ملف موضوع: ${t.subject}`;
-      document.getElementById('admin-modal-thread-meta').textContent = `اسم الطالب: ${t.studentName} | الصف: ${t.classId} | الجهة المستهدفة: ${t.targetRole}`;
-      
-      if(t.status === 'مغلق') { document.getElementById('admin-reply-form-wrapper').classList.add('hidden'); }
-      else { document.getElementById('admin-reply-form-wrapper').classList.remove('hidden'); }
-      
-      if(t.messages && t.messages.length > 0) {
-        bubblesArea.innerHTML = t.messages.map((m, index) => {
-          const isParent = m.sender === 'parent';
-          const bubbleClass = isParent ? 'parent' : 'admin';
-          const label = isParent ? 'ولي الأمر' : `رد الإدارة الرسمية (${t.targetRole})`;
-          const stampLabel = index === 0 ? 'وقت الإرسال المعتمد' : 'وقت الرد الفعلي';
-          
-          return `
-            <div class="chat-bubble ${bubbleClass}">
-              <strong>${label}:</strong><br>
-              ${m.text}
-              <span class="chat-time"><i class="bi bi-clock"></i> ${stampLabel}: ${m.date || ''} - الساعة ${m.time || ''}</span>
-            </div>
-          `;
-        }).join('');
-        bubblesArea.scrollTop = bubblesArea.scrollHeight;
-      }
-    }
-  } catch(e) { bubblesArea.innerHTML = '<p style="color:red; font-size:12px;">خطأ في سحب ملف الرسائل.</p>'; }
-};
-
-window.submitAdminReplyToThread = async function() {
-  const replyText = document.getElementById('admin-thread-reply-input').value.trim();
-  if(!replyText || !activeAdminThreadId) return;
-  
-  const currentTime = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'});
-  const currentDate = new Date().toLocaleDateString('ar-KW');
-  const threadRef = doc(db, 'school_threads', activeAdminThreadId);
-  
-  try {
-    await updateDoc(threadRef, {
-      lastUpdatedTime: currentTime, lastUpdatedDate: currentDate, status: 'تم الرد',
-      messages: arrayUnion({ sender: 'admin', text: replyText, time: currentTime, date: currentDate })
-    });
-    document.getElementById('admin-thread-reply-input').value = '';
-    window.openAdminThreadChatModal(activeAdminThreadId);
-    window.loadAdminMailboxInboxThreads();
-  } catch(e) { alert('خطأ أثناء إرسال الرد الرسمي: ' + e.message); }
-};
-
-window.closeThreadPermanently = async function() {
-  if(!confirm('هل تؤكد إغلاق هذا الملف نهائياً؟ لن يتمكن ولي الأمر من إرسال ردود إضافية بعد الإغلاق لحماية السجل.')) return;
-  const threadRef = doc(db, 'school_threads', activeAdminThreadId);
-  try {
-    await updateDoc(threadRef, { status: 'مغلق' });
-    document.getElementById('admin-chat-modal').style.display = 'none';
-    window.loadAdminMailboxInboxThreads();
-    alert('✓ تم إغلاق وأرشفة ملف المراسلة بنجاح بالمنظومة.');
-  } catch(e) { alert('خطأ أثناء أرشفة الملف: ' + e.message); }
-};
-
-// وظيفة بث التعاميم الإدارية الموحدة للمعلمين
-window.saveAdminAnnouncement = async function() {
-  const text = document.getElementById('announcement-input-text').value.trim();
-  if(!text) { alert('الرجاء كتابة نص التعميم أولاً!'); return; }
-  try {
-    await addDoc(collection(db, 'announcements'), {
-      text: text,
-      author: currentUser.name || 'إدارة المدرسة',
-      date: new Date().toLocaleDateString('ar-KW'),
-      time: new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'}),
-      createdAt: serverTimestamp()
-    });
-    document.getElementById('announcement-input-text').value = '';
-    alert('✓ تم نشر وتعميم التوجيه الإداري بنجاح بالمنظومة السحابية لجميع العاملين.');
-  } catch(e) { alert('خطأ أثناء نشر التعميم: ' + e.message); }
-};
-
-// رسم بياني تجريبي للمؤشرات عند التحميل الأول
+// رسم المؤشر البياني الترحيبي عند فتح اللوحة لأول مرة
 const ctx = document.getElementById('attendanceChart');
 if(ctx) {
   new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: ['حضور', 'غياب'],
-      datasets: [{ data: [495, 25], backgroundColor: ['#27ae60', '#e74c3c'], borderWhidth: 1 }]
+      datasets: [{ data: [495, 25], backgroundColor: ['#27ae60', '#e74c3c'], borderWidth: 1 }]
     },
     options: { plugins: { legend: { display: false } } }
   });
