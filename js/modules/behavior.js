@@ -1,7 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// إعدادات ومفاتيح قواعد البيانات السحابية المعتمدة للمدرسة
 const firebaseConfig = {
     apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
     authDomain: "hosainan-school.firebaseapp.com",
@@ -14,138 +13,156 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// دالة بناء وتوليد واجهة رصد انضباط وسلوك الطلاب
 export async function initBehaviorModule() {
     const container = document.getElementById('tab-behavior');
     if (!container) return;
 
-    let html = `
-        <div class="card" style="border-top: 5px solid var(--accent-color); text-align: right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
-            <h2 style="font-size:16px; font-weight:800; color:var(--primary-color); margin-bottom:6px;"><i class="bi bi-exclamation-octagon-fill" style="color:var(--accent-color);"></i> نظام رصد ومتابعة الانضباط السلوكي للطلاب</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:20px; font-weight:bold;">يرجى تسجيل الإجراء أو المخالفة السلوكية المرصودة للطالب لتوثيقها سحابياً وإحالتها لولي الأمر للاعتماد.</p>
+    container.innerHTML = `
+        <div class="card" style="border-top: 5px solid var(--danger-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
+            <h2><i class="bi bi-shield-exclamation" style="color:var(--danger-color);"></i> رصد ومتابعة سلوك الطلاب (البطاقات السلوكية)</h2>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">اختر الفصل الدراسي ليقوم النظام بفرز الأسماء أبجدياً فوراً بدون الحاجة للكتابة.</p>
             
-            <form id="behavior-log-form" onsubmit="window.submitBehaviorLogForm(event)">
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:15px; margin-bottom:15px; text-align:right;">
+            <form id="behavior-reg-form" onsubmit="window.handleRegisterBehaviorLive(event)">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
                     <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">اسم الطالب المشهود بحقه الإجراء</label>
-                        <input type="text" id="b-student-name" placeholder="أدخل اسم الطالب رباعياً" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px;">
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">الفصل الدراسي</label>
-                        <select id="b-class-id" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; font-weight:600;">
-                            <option value="">اختر الفصل</option>
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">1. اختر الصف / الفصل</label>
+                        <select id="beh-class-select" onchange="window.handleBehClassChange(this.value)" required>
+                            <option value="">-- اختر الفصل --</option>
                             <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
                             <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
                             <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
-                            <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
+                            <option value="9/1">9/1</option><option value="9/2">9/2</option>
                         </select>
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">نوع المخالفة / بطاقة الرصد</label>
-                        <select id="b-behavior-type" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; font-weight:600;">
-                            <option value="">اختر نوع الإجراء السلوكي</option>
-                            <option value="تنبيه شفهي: عدم الالتزام بالزي المدرسي الرسمي">تنبيه شفهي: عدم الالتزام بالزي المدرسي الرسمي</option>
-                            <option value="بطاقة صفراء: إثارة الفوضى داخل الفصل الدراسي">بطاقة صفراء: إثارة الفوضى داخل الفصل الدراسي</option>
-                            <option value="بطاقة برتقالية: تكرار عدم حل الواجبات المدرسية">بطاقة برتقالية: تكرار عدم حل الواجبات المدرسية</option>
-                            <option value="بطاقة حمراء: التأخر المتكرر عن طابور الصباح">بطاقة حمراء: التأخر المتكرر عن طابور الصباح</option>
-                            <option value="إحالة إدارية: الخروج من الفصل دون إذن المعلم">إحالة إدارية: الخروج من الفصل دون إذن المعلم</option>
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">2. اختر اسم الطالب من الفصل</label>
+                        <select id="beh-student-select" disabled required>
+                            <option value="">-- بانتظار اختيار الفصل --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">3. نوع الإجراء / المخالفة</label>
+                        <select id="beh-action-type" required>
+                            <option value="تنبيه شفهي أول">⚠️ تنبيه شفهي أول</option>
+                            <option value="إخلال بالنظام داخل الفصل">🚫 إخلال بالنظام داخل الفصل</option>
+                            <option value="عدم إحضار الأدوات والواجبات">📚 عدم إحضار الأدوات/الواجبات</option>
+                            <option value="سلوك سلبي متكرر">🛑 سلوك سلبي متكرر (بطاقة صفراء)</option>
+                            <option value="تعهد خطي رسمي">📝 تعهد خطي رسمي من الأخصائي</option>
                         </select>
                     </div>
                 </div>
-
-                <button type="submit" style="background:var(--accent-color); color:white; border:none; width:100%; font-size:15px; padding:13px; font-weight:700; border-radius:6px; cursor:pointer;"><i class="bi bi-file-earmark-medical-fill"></i> تسجيل الإجراء السلوكي وإحاطة ولي الأمر فورياً</button>
+                
+                <div style="margin-top:12px;">
+                    <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">ملاحظات وتفاصيل السلوك المرصود</label>
+                    <input type="text" id="beh-notes" placeholder="اكتب تفاصيل المخالفة باختصار..." required>
+                </div>
+                
+                <button type="submit" style="width:100%; background:var(--danger-color); font-weight:700; margin-top:5px;"><i class="bi bi-file-earmark-plus-fill"></i> تقييد وإصدار البطاقة السلوكية فوراً</button>
             </form>
         </div>
 
-        <!-- جدول أرشيف المخالفات السلوكية وحالة اعتماد ولي الأمر -->
-        <div class="card" style="margin-top:25px; text-align:right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); border-top:4px solid var(--primary-color);">
-            <h2><i class="bi bi-shield-exclamation"></i> أرشيف سجلات الانضباط السلوكي العام وحالة الاعتماد الرقمي</h2>
+        <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
+            <h2><i class="bi bi-list-task"></i> سجل الضبط السلوكي المرصود اليوم بالمنظومة</h2>
             <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:right;">
+                <table id="behavior-logs-table">
                     <thead>
                         <tr style="background:#f8f9fa;">
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">التاريخ والوقت</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">اسم الطالب</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">الفصل</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">طبيعة الإجراء السلوكي</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">حالة توقيع ولي الأمر</th>
+                            <th>اسم الطالب الدراسي</th>
+                            <th style="text-align:center;">الفصل</th>
+                            <th style="text-align:center;">نوع المخالفة المقيدة</th>
+                            <th>ملاحظات الأخصائي / المدرس</th>
                         </tr>
                     </thead>
-                    <tbody id="behavior-archive-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">جاري تدقيق السجلات السلوكية السحابية...</td></tr>
+                    <tbody id="behavior-logs-tbody">
+                        <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">جاري سحب السجلات السلوكية الحية...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     `;
 
-    container.innerHTML = html;
-    loadBehaviorArchiveFromServer();
+    loadBehaviorLogsLive();
 }
 
-// دالة معالجة وحفظ البيانات بالسيرفر
-window.submitBehaviorLogForm = async function(e) {
-    e.preventDefault();
-    
-    const studentName = document.getElementById('b-student-name').value.trim();
-    const classId = document.getElementById('b-class-id').value;
-    const behaviorType = document.getElementById('b-behavior-type').value;
+window.handleBehClassChange = async function(classId) {
+    const studentSelect = document.getElementById('beh-student-select');
+    if (!studentSelect) return;
 
-    const currentTime = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'});
-    const currentDate = new Date().toLocaleDateString('ar-KW');
+    if (!classId) {
+        studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
+        studentSelect.disabled = true;
+        return;
+    }
+
+    studentSelect.innerHTML = '<option value="">⏳ جاري جلب كشف الفصل...</option>';
+    studentSelect.disabled = true;
 
     try {
-        await addDoc(collection(db, 'behavior'), {
-            studentName: studentName,
-            classId: classId,
-            behaviorType: behaviorType,
-            parentAcknowledged: false, // افتراضي غير موقع لغاية ما يدش الأب ويوقع
-            acknowledgedAt: "",
-            date: currentDate,
-            time: currentTime,
-            createdAt: serverTimestamp()
-        });
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+        const snap = await getDocs(q);
+        
+        let arr = [];
+        snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
+        arr.sort((a, b) => a.localeCompare(b, 'ar'));
 
-        alert(`✓ تم تقييد الإجراء السلوكي بنجاح ضد الطالب (${studentName}) وبانتظار اعتماد ولي الأمر.`);
-        document.getElementById('behavior-log-form').reset();
-        loadBehaviorArchiveFromServer();
-    } catch (err) {
-        alert('خطأ أثناء تسجيل المخالفة بالسيرفر: ' + err.message);
+        let html = '<option value="">-- اختر اسم الطالب المخالف --</option>';
+        arr.forEach(name => { html += `<option value="${name}">${name}</option>`; });
+
+        studentSelect.innerHTML = arr.length === 0 ? '<option value="">⚠️ لا يوجد طلاب بالفصل</option>' : html;
+        studentSelect.disabled = arr.length === 0;
+    } catch (e) {
+        studentSelect.innerHTML = '<option value="">❌ خطأ في جلب الكشف</option>';
     }
 };
 
-// دالة جلب وعرض أرشيف السلوك مع فحص حالة توقيع الأب حياً
-async function loadBehaviorArchiveFromServer() {
-    const tbody = document.getElementById('behavior-archive-tbody');
+window.handleRegisterBehaviorLive = async function(e) {
+    e.preventDefault();
+    const sName = document.getElementById('beh-student-select').value;
+    const cId = document.getElementById('beh-class-select').value;
+    const action = document.getElementById('beh-action-type').value;
+    const notes = document.getElementById('beh-notes').value.trim();
+
+    try {
+        await addDoc(collection(db, 'behavior'), {
+            studentName: sName,
+            name: sName,
+            classId: cId,
+            action: action,
+            notes: notes,
+            createdAt: serverTimestamp()
+        });
+        alert('✓ تم تسجيل وإصدار المخالفة السلوكية بنجاح سحابي.');
+        document.getElementById('behavior-reg-form').reset();
+        document.getElementById('beh-student-select').innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
+        document.getElementById('beh-student-select').disabled = true;
+        loadBehaviorLogsLive();
+    } catch(err) {
+        alert('خطأ سحابي: ' + err.message);
+    }
+};
+
+async function loadBehaviorLogsLive() {
+    const tbody = document.getElementById('behavior-logs-tbody');
     if (!tbody) return;
 
     try {
         const snap = await getDocs(collection(db, 'behavior'));
-        let html = ''; let count = 0;
-
-        snap.forEach(docSnap => {
-            count++;
-            const b = docSnap.data();
-            
-            // تحديد شارة التوقيع الرقمي للأب
-            let signBadge = `<span class="badge warning" style="background:var(--accent-color);"><i class="bi bi-clock"></i> قيد انتظار التوقيع</span>`;
-            if(b.parentAcknowledged) {
-                signBadge = `<span class="badge success" style="background:var(--success-color);" title="${b.acknowledgedAt || ''}"><i class="bi bi-patch-check-fill"></i> تم الاعتماد إلكترونياً</span>`;
-            }
-
+        let html = '';
+        
+        snap.forEach(d => {
+            const data = d.data();
             html += `
                 <tr style="border-bottom:1px solid #eee;">
-                  <td style="padding:12px;"><small>${b.date || ''}<br>${b.time || ''}</small></td>
-                  <td style="padding:12px;"><b>${b.studentName}</b></td>
-                  <td style="padding:12px;"><span style="background:#1a1a2e; color:white; padding:3px 8px; border-radius:12px; font-size:11px;">${b.classId}</span></td>
-                  <td style="padding:12px; font-weight:bold; color:#555;">${b.behaviorType}</td>
-                  <td style="padding:12px;">${signBadge}</td>
+                    <td><b>👤 ${data.studentName || data.name || 'غير محدد'}</b></td>
+                    <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
+                    <td style="text-align:center;"><span class="badge danger">${data.action || 'مخالفة'}</span></td>
+                    <td style="color:#666; font-size:12px;">${data.notes || '-'}</td>
                 </tr>
             `;
         });
 
-        tbody.innerHTML = count === 0 ? '<tr><td colspan="5" style="text-align:center; color:#999; font-weight:bold; padding:15px;">لا توجد إجراءات سلوكية مقيدة بالسيرفر حالياً.</td></tr>' : html;
-    } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:15px;">خطأ أثناء سحب سجلات الانضباط.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">🥇 مبروك! السجل السلوكي لليوم نظيف بالكامل.</td></tr>';
+    } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">💡 بانتظار إدراج أولى المخالفات السلوكية لتفعيل السجل الحركي.</td></tr>';
     }
 }
