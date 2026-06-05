@@ -95,27 +95,27 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   </div>
 </div>
 
-<!-- 🗂️ شريط التبويبات الموحد والكامل للـ 19 زر الفورية للمدير -->
+<!-- 🗂️ شريط التبويبات الموحد والكامل بنظام المعرف النظيف المقاوم لتجمد الموبايل -->
 <div class="tabs" id="tabs-bar">
-  <button class="tab active" onclick="window.switchTab('today')">📊 اليوم والمؤشرات</button>
-  <button class="tab" onclick="window.switchTab('announcements')">✉️ المراسلات والطلبات الرسمية</button>
-  <button class="tab" onclick="window.switchTab('teacher-directory')">📇 دليل المعلمين</button>
-  <button class="tab" onclick="window.switchTab('teacher-perf')">📈 كفاءة الأداء</button>
-  <button class="tab" onclick="window.switchTab('clinic')">🩺 العيادة المدرسية</button>
-  <button class="tab" onclick="window.switchTab('classes')">🏫 محرك توزيع الفصول</button>
-  <button class="tab" onclick="window.switchTab('absent')">🔴 الغائبون اليوم</button>
-  <button class="tab" onclick="window.switchTab('repeat')">⚠️ الغياب المتكرر</button>
-  <button class="tab" onclick="window.switchTab('behavior')">📑 سلوك الطلاب</button>
-  <button class="tab" onclick="window.switchTab('gatepass')">🎫 حقيبة الاستئذان</button>
-  <button class="tab" onclick="window.switchTab('guard')">🚪 بوابة الحارس</button>
-  <button class="tab" onclick="window.switchTab('manager-visits')">👔 زيارات المدير</button>
-  <button class="tab" onclick="window.switchTab('student')">👤 ملف الطالب</button>
-  <button class="tab" onclick="window.switchTab('students-manage')">📁 إدارة الطلاب</button>
-  <button class="tab" onclick="window.switchTab('rounds')">📋 جولة الجناح</button>
-  <button class="tab" onclick="window.switchTab('honors')">🪙 بنك التميز الرقمي</button>
-  <button class="tab" onclick="window.switchTab('date')">📅 بحث بتاريخ</button>
-  <button class="tab" onclick="window.switchTab('visits')">🏫 الزيارات الفنية</button>
-  <button class="tab" onclick="window.switchTab('users')">👥 إدارة المستخدمين</button>
+  <button class="tab active" data-tab="today" onclick="window.switchTab('today')">📊 اليوم والمؤشرات</button>
+  <button class="tab" data-tab="announcements" onclick="window.switchTab('announcements')">✉️ المراسلات والطلبات الرسمية</button>
+  <button class="tab" data-tab="teacher-directory" onclick="window.switchTab('teacher-directory')">📇 دليل المعلمين</button>
+  <button class="tab" data-tab="teacher-perf" onclick="window.switchTab('teacher-perf')">📈 كفاءة الأداء</button>
+  <button class="tab" data-tab="clinic" onclick="window.switchTab('clinic')">🩺 العيادة المدرسية</button>
+  <button class="tab" data-tab="classes" onclick="window.switchTab('classes')">🏫 محرك توزيع الفصول</button>
+  <button class="tab" data-tab="absent" onclick="window.switchTab('absent')">🔴 الغائبون اليوم</button>
+  <button class="tab" data-tab="repeat" onclick="window.switchTab('repeat')">⚠️ الغياب المتكرر</button>
+  <button class="tab" data-tab="behavior" onclick="window.switchTab('behavior')">📑 سلوك الطلاب</button>
+  <button class="tab" data-tab="gatepass" onclick="window.switchTab('gatepass')">🎫 حقيبة الاستئذان</button>
+  <button class="tab" data-tab="guard" onclick="window.switchTab('guard')">🚪 بوابة الحارس</button>
+  <button class="tab" data-tab="manager-visits" onclick="window.switchTab('manager-visits')">👔 زيارات المدير</button>
+  <button class="tab" data-tab="student" onclick="window.switchTab('student')">👤 ملف الطالب</button>
+  <button class="tab" data-tab="students-manage" onclick="window.switchTab('students-manage')">📁 إدارة الطلاب</button>
+  <button class="tab" data-tab="rounds" onclick="window.switchTab('rounds')">📋 جولة الجناح</button>
+  <button class="tab" data-tab="honors" onclick="window.switchTab('honors')">🪙 بنك التميز الرقمي</button>
+  <button class="tab" data-tab="date" onclick="window.switchTab('date')">📅 بحث بتاريخ</button>
+  <button class="tab" data-tab="visits" onclick="window.switchTab('visits')">🏫 الزيارات الفنية</button>
+  <button class="tab" data-tab="users" onclick="window.switchTab('users')">👥 إدارة المستخدمين</button>
 </div>
 
 <div class="content">
@@ -182,7 +182,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
 <footer>المنظومة الرقمية الشاملة الموحدة التجاريّة © 2026 | مدرسة سالم الحسينان المتوسطة للبنين</footer>
 
 <script>
-// 🔒 نظام الجلسة والتشغيل المحمي (في سكربت مستقل تماماً لحمايته من التجمد)
+// 🔒 نظام الجلسة والتشغيل المحمي النظيف والمضمون 100% على تليفونات المبرمجين والمسؤولين
 document.addEventListener("DOMContentLoaded", function() {
   let username = "المسؤول الإداري";
   try {
@@ -211,12 +211,15 @@ window.logout = function(){
   window.location.href='index.html'; 
 };
 
-// 🎛️ موجه ومستدعي المحركات الديناميكي الموحد الفولاذي (المقاوم للتجميد والتعليق)
+// 🎛️ موجه ومستدعي المحركات الديناميكي الموحد المطور للموبايل (مضاد للتجمد والتعليق نهائياً)
 window.switchTab = function(tabId) {
-  // 1. تحديث وتنشيط شكل الزر المضغوط فوراً
+  // 1. تحديث وتنشيط شكل الزر المضغوط فوراً بناءً على معرف الموبايل data-tab
   document.querySelectorAll('.tab').forEach(t => { 
-    if(t.getAttribute('onclick').includes(`'${tabId}'`)) t.classList.add('active'); 
-    else t.classList.remove('active'); 
+    if(t.getAttribute('data-tab') === tabId) {
+       t.classList.add('active'); 
+    } else {
+       t.classList.remove('active'); 
+    }
   });
 
   // 2. تصفية وإخفاء التبويبات وإظهار المطلوب بالملي
@@ -226,7 +229,7 @@ window.switchTab = function(tabId) {
     if(el){ if(id === tabId) el.classList.remove('hidden'); else el.classList.add('hidden'); } 
   });
   
-  // 3. الاستدعاء المنفصل والديناميكي الآمن للملفات (إذا تعطل ملف لا يؤثر على حركة باچي الأزرار)
+  // 3. الاستدعاء المنفصل والديناميكي الآمن للملفات
   if(tabId === 'today') {
     import('./js/modules/today.js').then(m => { m.initTodayModule(); }).catch(err => console.error(err));
   }
