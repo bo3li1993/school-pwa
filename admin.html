@@ -129,7 +129,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
       <div class="card">
          <h2>🏫 رصد الحصص السبعة للفصول الدراسية</h2>
          <div id="class-status"><p style="color:#666; font-size:13px; font-weight:bold;">جميع الفصول مستقرة ومكتملة الرصد للحصة الحالية.</p></div>
-         <button onclick="window.exportAsالمنظومةPDF('today-report-area', 'تقرير_المؤشرات_اليومي')" style="background:var(--accent-color); font-size:11px; padding:6px 12px; margin-top:15px; width:100%;"><i class="bi bi-file-pdf-fill"></i> طباعة اللوحة الحالية PDF</button>
+         <button onclick="window.exportAsManzoumaPDF('today-report-area', 'تقرير_المؤشرات_اليومي')" style="background:var(--accent-color); font-size:11px; padding:6px 12px; margin-top:15px; width:100%;"><i class="bi bi-file-pdf-fill"></i> طباعة اللوحة الحالية PDF</button>
       </div>
     </div>
   </div>
@@ -180,7 +180,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
 import { initReportsModule } from './js/modules/reports.js';
 initReportsModule();
 
-// 🔒 نظام فحص الجلسة الفولاذي المطور (مقاوم تماماً للترمش والطرد)
+// 🔒 نظام فحص الجلسة الفولاذي المطور
 let username = "المسؤول الإداري";
 try {
   const savedUser = localStorage.getItem('hs_user') || localStorage.getItem('user') || localStorage.getItem('username');
