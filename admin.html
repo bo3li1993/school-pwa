@@ -7,6 +7,7 @@
 <title>لوحة التحكم الموحدة - المنظومة الرقمية الشاملة</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+<!-- مكتبات التقارير البيانية والـ PDF والإكسيل المعتمدة تجارياً -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -94,6 +95,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   </div>
 </div>
 
+<!-- 🗂️ شريط التبويبات الموحد والكامل للـ 19 زر الفورية للمدير -->
 <div class="tabs" id="tabs-bar">
   <button class="tab active" onclick="window.switchTab('today')">📊 اليوم والمؤشرات</button>
   <button class="tab" onclick="window.switchTab('announcements')">✉️ المراسلات والطلبات الرسمية</button>
@@ -118,9 +120,11 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
 
 <div class="content">
   
+  <!-- تبويب 1: اليوم والمؤشرات الشاملة (الحية) -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards">
-       </div>
+       <!-- المحرك يضخ الأرقام لايف هني -->
+    </div>
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;" id="today-report-area">
       <div class="card">
          <h2>📊 التحليل البياني للحضور اليومي</h2>
@@ -134,6 +138,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
     </div>
   </div>
 
+  <!-- 📥 حاويات نظيفة فارغة؛ يتم شحنها وحقنها ديناميكياً من ملفات الموديلات الخارجية فوراً عند الضغط -->
   <div id="tab-announcements" class="hidden"></div> 
   <div id="tab-teacher-directory" class="hidden"></div>
   <div id="tab-teacher-perf" class="hidden"></div>
@@ -154,6 +159,7 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <div id="tab-users" class="hidden"></div>
 </div>
 
+<!-- 📑 نافذة منبثقة مشتركة لمراجعة وتفنيد الردود مالت أولياء الأمور -->
 <div id="admin-chat-modal" class="modal">
   <div class="modal-content" style="max-width: 600px; border-top: 6px solid var(--primary-color);">
     <h3 id="admin-modal-thread-title" style="color: var(--primary-color); font-weight: 900;"><i class="bi bi-envelope-open-fill"></i> ملف المراسلة الرسمي</h3>
@@ -175,106 +181,110 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
 
 <footer>المنظومة الرقمية الشاملة الموحدة التجاريّة © 2026 | مدرسة سالم الحسينان المتوسطة للبنين</footer>
 
-<script type="module">
-// استدعاء محرك التقارير العالمي فوراً في الخلفية
-import { initReportsModule } from './js/modules/reports.js';
-initReportsModule();
-
-// 🔒 نظام فحص الجلسة الفولاذي المطور
-let username = "المسؤول الإداري";
-try {
-  const savedUser = localStorage.getItem('hs_user') || localStorage.getItem('user') || localStorage.getItem('username');
-  if(savedUser) {
-    const currentUser = JSON.parse(savedUser); 
-    username = currentUser.name || currentUser.username || "المسؤول الإداري";
+<script>
+// 🔒 نظام الجلسة والتشغيل المحمي (في سكربت مستقل تماماً لحمايته من التجمد)
+document.addEventListener("DOMContentLoaded", function() {
+  let username = "المسؤول الإداري";
+  try {
+    const savedUser = localStorage.getItem('hs_user') || localStorage.getItem('user') || localStorage.getItem('username');
+    if(savedUser) {
+      const currentUser = JSON.parse(savedUser); 
+      username = currentUser.name || currentUser.username || "المسؤول الإداري";
+    }
+  } catch(e) { 
+    console.log("قراءة الجلسة كنص عادي");
   }
-} catch(e) { 
-  console.log("قراءة الجلسة كنص عادي");
-}
-document.getElementById('user-name').textContent = username;
+  document.getElementById('user-name').textContent = username;
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-document.getElementById('current-date').textContent = new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // استدعاء محرك التقارير ديناميكياً وعزله لحماية بقية اللوحة
+  import('./js/modules/reports.js')
+    .then(m => m.initReportsModule())
+    .catch(e => console.error("محرك التقارير بانتظار الملفات:", e));
+
+  // تشغيل التبويب الأول تلقائياً عند الدخول
+  window.switchTab('today');
+});
 
 window.logout = function(){ 
   localStorage.clear(); 
   window.location.href='index.html'; 
 };
 
-// 🎛️ موجه ومستدعي المحركات الديناميكي الموحد (Modular Routing Engine)
+// 🎛️ موجه ومستدعي المحركات الديناميكي الموحد الفولاذي (المقاوم للتجميد والتعليق)
 window.switchTab = function(tabId) {
+  // 1. تحديث وتنشيط شكل الزر المضغوط فوراً
   document.querySelectorAll('.tab').forEach(t => { 
     if(t.getAttribute('onclick').includes(`'${tabId}'`)) t.classList.add('active'); 
     else t.classList.remove('active'); 
   });
 
+  // 2. تصفية وإخفاء التبويبات وإظهار المطلوب بالملي
   const sections = ['today', 'announcements', 'teacher-directory', 'teacher-perf', 'clinic', 'classes', 'absent', 'repeat', 'behavior', 'gatepass', 'guard', 'manager-visits', 'student', 'students-manage', 'rounds', 'honors', 'date', 'visits', 'users'];
   sections.forEach(id => { 
     const el = document.getElementById(`tab-${id}`); 
     if(el){ if(id === tabId) el.classList.remove('hidden'); else el.classList.add('hidden'); } 
   });
   
-  // استدعاء فوري وبأجزاء من الثانية للملفات المعزولة عند ضغط التبويب المخصص لها
+  // 3. الاستدعاء المنفصل والديناميكي الآمن للملفات (إذا تعطل ملف لا يؤثر على حركة باچي الأزرار)
   if(tabId === 'today') {
-    import('./js/modules/today.js').then(m => { m.initTodayModule(); });
+    import('./js/modules/today.js').then(m => { m.initTodayModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'announcements') {
-    import('./js/modules/mailbox.js').then(m => { m.initMailboxModule(); });
+    import('./js/modules/mailbox.js').then(m => { m.initMailboxModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'visits') {
-    import('./js/modules/visits.js').then(m => { m.initVisitsModule(); });
+    import('./js/modules/visits.js').then(m => { m.initVisitsModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'absent') {
-    import('./js/modules/attendance.js').then(m => { m.initAttendanceModule(); });
+    import('./js/modules/attendance.js').then(m => { m.initAttendanceModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'clinic') {
-    import('./js/modules/clinic.js').then(m => { m.initClinicModule(); });
+    import('./js/modules/clinic.js').then(m => { m.initClinicModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'behavior') {
-    import('./js/modules/behavior.js').then(m => { m.initBehaviorModule(); });
+    import('./js/modules/behavior.js').then(m => { m.initBehaviorModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'gatepass') {
-    import('./js/modules/gatepass.js').then(m => { m.initGatepassModule(); });
+    import('./js/modules/gatepass.js').then(m => { m.initGatepassModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'guard') {
-    import('./js/modules/guard.js').then(m => { m.initGuardModule(); });
+    import('./js/modules/guard.js').then(m => { m.initGuardModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'teacher-directory') {
-    import('./js/modules/teachers.js').then(m => { m.initTeachersModule(); });
+    import('./js/modules/teachers.js').then(m => { m.initTeachersModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'repeat') {
-    import('./js/modules/repeat.js').then(m => { m.initRepeatModule(); });
+    import('./js/modules/repeat.js').then(m => { m.initRepeatModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'teacher-perf') {
-    import('./js/modules/teacher_perf.js').then(m => { m.initTeacherPerfModule(); });
+    import('./js/modules/teacher_perf.js').then(m => { m.initTeacherPerfModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'classes') {
-    import('./js/modules/distribution.js').then(m => { m.initDistributionModule(); });
+    import('./js/modules/distribution.js').then(m => { m.initDistributionModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'manager-visits') {
-    import('./js/modules/manager_visits.js').then(m => { m.initManagerVisitsModule(); });
+    import('./js/modules/manager_visits.js').then(m => { m.initManagerVisitsModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'student') {
-    import('./js/modules/student.js').then(m => { m.initStudentModule(); });
+    import('./js/modules/student.js').then(m => { m.initStudentModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'students-manage') {
-    import('./js/modules/students_manage.js').then(m => { m.initStudentsManageModule(); });
+    import('./js/modules/students_manage.js').then(m => { m.initStudentsManageModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'rounds') {
-    import('./js/modules/rounds.js').then(m => { m.initRoundsModule(); });
+    import('./js/modules/rounds.js').then(m => { m.initRoundsModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'honors') {
-    import('./js/modules/rewards.js').then(m => { m.initRewardsModule(); });
+    import('./js/modules/rewards.js').then(m => { m.initRewardsModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'date') {
-    import('./js/modules/date_search.js').then(m => { m.initDateSearchModule(); });
+    import('./js/modules/date_search.js').then(m => { m.initDateSearchModule(); }).catch(err => console.error(err));
   }
   if(tabId === 'users') {
-    import('./js/modules/users.js').then(m => { m.initUsersModule(); });
+    import('./js/modules/users.js').then(m => { m.initUsersModule(); }).catch(err => console.error(err));
   }
 };
-
-// تشغيل الداشبورد الحي تلقائياً عند فتح اللوحة لأول مرة
-window.switchTab('today');
 </script>
 </body>
 </html>
