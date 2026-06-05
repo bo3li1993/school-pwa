@@ -1,7 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// إعدادات ومفاتيح قواعد البيانات السحابية المعتمدة للمدرسة
 const firebaseConfig = {
     apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
     authDomain: "hosainan-school.firebaseapp.com",
@@ -14,129 +13,155 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// دالة بناء وتوليد واجهة سجل العيادة المدرسية الطبية
 export async function initClinicModule() {
     const container = document.getElementById('tab-clinic');
     if (!container) return;
 
-    let html = `
-        <div class="card" style="border-top: 5px solid #3498db; text-align: right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
-            <h2 style="font-size:16px; font-weight:800; color:var(--primary-color); margin-bottom:6px;"><i class="bi bi-heart-pulse-fill" style="color:#3498db;"></i> نظام توثيق الإحالات والزيارات الطبية لعيادة المدرسة</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:20px; font-weight:bold;">يرجى تسجيل بيانات الزيارة الطبية للطالب بدقة لأرشفة السجل الصحي وإخطار ولي الأمر فوراً.</p>
+    container.innerHTML = `
+        <div class="card" style="border-top: 5px solid #3498db; text-align: right; background:#fff; padding:20px; border-radius:12px;">
+            <h2><i class="bi bi-heart-pulse-fill" style="color:#3498db;"></i> سجل العيادة المدرسية والصحة الطلابية</h2>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">نظام الدخول السريع لعيادة المدرسة؛ حدد فصل الطالب لاستدعاء اسمه ومتابعة حالته الطبية.</p>
             
-            <form id="clinic-log-form" onsubmit="window.submitClinicLogForm(event)">
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:15px; margin-bottom:15px; text-align:right;">
+            <form id="clinic-reg-form" onsubmit="window.handleRegisterClinicLive(event)">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
                     <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">اسم الطالب المراجع</label>
-                        <input type="text" id="c-student-name" placeholder="أدخل اسم الطالب رباعياً" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px;">
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">الفصل الدراسي الحالي</label>
-                        <select id="c-class-id" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; font-weight:600;">
-                            <option value="">اختر الفصل</option>
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">1. اختر الصف / الفصل</label>
+                        <select id="clinic-class-select" onchange="window.handleClinicClassChange(this.value)" required>
+                            <option value="">-- اختر الفصل --</option>
                             <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
                             <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
                             <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
-                            <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
+                            <option value="9/1">9/1</option><option value="9/2">9/2</option>
                         </select>
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">الأعراض / الشكوى المرضية</label>
-                        <input type="text" id="c-symptoms" placeholder="مثال: ارتفاع حرارة / صداع / إصابة صفية" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px;">
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">2. اختر اسم الطالب المريض</label>
+                        <select id="clinic-student-select" disabled required>
+                            <option value="">-- بانتظار اختيار الفصل --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">3. التشخيص العارض / الشكوى</label>
+                        <select id="clinic-complaint" required>
+                            <option value="ارتفاع درجة الحرارة">🌡️ ارتفاع درجة الحرارة</option>
+                            <option value="صداع وألم بالرأس">🤕 صداع وألم بالرأس</option>
+                            <option value="ألم بالمعدة ومغص">🤢 ألم بالمعدة ومغص</option>
+                            <option value="إصابة جرح / كدمة بالملعب">🏃 جرح / إصابة بالملاعب</option>
+                            <option value="إعياء عام وإرهاق">💤 إعياء عام وإرهاق</option>
+                        </select>
                     </div>
                 </div>
-
-                <div style="text-align:right; margin-bottom:15px;">
-                    <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">التدبير الطبي المتخذ والإجراء</label>
-                    <textarea id="c-action" rows="2" placeholder="مثال: إعطاء خافض حرارة / تواصل مع ولي الأمر للمغادرة / نقل للمستشفى" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; text-align:right;"></textarea>
+                
+                <div style="margin-top:12px;">
+                    <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">الإجراء الطبي والعلاج الممنوح</label>
+                    <input type="text" id="clinic-treatment" placeholder="مثال: إعطاء بندول + مكوث بالعيادة لمدة حصة كاملة" required>
                 </div>
-
-                <button type="submit" style="background:#3498db; color:white; border:none; width:100%; font-size:15px; padding:13px; font-weight:700; border-radius:6px; cursor:pointer;"><i class="bi bi-shield-plus"></i> اعتماد وتوثيق السجل الصحي بالطبي السحابي</button>
+                
+                <button type="submit" style="width:100%; background:#3498db; font-weight:700; margin-top:5px;"><i class="bi bi-plus-square-fill"></i> تقييد وإرسال بطاقة الزيارة الصحية</button>
             </form>
         </div>
 
-        <!-- جدول أرشيف التقارير الصحية -->
-        <div class="card" style="margin-top:25px; text-align:right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); border-top:4px solid var(--primary-color);">
-            <h2><i class="bi bi-medical-checklist"></i> أرشيف سجلات المراجعات الصحية لعيادة المدرسة</h2>
+        <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
+            <h2><i class="bi bi-capsule"></i> كشف زيارات العيادة المدرسية المقيدة اليوم لايف</h2>
             <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:right;">
+                <table id="clinic-logs-table">
                     <thead>
                         <tr style="background:#f8f9fa;">
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">التاريخ والوقت</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">اسم الطالب</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">الفصل</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">الأعراض الطبية</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">الإجراء المتخذ</th>
+                            <th>اسم الطالب المريض</th>
+                            <th style="text-align:center;">الفصل</th>
+                            <th style="text-align:center;">العارض الطبي</th>
+                            <th>الإجراء والعلاج الممنوح</th>
                         </tr>
                     </thead>
-                    <tbody id="clinic-archive-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">جاري استدعاء الملفات الطبية...</td></tr>
+                    <tbody id="clinic-logs-tbody">
+                        <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">جاري مراجعة سجلات العيادة السحابية...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     `;
 
-    container.innerHTML = html;
-    loadClinicArchiveFromServer();
+    loadClinicLogsLive();
 }
 
-// دالة معالجة وضخ حركات العيادة في قاعدة البيانات
-window.submitClinicLogForm = async function(e) {
-    e.preventDefault();
-    
-    const studentName = document.getElementById('c-student-name').value.trim();
-    const classId = document.getElementById('c-class-id').value;
-    const symptoms = document.getElementById('c-symptoms').value.trim();
-    const action = document.getElementById('c-action').value.trim();
+window.handleClinicClassChange = async function(classId) {
+    const studentSelect = document.getElementById('clinic-student-select');
+    if (!studentSelect) return;
 
-    const currentTime = new Date().toLocaleTimeString('ar-KW', {hour: '2-digit', minute:'2-digit'});
-    const currentDate = new Date().toLocaleDateString('ar-KW');
+    if (!classId) {
+        studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
+        studentSelect.disabled = true;
+        return;
+    }
+
+    studentSelect.innerHTML = '<option value="">⏳ جاري فرز الكشف أبجدياً...</option>';
+    studentSelect.disabled = true;
 
     try {
-        await addDoc(collection(db, 'clinic_logs'), {
-            studentName: studentName,
-            classId: classId,
-            symptoms: symptoms,
-            action: action,
-            date: currentDate,
-            time: currentTime,
-            createdAt: serverTimestamp()
-        });
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+        const snap = await getDocs(q);
+        
+        let arr = [];
+        snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
+        arr.sort((a, b) => a.localeCompare(b, 'ar'));
 
-        alert(`✓ تم توقيع السجل الصحي للطالب (${studentName}) بنجاح.`);
-        document.getElementById('clinic-log-form').reset();
-        loadClinicArchiveFromServer();
-    } catch (err) {
-        alert('خطأ أثناء حفظ الحركة الصحية بالسيرفر: ' + err.message);
+        let html = '<option value="">-- اختر اسم الطالب المريض --</option>';
+        arr.forEach(name => { html += `<option value="${name}">${name}</option>`; });
+
+        studentSelect.innerHTML = arr.length === 0 ? '<option value="">⚠️ لا يوجد طلاب</option>' : html;
+        studentSelect.disabled = arr.length === 0;
+    } catch (e) {
+        studentSelect.innerHTML = '<option value="">❌ خطأ في جلب الكشف</option>';
     }
 };
 
-// دالة سحب وعرض التقارير الطبية المؤرشفة
-async function loadClinicArchiveFromServer() {
-    const tbody = document.getElementById('clinic-archive-tbody');
+window.handleRegisterClinicLive = async function(e) {
+    e.preventDefault();
+    const sName = document.getElementById('clinic-student-select').value;
+    const cId = document.getElementById('clinic-class-select').value;
+    const complaint = document.getElementById('clinic-complaint').value;
+    const treatment = document.getElementById('clinic-treatment').value.trim();
+
+    try {
+        await addDoc(collection(db, 'clinic'), {
+            studentName: sName,
+            classId: cId,
+            complaint: complaint,
+            treatment: treatment,
+            createdAt: serverTimestamp()
+        });
+        alert('✓ تم تسجيل البيانات الصحية للطالب بنجاح السيرفر.');
+        document.getElementById('clinic-reg-form').reset();
+        document.getElementById('clinic-student-select').innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
+        document.getElementById('clinic-student-select').disabled = true;
+        loadClinicLogsLive();
+    } catch(err) {
+        alert('خطأ في الاتصال: ' + err.message);
+    }
+};
+
+async function loadClinicLogsLive() {
+    const tbody = document.getElementById('clinic-logs-tbody');
     if (!tbody) return;
 
     try {
-        const snap = await getDocs(collection(db, 'clinic_logs'));
-        let html = ''; let count = 0;
-
-        snap.forEach(docSnap => {
-            count++;
-            const c = docSnap.data();
+        const snap = await getDocs(collection(db, 'clinic'));
+        let html = '';
+        
+        snap.forEach(d => {
+            const data = d.data();
             html += `
                 <tr style="border-bottom:1px solid #eee;">
-                  <td style="padding:12px;"><small>${c.date || ''}<br>${c.time || ''}</small></td>
-                  <td style="padding:12px;"><b>${c.studentName}</b></td>
-                  <td style="padding:12px;"><span style="background:#1a1a2e; color:white; padding:3px 8px; border-radius:12px; font-size:11px;">${c.classId}</span></td>
-                  <td style="padding:12px; color:var(--danger-color); font-weight:bold;">${c.symptoms}</td>
-                  <td style="padding:12px;"><small style="color:#555; font-weight:bold;">${c.action}</small></td>
+                    <td><b>👤 ${data.studentName || 'غير محدد'}</b></td>
+                    <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
+                    <td style="text-align:center;"><span class="badge success" style="background:#3498db;">${data.complaint || '-'}</span></td>
+                    <td style="color:#555; font-size:12px; font-weight:700;">${data.treatment || '-'}</td>
                 </tr>
             `;
         });
 
-        tbody.innerHTML = count === 0 ? '<tr><td colspan="5" style="text-align:center; color:#999; font-weight:bold; padding:15px;">لا توجد سجلات زيارات مؤرشفة للعيادة الطبية حالياً.</td></tr>' : html;
-    } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:15px;">خطأ أثناء سحب الأرشيف الطبي.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 لا توجد زيارات مقيدة للعيادة اليوم.</td></tr>';
+    } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px;">💡 بانتظار قيد أول حالة صحية لتهيئة الجدول.</td></tr>';
     }
 }
