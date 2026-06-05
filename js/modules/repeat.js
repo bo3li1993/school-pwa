@@ -1,102 +1,73 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+// محرك أدوات التقارير التجارية الموحدة للمنظومة (PDF & Excel Engine)
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
+// 1. دالة تصدير أي جدول ديناميكي إلى ملف Excel معتمد فوراً
+window.exportAsManzoumaExcel = function(tableId, fileName = 'تقرير_المدرسة') {
+    const table = document.getElementById(tableId);
+    if (!table) {
+        alert('⚠️ تنبيه إداري: لم يتم العثور على الجدول المراد تصديره حالياً.');
+        return;
+    }
+    
+    try {
+        // تحويل الجدول إلى كائن ورقة عمل Excel مفرز
+        const wb = XLSX.utils.table_to_book(table, { sheet: "سجلات المنظومة" });
+        // كتابة وتنزيل الملف بجهاز الموظف فوراً
+        XLSX.writeFile(wb, `${fileName}_${new Date().toLocaleDateString('ar-KW')}.xlsx`);
+    } catch (error) {
+        alert('خطأ أثناء توليد ملف الـ Excel: ' + error.message);
+    }
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// 2. دالة تحويل وتصوير أي حاوية أو كشف إلى مستند PDF رسمي فخم
+window.exportAsManzoumaPDF = function(elementId, reportTitle = 'تقرير رسمي') {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        alert('⚠️ تنبيه إداري: لم يتم العثور على القسم المراد طباعته.');
+        return;
+    }
 
-// دالة بناء واجهة رصد الغياب المتكرر وحساب التجاوزات تلقائياً
-export async function initRepeatModule() {
-    const container = document.getElementById('tab-repeat');
-    if (!container) return;
+    alert('⏳ جاري تشغيل محرك التصوير السحابي وتحويل المستند إلى PDF، يرجى الانتظار...');
 
-    let html = `
-        <div class="card" style="border-top: 5px solid var(--danger-color); text-align: right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
-            <h2 style="font-size:16px; font-weight:800; color:var(--primary-color); margin-bottom:6px;"><i class="bi bi-exclamation-triangle-fill" style="color:var(--danger-color);"></i> نظام الرصد التلقائي للغياب المتكرر وتجاوز الإنذارات</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:20px; font-weight:bold;">يقوم النظام بفحص السجلات السحابية فوراً وحصر الطلاب الذين تجاوز إجمالي غيابهم 5 أيام أو أكثر لإصدار الإجراءات الإدارية.</p>
-            
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:right;">
-                    <thead>
-                        <tr style="background:#f8f9fa;">
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">اسم الطالب الدراسي</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">الفصل الدراسي</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">إجمالي أيام الغياب المرصودة</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">مستوى الإنذار الإداري</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">الإجراء والمتابعة</th>
-                        </tr>
-                    </thead>
-                    <tbody id="repeat-absent-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">جاري فحص وتجميع سجلات الغياب التراكمية من السيرفر...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-
-    container.innerHTML = html;
-    calculateRepeatAbsences();
-}
-
-// محرك ذكي يقوم بقراءة حركات الغياب وتجميعها بحسب كل طالب وتصفية المتجاوزين
-async function calculateRepeatAbsences() {
-    const tbody = document.getElementById('repeat-absent-tbody');
-    if (!tbody) return;
+    // إعدادات التصوير بدقة عالية جداً تناسب الطابعات المدرسية
+    const opt = {
+        margin: 10,
+        filename: `${reportTitle}_${new Date().toLocaleDateString('ar-KW')}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
 
     try {
-        const snap = await getDocs(collection(db, 'attendance'));
-        let studentAbsenceCount = {};
+        html2canvas(element, opt.html2canvas).then((canvas) => {
+            const imgData = canvas.toDataURL('image/jpeg');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF(opt.jsPDF);
+            
+            const imgWidth = 190; // مقاس الحجم المتوافق مع ورقة A4
+            const pageHeight = 295;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 10;
 
-        snap.forEach(docSnap => {
-            const att = docSnap.data();
-            if (att.status === 'absent') {
-                const sKey = att.studentId || att.studentName;
-                if (!studentAbsenceCount[sKey]) {
-                    studentAbsenceCount[sKey] = {
-                        name: att.studentName,
-                        classId: att.classId || '-',
-                        count: 0
-                    };
-                }
-                studentAbsenceCount[sKey].count += 1;
+            pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            // في حال كان التقرير طويل ويحتوي على صفحات متعددة تلقائياً
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight + 10;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
             }
+            
+            pdf.save(opt.filename);
         });
-
-        let html = ''; let count = 0;
-        
-        for (let key in studentAbsenceCount) {
-            const s = studentAbsenceCount[key];
-            if (s.count >= 5) {
-                count++;
-                
-                let warningBadge = `<span class="badge warning" style="background:#e67e22;">إنذار أول (أولي)</span>`;
-                if(s.count >= 10) warningBadge = `<span class="badge danger" style="background:#c0392b;">إنذار ثانٍ (حرج)</span>`;
-                if(s.count >= 15) warningBadge = `<span class="badge danger" style="background:#111; color:red; font-weight:900;">فصل / حرمان</span>`;
-
-                html += `
-                    <tr style="border-bottom:1px solid #eee;">
-                        <td style="padding:12px;"><b>${s.name}</b></td>
-                        <td style="padding:12px;"><span style="background:#1a1a2e; color:white; padding:3px 8px; border-radius:12px; font-size:11px;">${s.classId}</span></td>
-                        <td style="padding:12px; font-weight:800; color:var(--danger-color); font-size:15px; text-align:center;">${s.count} أيام</td>
-                        <td style="padding:12px;">${warningBadge}</td>
-                        <td style="padding:12px;">
-                            <button onclick="alert('جاري إعداد تقرير الإنذار الرسمي للطالب: ${s.name}')" style="padding:4px 10px; font-size:11px; background:#1a1a2e; color:white; border:none; border-radius:4px; cursor:pointer;"><i class="bi bi-file-earmark-pdf-fill"></i> طباعة كتاب الإنذار</button>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        tbody.innerHTML = count === 0 ? '<tr><td colspan="5" style="text-align:center; color:#27ae60; font-weight:bold; padding:15px;">✓ مستقر: لا يوجد أي حالات تجاوزت 5 أيام غياب متكرر حالياً.</td></tr>' : html;
-    } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:15px;">خطأ في معالجة وحساب التجاوزات السلوكية.</td></tr>';
+    } catch (err) {
+        alert('خطأ أثناء معالجة أمر الطباعة الرقمي: ' + err.message);
     }
+};
+
+// دالة تفعيل المحرك تلقائياً عند الاستدعاء
+export function initReportsModule() {
+    console.log('✓ تم تشغيل محرك التقارير بنجاح وبانتظار أوامر الطباعة.');
 }
