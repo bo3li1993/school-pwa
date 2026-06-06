@@ -1,121 +1,117 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db } from '../firebase-config.js';
+import { collection, addDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// دالة بناء وتوليد واجهة إدارة المستخدمين والصلاحيات المدرسية
 export async function initUsersModule() {
     const container = document.getElementById('tab-users');
     if (!container) return;
 
-    let html = `
-        <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
-            <h2><i class="bi bi-people-fill" style="color:var(--accent-color);"></i> نظام إدارة مستخدمي المنظومة ومنح الصلاحيات المشتركة</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:20px; font-weight:bold;">تستخدم هذه الشاشة من قبل الإدارة العليا لإنشاء حسابات العاملين بالمنشأة وتحديد مستوى صلاحيات الدخول الأمني.</p>
+    // 🛡️ جدار حماية موضعى لضمان استقرار واجهة المستخدم الإدارية ضد الكراش
+    try {
+        container.innerHTML = `
+        <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
+            <h2><i class="bi bi-people-fill" style="color:var(--primary-color);"></i> نظام إدارة صلاحيات المستخدمين وحسابات الهيئة التعليمية</h2>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">قم بإنشاء وتفعيل مستويات صلاحيات الدخول للمدرسة وحفظها فورياً بقاعدة البيانات الموحدة.</p>
             
-            <form id="user-add-form" onsubmit="window.submitUserCreationForm(event)">
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:15px; margin-bottom:15px; text-align:right;">
+            <form id="user-creation-form" onsubmit="window.handleCreateUserLive(event)">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
                     <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">اسم الموظف / المستخدم الكامل</label>
-                        <input type="text" id="u-full-name" placeholder="أدخل الاسم ثلاثياً" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px;">
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">الاسم الكامل للموظف</label>
+                        <input type="text" id="user-full-name" placeholder="أدخل الاسم الثلاثي أو الرباعي" required>
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">المسمى الوظيفي والدور بالمنظومة</label>
-                        <select id="u-role" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; font-weight:600;">
-                            <option value="مدير مساعد / مسؤول إداري">مدير مساعد / مسؤول إداري</option>
-                            <option value="رئيس قسم فني">رئيس قسم فني</option>
-                            <option value="أخصائي اجتماعي / نفسي">أخصائي اجتماعي / نفسي</option>
-                            <option value="حارس أمن السلامة">حارس أمن السلامة</option>
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">رقم المستخدم الافتراضي (User ID)</label>
+                        <input type="text" id="user-login-id" placeholder="مثال: 6464" required>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">كلمة المرور الافتراضية</label>
+                        <input type="text" id="user-plain-pass" placeholder="أدخل الرمز السري الفريش" required>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">المسمى الوظيفي والدور (Role)</label>
+                        <select id="user-role-select" required>
+                            <option value="teacher">teacher (معلم / هيئة تعليمية)</option>
+                            <option value="admin">admin (مدير مساعد / مسؤول نظام إداري)</option>
                         </select>
                     </div>
-                    <div>
-                        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:6px;">كلمة المرور الافتراضية للدخول</label>
-                        <input type="text" id="u-password" placeholder="أدخل رمز الدخول المبدئي" required style="width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; text-align:center; font-family:monospace;">
-                    </div>
                 </div>
-
-                <button type="submit" style="background:var(--primary-color); color:white; border:none; width:100%; font-size:15px; padding:13px; font-weight:700; border-radius:6px; cursor:pointer;"><i class="bi bi-person-check-fill"></i> اعتماد قيد المستخدم وتفعيل الصلاحية فوراً</button>
+                <button type="submit" style="width:100%; margin-top:15px; font-weight:700;"><i class="bi bi-person-plus-fill"></i> اعتماد قيد المستخدم وتنشيط الصلاحية فورا</button>
             </form>
         </div>
 
-        <!-- جدول استعراض حسابات المنظومة النشطة -->
-        <div class="card" style="margin-top:25px; text-align:right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04); border-top:4px solid var(--accent-color);">
-            <h2><i class="bi bi-shield-lock-fill"></i> سجل الحسابات النشطة ومستويات الوصول الأمنية المعتمدة</h2>
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:right;">
+        <div class="card" style="border-top: 5px solid var(--hover-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
+            <h2><i class="bi bi-shield-lock"></i> سجل الحسابات النشطة والمصرح لها بالدخول للمنظومة</h2>
+            <div style="overflow-x:auto; margin-top:10px;">
+                <table>
                     <thead>
                         <tr style="background:#f8f9fa;">
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">تاريخ التفعيل</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">اسم المستخدم الكامل</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">المسمى الوظيفي</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd; text-align:center;">رمز المرور</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd; text-align:center;">حالة الوصول</th>
+                            <th>الاسم المعتمد بالمنشأة</th>
+                            <th style="text-align:center;">رقم المستخدم ID</th>
+                            <th style="text-align:center;">الصلاحية الدور</th>
+                            <th style="text-align:center;">كلمة المرور الافتراضية</th>
                         </tr>
                     </thead>
-                    <tbody id="system-users-archive-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">جاري مراجعة الأذونات السحابية...</td></tr>
+                    <tbody id="system-users-tbody">
+                        <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">جاري فحص تصاريح الحسابات السحابية...</td></tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-    `;
-
-    container.innerHTML = html;
-    loadSystemUsersFromServer();
+        </div>`;
+        
+        loadSystemUsersLive();
+    } catch(e) {
+        container.innerHTML = `
+            <div class="card" style="border-top:5px solid var(--danger-color); color:var(--danger-color); text-align:center; padding:20px; font-weight:bold;">
+               ⚠️ تعذر تحميل شاشة إدارة المستخدمين: ${e.message}
+            </div>`;
+    }
 }
 
-// دالة إنشاء وحفظ الحساب الجديد بالسيرفر
-window.submitUserCreationForm = async function(e) {
+window.handleCreateUserLive = async function(e) {
     e.preventDefault();
-    const fullName = document.getElementById('u-full-name').value.trim();
-    const role = document.getElementById('u-role').value;
-    const password = document.getElementById('u-password').value.trim();
-    const currentDate = new Date().toLocaleDateString('ar-KW');
+    const name = document.getElementById('user-full-name').value.trim();
+    const userId = document.getElementById('user-login-id').value.trim();
+    const plainPass = document.getElementById('user-plain-pass').value.trim();
+    const role = document.getElementById('user-role-select').value;
 
     try {
-        await addDoc(collection(db, 'system_users'), {
-            name: fullName,
+        // ✨ تصحيح العلة الحرج وحفظ البيانات في الكولكشن الصحيح الموحد users مع الحقول الأربعة المطلوبة بالملي
+        await addDoc(collection(db, 'users'), {
+            name: name,
+            userId: userId,
+            plainPass: plainPass,
             role: role,
-            password: password,
-            dateCreated: currentDate,
             createdAt: serverTimestamp()
         });
-        alert(`✓ تم بنجاح إنشاء وتفعيل حساب الموظف (${fullName}) بصفة: ${role}.`);
-        document.getElementById('user-add-form').reset();
-        loadSystemUsersFromServer();
-    } catch (err) { alert('خطأ أثناء حفظ الحساب السحابي: ' + err.message); }
+        alert(`✓ تم بنجاح اعتماد الحساب السحابي للموظف: ${name}\nصلاحية الدخول الممنوحة: ${role}`);
+        document.getElementById('user-creation-form').reset();
+        loadSystemUsersLive();
+    } catch(err) { 
+        alert('خطأ مالي أثناء حفظ الحساب بالسيرفر: ' + err.message); 
+    }
 };
 
-// دالة جلب وعرض الحسابات النشطة من السيرفر
-async function loadSystemUsersFromServer() {
-    const tbody = document.getElementById('system-users-archive-tbody');
-    if (!tbody) return;
+async function loadSystemUsersLive() {
+    const tbody = document.getElementById('system-users-tbody');
+    if(!tbody) return;
+
     try {
-        const snap = await getDocs(collection(db, 'system_users'));
-        let html = ''; let count = 0;
-        snap.forEach(docSnap => {
-            count++;
-            const u = docSnap.data();
+        const snap = await getDocs(collection(db, 'users'));
+        let html = '';
+        
+        snap.forEach(doc => {
+            const data = doc.data();
             html += `
                 <tr style="border-bottom:1px solid #eee;">
-                  <td style="padding:12px;"><small>${u.dateCreated || '-'}</small></td>
-                  <td style="padding:12px;"><b>${u.name}</b></td>
-                  <td style="padding:12px;"><span style="background:#1a1a2e; color:white; padding:3px 8px; border-radius:12px; font-size:11px;">${u.role}</span></td>
-                  <td style="padding:12px; text-align:center;"><code style="background:#fff3cd; color:#856404; padding:2px 6px; border-radius:4px; font-weight:bold;">${u.password}</code></td>
-                  <td style="padding:12px; text-align:center;"><span class="badge success" style="background:#27ae60;"><i class="bi bi-shield-check"></i> نشط ومصرح</span></td>
+                    <td><b>👤 ${data.name || '-'}</b></td>
+                    <td style="text-align:center; font-weight:700;">${data.userId || '-'}</td>
+                    <td style="text-align:center;"><span class="badge ${data.role === 'admin' ? 'danger' : 'info'}">${data.role === 'admin' ? 'مسؤول نظام' : 'معلم'}</span></td>
+                    <td style="text-align:center; font-family:monospace; font-weight:bold; color:var(--accent-color); font-size:14px;">${data.plainPass || '-'}</td>
                 </tr>
             `;
         });
-        tbody.innerHTML = count === 0 ? '<tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">لا توجد حسابات إضافية مسجلة حالياً.</td></tr>' : html;
-    } catch (e) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:15px;">خطأ في جلب تصاريح المستخدمين.</td></tr>'; }
+        
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold; color:#999;">💡 لا توجد حسابات مخصصة مقيدة بالسيرفر حالياً.</td></tr>';
+    } catch(e) { 
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:15px; font-weight:bold;">❌ تعذر جلب الحسابات النشطة من السيرفر الموحد.</td></tr>'; 
+    }
 }
