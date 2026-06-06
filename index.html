@@ -36,6 +36,7 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 .parent-link { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 13px; font-weight: bold; }
 .parent-link a { color: #2980b9; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
 
+/* 📲 ستايل زر التثبيت الذكي العائم والمحمي */
 #install-app-btn {
     display: none; background: #27ae60; color: #fff; border: none; padding: 10px 15px; 
     border-radius: 30px; font-weight: 700; font-size: 13px; margin-bottom: 15px; width: 100%;
@@ -45,6 +46,7 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 </head>
 <body>
 
+<!-- 📲 زر التثبيت السريع للـ PWA (يظهر فقط إذا كان الجهاز يدعم التثبيت ولم يثبته بعد) -->
 <div style="width: 100%; max-width: 420px;">
     <button id="install-app-btn"><i class="bi bi-phone-vibrate-fill"></i> 📲 ثبّت تطبيق المنظومة على هاتفِك الحين</button>
 </div>
@@ -54,12 +56,12 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
     <h2>المنظومة الرقمية الموحدة</h2>
     <p>مدرسة سالم الحسينان المتوسطة للبنين</p>
     
-    <form id="system-login-form-submit">
+    <form onsubmit="window.handleSystemLoginLive(event)">
         <label><i class="bi bi-person-fill"></i> رقم المستخدم / المعرف (User ID)</label>
         <input type="text" id="login-user-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
         
         <label><i class="bi bi-key-fill"></i> رمز الحماية السري (Password)</label>
-        <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+        <input type="password" id="login-password" placeholder="أدخل كلمة المرور المشفرة" required>
         
         <button type="submit" id="btn-login-submit">
             <i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة
@@ -74,116 +76,67 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 <script type="module">
 import { db } from './js/firebase-config.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
-// ⏳ 1. فحص وجود جلسة سابقة مستقرة لتسريع الدخول آلياً لراحتك
+// تحقق من جلسة سابقة
 const saved = localStorage.getItem('hs_user');
 if(saved){
     try{
         const u = JSON.parse(saved);
         if(u && u.role) window.location.replace(u.role === 'admin' ? 'admin.html' : 'teacher.html');
-    }catch(e) { localStorage.removeItem('hs_user'); }
+    }catch(e){ localStorage.removeItem('hs_user'); }
 }
 
-// 🛡️ تكتيك حماية حركي: استدعاء الـ App والـ Auth بذكاء بدون إجبار ملف الكونفيج على التصدير
-const currentFirebaseApp = getApps()[0];
-const firebaseAuthInstance = getAuth(currentFirebaseApp);
-
-let deferredPrompt;
-const installBtn = document.getElementById('install-app-btn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
+document.getElementById('btn-login-submit').addEventListener('click', async function(e){
     e.preventDefault();
-    deferredPrompt = e;
-    installBtn.style.display = 'block';
-});
-
-installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    installBtn.style.display = 'none';
-});
-
-// 🔑 3. محرك الفحص والولوج المرن الموحد والمطهر محلياً بالكامل
-async function executeSecureLoginProcess(e) {
-    if(e) e.preventDefault();
-    
     const userId = document.getElementById('login-user-id').value.trim();
-    const pass = document.getElementById('login-password').value.trim();
-    const btn = document.getElementById('btn-login-submit');
+    const pass   = document.getElementById('login-password').value.trim();
+    const btn    = document.getElementById('btn-login-submit');
 
-    if(!userId || !pass) { alert('⚠️ يرجى إدخال رقم المستخدم ورمز الحماية.'); return; }
+    if(!userId || !pass){ alert('⚠️ أدخل رقم المستخدم وكلمة المرور'); return; }
 
-    const targetEmail = `${userId}@hosainan.school`;
     btn.disabled = true;
-    btn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص جدار الحماية...`;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
 
-    try {
-        let isAuthSuccess = false;
-        let foundUserDoc = null;
-
-        // أ) محاولة الدخول بنظام التشفير العالمي أولاً
-        try {
-            await signInWithEmailAndPassword(firebaseAuthInstance, targetEmail, pass);
-            isAuthSuccess = true;
-            console.log("✓ تم الولوج آمن عبر الـ Auth.");
-        } catch(authErr) {
-            console.log("ℹ️ الحساب غير مرحل بعد، جاري الفرز والتطهير المحلي للمطابقة...");
-        }
-
-        // ب) جلب السجلات وعمل الفرز المحلي الفولاذي المقاوم للمسافات واختلاف الأنواع (نص ضد رقم)
+    try{
         const snap = await getDocs(collection(db, 'users'));
-        
+        let found = null;
+
         snap.forEach(doc => {
             const d = doc.data();
-            const dbUid  = String(d.userId || '').trim();
-            const dbPass = String(d.plainPass || '').trim();
-
-            if (dbUid === userId) {
-                if (isAuthSuccess || dbPass === pass) {
-                    foundUserDoc = {
-                        id: doc.id,
-                        name: d.name || 'موظف المنظومة',
-                        role: String(d.role || '').trim().toLowerCase(),
-                        classId: d.classId || '',
-                        userId: dbUid
-                    };
-                }
+            const uid  = String(d.userId  || '').trim();
+            const pwd  = String(d.plainPass || '').trim();
+            if(uid === userId && pwd === pass){
+                found = { id: doc.id, name: d.name||'', role: String(d.role||'').trim().toLowerCase(), classId: d.classId||'', userId: d.userId };
             }
         });
 
-        if(!foundUserDoc) {
-            alert("❌ عذراً: رقم المستخدم أو كلمة المرور غير صحيحة.");
+        if(!found){
+            alert('❌ رقم المستخدم أو كلمة المرور غير صحيحة');
             btn.disabled = false;
-            btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
+            btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة';
             return;
         }
 
-        // حفظ الجلسة النظيفة والتوجيه الفوري المستقر
-        localStorage.setItem('hs_user', JSON.stringify(foundUserDoc));
-        window.location.replace(foundUserDoc.role === 'admin' ? 'admin.html' : 'teacher.html');
+        localStorage.setItem('hs_user', JSON.stringify(found));
+        window.location.replace(found.role === 'admin' ? 'admin.html' : 'teacher.html');
 
-    } catch(err) {
-        alert("⚠️ عطل في الاتصال بالسيرفر: " + err.message);
+    }catch(err){
+        alert('⚠️ خطأ في الاتصال: ' + err.message);
         btn.disabled = false;
-        btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة';
     }
-}
+});
 
-// ربط المحرك بحدث إرسال الاستمارة والضغط معاً لضمان العمل على كيبورد الموبايل والكمبيوتر صخر
-document.getElementById('system-login-form-submit').addEventListener('submit', executeSecureLoginProcess);
-
+// Enter key
 document.getElementById('login-password').addEventListener('keypress', e => {
-    if(e.key === 'Enter') executeSecureLoginProcess(e);
+    if(e.key === 'Enter') document.getElementById('btn-login-submit').click();
 });
 document.getElementById('login-user-id').addEventListener('keypress', e => {
     if(e.key === 'Enter') document.getElementById('login-password').focus();
 });
 
-if ('serviceWorker' in navigator) {
+// Service Worker
+if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 </script>
