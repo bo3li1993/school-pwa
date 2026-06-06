@@ -31,6 +31,7 @@ button:hover { background:var(--accent-color); }
 </head>
 <body>
 
+<!-- 🔒 شاشة تسجيل الدخول الموحدة -->
 <div id="parent-login-screen" class="container" style="max-width:400px; margin:50px auto 0 auto;">
     <div class="card" style="border-top-color:var(--primary-color); text-align:center;">
         <div style="font-size:45px; color:var(--accent-color); margin-bottom:10px;"><i class="bi bi-person-hearts"></i></div>
@@ -45,14 +46,19 @@ button:hover { background:var(--accent-color); }
     </div>
 </div>
 
+<!-- 📱 لوحة التحكم الفورية لولي الأمر (SPA) -->
 <div id="parent-dashboard-screen" class="container hidden" style="max-width:650px; margin:0 auto;">
     <div class="card" style="background:var(--primary-color); color:#fff; border:none; text-align:center; padding:25px;">
         <h3 style="font-weight:900; font-size:19px;">👤 الطالب: <span id="lbl-student-name">-</span></h3>
         <p style="font-size:12px; opacity:0.8; font-weight:bold; margin-top:3px;">الصف والفصل الحالي: <span id="lbl-student-class">-</span></p>
+        
+        <!-- مؤشر تنبيه حالة تفعيل الإشعارات السحابية للجوال -->
+        <div id="push-status-badge-area" style="margin-top:8px; font-size:11px; font-weight:bold;"></div>
+        
         <button onclick="localStorage.removeItem('hs_parent'); location.reload();" style="width:auto; padding:4px 12px; font-size:11px; background:rgba(255,255,255,0.15); border:1px solid #fff; margin-top:12px; border-radius:4px;">تسجيل خروج آمن</button>
     </div>
 
-    <!-- 🔴 شريط رصد الغياب التفصيلي المطور برقم الحصة بالملي -->
+    <!-- 🔴 رادار عرض الغياب التفصيلي بالحصة -->
     <div class="card" style="border-top-color:var(--danger-color);">
         <h2><i class="bi bi-calendar-x-fill" style="color:var(--danger-color);"></i> رصد وتفصيل غياب الحصص اليومي</h2>
         <div id="parent-attendance-area" style="font-size:13px; font-weight:bold; margin-top:8px; display:flex; flex-direction:column; gap:8px;">
@@ -60,6 +66,7 @@ button:hover { background:var(--accent-color); }
         </div>
     </div>
 
+    <!-- ✉️ نظام المراسلة والدردشة الحية مع الأخصائي -->
     <div class="card" style="border-top-color:var(--success-color);">
         <h2><i class="bi bi-chat-left-text-fill" style="color:var(--success-color);"></i> صندوق المراسلة والردود مع إدارة المدرسة</h2>
         <div class="chat-box" id="parent-chat-bubbles"></div>
@@ -73,6 +80,8 @@ button:hover { background:var(--accent-color); }
 <script type="module">
 import { db } from './js/firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+// 🔔 استدعاء مكتبة قوقل الرسمية لإدارة بث واستقبال الإشعارات السحابية للـ PWA
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
 
 let activeStudent = null;
 
@@ -99,7 +108,9 @@ window.handleParentLoginLive = async function(e) {
             activeStudent = found;
             localStorage.setItem('hs_parent', JSON.stringify(found));
             showParentDashboard();
-        } else { alert('⚠️ تنبيه: لم يتم العثور على طالب مقيد بهذا الرقم.'); }
+        } else {
+            alert('⚠️ تنبيه: لم يتم العثور على طالب مقيد بهذا الرقم، يرجى مراجعة الإدارة.');
+        }
     } catch(err) { alert('خطأ في الاتصال: ' + err.message); }
 };
 
@@ -111,6 +122,64 @@ function showParentDashboard() {
 
     loadStudentAttendanceLive();
     loadParentChatThreadLive();
+    
+    // 🚀 تفعيل وتشغيل محرك طلب إذن الإشعارات وربط الـ Token الخاص بولي الأمر
+    initParentPushNotificationsEngine();
+}
+
+async function initParentPushNotificationsEngine() {
+    const statusBadge = document.getElementById('push-status-badge-area');
+    if(!statusBadge) return;
+
+    try {
+        // فحص دعم المتصفح للإشعارات قبل الشروع في الطلب
+        if (!('Notification' in window)) {
+            statusBadge.innerHTML = `<span style="color:#ffcc00;">⚠️ متصفحك الحالي لا يدعم ميزة الإشعارات التلقائية.</span>`;
+            return;
+        }
+
+        // طلب الإذن الرسمي من تليفون ولي الأمر بالخلفية
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            const messaging = getMessaging();
+            
+            // توليد الـ FCM Token الفريد الخاص بجهاز ولي الأمر الحين
+            // 💡 ملاحظة ملوكية: استبدل 'YOUR_VAPID_KEY' بمفتاح كيباد الفايربيس الخاص بك لاحقاً لتفعيل الربط الكامل
+            const currentToken = await getToken(messaging, { vapidKey: 'YOUR_VAPID_KEY' });
+            
+            if (currentToken) {
+                // حفظ وتحديث توكن الجهاز في الفايرستور لربطه بالطالب لايف
+                const tokenQ = query(collection(db, 'fcm_tokens'), where('token', '==', currentToken), where('studentName', '==', activeStudent.name.trim()));
+                const tokenSnap = await getDocs(tokenQ);
+                
+                if(tokenSnap.empty) {
+                    await addDoc(collection(db, 'fcm_tokens'), {
+                        studentName: activeStudent.name.trim(),
+                        classId: activeStudent.classId,
+                        token: currentToken,
+                        deviceType: navigator.userAgent.includes('Mobi') ? 'Mobile' : 'Desktop',
+                        createdAt: serverTimestamp()
+                    });
+                }
+                statusBadge.innerHTML = `<span style="color:#27ae60;"><i class="bi bi-bell-fill"></i> 🔔 نظام الإشعارات السحابية نشط ومربوط بتليفونك بنجاح.</span>`;
+                
+                // الاستماع للإشعارات الواردة في حال كان ولي الأمر فاتح التطبيق چدامه (Foreground)
+                onMessage(messaging, (payload) => {
+                    console.log('✉️ تم استقبال إشعار غياب فوري لايف:', payload);
+                    alert(`🚨 تنبيه رسمي من المدرسة:\n${payload.notification.title}\n${payload.notification.body}`);
+                    loadStudentAttendanceLive(); // إنعاش كشف الغياب فوراً
+                });
+
+            } else {
+                statusBadge.innerHTML = `<span style="color:#e74c3c;">⚠️ فشل في توليد رمز الإشعارات السحابي للجهاز.</span>`;
+            }
+        } else {
+            statusBadge.innerHTML = `<span style="color:#95a5a6;"><i class="bi bi-bell-slash"></i> تم حظر الإشعارات. يرجى تفعيلها من إعدادات المتصفح لتلقي الغياب.</span>`;
+        }
+    } catch (err) {
+        console.log("FCM Notification Setup Info:", err.message);
+        statusBadge.innerHTML = `<span style="color:#95a5a6;"><i class="bi bi-info-circle"></i> بانتظار ربط مفتاح الـ VAPID لتنشيط البث السحابي المباشر.</span>`;
+    }
 }
 
 async function loadStudentAttendanceLive() {
@@ -122,7 +191,6 @@ async function loadStudentAttendanceLive() {
         let html = '';
         let absentCount = 0;
 
-        // 🔥 تطبيق الميزة المقترحة بالتقرير: تفكيك وعرض حقل الحصة بدقة لولي الأمر
         snap.forEach(doc => {
             const d = doc.data();
             const periodLabel = d.period || 'غير محددة';
@@ -133,7 +201,7 @@ async function loadStudentAttendanceLive() {
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee; background:#fff; border-radius:6px;">
                     <span style="color:#555; font-weight:700;"><i class="bi bi-calendar3"></i> تاريخ الرصد: ${d.date}</span>
                     <span style="color:var(--accent-color); font-weight:800;"><i class="bi bi-clock-history"></i> الحصة: ${periodLabel}</span>
-                    <span class="badge ${isAbsent ? 'danger' : 'success'}">${isAbsent ? '🔴 غياب' : '🟢 حضور'}</span>
+                    <span class="badge ${isAbsent ? 'danger' : 'success'}">${isAbsent ? '🔴 غائب' : '🟢 حضور'}</span>
                 </div>`;
         });
 
