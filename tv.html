@@ -31,7 +31,6 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
 .tv-panel { background: var(--card-dark); border-radius: 16px; padding: 25px; min-height: 350px; }
 .tv-panel h3 { font-size: 18px; font-weight: 800; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: var(--accent-orange); }
 
-/* رادار الفصول المتأخرة و badges الغياب */
 .missing-classes-box { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
 .missing-badge { background: var(--danger-red); color: #fff; padding: 10px 18px; border-radius: 8px; font-weight: 900; font-size: 20px; animation: pulse-blink 1.5s infinite; text-align: center; display: inline-block; }
 @keyframes pulse-blink { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
@@ -41,6 +40,17 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
 .live-dot { width: 8px; height: 8px; background: var(--success-green); border-radius: 50%; animation: live-glow 1s infinite alternate; }
 @keyframes live-glow { from { transform: scale(0.9); opacity: 0.5; } to { transform: scale(1.2); opacity: 1; } }
 </style>
+
+<script>
+(function(){
+    try {
+        const u = localStorage.getItem('hs_user');
+        if(!u) { window.location.replace('index.html'); return; }
+        const user = JSON.parse(u);
+        if(!user || !user.role) { window.location.replace('index.html'); }
+    } catch(e) { window.location.replace('index.html'); }
+})();
+</script>
 </head>
 <body>
 
@@ -71,7 +81,6 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
 </div>
 
 <div class="tv-panels">
-    <!-- 🚨 رادار الفصول المتأخرة عن الرصد (أهم معلومة للمدير) -->
     <div class="tv-panel">
         <h3><i class="bi bi-exclamation-triangle-fill" style="color:var(--danger-red);"></i> فصول لم تسجّل غياب الحصص اليوم حتّى الآن</h3>
         <p style="font-size:12px; color:#94a3b8; font-weight:bold; margin-bottom:15px;">يتم الفحص التلقائي والمطابقة الفورية مع خادم السيرفر المركزي:</p>
@@ -80,7 +89,6 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
         </div>
     </div>
 
-    <!-- كشف آخر 5 زيارات صفية للمدير اليوم -->
     <div class="tv-panel">
         <h3><i class="bi bi-eye-fill"></i> آخر 5 زيارات وتفقدات إدارية اليوم</h3>
         <div id="tv-latest-visits-area" style="display:flex; flex-direction:column; gap:8px;">
@@ -93,11 +101,9 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
 import { db } from './js/firebase-config.js';
 import { collection, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// قائمة فصول المدرسة الـ 16 المعتمدة بالكامل في تقرير الفحص
 const ALL_CLASSES = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'];
 
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. تشغيل الساعة الفورية
     setInterval(() => {
         const now = new Date();
         document.getElementById('tv-live-clock').textContent = now.toLocaleTimeString('ar-KW', { hour12: true });
@@ -109,12 +115,10 @@ document.addEventListener("DOMContentLoaded", function() {
 function startLiveTvEngine() {
     const todayStr = new Date().toLocaleDateString('ar-KW');
 
-    // أ) رادار قراءة إجمالي عدد الطلاب النشطين
     onSnapshot(collection(db, 'students'), (snap) => {
         document.getElementById('tv-stat-students').textContent = snap.size || 380;
     });
 
-    // ب) رادار جرد الحضور، الغياب، وحساب الفصول المتأخرة بالملي (onSnapshot ليزري لايف)
     onSnapshot(collection(db, 'attendance'), (snap) => {
         let presentCount = 0;
         let absentCount = 0;
@@ -129,13 +133,11 @@ function startLiveTvEngine() {
             }
         });
 
-        // موازنة تلقائية لحساب الحضور الافتراضي
         if(presentCount === 0 && absentCount === 0) { presentCount = 380; }
 
         document.getElementById('tv-stat-present').textContent = presentCount;
         document.getElementById('tv-stat-absent').textContent = absentCount;
 
-        // 🔥 معالجة وضخ الفصول المتأخرة بلون أحمر نابض كطلب المدير بالتقرير
         const missingClasses = ALL_CLASSES.filter(c => !recordedClasses.has(c));
         const missingContainer = document.getElementById('tv-missing-classes');
         
@@ -146,7 +148,6 @@ function startLiveTvEngine() {
         }
     });
 
-    // ج) رادار جلب آخر 5 زيارات تفقدية للمدير
     onSnapshot(collection(db, 'manager_visits'), (snap) => {
         const area = document.getElementById('tv-latest-visits-area');
         let html = '';
