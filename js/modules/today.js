@@ -107,6 +107,7 @@ function renderAttendanceChartLive(present, absent) {
                 borderWidth: 0
             }]
         },
+        
         options: {
             responsive: true,
             plugins: {
