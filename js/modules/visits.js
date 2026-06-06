@@ -1,4 +1,4 @@
-// 🏫 موديل تسجيل الزيارات الفنية للموجهين ورؤساء الأقسام - كولكشن موحد technical_visits
+// 🏫 موديل تسجيل الزيارات الفنية للموجهين ورؤساء الأقسام - حقل التاريخ معروض وموثق
 import { db } from '../firebase-config.js';
 import { collection, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
@@ -6,13 +6,12 @@ export async function initVisitsModule() {
     const container = document.getElementById('tab-visits');
     if (!container) return;
 
-    // 🛡️ جدار حماية وعزل الأخطاء (Error Boundary)
     try {
         container.innerHTML = `
         <div class="card" style="border-top: 5px solid var(--accent-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-journal-check" style="color:var(--accent-color);"></i> توثيق ورصد الزيارات الفنية للهيئة التعليمية</h2>
             <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">
-                🔒 تم توحيد اسم الكولكشن إلى technical_visits ليتوافق مع محرك كفاءة الأداء والتقارير الأسبوعية بالملي.
+                🔒 تم قيد وعرض حقل تاريخ الزيارات لتطابق سجلات التوجيه الفني مع المنطقة التعليمية باليوم.
             </p>
             
             <form id="tech-visit-form" onsubmit="window.handleRegisterTechVisitLive(event)">
@@ -56,12 +55,13 @@ export async function initVisitsModule() {
                         <tr style="background:#f8f9fa;">
                             <th>المعلم المزار</th>
                             <th style="text-align:center;">القسم / المادة</th>
-                            <th>الموجه / رئيس القسم</th>
+                            <th>الموجه / الزائر</th>
+                            <th style="text-align:center; width:120px;">تاريخ الزيارة</th>
                             <th>التوصيات المرصودة</th>
                         </tr>
                     </thead>
                     <tbody id="tech-visits-tbody">
-                        <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">جاري جلب الأرشيف الفني...</td></tr>
+                        <tr><td colspan="5" style="text-align:center; color:#999; padding:15px;">جاري جلب الأرشيف الفني...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -79,14 +79,16 @@ window.handleRegisterTechVisitLive = async function(e) {
     const subject = document.getElementById('visit-subject').value;
     const vName = document.getElementById('visit-visitor-name').value.trim();
     const notes = document.getElementById('visit-notes').value.trim();
+    const kwDate = new Date().toLocaleDateString('ar-KW');
 
     try {
-        // ✨ حل خطأ التقرير والتخزين الصارم في كولكشن technical_visits
+        // ✨ تفعيل حفظ حقل التاريخ الموحد بالسيرفر
         await addDoc(collection(db, 'technical_visits'), {
             teacherName: tName,
             subject: subject,
             visitorName: vName,
             notes: notes,
+            date: kwDate,
             createdAt: serverTimestamp()
         });
         alert('✓ تم توثيق الزيارة الفنية بنجاح في السجل السحابي الموحد.');
@@ -109,16 +111,17 @@ async function loadTechVisitsLive() {
             const data = d.data();
             html += `
                 <tr style="border-bottom:1px solid #eee;">
-                    <td><b>👤 ${data.teacherName || '-'}</b></td>
+                    <td><b>👤 أ. ${data.teacherName || '-'}</b></td>
                     <td style="text-align:center;"><span class="badge info">${data.subject || '-'}</span></td>
                     <td><i class="bi bi-person-badge"></i> ${data.visitorName || '-'}</td>
+                    <td style="text-align:center; font-weight:bold; color:var(--accent-color);">${data.date || '-'}</td>
                     <td style="color:#555; font-size:12px; font-weight:700;">${data.notes || '-'}</td>
                 </tr>
             `;
         });
 
-        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 الأرشيف الفني خالي حالياً.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 الأرشيف الفني خالي حالياً.</td></tr>';
     } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px;">💡 بانتظار قيد أول زيارة فنية لتنشيط الأرشيف.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#666; padding:15px;">💡 بانتظار قيد أول زيارة فنية لتنشيط الأرشيف.</td></tr>';
     }
 }
