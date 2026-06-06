@@ -1,23 +1,13 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { db } from '../firebase-config.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initRewardsModule() {
     const container = document.getElementById('tab-honors');
     if (!container) return;
 
-    container.innerHTML = `
+    // 🛡️ جدار حماية موضعي (Error Boundary) لمنع انهيار اللوحة في حال وجود خطأ بالسيرفر
+    try {
+        container.innerHTML = `
         <div class="card" style="border-top: 5px solid #2ecc71; text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-coin" style="color:#2ecc71;"></i> نظام بنك التميز الرقمي - منح مكافآت ونقاط السلوك الإيجابي</h2>
             <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">اختر الفصل أولاً، ثم حدد اسم الطالب من القائمة المفرزة أبجدياً لمنحه النقاط التشجيعية فوراً.</p>
@@ -77,13 +67,17 @@ export async function initRewardsModule() {
                     </tbody>
                 </table>
             </div>
-        </div>
-    `;
-
-    loadRewardsLeaderboardLive();
+        </div>`;
+        
+        loadRewardsLeaderboardLive();
+    } catch(e) {
+        container.innerHTML = `
+            <div class="card" style="border-top:5px solid var(--danger-color); color:var(--danger-color); text-align:center; padding:20px; font-weight:bold;">
+               ⚠️ خطأ في تحميل موديل المكافآت: ${e.message}
+            </div>`;
+    }
 }
 
-// دالة جلب أسامي الفصل وترتيبهم أبجدياً فوراً في بنك التميز
 window.handleRewardClassChange = async function(classId) {
     const studentSelect = document.getElementById('reward-student-select');
     if (!studentSelect) return;
@@ -141,11 +135,15 @@ window.handleGrantPointsLive = async function(e) {
             reason: reason,
             createdAt: serverTimestamp()
         });
-        alert(`✓ تم بنجاح إيداع (+${pts}) نقطة في محفظة الطالب: ${sName}`);
+        alert(`✓ تم بنجاح إيداع (+${pts}) نقطة في محفظة الطالب.`);
         document.getElementById('rewards-grant-form').reset();
-        // إعادة قفل قائمة الطلاب بعد الريسيت
-        studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
-        studentSelect.disabled = true;
+        
+        // ✨ إصلاح الخطأ الحرج وتحديد النطاق (Scope) للمتصفح لمنع الانهيار والتعليق
+        const studentSelect = document.getElementById('reward-student-select');
+        if(studentSelect) {
+            studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
+            studentSelect.disabled = true;
+        }
         loadRewardsLeaderboardLive();
     } catch(err) {
         alert('خطأ في إيداع النقاط السحابية: ' + err.message);
@@ -173,10 +171,9 @@ async function loadRewardsLeaderboardLive() {
         let html = '';
         
         sorted.forEach((s, idx) => {
-            let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
             html += `
                 <tr style="border-bottom:1px solid #eee;">
-                    <td style="text-align:center; font-weight:bold; padding:10px;">${medal}</td>
+                    <td style="text-align:center; font-weight:bold; padding:10px;">${idx + 1}</td>
                     <td><b>👤 ${s.name}</b></td>
                     <td style="text-align:center;"><span class="badge info">${s.classId}</span></td>
                     <td style="text-align:center; font-weight:900; color:#2ecc71; font-size:15px;">${s.total} نقطة</td>
@@ -184,8 +181,8 @@ async function loadRewardsLeaderboardLive() {
             `;
         });
 
-        tbody.innerHTML = sorted.length === 0 ? '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 البنك فارغ حالياً. ابدأ بإيداع أولى النقاط للطلاب أعلاه.</td></tr>' : html;
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">💡 البنك فارغ حالياً.</td></tr>';
     } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px; font-weight:bold;">💡 بانتظار إضافة أولى النقاط لتفعيل قاعدة بيانات البنك.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px; font-weight:bold;">💡 بانتظار قيد حركات إيداع أولية لتوليد الكشف.</td></tr>';
     }
 }
