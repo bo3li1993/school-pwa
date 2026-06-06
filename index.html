@@ -54,7 +54,7 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
     <h2>المنظومة الرقمية الموحدة</h2>
     <p>مدرسة سالم الحسينان المتوسطة للبنين</p>
     
-    <form onsubmit="window.handleSystemLoginLive(event)">
+    <form id="system-login-form-submit">
         <label><i class="bi bi-person-fill"></i> رقم المستخدم / المعرف (User ID)</label>
         <input type="text" id="login-user-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
         
@@ -72,18 +72,23 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 </div>
 
 <script type="module">
-import { db, auth } from './js/firebase-config.js';
-import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { db } from './js/firebase-config.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
-// فحص وجود جلسة سابقة لتسريع الدخول آلياً لراحة الإدارة
+// ⏳ 1. فحص وجود جلسة سابقة مستقرة لتسريع الدخول آلياً لراحتك
 const saved = localStorage.getItem('hs_user');
 if(saved){
     try{
         const u = JSON.parse(saved);
         if(u && u.role) window.location.replace(u.role === 'admin' ? 'admin.html' : 'teacher.html');
-    }catch(e){ localStorage.removeItem('hs_user'); }
+    }catch(e) { localStorage.removeItem('hs_user'); }
 }
+
+// 🛡️ تكتيك حماية حركي: استدعاء الـ App والـ Auth بذكاء بدون إجبار ملف الكونفيج على التصدير
+const currentFirebaseApp = getApps()[0];
+const firebaseAuthInstance = getAuth(currentFirebaseApp);
 
 let deferredPrompt;
 const installBtn = document.getElementById('install-app-btn');
@@ -102,89 +107,77 @@ installBtn.addEventListener('click', async () => {
     installBtn.style.display = 'none';
 });
 
-window.handleSystemLoginLive = async function(e) {
-    e.preventDefault();
+// 🔑 3. محرك الفحص والولوج المرن الموحد والمطهر محلياً بالكامل
+async function executeSecureLoginProcess(e) {
+    if(e) e.preventDefault();
+    
     const userId = document.getElementById('login-user-id').value.trim();
     const pass = document.getElementById('login-password').value.trim();
     const btn = document.getElementById('btn-login-submit');
 
-    if(!userId || !pass) return;
+    if(!userId || !pass) { alert('⚠️ يرجى إدخال رقم المستخدم ورمز الحماية.'); return; }
 
     const targetEmail = `${userId}@hosainan.school`;
     btn.disabled = true;
-    btn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص جدار الحماية الحّي...`;
+    btn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص جدار الحماية...`;
 
     try {
         let isAuthSuccess = false;
-        let userData = null;
+        let foundUserDoc = null;
 
-        // 🛡️ 1. محاولة تسجيل الدخول بنظام التشفير الجديد أولاً
+        // أ) محاولة الدخول بنظام التشفير العالمي أولاً
         try {
-            await signInWithEmailAndPassword(auth, targetEmail, pass);
+            await signInWithEmailAndPassword(firebaseAuthInstance, targetEmail, pass);
             isAuthSuccess = true;
-            console.log("✓ تم الولوج بنجاح عبر نظام Firebase Auth المشفر.");
+            console.log("✓ تم الولوج آمن عبر الـ Auth.");
         } catch(authErr) {
-            console.log("ℹ️ الحساب غير مرحل بعد، جاري الفحص الانتقالي المرن...");
+            console.log("ℹ️ الحساب غير مرحل بعد، جاري الفرز والتطهير المحلي للمطابقة...");
         }
 
-        // 💾 2. جلب وثيقة المستخدم مع دعم فحص النص والرقم معاً لحل مشكلة التعليق تماماً
-        let q = query(collection(db, 'users'), where('userId', '==', userId));
-        let snap = await getDocs(q);
-
-        // 🔥 التكتيك العبقري: إذا لم يجد السجل كـ نص وكان المدخل رقماً، يفحصه فوراً كـ رقم بالسيرفر
-        if (snap.empty && !isNaN(userId)) {
-            q = query(collection(db, 'users'), where('userId', '==', Number(userId)));
-            snap = await getDocs(q);
-        }
+        // ب) جلب السجلات وعمل الفرز المحلي الفولاذي المقاوم للمسافات واختلاف الأنواع (نص ضد رقم)
+        const snap = await getDocs(collection(db, 'users'));
         
-        snap.forEach(doc => { userData = doc.data(); });
+        snap.forEach(doc => {
+            const d = doc.data();
+            const dbUid  = String(d.userId || '').trim();
+            const dbPass = String(d.plainPass || '').trim();
 
-        if(!userData) {
-            alert("⚠️ تنبيه: رقم المستخدم هذا غير مقيد بسجلات المنظومة.");
+            if (dbUid === userId) {
+                if (isAuthSuccess || dbPass === pass) {
+                    foundUserDoc = {
+                        id: doc.id,
+                        name: d.name || 'موظف المنظومة',
+                        role: String(d.role || '').trim().toLowerCase(),
+                        classId: d.classId || '',
+                        userId: dbUid
+                    };
+                }
+            }
+        });
+
+        if(!foundUserDoc) {
+            alert("❌ عذراً: رقم المستخدم أو كلمة المرور غير صحيحة.");
             btn.disabled = false;
             btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
             return;
         }
 
-        // 🔑 3. التحقق الانتقالي والمطابقة الذكية للباسورد (نص ضد رقم)
-        if (!isAuthSuccess) {
-            const dbPassClean = String(userData.plainPass || '').trim();
-            if (dbPassClean === pass) {
-                console.log("✓ تم الولوج الانتقالي بنجاح.");
-            } else {
-                alert("❌ الرمز السري أو رقم المستخدم غير صحيح، يرجى المحاولة مرة أخرى.");
-                btn.disabled = false;
-                btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
-                return;
-            }
-        }
-
-        // توحيد البيانات لحفظ الجلسة لضمان عمل الـ Routing والـ Tabs بكفاءة
-        const normalizedUser = {
-            name: userData.name || 'موظف المنظومة',
-            role: String(userData.role || '').trim().toLowerCase(),
-            classId: userData.classId || '',
-            userId: String(userData.userId || '').trim()
-        };
-
-        localStorage.setItem('hs_user', JSON.stringify(normalizedUser));
-
-        if(normalizedUser.role === 'admin') {
-            window.location.replace('admin.html');
-        } else {
-            window.location.replace('teacher.html');
-        }
+        // حفظ الجلسة النظيفة والتوجيه الفوري المستقر
+        localStorage.setItem('hs_user', JSON.stringify(foundUserDoc));
+        window.location.replace(foundUserDoc.role === 'admin' ? 'admin.html' : 'teacher.html');
 
     } catch(err) {
-        alert("❌ عطل في الاتصال بالسيرفر: " + err.message);
+        alert("⚠️ عطل في الاتصال بالسيرفر: " + err.message);
         btn.disabled = false;
         btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
     }
-};
+}
 
-// تفعيل الدخول السريع عبر زر Enter من الكيبورد لراحة المعلمين
+// ربط المحرك بحدث إرسال الاستمارة والضغط معاً لضمان العمل على كيبورد الموبايل والكمبيوتر صخر
+document.getElementById('system-login-form-submit').addEventListener('submit', executeSecureLoginProcess);
+
 document.getElementById('login-password').addEventListener('keypress', e => {
-    if(e.key === 'Enter') window.handleSystemLoginLive(e);
+    if(e.key === 'Enter') executeSecureLoginProcess(e);
 });
 document.getElementById('login-user-id').addEventListener('keypress', e => {
     if(e.key === 'Enter') document.getElementById('login-password').focus();
