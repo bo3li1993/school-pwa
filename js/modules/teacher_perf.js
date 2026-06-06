@@ -1,122 +1,82 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+// 📈 موديل رصد كفاءة أداء المعلمين وجرد الزيارات الفنية التراكمية من كولكشن technical_visits
+import { db } from '../firebase-config.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// دالة بناء واجهة تحليل كفاءة أداء الأقسام الدراسية
 export async function initTeacherPerfModule() {
     const container = document.getElementById('tab-teacher-perf');
     if (!container) return;
 
-    let html = `
-        <div class="card" style="border-top: 5px solid var(--hover-color); text-align: right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
-            <h2 style="font-size:16px; font-weight:800; color:var(--primary-color); margin-bottom:6px;"><i class="bi bi-graph-up-arrow" style="color:var(--hover-color);"></i> لوحة قياس وتحليل كفاءة أداء الأقسام الفنية والمعلمين</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:20px; font-weight:bold;">تقوم اللوحة باحتساب متوسط التقييمات الفنية التراكمية بناءً على استمارات رصد الحصص والزيارات المعتمدة لكل قسم.</p>
+    // 🛡️ جدار حماية وعزل الأخطاء (Error Boundary)
+    try {
+        container.innerHTML = `
+        <div class="card" style="border-top: 5px solid var(--success-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
+            <h2><i class="bi bi-graph-up-arrow" style="color:var(--success-color);"></i> مؤشرات كفاءة الأداء والزيارات التراكمية للمعلمين</h2>
+            <p style="font-size:12px; color:#666; margin-bottom:20px; font-weight:bold;">
+                📊 يقوم المحرك بذكاء بقراءة كولكشن technical_visits وحساب إجمالي عدد الزيارات الفنية المرصودة لكل معلم لمساعدة الإدارة في التقييم السنوي.
+            </p>
             
             <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:right;">
+                <table>
                     <thead>
-                        <tr style="background:#f8f9fa;">
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">القسم الفني / المادة الدراسية</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd; text-align:center;">عدد الزيارات المرصودة</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd; text-align:center;">متوسط الدرجة التراكمية</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd; text-align:center;">نسبة الكفاءة العامة للقسم</th>
-                            <th style="padding:12px; border-bottom:2px solid #ddd;">مستوى استقرار القسم</th>
+                        <tr style="background:#f4f6f9; color:var(--primary-color);">
+                            <th>اسم المعلم المعتمد بالمنشأة</th>
+                            <th style="text-align:center;">القسم الفني / المادة</th>
+                            <th style="text-align:center;">إجمالي عدد الزيارات الفنية المرصودة له</th>
+                            <th style="text-align:center;">حالة استقرار التقييم</th>
                         </tr>
                     </thead>
-                    <tbody id="perf-departments-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">جاري تحليل ومعالجة مؤشرات الأداء السحابية...</td></tr>
+                    <tbody id="teacher-perf-tbody">
+                        <tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">⏳ جاري تحليل ومطابقة البيانات الفنية...</td></tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-    `;
+            <button onclick="window.exportAsManzoumaPDF('tab-teacher-perf', 'تقرير_كفاءة_الاداء_التعليمي')" style="background:var(--success-color); margin-top:15px; font-size:12px;"><i class="bi bi-printer-fill"></i> طباعة لوحة تقييم الأداء الحالية PDF</button>
+        </div>`;
 
-    container.innerHTML = html;
-    calculateDepartmentPerformance();
+        calculateTeacherPerformanceLive();
+    } catch(e) {
+        container.innerHTML = `<div class="card" style="color:red; text-align:center; padding:20px;">⚠️ تعذر تحميل لوحة كفاءة الأداء: ${e.message}</div>`;
+    }
 }
 
-// محرك فرز وتحليل متوسطات درجات الأقسام من السيرفر
-async function calculateDepartmentPerformance() {
-    const tbody = document.getElementById('perf-departments-tbody');
+async function calculateTeacherPerformanceLive() {
+    const tbody = document.getElementById('teacher-perf-tbody');
     if (!tbody) return;
 
-    // قائمة الأقسام الأساسية بالمدرسة لضمان ظهورها حتى لو لم ترصد لها زيارات بعد
-    let deptsData = {
-        "التربية الإسلامية": { totalScore: 0, visitsCount: 0 },
-        "اللغة العربية": { totalScore: 0, visitsCount: 0 },
-        "اللغة الإنجليزية": { totalScore: 0, visitsCount: 0 },
-        "الرياضيات": { totalScore: 0, visitsCount: 0 },
-        "العلوم": { totalScore: 0, visitsCount: 0 },
-        "الاجتماعيات": { totalScore: 0, visitsCount: 0 },
-        "الحاسوب": { totalScore: 0, visitsCount: 0 }
-    };
-
     try {
+        // ✨ القراءة الصحيحة والموحدة من كولكشن technical_visits لإنهاء أخطاء التضارب تماماً
         const snap = await getDocs(collection(db, 'technical_visits'));
-        
-        // قراءة وتحليل مجموع الدرجات الفنية لكل قسم
-        snap.forEach(docSnap => {
-            const v = docSnap.data();
-            const dName = v.deptName;
-            if (deptsData[dName]) {
-                deptsData[dName].totalScore += v.totalScore || 0;
-                deptsData[dName].visitsCount += 1;
+        let perfMap = {};
+
+        snap.forEach(doc => {
+            const data = doc.data();
+            const tName = data.teacherName ? data.teacherName.trim() : 'معلم غير معرف';
+            
+            if (!perfMap[tName]) {
+                perfMap[tName] = { name: tName, subject: data.subject || 'القسم الفني', count: 0 };
             }
+            perfMap[tName].count++;
         });
 
+        let sortedTeachers = Object.values(perfMap).sort((a,b) => b.count - a.count);
         let html = '';
-        
-        for (let deptName in deptsData) {
-            const d = deptsData[deptName];
-            
-            // حساب المتوسط والنسبة المئوية (الدرجة العظمى للاستمارة هي 90)
-            let avgScore = d.visitsCount > 0 ? (d.totalScore / d.visitsCount).toFixed(1) : 0;
-            let percentage = d.visitsCount > 0 ? ((avgScore / 90) * 100).toFixed(1) : 0;
-            
-            // تحديد حالة استقرار كفاءة القسم
-            let statusBadge = `<span class="badge" style="background:#7f8c8d;">لم يُرصد بعد</span>`;
-            let badgeBg = '#27ae60';
-            
-            if (d.visitsCount > 0) {
-                if (percentage >= 85) {
-                    statusBadge = `<span class="badge success" style="background:#27ae60;"><i class="bi bi-check-circle-fill"></i> أداء متميز (امتياز)</span>`;
-                } else if (percentage >= 70) {
-                    statusBadge = `<span class="badge info" style="background:#3498db;"><i class="bi bi-info-circle-fill"></i> أداء مستقر (جيد جداً)</span>`;
-                    badgeBg = '#3498db';
-                } else {
-                    statusBadge = `<span class="badge danger" style="background:#e74c3c;"><i class="bi bi-exclamation-circle-fill"></i> يتطلب متابعة توجيهية</span>`;
-                    badgeBg = '#e74c3c';
-                }
-            }
+
+        sortedTeachers.forEach(t => {
+            let statusBadge = `<span class="badge success">مستقر (ممتاز)</span>`;
+            if(t.count < 2) statusBadge = `<span class="badge warning">يحتاج زيارات إضافية</span>`;
 
             html += `
                 <tr style="border-bottom:1px solid #eee;">
-                    <td style="padding:14px;"><b>${deptName}</b></td>
-                    <td style="padding:14px; text-align:center; font-weight:700; color:#555;">${d.visitsCount} زيارات</td>
-                    <td style="padding:14px; text-align:center; font-weight:800; color:var(--primary-color);">${d.visitsCount > 0 ? avgScore + ' / 90' : '-'}</td>
-                    <td style="padding:14px; text-align:center;">
-                        <span style="background:${d.visitsCount > 0 ? badgeBg : '#eee'}; color:${d.visitsCount > 0 ? '#fff' : '#999'}; padding:3px 9px; border-radius:12px; font-size:12px; font-weight:bold;">
-                            ${d.visitsCount > 0 ? percentage + '%' : '-'}
-                        </span>
-                    </td>
-                    <td style="padding:14px;">${statusBadge}</td>
+                    <td><b>👤 أ. ${t.name}</b></td>
+                    <td style="text-align:center;"><span class="badge info">${t.subject}</span></td>
+                    <td style="text-align:center; font-weight:900; color:var(--primary-color); font-size:15px;">${t.count} زيارات فنية</td>
+                    <td style="text-align:center;">${statusBadge}</td>
                 </tr>
             `;
-        }
+        });
 
-        tbody.innerHTML = html;
-    } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:15px;">خطأ أثناء معالجة مؤشرات كفاءة الأداء.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 لا توجد زيارات فنية مقيدة حالياً بالسيرفر لتوليد مؤشر الأداء.</td></tr>';
+    } catch(err) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px;">💡 بانتظار قيد حركات الزيارات الفنية لتهيئة محرك الكفاءة.</td></tr>';
     }
 }
