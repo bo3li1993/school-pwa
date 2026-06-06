@@ -1,116 +1,60 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db } from '../firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// دالة بناء وتوليد واجهة فحص سجلات الغياب بتاريخ محدد هجائياً
 export async function initDateSearchModule() {
     const container = document.getElementById('tab-date');
     if (!container) return;
-
-    let html = `
-        <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
-            <h2><i class="bi bi-calendar-search" style="color:var(--accent-color);"></i> نظام البحث والمطابقة الذكية لكشوف الغياب السنوية</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:20px; font-weight:bold;">يرجى تحديد التاريخ المراد فحص سجلاته لاستدعاء كشف غياب وحضور الطلاب المعتمد من قاعدة البيانات السحابية.</p>
-            
-            <div style="display:flex; gap:10px; margin-bottom: 20px; align-items: center;">
-                <input type="date" id="history-date-picker" style="margin-bottom:0; flex:1; text-align:center; font-weight:bold;">
-                <button onclick="window.fetchAttendanceBySpecificDate()" style="background:var(--primary-color); padding:12px 25px;"><i class="bi bi-search"></i> استدعاء كشف التاريخ</button>
-            </div>
-
-            <!-- حاوية تفريغ نتائج البحث التاريخي للفصول -->
-            <div id="date-search-results-area"></div>
+    container.innerHTML = `
+    <div class="card" style="border-top:5px solid var(--primary-color);">
+        <h2><i class="bi bi-calendar-search"></i> محرك الأرشفة والبحث التاريخي الموحد للغياب</h2>
+        <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:15px;">ابحث بكشوف غياب الحصص المرفوعة سابقاً عبر إدخال التاريخ بالصيغة الموحدة المعتمدة للمدرسة.</p>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="search-target-date-string" placeholder="مثال للصيغة المعتمدة: ٢٠٢٦/٦/٦" style="margin-bottom:0;">
+            <button onclick="window.triggerDateAttendanceSearchLive()" style="width:120px; font-weight:bold;"><i class="bi bi-search"></i> جرد التاريخ</button>
         </div>
-    `;
-
-    container.innerHTML = html;
-    
-    // تعيين تاريخ اليوم كقيمة افتراضية مريحة للمستخدم
-    const todayStr = new Date().toISOString().split('T')[0];
-    const picker = document.getElementById('history-date-picker');
-    if(picker) picker.value = todayStr;
+    </div>
+    <div class="card" id="date-search-results-card" style="border-top-color:var(--accent-color); display:none;">
+        <h2>📋 كشف السجلات المرصودة للتاريخ المستعلم عنه:</h2>
+        <div style="overflow-x:auto; margin-top:10px;">
+            <table>
+                <thead>
+                    <tr style="background:#f8f9fa;">
+                        <th>اسم الطالب المدرسي</th>
+                        <th style="text-align:center;">الفصل</th>
+                        <th style="text-align:center;">حالة الرصد التراكمي</th>
+                        <th>المعلم الراصد الموثق بالملف</th>
+                    </tr>
+                </thead>
+                <tbody id="date-search-tbody"></tbody>
+            </table>
+        </div>
+    </div>`;
 }
 
-// محرك الفرز السحابي لجلب سجلات الغياب والحضور بحسب اليوم المختار
-window.fetchAttendanceBySpecificDate = async function() {
-    const pickedDate = document.getElementById('history-date-picker').value;
-    const area = document.getElementById('date-search-results-area');
-    if(!pickedDate) { alert('الرجاء اختيار التاريخ أولاً!'); return; }
-
-    // تحويل صيغة التاريخ المدخل لتطابق الصيغة العربية المخزنة بالسيرفر (يوم/شهر/سنة)
-    const dateObj = new Date(pickedDate);
-    const formattedDate = dateObj.toLocaleDateString('ar-KW');
-
-    area.innerHTML = `<p style="text-align:center; font-size:13px; color:#666; font-weight:bold; padding:20px;">⏳ جاري سحب كشوف الحضور والغياب ليوم (${formattedDate}) من السيرفر...</p>`;
-
+window.triggerDateAttendanceSearchLive = async function() {
+    const dateStr = document.getElementById('search-target-date-string').value.trim();
+    const resultCard = document.getElementById('date-search-results-card');
+    const tbody = document.getElementById('date-search-tbody');
+    if(!dateStr) return;
+    resultCard.style.display = 'block';
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; font-weight:bold; padding:15px;">⏳ جاري جلب الأرشيف ومطابقة صيغة التاريخ السحابي...</td></tr>`;
     try {
-        const snap = await getDocs(collection(db, 'attendance'));
-        let absentRecords = [];
-
-        snap.forEach(docSnap => {
-            const att = docSnap.data();
-            // فلترة السجلات بناءً على التاريخ المختار وحالة الغياب فقط
-            if(att.date === formattedDate && att.status === 'absent') {
-                absentRecords.push({ name: att.studentName, classId: att.classId || '-' });
-            }
-        });
-
-        if(absentRecords.length === 0) {
-            area.innerHTML = `<p style="text-align:center; color:#27ae60; font-weight:bold; padding:20px;">✓ كشف مثالي: لا يوجد أي حالات غياب مسجلة في تاريخ (${formattedDate}).</p>`;
-            return;
-        }
-
-        // ترتيب الطلاب تنازلياً أو تصاعدياً حسب الفصول لتسهيل المراجعة الإدارية
-        absentRecords.sort((a, b) => a.classId.localeCompare(b.classId));
-
-        let html = `
-            <div style="background:#fff5f5; padding:12px; border-radius:6px; margin-bottom:15px; border-right:4px solid var(--danger-color); text-align:right;">
-                <span style="font-size:13px; font-weight:800; color:var(--danger-color);">🔴 تم رصد عدد (${absentRecords.length}) طالب غائب في تاريخ ${formattedDate}</span>
-            </div>
-
-            <div style="overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; text-align:right;">
-                    <thead>
-                        <tr style="background:#e74c3c; color:white;">
-                            <th style="padding:12px; color:white; width:80px; text-align:center;">مسلسل</th>
-                            <th style="padding:12px; color:white;">اسم الطالب الغائب رباعياً</th>
-                            <th style="padding:12px; color:white; width:150px; text-align:center;">الفصل الدراسي</th>
-                            <th style="padding:12px; color:white; width:120px; text-align:center;">الحالة الإدارية</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-
-        absentRecords.forEach((rec, index) => {
+        // ✨ الفحص ليزري مستهدف يبحث بالصيغة الموحدة ar-KW لحل مشاكل تضارب تواريخ مكة المذكورة بالتقرير بالملي
+        const q = query(collection(db, 'attendance'), where('date', '==', dateStr));
+        const snap = await getDocs(q);
+        let html = '';
+        let count = 0;
+        snap.forEach(doc => {
+            const data = doc.data();
             html += `
-                <tr style="border-bottom:1px solid #eee; background:#fff;">
-                    <td style="padding:12px; text-align:center; font-weight:800; color:#666;">${index + 1}</td>
-                    <td style="padding:12px; font-size:14px;"><b>${rec.name}</b></td>
-                    <td style="padding:12px; text-align:center;"><span style="background:#1a1a2e; color:white; padding:3px 10px; border-radius:12px; font-size:11px; font-weight:bold;">${rec.classId}</span></td>
-                    <td style="padding:12px; text-align:center;"><span class="badge danger" style="background:var(--danger-color); font-size:11px;">غائب</span></td>
-                </tr>
-            `;
+                <tr style="border-bottom:1px solid #eee;">
+                    <td><b>👤 ${data.studentName || data.name || '-'}</b></td>
+                    <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
+                    <td style="text-align:center;"><span class="badge ${data.status==='absent'?'danger':'success'}">${data.status==='absent'?'غائب بالحصة':'حاضر ومقيد'}</span></td>
+                    <td style="font-size:12px; color:#666; font-weight:700;">أ. ${data.recordedBy || 'عضو هيئة التعليم'}</td>
+                </tr>`;
+            count++;
         });
-
-        html += `
-                    </tbody>
-                </table>
-            </div>
-        `;
-
-        area.innerHTML = html;
-
-    } catch(e) {
-        area.innerHTML = '<p style="text-align:center; color:red; padding:20px;">خطأ إداري في استدعاء الأرشيف التاريخي للكشوف.</p>';
-    }
+        tbody.innerHTML = count === 0 ? `<tr><td colspan="4" style="text-align:center; color:var(--danger-color); padding:15px; font-weight:bold;">⚠️ تنبيه: لم يتم العثور على أي حركات رصد مرفوعة بهذا التاريخ بالسيرفر.</td></tr>` : html;
+    } catch(e) { tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">خطأ: ${e.message}</td></tr>`; }
 };
