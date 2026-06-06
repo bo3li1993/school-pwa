@@ -59,7 +59,7 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
         <input type="text" id="login-user-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
         
         <label><i class="bi bi-key-fill"></i> رمز الحماية السري (Password)</label>
-        <input type="password" id="login-password" placeholder="أدخل كلمة المرور المشفرة" required>
+        <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
         
         <button type="submit" id="btn-login-submit">
             <i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة
@@ -75,6 +75,15 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 import { db, auth } from './js/firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+// فحص وجود جلسة سابقة لتسريع الدخول آلياً لراحة الإدارة
+const saved = localStorage.getItem('hs_user');
+if(saved){
+    try{
+        const u = JSON.parse(saved);
+        if(u && u.role) window.location.replace(u.role === 'admin' ? 'admin.html' : 'teacher.html');
+    }catch(e){ localStorage.removeItem('hs_user'); }
+}
 
 let deferredPrompt;
 const installBtn = document.getElementById('install-app-btn');
@@ -115,26 +124,33 @@ window.handleSystemLoginLive = async function(e) {
             isAuthSuccess = true;
             console.log("✓ تم الولوج بنجاح عبر نظام Firebase Auth المشفر.");
         } catch(authErr) {
-            console.log("ℹ️ الحساب غير مرحل بعد، جاري تجربة الفحص الانتقالي المرن...");
+            console.log("ℹ️ الحساب غير مرحل بعد، جاري الفحص الانتقالي المرن...");
         }
 
-        // 💾 2. جلب مستند المستخدم من الفايرستور للتحقق من الصلاحيات والـ plainPass القديم
-        const q = query(collection(db, 'users'), where('userId', '==', userId));
-        const snap = await getDocs(q);
+        // 💾 2. جلب وثيقة المستخدم مع دعم فحص النص والرقم معاً لحل مشكلة التعليق تماماً
+        let q = query(collection(db, 'users'), where('userId', '==', userId));
+        let snap = await getDocs(q);
+
+        // 🔥 التكتيك العبقري: إذا لم يجد السجل كـ نص وكان المدخل رقماً، يفحصه فوراً كـ رقم بالسيرفر
+        if (snap.empty && !isNaN(userId)) {
+            q = query(collection(db, 'users'), where('userId', '==', Number(userId)));
+            snap = await getDocs(q);
+        }
         
         snap.forEach(doc => { userData = doc.data(); });
 
         if(!userData) {
-            alert("⚠️ خطأ حرج: رقم المستخدم غير مقيد بسجلات المنظومة.");
+            alert("⚠️ تنبيه: رقم المستخدم هذا غير مقيد بسجلات المنظومة.");
             btn.disabled = false;
             btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
             return;
         }
 
-        // 🔑 3. التحقق الانتقالي: لو الحساب لم يرحل للـ Auth بعد، نطابق الـ plainPass القديم مباشرة
+        // 🔑 3. التحقق الانتقالي والمطابقة الذكية للباسورد (نص ضد رقم)
         if (!isAuthSuccess) {
-            if (userData.plainPass && userData.plainPass === pass) {
-                console.log("✓ تم الولوج الانتقالي المؤقت بنجاح.");
+            const dbPassClean = String(userData.plainPass || '').trim();
+            if (dbPassClean === pass) {
+                console.log("✓ تم الولوج الانتقالي بنجاح.");
             } else {
                 alert("❌ الرمز السري أو رقم المستخدم غير صحيح، يرجى المحاولة مرة أخرى.");
                 btn.disabled = false;
@@ -143,10 +159,17 @@ window.handleSystemLoginLive = async function(e) {
             }
         }
 
-        // حفظ الجلسة والتوجيه المستقر حسب الصلاحية
-        localStorage.setItem('hs_user', JSON.stringify(userData));
+        // توحيد البيانات لحفظ الجلسة لضمان عمل الـ Routing والـ Tabs بكفاءة
+        const normalizedUser = {
+            name: userData.name || 'موظف المنظومة',
+            role: String(userData.role || '').trim().toLowerCase(),
+            classId: userData.classId || '',
+            userId: String(userData.userId || '').trim()
+        };
 
-        if(userData.role === 'admin') {
+        localStorage.setItem('hs_user', JSON.stringify(normalizedUser));
+
+        if(normalizedUser.role === 'admin') {
             window.location.replace('admin.html');
         } else {
             window.location.replace('teacher.html');
@@ -159,10 +182,16 @@ window.handleSystemLoginLive = async function(e) {
     }
 };
 
+// تفعيل الدخول السريع عبر زر Enter من الكيبورد لراحة المعلمين
+document.getElementById('login-password').addEventListener('keypress', e => {
+    if(e.key === 'Enter') window.handleSystemLoginLive(e);
+});
+document.getElementById('login-user-id').addEventListener('keypress', e => {
+    if(e.key === 'Enter') document.getElementById('login-password').focus();
+});
+
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(() => {
-        console.log('✓ Service Worker Registered Successfully.');
-    });
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 </script>
 </body>
