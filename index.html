@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link lang="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <title>بوابة الدخول الموحدة - المنظومة الرقمية الشاملة</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
@@ -15,7 +15,7 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
 body { 
     background: linear-gradient(135deg, var(--bg-dark) 0%, #1e1e38 100%); 
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; 
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; 
 }
 .login-card { 
     background: var(--card-bg); border-radius: 16px; padding: 35px 30px; width: 100%; max-width: 420px; 
@@ -25,7 +25,7 @@ body {
 .login-card h2 { font-size: 20px; font-weight: 900; color: var(--primary-color); text-align: center; margin-bottom: 4px; }
 .login-card p { font-size: 12px; color: #666; font-weight: bold; text-align: center; margin-bottom: 25px; }
 label { font-weight: 700; font-size: 13px; color: var(--primary-color); display: block; margin-bottom: 6px; }
-input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; font-weight: 600; text-align: right; outline: none; font-size: 14px; }
+input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; font-weight: 600; text-align: right; outline: none; font-size: 14px; }
 input:focus { border-color: var(--accent-color); }
 button { 
     background: var(--primary-color); color: #fff; border: none; padding: 13px; border-radius: 8px; 
@@ -35,9 +35,21 @@ button {
 button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,126,34,0.2); }
 .parent-link { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 13px; font-weight: bold; }
 .parent-link a { color: #2980b9; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+
+/* 📲 ستايل زر التثبيت الذكي العائم والمحمي */
+#install-app-btn {
+    display: none; background: #27ae60; color: #fff; border: none; padding: 10px 15px; 
+    border-radius: 30px; font-weight: 700; font-size: 13px; margin-bottom: 15px; width: 100%;
+    box-shadow: 0 4px 10px rgba(39,174,96,0.3); cursor: pointer; text-align: center;
+}
 </style>
 </head>
 <body>
+
+<!-- 📲 زر التثبيت السريع للـ PWA (يظهر فقط إذا كان الجهاز يدعم التثبيت ولم يثبته بعد) -->
+<div style="width: 100%; max-width: 420px;">
+    <button id="install-app-btn"><i class="bi bi-phone-vibrate-fill"></i> 📲 ثبّت تطبيق المنظومة على هاتفِك الحين</button>
+</div>
 
 <div class="login-card">
     <div class="login-logo"><i class="bi bi-shield-lock-fill"></i></div>
@@ -62,11 +74,31 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 </div>
 
 <script type="module">
-// 🔗 الربط المباشر بالمحرك المركزي لـ غوغل فايربيس
 import { db, auth } from './js/firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-// استدعاء دالة تسجيل الدخول الرسمية والمشفرة من غوغل
 import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+// 📱 محرك هندسة الـ Install Prompt لتثبيت التطبيق على الشاشة الرئيسية
+let deferredPrompt;
+const installBtn = document.getElementById('install-app-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // إظهار زر التثبيت للمستخدم فوراً چدام عينه
+    installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+        console.log('✓ وافق المستخدم على تثبيت الأبليكيشن بنجاح.');
+    }
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});
 
 window.handleSystemLoginLive = async function(e) {
     e.preventDefault();
@@ -76,37 +108,28 @@ window.handleSystemLoginLive = async function(e) {
 
     if(!userId || !pass) return;
 
-    // ⚡ تحويل معرّف الموظف تلقائياً للإيميل الافتراضي المشفر والمحمي بسيرفرات غوغل
     const targetEmail = `${userId}@hosainan.school`;
-
     btn.disabled = true;
     btn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص جدار الحماية الحّي...`;
 
     try {
-        // 1. الفحص الصارم وتثبيت الجلسة عبر ميكانيكية الـ Authentication المشفرة
-        const authResult = await signInWithEmailAndPassword(auth, targetEmail, pass);
+        await signInWithEmailAndPassword(auth, targetEmail, pass);
         
-        // 2. إذا نجح التشفير، يطير السستم فوراً يجلب صلاحية ودور الموظف من كولكشن users الموحد
         const q = query(collection(db, 'users'), where('userId', '==', userId));
         const snap = await getDocs(q);
         
         let userData = null;
-        snap.forEach(doc => {
-            userData = doc.data();
-        });
+        snap.forEach(doc => { userData = doc.data(); });
 
-        // 🛡️ حماية إضافية في حال تم حذف الموظف من قاعدة البيانات وبقى بالـ Auth
         if(!userData) {
-            alert("⚠️ خطأ حرج: الحساب مصرح به بالخلفية ولكن تفاصيل الصلاحيات غير مقيدة بالمنظومة.");
+            alert("⚠️ خطأ حرج: تفاصيل الصلاحيات غير مقيدة بالمنظومة.");
             btn.disabled = false;
             btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
             return;
         }
 
-        // 3. تخزين تفاصيل الجلسة الآمنة بمتصفح الموبايل لتقييد الصلاحيات
         localStorage.setItem('hs_user', JSON.stringify(userData));
 
-        // 4. التوجيه الفوري والذكي بناء على دور وصلاحية الموظف المعتمدة بالملي
         if(userData.role === 'admin') {
             window.location.replace('admin.html');
         } else {
@@ -114,19 +137,18 @@ window.handleSystemLoginLive = async function(e) {
         }
 
     } catch(err) {
-        // فرز ذكي لرسائل الخطأ بلغة واضحة للمدرسين بدال الأكواد الإنجليزية المبهمة
-        let errMsg = "تعذر تسجيل الدخول؛ يرجى التأكد من رقم المستخدم أو الرمز السري.";
-        if(err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
-            errMsg = "❌ الرمز السري أو رقم المستخدم غير صحيح، يرجى المحاولة مرة أخرى.";
-        } else if(err.code === "auth/invalid-credential") {
-            errMsg = "❌ بيانات الدخول غير مطابقة للسجلات المؤمنة حالياً.";
-        }
-        
-        alert(errMsg);
+        alert("❌ الرمز السري أو رقم المستخدم غير صحيح، يرجى المحاولة مرة أخرى.");
         btn.disabled = false;
         btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
     }
 };
+
+// تسجيل السيرفس وركر لضمان عمل ميزات الـ PWA كاملة
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(() => {
+        console.log('✓ Service Worker Registered Successfully.');
+    });
+}
 </script>
 </body>
 </html>
