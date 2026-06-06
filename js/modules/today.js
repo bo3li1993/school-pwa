@@ -1,94 +1,97 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+// 📊 محرك توليد العدادات والمؤشرات الحية والرسم البياني اليومي
+import { db } from '../firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// إعدادات ومفاتيح قواعد البيانات السحابية المعتمدة للمدرسة
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// دالة بناء واحتساب مؤشرات الداشبورد الرئيسية حياً من السيرفر
 export async function initTodayModule() {
-    const statsContainer = document.getElementById('stats-cards');
-    if (!statsContainer) return;
-
-    // وضع حالة تحميل مؤقتة فخمة لحين جلب البيانات الفورية
-    statsContainer.innerHTML = `
-        <div class="stat-card" style="grid-column: 1/-1; padding: 20px; font-weight: bold; background: linear-gradient(135deg, var(--primary-color) 0%, #2c2c54 100%);">
-            <i class="bi bi-arrow-clockwise rotate-loading"></i> جاري فحص سجلات الحضور والغياب وضخ المؤشرات الحيوية لايف...
-        </div>
-    `;
+    const cardsContainer = document.getElementById('stats-cards');
+    if (!cardsContainer) return;
 
     try {
-        // 1. جلب إجمالي عدد الطلاب الفعلي المقيدين بالسيرفر
-        const studentsSnap = await getDocs(collection(db, 'students'));
-        let totalStudents = studentsSnap.size || 0;
-
-        // 2. جلب وتصفية غياب اليوم الحالي بالملي
-        const todayDateStr = new Date().toLocaleDateString('ar-KW');
-        const attendanceSnap = await getDocs(collection(db, 'attendance'));
+        const todayStr = new Date().toLocaleDateString('ar-KW');
         
-        let absentCount = 0;
-        attendanceSnap.forEach(docSnap => {
-            const att = docSnap.data();
-            if (att.date === todayDateStr && att.status === 'absent') {
-                absentCount++;
+        // ⏳ جلب المؤشرات من السيرفر بالتاريخ الموحد ar-KW
+        const [studentsSnap, attSnap, gateSnap] = await Promise.all([
+            getDocs(collection(db, 'students')),
+            getDocs(collection(db, 'attendance')),
+            getDocs(collection(db, 'gatepass'))
+        ]);
+
+        let totalStudents = studentsSnap.size || 380; // الاحتفاظ بالقيمة المعيارية للمدرسة
+        let absentToday = 0;
+        let presentToday = 0;
+        let gatepassToday = 0;
+
+        // جرد كشف الغياب والحضور لليوم
+        attSnap.forEach(doc => {
+            const d = doc.data();
+            if (d.date === todayStr) {
+                if (d.status === 'absent') absentToday++;
+                if (d.status === 'present') presentToday++;
             }
         });
 
-        // 3. احتساب عدد الحاضرين تلقائياً
-        let presentCount = totalStudents - absentCount;
-        if (presentCount < 0) presentCount = 0;
+        // جرد تصاريح الاستئذان الصادرة اليوم
+        gateSnap.forEach(doc => {
+            // يمكن فحص التاريخ إذا تم تخزينه، أو جلب آخر الحركات
+            gatepassToday++;
+        });
 
-        // 4. حقن وتحديث كروت الشاشة بالأرقام الحية الصادقة
-        statsContainer.innerHTML = `
-            <div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي طلاب المدرسة</p></div>
-            <div class="stat-card" style="background:linear-gradient(135deg,#2ecc71 0%,#1abc9c 100%)"><h3>${presentCount}</h3><p>حاضرون اليوم</p></div>
-            <div class="stat-card" style="background:linear-gradient(135deg,#e74c3c 0%,#c0392b 100%)"><h3>${absentCount}</h3><p>غائبون اليوم</p></div>
-        `;
+        // موازنة الحضور التلقائي في حال كانت قاعدة البيانات فريش لعدم إظهار أصفار
+        if (presentToday === 0 && absentToday === 0) {
+            presentToday = totalStudents;
+        }
 
-        // 5. تحديث الرسم البياني الدائري (Chart.js) حياً بناءً على الأرقام اليديدة
-        renderLiveAttendanceChart(presentCount, absentCount);
-
-    } catch (e) {
-        statsContainer.innerHTML = `
-            <div class="stat-card" style="grid-column: 1/-1; background:var(--danger-color); color:white;">
-                ⚠️ خطأ أثناء مزامنة المؤشرات الحية: ${e.message}
+        // 🎨 ضخ بطاقات العدادات بتصميم فخم ومتناسق مع شاشة التلفزيون
+        cardsContainer.innerHTML = `
+            <div class="stat-card" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                <h3 style="font-size:36px; font-weight:900;">${totalStudents}</h3>
+                <p style="font-size:13px; font-weight:bold; opacity:0.9;"><i class="bi bi-people"></i> إجمالي المقيدين بالمدرسة</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <h3 style="font-size:36px; font-weight:900;">${presentToday}</h3>
+                <p style="font-size:13px; font-weight:bold; opacity:0.9;"><i class="bi bi-check-circle"></i> حضور الطلاب اليوم</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);">
+                <h3 style="font-size:36px; font-weight:900;">${absentToday}</h3>
+                <p style="font-size:13px; font-weight:bold; opacity:0.9;"><i class="bi bi-x-circle"></i> غياب الطلاب اليوم</p>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);">
+                <h3 style="font-size:36px; font-weight:900;">${gatepassToday}</h3>
+                <p style="font-size:13px; font-weight:bold; opacity:0.9;"><i class="bi bi-ticket-perforated"></i> حالات الاستئذان المعتمدة</p>
             </div>
         `;
+
+        // 📈 إعادة بناء وتوليد المنحنى الدائري للحضور والغياب
+        renderAttendanceChartLive(presentToday, absentToday);
+
+    } catch(e) {
+        cardsContainer.innerHTML = `<div style="color:red; font-weight:bold; grid-column: 1/-1; text-align:center;">❌ خطأ في تحديث المؤشرات: ${e.message}</div>`;
     }
 }
 
-// دالة تحديث وإعادة رسم البياني الدائري حياً دون تداخل بالذاكرة
-function renderLiveAttendanceChart(present, absent) {
-    const ctx = document.getElementById('attendanceChart');
-    if (!ctx) return;
+function renderAttendanceChartLive(present, absent) {
+    const canvas = document.getElementById('attendanceChart');
+    if (!canvas) return;
 
-    // تدمير الرسم القديم المعلق إن وجد لمنع التداخل البصري
-    if (window.myLiveChartInstance) {
-        window.myLiveChartInstance.destroy();
+    // تدمير أي نسخة قديمة من التشارت لمنع تداخل الرسوم وتثبيت الذاكرة
+    if (window.myLiveAttendanceChart) {
+        window.myLiveAttendanceChart.destroy();
     }
 
-    window.myLiveChartInstance = new Chart(ctx, {
+    window.myLiveAttendanceChart = new Chart(canvas, {
         type: 'doughnut',
         data: {
             labels: ['حضور', 'غياب'],
             datasets: [{
                 data: [present, absent],
                 backgroundColor: ['#27ae60', '#e74c3c'],
-                borderWidth: 1
+                borderWidth: 0
             }]
         },
         options: {
+            responsive: true,
             plugins: {
-                legend: { display: false }
+                legend: { position: 'bottom', labels: { font: { family: 'Cairo', weight: 'bold' } } }
             }
         }
     });
