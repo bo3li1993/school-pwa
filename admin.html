@@ -6,8 +6,6 @@
 <link lang="manifest" href="manifest.json">
 <title>لوحة التحكم الموحدة - المنظومة الرقمية الشاملة</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<!-- مكتبات التقارير البيانية والـ PDF والإكسيل المعتمدة تجارياً -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -15,71 +13,29 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
-
-/* 🎨 الهوية البصرية الرسمية المعتمدة للمنظومة التجارية */
 :root {
-    --primary-color: #1a1a2e;     /* الكحلي الملكي الفخم */
-    --accent-color: #e67e22;      /* البرتقالي الحركي المعتمد */
-    --hover-color: #e1b12c;       /* الذهبي للإجراءات الثانوية */
-    --bg-light: #f5f6fa;          /* خلفية مريحة جداً لعين المسؤول */
-    --card-bg: #ffffff;
-    --success-color: #27ae60;
-    --danger-color: #e74c3c;
+    --primary-color: #1a1a2e; --accent-color: #e67e22; --hover-color: #e1b12c;
+    --bg-light: #f5f6fa; --card-bg: #ffffff; --success-color: #27ae60; --danger-color: #e74c3c;
 }
-
-*{margin:0;padding:0;box-sizing:border-box; font-family: 'Cairo', Arial, sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box; font-family: 'Cairo', sans-serif;}
 body{background: var(--bg-light); color:#333; line-height:1.6; overflow-x: hidden;}
-
-/* الهيدر الرئيسي الموحد */
 .header{background: var(--primary-color); color:#fff; padding:1.2rem 1.5rem; display:flex; justify-content:space-between; align-items:center; border-bottom: 4px solid var(--accent-color); box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
 .header h1{font-size:18px; font-weight: 900;}
-.header-right{display:flex; gap:12px; align-items:center; font-size:14px}
-
-/* شريط التبويبات الانسيابي السلس لموبايل الإدارة */
-.tabs{background:#ffffff; display:flex; gap:8px; padding:12px; overflow-x:auto; border-bottom:2px solid #ddd; position: sticky; top:0; z-index:999; -webkit-overflow-scrolling: touch; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
-.tabs::-webkit-scrollbar { height: 5px; }
-.tabs::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
-
-.tab{ flex: 0 0 auto; padding:10px 20px; border:1px solid #dcdde1; background:#ffffff; color: var(--primary-color); cursor:pointer; font-size:13px; white-space:nowrap; border-radius:8px; transition:all .2s; font-weight:700; display:flex; align-items:center; gap:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-.tab:hover{background: var(--hover-color); color: #fff; border-color: var(--hover-color);}
-.tab.active{background: var(--primary-color); color:#fff; border-color: var(--primary-color); box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
-
+.tabs{background:#ffffff; display:flex; gap:8px; padding:12px; overflow-x:auto; border-bottom:2px solid #ddd; position: sticky; top:0; z-index:999; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+.tab{ flex: 0 0 auto; padding:10px 20px; border:1px solid #dcdde1; background:#ffffff; color: var(--primary-color); cursor:pointer; font-size:13px; border-radius:8px; font-weight:700; display:flex; align-items:center; gap:6px; }
+.tab.active{background: var(--primary-color); color:#fff; border-color: var(--primary-color);}
 .content{max-width:1200px; margin:0 auto; padding:1.5rem; width:100%; min-height: 70vh;}
-.card{background: var(--card-bg); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 4px 6px rgba(0,0,0,.03); border-top: 4px solid var(--primary-color); transition: transform 0.2s; text-align: right;}
-.card h2 { font-size: 16px; font-weight: 800; color: var(--primary-color); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-
-/* كروت المؤشرات الحيوية */
+.card{background: var(--card-bg); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem; box-shadow:0 4px 6px rgba(0,0,0,.03); border-top: 4px solid var(--primary-color); text-align: right;}
 .stats-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.2rem; margin-bottom:1.5rem}
-.stat-card{background: linear-gradient(135deg, var(--primary-color) 0%, #2c2c54 100%); color:#fff; padding:1.5rem; border-radius:12px; text-align:center; box-shadow: 0 4px 10px rgba(0,0,0,0.08);}
-.stat-card h3{font-size:36px; margin-bottom:6px; font-weight: 900; color: #fff;}
-.stat-card p{font-size:13px; opacity:.8; font-weight: 600;}
-
-/* أزرار وحقول إدخال موحدة النمط */
-button{background: var(--primary-color); color:#fff; border:none; padding:11px 22px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:700; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px;}
-button:hover{background: var(--accent-color); box-shadow: 0 4px 8px rgba(0,0,0,0.1); transform: translateY(-1px);}
-input,select,textarea{width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; font-size:14px; margin-bottom:12px; background: #fff; outline: none; font-weight: 600; transition: border 0.2s; color: #333; text-align: right;}
-
-/* نظام النوافذ المنبثقة (Modal) المطور */
-.modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; backdrop-filter: blur(4px);}
-.modal-content{background:#fff; border-radius:12px; padding:2rem; max-width:750px; width:95%; max-height:90vh; overflow-y:auto; border-top: 6px solid var(--accent-color); text-align: right;}
-
-/* حاوية الرسائل داخل ملفات دردشة أولياء الأمور */
-.chat-container { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; padding: 10px 6px; border: 1px solid #eee; border-radius: 8px; background: #fdfdfd; margin-bottom: 12px; }
-.chat-bubble { max-width: 85%; padding: 10px 12px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1.4; }
-.chat-bubble.parent { background: #eef9ff; color: #1a5a80; align-self: flex-start; border-bottom-right-radius: 2px; text-align: right; }
-.chat-bubble.admin { background: #fff3cd; color: #856404; align-self: flex-end; border-bottom-left-radius: 2px; text-align: right; }
-.chat-time { display: block; font-size: 10px; opacity: 0.75; margin-top: 6px; text-align: left; font-weight: bold; color: #555; border-top: 1px dashed rgba(0,0,0,0.05); padding-top: 4px; }
-
-.badge{display:inline-block; padding:3px 9px; border-radius:12px; font-size:11px; font-weight:700; color: #fff;}
-.badge.success{background: var(--success-color);}
-.badge.warning{background: var(--accent-color);}
-.badge.danger{background: var(--danger-color);}
-.badge.info{background:#3498db;}
+button{background: var(--primary-color); color:#fff; border:none; padding:11px 22px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:700; display: inline-flex; align-items: center; justify-content: center; gap: 6px;}
+input,select,textarea{width:100%; padding:11px; border:1px solid #dcdde1; border-radius:6px; font-size:14px; margin-bottom:12px; background: #fff; outline: none; text-align: right;}
 .hidden{display:none!important}
 table{width:100%; border-collapse:collapse; font-size:13px; margin-top:10px; text-align: right;}
 table th{background:#f8f9fa; padding:14px; border-bottom:3px solid #ddd; color: var(--primary-color); font-weight: 800;}
-table td{padding:12px; border-bottom:1px solid #eee; vertical-align:middle; font-weight: 600; color: #444;}
-footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-align: center; padding: 20px; font-size: 12px; border-top: 3px solid var(--accent-color); margin-top: 3rem; font-weight: 600; }
+table td{padding:12px; border-bottom:1px solid #eee; font-weight: 600;}
+footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-align: center; padding: 20px; font-size: 12px; border-top: 3px solid var(--accent-color); margin-top: 3rem; }
+.spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--accent-color); animation: spin 1s linear infinite; margin: 0 auto 10px auto; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -89,16 +45,15 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
     <h1>لوحة الإدارة الشاملة: أ. <span id="user-name">المسؤول الإداري</span></h1>
     <p style="font-size:12px; opacity:.8; font-weight: bold;">المنظومة الرقمية الموحدة لإدارة المنشأة التعليمية</p>
   </div>
-  <div class="header-right">
-    <span id="current-date" style="font-weight: 700;"></span>
-    <button onclick="logout()" style="background:transparent; border:1px solid #fff; padding:6px 14px; font-size:12px; border-radius: 4px;">خروج آمن من النظام</button>
+  <div>
+    <span id="current-date" style="font-weight: 700; margin-left:15px; font-size:13px;"></span>
+    <button onclick="logout()" style="background:transparent; border:1px solid #fff; padding:6px 14px; font-size:12px; border-radius: 4px;">خروج آمن</button>
   </div>
 </div>
 
-<!-- 🗂️ شريط التبويبات الموحد والكامل بنظام المعرف النظيف المقاوم لتجمد الموبايل -->
 <div class="tabs" id="tabs-bar">
   <button class="tab active" data-tab="today" onclick="window.switchTab('today')">📊 اليوم والمؤشرات</button>
-  <button class="tab" data-tab="announcements" onclick="window.switchTab('announcements')">✉️ المراسلات والطلبات الرسمية</button>
+  <button class="tab" data-tab="announcements" onclick="window.switchTab('announcements')">✉️ المراسلات والطلبات</button>
   <button class="tab" data-tab="teacher-directory" onclick="window.switchTab('teacher-directory')">📇 دليل المعلمين</button>
   <button class="tab" data-tab="teacher-perf" onclick="window.switchTab('teacher-perf')">📈 كفاءة الأداء</button>
   <button class="tab" data-tab="clinic" onclick="window.switchTab('clinic')">🩺 العيادة المدرسية</button>
@@ -113,179 +68,105 @@ footer { background: var(--primary-color); color: rgba(255,255,255,0.6); text-al
   <button class="tab" data-tab="students-manage" onclick="window.switchTab('students-manage')">📁 إدارة الطلاب</button>
   <button class="tab" data-tab="rounds" onclick="window.switchTab('rounds')">📋 جولة الجناح</button>
   <button class="tab" data-tab="honors" onclick="window.switchTab('honors')">🪙 بنك التميز الرقمي</button>
+  <button class="tab" data-tab="honors_board" onclick="window.switchTab('honors_board')">🏆 لوحة الشرف المدرسية</button>
   <button class="tab" data-tab="date" onclick="window.switchTab('date')">📅 بحث بتاريخ</button>
   <button class="tab" data-tab="visits" onclick="window.switchTab('visits')">🏫 الزيارات الفنية</button>
   <button class="tab" data-tab="users" onclick="window.switchTab('users')">👥 إدارة المستخدمين</button>
 </div>
 
 <div class="content">
-  
-  <!-- تبويب 1: اليوم والمؤشرات الشاملة (الحية) -->
   <div id="tab-today">
-    <div class="stats-grid" id="stats-cards">
-       <!-- المحرك يضخ الأرقام لايف هني -->
-    </div>
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;" id="today-report-area">
+    <div class="stats-grid" id="stats-cards"></div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
       <div class="card">
          <h2>📊 التحليل البياني للحضور اليومي</h2>
          <div style="max-width:220px; margin:0 auto;"><canvas id="attendanceChart"></canvas></div>
       </div>
       <div class="card">
-         <h2>🏫 رصد الحصص السبعة للفصول الدراسية</h2>
+         <h2>🏫 رصد الحصص السبعة للفصول</h2>
          <div id="class-status"><p style="color:#666; font-size:13px; font-weight:bold;">جميع الفصول مستقرة ومكتملة الرصد للحصة الحالية.</p></div>
-         <button onclick="window.exportAsManzoumaPDF('today-report-area', 'تقرير_المؤشرات_اليومي')" style="background:var(--accent-color); font-size:11px; padding:6px 12px; margin-top:15px; width:100%;"><i class="bi bi-file-pdf-fill"></i> طباعة اللوحة الحالية PDF</button>
+         <button onclick="window.exportAsManzoumaPDF('tab-today', 'تقرير_المؤشرات_اليومي')" style="background:var(--accent-color); font-size:11px; padding:6px 12px; margin-top:15px; width:100%;"><i class="bi bi-file-pdf-fill"></i> طباعة اللوحة الحالية PDF</button>
       </div>
     </div>
   </div>
 
-  <!-- 📥 حاويات نظيفة فارغة؛ يتم شحنها وحقنها ديناميكياً من ملفات الموديلات الخارجية فوراً عند الضغط -->
-  <div id="tab-announcements" class="hidden"></div> 
-  <div id="tab-teacher-directory" class="hidden"></div>
-  <div id="tab-teacher-perf" class="hidden"></div>
-  <div id="tab-clinic" class="hidden"></div> 
-  <div id="tab-classes" class="hidden"></div>
-  <div id="tab-absent" class="hidden"></div> 
-  <div id="tab-repeat" class="hidden"></div>
-  <div id="tab-behavior" class="hidden"></div> 
-  <div id="tab-gatepass" class="hidden"></div> 
-  <div id="tab-guard" class="hidden"></div> 
-  <div id="tab-manager-visits" class="hidden"></div>
-  <div id="tab-student" class="hidden"></div>
-  <div id="tab-students-manage" class="hidden"></div>
-  <div id="tab-rounds" class="hidden"></div>
-  <div id="tab-honors" class="hidden"></div>
-  <div id="tab-date" class="hidden"></div>
-  <div id="tab-visits" class="hidden"></div> 
+  <div id="tab-announcements" class="hidden"></div> <div id="tab-teacher-directory" class="hidden"></div>
+  <div id="tab-teacher-perf" class="hidden"></div> <div id="tab-clinic" class="hidden"></div> 
+  <div id="tab-classes" class="hidden"></div> <div id="tab-absent" class="hidden"></div> 
+  <div id="tab-repeat" class="hidden"></div> <div id="tab-behavior" class="hidden"></div> 
+  <div id="tab-gatepass" class="hidden"></div> <div id="tab-guard" class="hidden"></div> 
+  <div id="tab-manager-visits" class="hidden"></div> <div id="tab-student" class="hidden"></div>
+  <div id="tab-students-manage" class="hidden"></div> <div id="tab-rounds" class="hidden"></div>
+  <div id="tab-honors" class="hidden"></div> <!-- كولكشن المكافآت والتميز مستقل -->
+  <div id="tab-honors_board" class="hidden"></div> <!-- معرّف لوحة الشرف المنفصل منعاً لأي تعارض تفادياً للمشاكل السابقة -->
+  <div id="tab-date" class="hidden"></div> <div id="tab-visits" class="hidden"></div> 
   <div id="tab-users" class="hidden"></div>
-</div>
-
-<!-- 📑 نافذة منبثقة مشتركة لمراجعة وتفنيد الردود مالت أولياء الأمور -->
-<div id="admin-chat-modal" class="modal">
-  <div class="modal-content" style="max-width: 600px; border-top: 6px solid var(--primary-color);">
-    <h3 id="admin-modal-thread-title" style="color: var(--primary-color); font-weight: 900;"><i class="bi bi-envelope-open-fill"></i> ملف المراسلة الرسمي</h3>
-    <p id="admin-modal-thread-meta" style="font-size: 12px; color: #666; margin-bottom: 12px; font-weight: bold; background: #f8f9fa; padding: 6px; border-radius: 4px;">الطالب: - | الفصل: -</p>
-    
-    <div class="chat-container" id="admin-thread-messages-bubbles-area"></div>
-    
-    <div id="admin-reply-form-wrapper">
-      <textarea id="admin-thread-reply-input" rows="3" placeholder="اكتب الرد الرسمي للإدارة هنا باللغة الفصحى المعتمدة..."></textarea>
-      <div style="display: flex; gap: 8px;">
-        <button onclick="window.submitAdminReplyToThread()" style="background: var(--success-color); flex: 2;"><i class="bi bi-reply-all-fill"></i> إرسال الرد الرسمي لولي الأمر</button>
-        <button onclick="window.closeThreadPermanently()" style="background: var(--danger-color); flex: 1;"><i class="bi bi-lock-fill"></i> إغلاق الملف نهائياً</button>
-      </div>
-    </div>
-    
-    <button onclick="document.getElementById('admin-chat-modal').style.display='none'" style="width:100%; margin-top:12px; background:#6c757d; color:white; border-radius: 6px;">إغلاق نافذة الملف</button>
-  </div>
 </div>
 
 <footer>المنظومة الرقمية الشاملة الموحدة التجاريّة © 2026 | مدرسة سالم الحسينان المتوسطة للبنين</footer>
 
 <script>
-// 🔒 نظام الجلسة والتشغيل المحمي النظيف والمضمون 100% على تليفونات المبرمجين والمسؤولين
 document.addEventListener("DOMContentLoaded", function() {
-  let username = "المسؤول الإداري";
+  // 🔒 قفل الحماية الصارم للجلسة التربوية المعتمدة بالإدارة
   try {
-    const savedUser = localStorage.getItem('hs_user') || localStorage.getItem('user') || localStorage.getItem('username');
-    if(savedUser) {
-      const currentUser = JSON.parse(savedUser); 
-      username = currentUser.name || currentUser.username || "المسؤول الإداري";
-    }
-  } catch(e) { 
-    console.log("قراءة الجلسة كنص عادي");
-  }
-  document.getElementById('user-name').textContent = username;
+    const savedUser = localStorage.getItem('hs_user');
+    if(!savedUser) { window.location.href='index.html'; return; }
+    const currentUser = JSON.parse(savedUser);
+    if(currentUser.role !== 'admin') { window.location.replace('teacher.html'); return; }
+    document.getElementById('user-name').textContent = currentUser.name || "المسؤول الإداري";
+  } catch(e) { window.location.href='index.html'; return; }
+
   document.getElementById('current-date').textContent = new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
-  // استدعاء محرك التقارير ديناميكياً وعزله لحماية بقية اللوحة
-  import('./js/modules/reports.js')
-    .then(m => m.initReportsModule())
-    .catch(e => console.error("محرك التقارير بانتظار الملفات:", e));
-
-  // تشغيل التبويب الأول تلقائياً عند الدخول
+  import('./js/modules/reports.js').then(m => m.initReportsModule()).catch(e => console.log(e));
   window.switchTab('today');
 });
 
-window.logout = function(){ 
-  localStorage.clear(); 
-  window.location.href='index.html'; 
-};
+window.logout = function(){ localStorage.clear(); window.location.href='index.html'; };
 
-// 🎛️ موجه ومستدعي المحركات الديناميكي الموحد المطور للموبايل (مضاد للتجمد والتعليق نهائياً)
 window.switchTab = function(tabId) {
-  // 1. تحديث وتنشيط شكل الزر المضغوط فوراً بناءً على معرف الموبايل data-tab
   document.querySelectorAll('.tab').forEach(t => { 
-    if(t.getAttribute('data-tab') === tabId) {
-       t.classList.add('active'); 
-    } else {
-       t.classList.remove('active'); 
-    }
+    if(t.getAttribute('data-tab') === tabId) t.classList.add('active'); else t.classList.remove('active'); 
   });
 
-  // 2. تصفية وإخفاء التبويبات وإظهار المطلوب بالملي
-  const sections = ['today', 'announcements', 'teacher-directory', 'teacher-perf', 'clinic', 'classes', 'absent', 'repeat', 'behavior', 'gatepass', 'guard', 'manager-visits', 'student', 'students-manage', 'rounds', 'honors', 'date', 'visits', 'users'];
+  const sections = ['today', 'announcements', 'teacher-directory', 'teacher-perf', 'clinic', 'classes', 'absent', 'repeat', 'behavior', 'gatepass', 'guard', 'manager-visits', 'student', 'students-manage', 'rounds', 'honors', 'honors_board', 'date', 'visits', 'users'];
   sections.forEach(id => { 
     const el = document.getElementById(`tab-${id}`); 
-    if(el){ if(id === tabId) el.classList.remove('hidden'); else el.classList.add('hidden'); } 
+    if(el){ 
+      if(id === tabId) {
+        el.classList.remove('hidden');
+        // ⏳ إظهار مؤشر التحميل الفوري لمنع الواجهات الفارغة
+        if(id !== 'today') {
+          el.innerHTML = `<div style="text-align:center; padding:50px; font-weight:900; color:var(--primary-color);"><div class="spinner"></div>⏳ جاري استدعاء الموديل والربط السحابي...</div>`;
+        }
+      } else el.classList.add('hidden'); 
+    } 
   });
   
-  // 3. الاستدعاء المنفصل والديناميكي الآمن للملفات
-  if(tabId === 'today') {
-    import('./js/modules/today.js').then(m => { m.initTodayModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'announcements') {
-    import('./js/modules/mailbox.js').then(m => { m.initMailboxModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'visits') {
-    import('./js/modules/visits.js').then(m => { m.initVisitsModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'absent') {
-    import('./js/modules/attendance.js').then(m => { m.initAttendanceModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'clinic') {
-    import('./js/modules/clinic.js').then(m => { m.initClinicModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'behavior') {
-    import('./js/modules/behavior.js').then(m => { m.initBehaviorModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'gatepass') {
-    import('./js/modules/gatepass.js').then(m => { m.initGatepassModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'guard') {
-    import('./js/modules/guard.js').then(m => { m.initGuardModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'teacher-directory') {
-    import('./js/modules/teachers.js').then(m => { m.initTeachersModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'repeat') {
-    import('./js/modules/repeat.js').then(m => { m.initRepeatModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'teacher-perf') {
-    import('./js/modules/teacher_perf.js').then(m => { m.initTeacherPerfModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'classes') {
-    import('./js/modules/distribution.js').then(m => { m.initDistributionModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'manager-visits') {
-    import('./js/modules/manager_visits.js').then(m => { m.initManagerVisitsModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'student') {
-    import('./js/modules/student.js').then(m => { m.initStudentModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'students-manage') {
-    import('./js/modules/students_manage.js').then(m => { m.initStudentsManageModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'rounds') {
-    import('./js/modules/rounds.js').then(m => { m.initRoundsModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'honors') {
-    import('./js/modules/rewards.js').then(m => { m.initRewardsModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'date') {
-    import('./js/modules/date_search.js').then(m => { m.initDateSearchModule(); }).catch(err => console.error(err));
-  }
-  if(tabId === 'users') {
-    import('./js/modules/users.js').then(m => { m.initUsersModule(); }).catch(err => console.error(err));
+  const fileMap = {
+    'today': 'today.js', 'announcements': 'mailbox.js', 'visits': 'visits.js', 'absent': 'attendance.js',
+    'clinic': 'clinic.js', 'behavior': 'behavior.js', 'gatepass': 'gatepass.js', 'guard': 'guard.js',
+    'teacher-directory': 'teachers.js', 'repeat': 'repeat.js', 'teacher-perf': 'teacher_perf.js',
+    'classes': 'distribution.js', 'manager-visits': 'manager_visits.js', 'student': 'student.js',
+    'students-manage': 'students_manage.js', 'rounds': 'rounds.js', 'honors': 'rewards.js',
+    'honors_board': 'honors.js', 'date': 'date_search.js', 'users': 'users.js'
+  };
+
+  if(fileMap[tabId]) {
+    import(`./js/modules/${fileMap[tabId]}`).then(m => {
+      const funcName = 'init' + fileMap[tabId].split('.')[0].split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('') + 'Module';
+      if(m[funcName]) m[funcName]();
+      else if(tabId === 'honors') m.initRewardsModule();
+      else if(tabId === 'teacher-directory') m.initTeachersModule();
+      else if(tabId === 'absent') m.initAttendanceModule();
+      else if(tabId === 'announcements') m.initMailboxModule();
+      else if(tabId === 'classes') m.initDistributionModule();
+    }).catch(err => {
+      // حاوية معالجة حماية كراش الأزرار
+      document.getElementById(`tab-${tabId}`).innerHTML = `
+        <div class="card" style="border-top:5px solid var(--danger-color); color:var(--danger-color); text-align:center; padding:20px; font-weight:bold;">
+           ❌ خطأ حرج: تعذر تحميل الموديل البرمجي [${fileMap[tabId]}] بنجاح.<br>Reason: ${err.message}
+        </div>`;
+    });
   }
 };
 </script>
