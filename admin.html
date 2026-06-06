@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
+<link lang="manifest" href="manifest.json">
 <title>لوحة التحكم الإدارية الموحدة - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <!-- استدعاء المكتبات الرسومية والطباعة المركزية المعتمدة بالتقرير -->
@@ -15,11 +15,11 @@
 :root {
     --primary-color: #1a1a2e; --sidebar-bg: #161625; --hover-color: #e67e22;
     --text-color: #ecf0f1; --bg-light: #f4f6f9; --success-color: #27ae60; --danger-color: #e74c3c;
+    --accent-color: #2980b9;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; }
 
-/* الهيكل الخارجي للسايد بار الجانبي */
 .sidebar { width: 260px; background: var(--sidebar-bg); color: var(--text-color); display: flex; flex-direction: column; transition: all 0.3s; z-index: 100; }
 .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #2c2c3e; background: var(--primary-color); }
 .sidebar-header h3 { font-size: 15px; font-weight: 900; color: #fff; }
@@ -28,13 +28,11 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #b2bec3; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.2s; }
 .menu-item:hover, .menu-item.active { background: #2c2c3e; color: #fff; border-right: 4px solid var(--hover-color); }
 
-/* منطقة المحتوى الرئيسي العائم */
 .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .top-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .user-badge { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; color: var(--primary-color); }
 .content-body { padding: 20px; overflow-y: auto; flex: 1; }
 
-/* ستايلات الكروت الموحدة لجميع الموديلات */
 .card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
 table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
 th, td { padding: 12px; text-align: right; border-bottom: 1px solid #eee; }
@@ -46,9 +44,7 @@ button:hover { background: var(--hover-color); }
 .badge.danger { background: var(--danger-color); }
 .badge.info { background: #2980b9; }
 .badge.success { background: var(--success-color); }
-.badge.warning { background: #f39c12; }
 
-/* لوحة عدادات اليوم والمؤشرات الافتراضية */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
 .stat-card { color: #fff; padding: 20px; border-radius: 10px; text-align: right; }
 .tab-content { display: none; }
@@ -57,7 +53,6 @@ button:hover { background: var(--hover-color); }
 </head>
 <body>
 
-<!-- 🎛️ السايد بار الجانبي الموحد والأنيق لجميع الموديلات -->
 <div class="sidebar">
     <div class="sidebar-header">
         <h3>مدرسة سالم الحسينان</h3>
@@ -92,11 +87,20 @@ button:hover { background: var(--hover-color); }
             <i class="bi bi-person-circle" style="font-size:20px; color:var(--hover-color);"></i>
             <span>مرحباً، <b id="lbl-admin-name">المسؤول الإداري</b></span>
         </div>
-        <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:6px 15px; font-size:12px;"><i class="bi bi-box-arrow-left"></i> خروج آمن</button>
+        
+        <!-- ⚡ منطقة الأزرار التنفيذية المحدثة بالتقرير الشامل -->
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button onclick="window.generateWeeklyReport()" style="background:var(--accent-color); padding:6px 14px; font-size:12px; border-radius:4px; display:inline-flex; align-items:center; gap:6px;">
+                <i class="bi bi-file-earmark-pdf-fill"></i> <i class="bi bi-printer"></i> تقرير أسبوعي للمنطقة
+            </button>
+            <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:6px 15px; font-size:12px;"><i class="bi bi-box-arrow-left"></i> خروج آمن</button>
+        </div>
     </div>
 
+    <!-- 🖨️ حاوية إنشاء وطباعة التقرير الأسبوعي التنفيذي المفقود سابقاً -->
+    <div id="weekly-report-area" style="display:none; background:#fff;"></div>
+
     <div class="content-body">
-        <!-- 📊 اللوحة الرئيسية المدمجة (اليوم والمؤشرات) -->
         <div id="tab-index" class="tab-content active">
             <div class="stats-grid" id="stats-cards"></div>
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
@@ -111,7 +115,6 @@ button:hover { background: var(--hover-color); }
             </div>
         </div>
 
-        <!-- ⚓ حاويات التبويبات والموديلات المتبقية الـ 18 العائمة -->
         <div id="tab-absent" class="tab-content"></div>
         <div id="tab-repeat" class="tab-content"></div>
         <div id="tab-behavior" class="tab-content"></div>
@@ -134,10 +137,9 @@ button:hover { background: var(--hover-color); }
 </div>
 
 <script type="module">
-// 🛡️ استيراد مركزي محصن للـ Firebase لمنع الأخطاء الحرجة وسقوط التبويبات
 import { db, auth } from './js/firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// خريطة الربط الهندسي للموديلات لتسهيل التحميل الديناميكي طيران
 const moduleMap = {
     'tab-index': { file: './js/modules/today.js', init: 'initTodayModule' },
     'tab-absent': { file: './js/modules/attendance.js', init: 'initAttendanceModule' },
@@ -163,7 +165,6 @@ const moduleMap = {
 let loadedModules = new Set();
 
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. فحص جدار حماية الجلسة والتحقق من صلاحية الأدمين
     const user = JSON.parse(localStorage.getItem('hs_user'));
     if (!user || user.role !== 'admin') {
         alert("🔒 الوصول مرفوض: هذه اللوحة مخصصة للإدارة العليا ومحمية بجدار الأمان.");
@@ -172,14 +173,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     document.getElementById('lbl-admin-name').textContent = user.name || "مسؤول النظام";
 
-    // 2. تشغيل الموديل الرئيسي لليوم والمؤشرات تلقائياً عند الدخول
     loadModuleLive('tab-index');
-
-    // 3. تنشيط محرك التقارير التنفيذية بالخلفية
     import('./js/modules/reports.js').then(m => m.initReportsModule());
 });
 
-// 🔄 دالة التنقل الديناميكي الملوكي والآمن بين التبويبات (Global Window scope)
 window.switchTab = function(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
@@ -187,7 +184,6 @@ window.switchTab = function(tabId) {
     const targetTab = document.getElementById(tabId);
     if(targetTab) targetTab.classList.add('active');
 
-    // تمييز العنصر النشط بالسايد بار بذكاء عبر مطابقة الـ onclick
     const menuItems = document.querySelectorAll('.menu-item');
     menuItems.forEach(item => {
         if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(tabId)) {
@@ -201,7 +197,6 @@ window.switchTab = function(tabId) {
 async function loadModuleLive(tabId) {
     const config = moduleMap[tabId];
     if (!config || loadedModules.has(tabId)) {
-        // إذا الموديل محمل سابقاً، نكتفي بتنشيط عدادات اليوم إذا كنا بالرئيسية
         if (tabId === 'tab-index' && typeof window.initTodayModule === 'function') {
             window.initTodayModule();
         }
@@ -213,9 +208,91 @@ async function loadModuleLive(tabId) {
         if (typeof module[config.init] === 'function') {
             await module[config.init]();
             loadedModules.add(tabId);
-            console.log(`✓ تم تحميل وتنشيط الموديل السحابي بنجاح: ${config.file}`);
+            console.log(`✓ تم تحميل الموديل: ${config.file}`);
         }
     } catch (err) {
-        console.error(`❌ فشل في تحميل الموديل ${config.file}:`, err);
+        console.error(`❌ فشل تحميل ${config.file}:`, err);
     }
 }
+
+// 🖨️ محرك بناء وتوليد التقرير الأسبوعي الموحد لوزارة التربية (PDF)
+window.generateWeeklyReport = async function() {
+    alert("⏳ جاري جرد الملفات السحابية وتجميع بنود التقرير الأسبوعي...");
+    try {
+        const todayStr = new Date().toLocaleDateString('ar-KW');
+        const [attSnap, visSnap] = await Promise.all([
+            getDocs(collection(db, 'attendance')),
+            getDocs(collection(db, 'technical_visits'))
+        ]);
+
+        const absMap = {};
+        attSnap.forEach(doc => {
+            const d = doc.data();
+            if(d.status === 'absent' && d.studentName) {
+                const key = d.studentName.trim();
+                if(!absMap[key]) absMap[key] = { name: key, classId: d.classId || '-', count: 0 };
+                absMap[key].count++;
+            }
+        });
+        const repeated = Object.values(absMap).filter(s => s.count >= 3).sort((a,b) => b.count - a.count);
+
+        const area = document.getElementById('weekly-report-area');
+        area.style.display = 'block';
+        area.innerHTML = `
+        <div id="report-print-area" style="padding:30px; direction:rtl; font-family:'Cairo',sans-serif; background:#fff; color:#000; width:750px; margin:0 auto; border:1px solid #eee;">
+            <div style="text-align:center; border-bottom:3px solid #1a1a2e; padding-bottom:15px; margin-bottom:20px;">
+                <h2 style="color:#1a1a2e; font-size:18px; font-weight:900;">وزارة التربية - الإدارة العامة لمنطقة الفروانية التعليمية</h2>
+                <h3 style="font-size:15px; font-weight:bold; margin-top:4px;">متوسطة سالم الحسينان للبنين</h3>
+                <p style="font-size:12px; color:#666; font-weight:bold; margin-top:3px;">التقرير الأسبوعي الشامل للمنشأة | تاريخ الإصدار: ${todayStr}</p>
+            </div>
+            
+            <h4 style="margin-bottom:10px; color:#e74c3c; font-weight:900; border-right:4px solid #e74c3c; padding-right:6px;">أولاً: حصر الطلاب ذوي الغياب المتكرر (3 أيام فأكثر)</h4>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
+                <thead>
+                    <tr style="background:#1a1a2e; color:#fff;">
+                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">#</th>
+                        <th style="padding:8px; text-align:right; border:1px solid #ddd;">اسم الطالب رباعي</th>
+                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">الفصل الدراسي</th>
+                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">أيام الغياب التراكمي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${repeated.length ? repeated.map((s,i) => `
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:8px; text-align:center; border:1px solid #ddd;"><b>${i+1}</b></td>
+                            <td style="padding:8px; border:1px solid #ddd; font-weight:bold;">👤 ${s.name}</td>
+                            <td style="padding:8px; text-align:center; border:1px solid #ddd; font-weight:bold; color:#2980b9;">${s.classId}</td>
+                            <td style="padding:8px; text-align:center; border:1px solid #ddd; color:#e74c3c; font-weight:900;">${s.count} أيام غياب</td>
+                        </tr>`).join('') : 
+                        '<tr><td colspan="4" style="padding:15px; text-align:center; color:#27ae60; font-weight:bold; border:1px solid #ddd;">✅ كشوف الغياب نظيفة ومثالية بالكامل هذا الأسبوع.</td></tr>'
+                    }
+                </tbody>
+            </table>
+            
+            <h4 style="margin-bottom:10px; color:#2980b9; font-weight:900; border-right:4px solid #2980b9; padding-right:6px;">ثانياً: مؤشرات الكفاءة والزيارات الفنية المنجزة</h4>
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; font-size:13px; font-weight:bold; color:#333; margin-bottom:30px;">
+                <i class="bi bi-info-circle-fill" style="color:#2980b9;"></i> إجمالي الزيارات التفقدية الفنية المرصودة من الموجهين ورؤساء الأقسام: 
+                <span style="color:#27ae60; font-size:16px; font-weight:900; margin-right:5px;">${visSnap.size} زيارة موثقة بالسيرفر</span>
+            </div>
+
+            <div style="margin-top:60px; display:flex; justify-content:space-between; font-size:13px; font-weight:bold; padding:0 20px;">
+                <div style="text-align:center;"><p>يعتمد، مدير المدرسة</p><p style="margin-top:40px;">_________________</p></div>
+                <div style="text-align:center;"><p>ختم المنشأة الرسمي</p><div style="margin-top:10px; width:70px; height:70px; border:2px dashed #444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; color:#444;">سالم الحسينان</div></div>
+            </div>
+        </div>`;
+        
+        setTimeout(() => {
+            import('./js/modules/reports.js').then(m => {
+                if(typeof m.exportAsManzoumaPDF === 'function') {
+                    m.exportAsManzoumaPDF('report-print-area', 'التقرير_الأسبوعي_الرسمي_للمنطقة');
+                    setTimeout(() => { area.style.display = 'none'; }, 1000);
+                } else {
+                    alert("⚠️ تعذر استدعاء دالة الطباعة المركزية.");
+                }
+            });
+        }, 600);
+    } catch(err) { alert("❌ تعذر إصدار التقرير: " + err.message); }
+};
+</script>
+</body>
+</html>
