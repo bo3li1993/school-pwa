@@ -1,26 +1,17 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// 🎫 موديل حقيبة تصاريح الاستئذان والخروج المبكر للطلاب بربط مركزي آمن
+import { db } from '../firebase-config.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initGatepassModule() {
     const container = document.getElementById('tab-gatepass');
     if (!container) return;
 
-    container.innerHTML = `
+    // 🛡️ جدار حماية وعزل الأخطاء (Error Boundary) لمنع تعليق اللوحة الإدارية
+    try {
+        container.innerHTML = `
         <div class="card" style="border-top: 5px solid var(--accent-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-ticket-perforated-fill" style="color:var(--accent-color);"></i> حقيبة تصاريح الاستئذان والخروج المبكر للطلاب</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">اصدار إلكتروني فوري لبطاقة الاستئذان المعتمدة؛ اختر الفصل وسيتكفل المحرك بجلب كشف الأسماء مفرزاً.</p>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">إصدار إلكتروني فوري لبطاقة الاستئذان المعتمدة؛ اختر الفصل وسيتكفل المحرك بجلب كشف الأسماء مفرزاً أبجدياً.</p>
             
             <form id="gatepass-reg-form" onsubmit="window.handleRegisterGatepassLive(event)">
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px;">
@@ -77,10 +68,12 @@ export async function initGatepassModule() {
                     </tbody>
                 </table>
             </div>
-        </div>
-    `;
+        </div>`;
 
-    loadGatepassLogsLive();
+        loadGatepassLogsLive();
+    } catch(e) {
+        container.innerHTML = `<div class="card" style="color:red; text-align:center; padding:20px;">⚠️ تعذر تحميل موديل تصاريح الخروج: ${e.message}</div>`;
+    }
 }
 
 window.handleGateClassChange = async function(classId) {
@@ -122,6 +115,7 @@ window.handleRegisterGatepassLive = async function(e) {
     const reason = document.getElementById('gate-reason').value.trim();
 
     try {
+        // الحفظ بكولكشن الاستئذان الموحد
         await addDoc(collection(db, 'gatepass'), {
             studentName: sName,
             classId: cId,
