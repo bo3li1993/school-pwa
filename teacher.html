@@ -31,16 +31,32 @@ select { width:100%; padding:11px; border:1px solid #ddd; border-radius:6px; mar
 
     <div class="card">
         <h2><i class="bi bi-calendar-check-fill" style="color:var(--accent-color);"></i> رصد غياب وفروق الحصص للفصل الدراسي</h2>
-        <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">اختر الفصل الدراسي الموكل إليك رصده؛ سيقوم المحرك بترتيب كشف الأسماء أبجدياً تلقائياً لراحة الرصد بالموبايل.</p>
+        <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">اختر الفصل والحصة؛ سيقوم المحرك بفحص السيرفر آلياً لمنع تكرار الرصد المزدوج للفصل.</p>
         
-        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:4px;">اختر الفصل الدراسي</label>
-        <select id="teacher-class-select" onchange="window.loadClassStudentsForTeacher(this.value)">
-            <option value="">-- اختر الفصل الدراسي المعتمد --</option>
-            <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
-            <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
-            <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
-            <option value="9/1">9/1</option><option value="9/2">9/2</option>
-        </select>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+                <label style="font-weight:700; font-size:13px; display:block; margin-bottom:4px;">1. اختر الفصل الدراسي</label>
+                <select id="teacher-class-select" onchange="window.loadClassStudentsForTeacher(this.value)">
+                    <option value="">-- اختر الفصل --</option>
+                    <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
+                    <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
+                    <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+                    <option value="9/1">9/1</option><option value="9/2">9/2</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-weight:700; font-size:13px; display:block; margin-bottom:4px;">2. اختر الحصة الدراسية</label>
+                <select id="teacher-period-select">
+                    <option value="الحصة الأولى">الحصة الأولى</option>
+                    <option value="الحصة الثانية">الحصة الثانية</option>
+                    <option value="الحصة الثالثة">الحصة الثالثة</option>
+                    <option value="الحصة الرابعة">الحصة الرابعة</option>
+                    <option value="الحصة الخامسة">الحصة الخامسة</option>
+                    <option value="الحصة السادسة">الحصة السادسة</option>
+                    <option value="الحصة السابعة">الحصة السابعة</option>
+                </select>
+            </div>
+        </div>
         
         <div id="students-attendance-list-area" style="margin-top:15px;"></div>
         <button id="submit-attendance-btn" onclick="window.submitAttendanceLiveFromTeacher()" style="display:none; margin-top:15px; background:var(--accent-color);"><i class="bi bi-cloud-upload-fill"></i> اعتماد ورفع سجل الحضور والغياب للداشبورد</button>
@@ -103,36 +119,50 @@ window.loadClassStudentsForTeacher = async function(classId) {
 
 window.submitAttendanceLiveFromTeacher = async function() {
     const classId = document.getElementById('teacher-class-select').value;
+    const period = document.getElementById('teacher-period-select').value;
     const rows = document.querySelectorAll('.attendance-status-input');
     if(!classId || rows.length === 0) return;
 
     const kwDate = new Date().toLocaleDateString('ar-KW');
-    alert('⏳ جاري إرسال ورفع كشف الرصد الرقمي وتأمين طابور الإشعارات...');
 
     try {
+        // 🛑 المحرك المطور: الفحص الذكي المسبق لمنع تكرار رصد نفس الصف ونفس الحصة باليوم
+        const existingCheck = await getDocs(
+            query(collection(db, 'attendance'),
+            where('classId', '==', classId),
+            where('date', '==', kwDate),
+            where('period', '==', period))
+        );
+        
+        if(!existingCheck.empty) {
+            const confirm = window.confirm(`⚠️ تنبيه: يوجد سجل غياب مرصود وموثق لفصل ${classId} في (${period}) اليوم بالفعل!\nهل تريد إعادة التسجيل وإضافة سجل جديد بالخلفية؟`);
+            if(!confirm) return;
+        }
+
+        alert('⏳ جاري إرسال ورفع كشف الرصد الرقمي وتأمين طابور الإشعارات...');
         let promises = [];
         rows.forEach(row => {
             const name = row.getAttribute('data-name');
             const status = row.value;
             
-            // 1. رفع وحقن رصد الغياب والحضور بجدول السيرفر الرئيسي
             promises.push(addDoc(collection(db, 'attendance'), {
                 studentName: name,
                 name: name,
                 classId: classId,
                 status: status,
                 date: kwDate,           
+                period: period,
                 recordedBy: teacherName, 
                 timestamp: serverTimestamp()
             }));
 
-            // 🔥 الميزة المطورة: حقن وإصدار تذكرة فورية بطابور الإشعارات السحابية لو الطالب غائب كما طلب التقرير
             if(status === 'absent') {
                 promises.push(addDoc(collection(db, 'notifications_queue'), {
                     studentName: name,
                     classId: classId,
                     date: kwDate,
-                    message: `إشعار رسمي: سجل المعلم غياب الطالب ${name} اليوم ${kwDate} عن الحصة المعتمدة.`,
+                    period: period,
+                    message: `إشعار رسمي: سجل المعلم غياب الطالب ${name} اليوم ${kwDate} في ${period}.`,
                     sent: false,
                     createdAt: serverTimestamp()
                 }));
@@ -140,7 +170,7 @@ window.submitAttendanceLiveFromTeacher = async function() {
         });
         
         await Promise.all(promises);
-        alert('✓ تم رصد واعتماد غياب الفصل بنجاح، وتأمين طابور الإشعارات السحابية للإدارة والمدير.');
+        alert('✓ تم رصد واعتماد غياب الفصل بنجاح، وتأمين طابور الإشعارات السحابية.');
         document.getElementById('teacher-class-select').value = "";
         document.getElementById('students-attendance-list-area').innerHTML = "";
         document.getElementById('submit-attendance-btn').style.display = 'none';
