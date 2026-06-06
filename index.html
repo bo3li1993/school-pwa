@@ -36,7 +36,6 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 .parent-link { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 13px; font-weight: bold; }
 .parent-link a { color: #2980b9; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
 
-/* 📲 ستايل زر التثبيت الذكي العائم والمحمي */
 #install-app-btn {
     display: none; background: #27ae60; color: #fff; border: none; padding: 10px 15px; 
     border-radius: 30px; font-weight: 700; font-size: 13px; margin-bottom: 15px; width: 100%;
@@ -46,7 +45,6 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 </head>
 <body>
 
-<!-- 📲 زر التثبيت السريع للـ PWA (يظهر فقط إذا كان الجهاز يدعم التثبيت ولم يثبته بعد) -->
 <div style="width: 100%; max-width: 420px;">
     <button id="install-app-btn"><i class="bi bi-phone-vibrate-fill"></i> 📲 ثبّت تطبيق المنظومة على هاتفِك الحين</button>
 </div>
@@ -78,24 +76,19 @@ import { db, auth } from './js/firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
-// 📱 محرك هندسة الـ Install Prompt لتثبيت التطبيق على الشاشة الرئيسية
 let deferredPrompt;
 const installBtn = document.getElementById('install-app-btn');
 
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    // إظهار زر التثبيت للمستخدم فوراً چدام عينه
     installBtn.style.display = 'block';
 });
 
 installBtn.addEventListener('click', async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-        console.log('✓ وافق المستخدم على تثبيت الأبليكيشن بنجاح.');
-    }
+    await deferredPrompt.userChoice;
     deferredPrompt = null;
     installBtn.style.display = 'none';
 });
@@ -113,21 +106,44 @@ window.handleSystemLoginLive = async function(e) {
     btn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص جدار الحماية الحّي...`;
 
     try {
-        await signInWithEmailAndPassword(auth, targetEmail, pass);
-        
+        let isAuthSuccess = false;
+        let userData = null;
+
+        // 🛡️ 1. محاولة تسجيل الدخول بنظام التشفير الجديد أولاً
+        try {
+            await signInWithEmailAndPassword(auth, targetEmail, pass);
+            isAuthSuccess = true;
+            console.log("✓ تم الولوج بنجاح عبر نظام Firebase Auth المشفر.");
+        } catch(authErr) {
+            console.log("ℹ️ الحساب غير مرحل بعد، جاري تجربة الفحص الانتقالي المرن...");
+        }
+
+        // 💾 2. جلب مستند المستخدم من الفايرستور للتحقق من الصلاحيات والـ plainPass القديم
         const q = query(collection(db, 'users'), where('userId', '==', userId));
         const snap = await getDocs(q);
         
-        let userData = null;
         snap.forEach(doc => { userData = doc.data(); });
 
         if(!userData) {
-            alert("⚠️ خطأ حرج: تفاصيل الصلاحيات غير مقيدة بالمنظومة.");
+            alert("⚠️ خطأ حرج: رقم المستخدم غير مقيد بسجلات المنظومة.");
             btn.disabled = false;
             btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
             return;
         }
 
+        // 🔑 3. التحقق الانتقالي: لو الحساب لم يرحل للـ Auth بعد، نطابق الـ plainPass القديم مباشرة
+        if (!isAuthSuccess) {
+            if (userData.plainPass && userData.plainPass === pass) {
+                console.log("✓ تم الولوج الانتقالي المؤقت بنجاح.");
+            } else {
+                alert("❌ الرمز السري أو رقم المستخدم غير صحيح، يرجى المحاولة مرة أخرى.");
+                btn.disabled = false;
+                btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
+                return;
+            }
+        }
+
+        // حفظ الجلسة والتوجيه المستقر حسب الصلاحية
         localStorage.setItem('hs_user', JSON.stringify(userData));
 
         if(userData.role === 'admin') {
@@ -137,13 +153,12 @@ window.handleSystemLoginLive = async function(e) {
         }
 
     } catch(err) {
-        alert("❌ الرمز السري أو رقم المستخدم غير صحيح، يرجى المحاولة مرة أخرى.");
+        alert("❌ عطل في الاتصال بالسيرفر: " + err.message);
         btn.disabled = false;
         btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
     }
 };
 
-// تسجيل السيرفس وركر لضمان عمل ميزات الـ PWA كاملة
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(() => {
         console.log('✓ Service Worker Registered Successfully.');
