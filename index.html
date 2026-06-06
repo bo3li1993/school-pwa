@@ -4,86 +4,129 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link lang="manifest" href="manifest.json">
-<title>تسجيل الدخول - المنظومة الرقمية الموحدة</title>
+<title>بوابة الدخول الموحدة - المنظومة الرقمية الشاملة</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<script>
-// 🧼 الممحاة الرقمية الفورية: كسر وحذف السيرفس وركر والكاش القديم المترمش غصبن عليه
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-            registration.unregister().then(function() { console.log('✓ تم تطهير السيرفس وركر القديم'); });
-        }
-    });
-}
-// تنظيف الجلسات المعلقة القديمة لتهيئة السستم على النظافة
-if(!localStorage.getItem('hs_clean_reset')) {
-    localStorage.clear();
-    localStorage.setItem('hs_clean_reset', 'true');
-}
-</script>
-
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-:root {
-    --primary-color: #1a1a2e;
-    --accent-color: #e67e22;
-    --bg-light: #f5f6fa;
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+:root { 
+    --primary-color: #1a1a2e; --accent-color: #e67e22; 
+    --bg-dark: #0f172a; --card-bg: #ffffff; 
 }
-*{margin:0;padding:0;box-sizing:border-box; font-family: 'Cairo', sans-serif;}
-body{background: var(--bg-light); display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px;}
-.login-card{background:#fff; padding:2.5rem 2rem; border-radius:16px; max-width:420px; width:100%; box-shadow:0 10px 25px rgba(0,0,0,0.05); border-top:6px solid var(--primary-color); text-align:center;}
-.logo-icon{font-size:50px; color:var(--accent-color); margin-bottom:10px;}
-h1{font-size:20px; font-weight:900; color:var(--primary-color); margin-bottom:5px;}
-p{font-size:13px; color:#666; margin-bottom:25px; font-weight:600;}
-label{display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);}
-input{width:100%; padding:12px; border:1px solid #dcdde1; border-radius:8px; margin-bottom:15px; text-align:right; font-size:14px; outline:none; font-weight:600;}
-input:focus{border-color:var(--accent-color);}
-button{background:var(--primary-color); color:#fff; border:none; width:100%; padding:12px; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s;}
-button:hover{background:var(--accent-color);}
-.footer-text{font-size:11px; color:#aaa; margin-top:25px; font-weight:600;}
+* { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
+body { 
+    background: linear-gradient(135deg, var(--bg-dark) 0%, #1e1e38 100%); 
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; 
+}
+.login-card { 
+    background: var(--card-bg); border-radius: 16px; padding: 35px 30px; width: 100%; max-width: 420px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4); border-top: 6px solid var(--accent-color); text-align: right; 
+}
+.login-logo { font-size: 50px; color: var(--primary-color); text-align: center; margin-bottom: 10px; }
+.login-card h2 { font-size: 20px; font-weight: 900; color: var(--primary-color); text-align: center; margin-bottom: 4px; }
+.login-card p { font-size: 12px; color: #666; font-weight: bold; text-align: center; margin-bottom: 25px; }
+label { font-weight: 700; font-size: 13px; color: var(--primary-color); display: block; margin-bottom: 6px; }
+input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; font-weight: 600; text-align: right; outline: none; font-size: 14px; }
+input:focus { border-color: var(--accent-color); }
+button { 
+    background: var(--primary-color); color: #fff; border: none; padding: 13px; border-radius: 8px; 
+    font-weight: 700; cursor: pointer; width: 100%; font-size: 15px; transition: all 0.2s; 
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px;
+}
+button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,126,34,0.2); }
+.parent-link { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 13px; font-weight: bold; }
+.parent-link a { color: #2980b9; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
 </style>
 </head>
 <body>
 
 <div class="login-card">
-    <div class="logo-icon"><i class="bi bi-shield-lock-fill"></i></div>
-    <h1>بوابة الدخول الموحدة</h1>
+    <div class="login-logo"><i class="bi bi-shield-lock-fill"></i></div>
+    <h2>المنظومة الرقمية الموحدة</h2>
     <p>مدرسة سالم الحسينان المتوسطة للبنين</p>
     
-    <form id="login-form" onsubmit="handleSystemLogin(event)">
-        <div>
-            <label>اسم المستخدم / المسؤول</label>
-            <input type="text" id="login-username" placeholder="أدخل اسم المستخدم المعين" required>
-        </div>
-        <div>
-            <label>كلمة المرور الإدارية</label>
-            <input type="password" id="login-password" placeholder="أدخل رمز المرور السري" required>
-        </div>
-        <button type="submit"><i class="bi bi-box-arrow-in-left"></i> دخول آمن للمنظومة</button>
+    <form onsubmit="window.handleSystemLoginLive(event)">
+        <label><i class="bi bi-person-fill"></i> رقم المستخدم / المعرف (User ID)</label>
+        <input type="text" id="login-user-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
+        
+        <label><i class="bi bi-key-fill"></i> رمز الحماية السري (Password)</label>
+        <input type="password" id="login-password" placeholder="أدخل كلمة المرور المشفرة" required>
+        
+        <button type="submit" id="btn-login-submit">
+            <i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة
+        </button>
     </form>
-    
-    <div class="footer-text">المنظومة الرقمية الشاملة المعتمدة © 2026</div>
+
+    <div class="parent-link">
+        <a href="parent.html"><i class="bi bi-person-hearts"></i> هل أنت ولي أمر طالب؟ اضغط هنا للدخول</a>
+    </div>
 </div>
 
-<script>
-function handleSystemLogin(e) {
+<script type="module">
+// 🔗 الربط المباشر بالمحرك المركزي لـ غوغل فايربيس
+import { db, auth } from './js/firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+// استدعاء دالة تسجيل الدخول الرسمية والمشفرة من غوغل
+import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+window.handleSystemLoginLive = async function(e) {
     e.preventDefault();
-    const user = document.getElementById('login-username').value.trim();
+    const userId = document.getElementById('login-user-id').value.trim();
     const pass = document.getElementById('login-password').value.trim();
+    const btn = document.getElementById('btn-login-submit');
 
-    if(user && pass) {
-        // حفظ البيانات بالصيغة الفولاذية المتوافقة 100% مع صفحة الأدمين الجديدة
-        const sessionData = { name: user, role: "مسؤول النظام", loginTime: new Date().getTime() };
-        localStorage.setItem('hs_user', JSON.stringify(sessionData));
+    if(!userId || !pass) return;
+
+    // ⚡ تحويل معرّف الموظف تلقائياً للإيميل الافتراضي المشفر والمحمي بسيرفرات غوغل
+    const targetEmail = `${userId}@hosainan.school`;
+
+    btn.disabled = true;
+    btn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص جدار الحماية الحّي...`;
+
+    try {
+        // 1. الفحص الصارم وتثبيت الجلسة عبر ميكانيكية الـ Authentication المشفرة
+        const authResult = await signInWithEmailAndPassword(auth, targetEmail, pass);
         
-        // التوجيه المباشر والآمن بدون أي حلقات تكرار
-        window.location.replace('admin.html');
-    } else {
-        alert('يرجى إدخال البيانات المطلوبة بشكل صحيح.');
-    }
-}
-</script>
+        // 2. إذا نجح التشفير، يطير السستم فوراً يجلب صلاحية ودور الموظف من كولكشن users الموحد
+        const q = query(collection(db, 'users'), where('userId', '==', userId));
+        const snap = await getDocs(q);
+        
+        let userData = null;
+        snap.forEach(doc => {
+            userData = doc.data();
+        });
 
+        // 🛡️ حماية إضافية في حال تم حذف الموظف من قاعدة البيانات وبقى بالـ Auth
+        if(!userData) {
+            alert("⚠️ خطأ حرج: الحساب مصرح به بالخلفية ولكن تفاصيل الصلاحيات غير مقيدة بالمنظومة.");
+            btn.disabled = false;
+            btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
+            return;
+        }
+
+        // 3. تخزين تفاصيل الجلسة الآمنة بمتصفح الموبايل لتقييد الصلاحيات
+        localStorage.setItem('hs_user', JSON.stringify(userData));
+
+        // 4. التوجيه الفوري والذكي بناء على دور وصلاحية الموظف المعتمدة بالملي
+        if(userData.role === 'admin') {
+            window.location.replace('admin.html');
+        } else {
+            window.location.replace('teacher.html');
+        }
+
+    } catch(err) {
+        // فرز ذكي لرسائل الخطأ بلغة واضحة للمدرسين بدال الأكواد الإنجليزية المبهمة
+        let errMsg = "تعذر تسجيل الدخول؛ يرجى التأكد من رقم المستخدم أو الرمز السري.";
+        if(err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+            errMsg = "❌ الرمز السري أو رقم المستخدم غير صحيح، يرجى المحاولة مرة أخرى.";
+        } else if(err.code === "auth/invalid-credential") {
+            errMsg = "❌ بيانات الدخول غير مطابقة للسجلات المؤمنة حالياً.";
+        }
+        
+        alert(errMsg);
+        btn.disabled = false;
+        btn.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة`;
+    }
+};
+</script>
 </body>
 </html>
