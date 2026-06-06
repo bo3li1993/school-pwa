@@ -1,6 +1,5 @@
-// 🚀 ملف السيرفس وركر المطور بأتمتة الكاش الذكي عبر التاريخ الموحد
-// السستم يولّد الحين اسم الكاش آلياً بناءً على تاريخ اليوم لحل مشكلة تعليق أجهزة المستخدمين تماماً
-const CACHE_NAME = `hosainan-${new Date().toISOString().split('T')[0]}`;
+// 🚀 ملف السيرفس وركر الذكي - نظام أتمتة الكاش اليومي بالتاريخ القياسي الموحد
+const CACHE_NAME = `hosainan-${new Date().toISOString().slice(0, 10)}`;
 
 // قائمة الأصول والملفات والموديلات الـ 22 المعتمدة لعمل السيستم بكفاءة
 const ASSETS = [
@@ -35,24 +34,24 @@ const ASSETS = [
   './js/modules/mailbox.js'
 ];
 
-// ⏳ حدث التثبيت: ضخ وحقن الملفات والموديلات بداخل الكاش المحمي بالخلفية
+// ⏳ حدث التثبيت: ضخ وحقن أصول المنظومة بداخل الكاش المؤتمت بالخلفية
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('📦 جاري تهيئة وحقن ملفات المنظومة بداخل الكاش المؤتمت...');
+      console.log('📦 جاري تهيئة وحقن أصول المنظومة بداخل الكاش المؤتمت...');
       return cache.addAll(ASSETS);
     }).then(() => self.skipWaiting())
   );
 });
 
-// 🧹 حدث التنشيط: مسح وتدمير كاش الأيام السابقة فوراً لإنعاش أجهزة المعلمين
+// 🧹 حدث التنشيط: تدمير ومسح كاش الأيام السابقة فوراً لإنعاش أجهزة المعلمين والإدارة
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
         keys.map(key => {
           if (key !== CACHE_NAME) {
-            console.log('🗑️ تم رصد كاش ليوم سابق ومسحه فوراً لتحديث جهاز المستخدم:', key);
+            console.log('🗑️ تم تنظيف أرشيف كاش ليوم سابق لتوفير مساحة الهاتف:', key);
             return caches.delete(key);
           }
         })
@@ -61,13 +60,11 @@ self.addEventListener('activate', e => {
   );
 });
 
-// 🌐 حدث جلب البيانات: تشغيل استراتيجية الاستجابة الذكية لحماية حركات الفايربيس الحية
+// 🌐 حدث جلب البيانات: استراتيجية الاستجابة الذكية وحماية حركات الفايربيس اللحظية
 self.addEventListener('fetch', e => {
-  // استثناء روابط الفايربيس والفايرستور الحية من الكاش لضمان الرصد اللحظي
   if (e.request.url.includes('firestore.googleapis.com') || e.request.url.includes('firebasejs')) {
     return;
   }
-
   e.respondWith(
     fetch(e.request).then(res => {
       if (!res || res.status !== 200 || res.type !== 'basic') {
@@ -79,7 +76,6 @@ self.addEventListener('fetch', e => {
       });
       return res;
     }).catch(() => {
-      // في حال انقطاع شبكة الـ LTE بالمدرسة، يتم السحب فوراً من الكاش لعدم تعليق المعلم
       return caches.match(e.request);
     })
   );
