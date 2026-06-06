@@ -1,7 +1,8 @@
-// 🚀 ملف السيرفس وركر المطور لإدارة الكاش والتحديث التلقائي للمنظومة
-const CACHE_NAME = 'hosainan-v3'; // رفع الإصدار لتطهير كاش أجهزة المستخدمين آلياً
+// 🚀 ملف السيرفس وركر المطور بأتمتة الكاش الذكي عبر التاريخ الموحد
+// السستم يولّد الحين اسم الكاش آلياً بناءً على تاريخ اليوم لحل مشكلة تعليق أجهزة المستخدمين تماماً
+const CACHE_NAME = `hosainan-${new Date().toISOString().split('T')[0]}`;
 
-// قائمة الأصول والملفات والموديلات الـ 21 المعتمدة لعمل السيستم بدون إنترنت
+// قائمة الأصول والملفات والموديلات الـ 22 المعتمدة لعمل السيستم بكفاءة
 const ASSETS = [
   './',
   './index.html',
@@ -34,24 +35,24 @@ const ASSETS = [
   './js/modules/mailbox.js'
 ];
 
-// ⏳ حدث التثبيت: ضخ الملفات الجديدة داخل الـ Cache بالخلفية
+// ⏳ حدث التثبيت: ضخ وحقن الملفات والموديلات بداخل الكاش المحمي بالخلفية
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('📦 جاري تهيئة وحقن ملفات المنظومة بداخل الكاش المحمي...');
+      console.log('📦 جاري تهيئة وحقن ملفات المنظومة بداخل الكاش المؤتمت...');
       return cache.addAll(ASSETS);
     }).then(() => self.skipWaiting())
   );
 });
 
-// 🧹 حدث التنشيط: مسح وتدمير كاش الإصدارات القديمة (v2 و v1) لمنع التضارب
+// 🧹 حدث التنشيط: مسح وتدمير كاش الأيام السابقة فوراً لإنعاش أجهزة المعلمين
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
         keys.map(key => {
           if (key !== CACHE_NAME) {
-            console.log('🗑️ تم رصد كاش قديم ومسحه فوراً لتحديث جهاز المستخدم:', key);
+            console.log('🗑️ تم رصد كاش ليوم سابق ومسحه فوراً لتحديث جهاز المستخدم:', key);
             return caches.delete(key);
           }
         })
@@ -60,16 +61,15 @@ self.addEventListener('activate', e => {
   );
 });
 
-// 🌐 حدث جلب البيانات: تشغيل استراتيجية ذكية تضمن تحديث البيانات الحية
+// 🌐 حدث جلب البيانات: تشغيل استراتيجية الاستجابة الذكية لحماية حركات الفايربيس الحية
 self.addEventListener('fetch', e => {
-  // منع كاش السيرفس وركر من التداخل مع طلبات الفايربيس والفايرستور الحية
+  // استثناء روابط الفايربيس والفايرستور الحية من الكاش لضمان الرصد اللحظي
   if (e.request.url.includes('firestore.googleapis.com') || e.request.url.includes('firebasejs')) {
     return;
   }
 
   e.respondWith(
     fetch(e.request).then(res => {
-      // إذا الاستجابة سليمة نحدث الكاش محلياً طيران
       if (!res || res.status !== 200 || res.type !== 'basic') {
         return res;
       }
@@ -79,7 +79,7 @@ self.addEventListener('fetch', e => {
       });
       return res;
     }).catch(() => {
-      // في حال انقطع الإنترنت تماماً، يسحب من الكاش المخزن لحماية المعلم من التعليق
+      // في حال انقطاع شبكة الـ LTE بالمدرسة، يتم السحب فوراً من الكاش لعدم تعليق المعلم
       return caches.match(e.request);
     })
   );
