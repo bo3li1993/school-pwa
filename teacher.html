@@ -53,7 +53,6 @@ import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'http
 
 let teacherName = "";
 
-// 🔒 1. فحص الحماية والجلسة الصارم للمعلم لتقييد الصلاحيات وحماية المنظومة من التداخل
 try {
     const saved = localStorage.getItem('hs_user');
     if(!saved) { window.location.href = 'index.html'; }
@@ -77,7 +76,6 @@ window.loadClassStudentsForTeacher = async function(classId) {
         let arr = [];
         snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
         
-        // 🔤 ترتيب أسماء الطلاب أبجدياً من الألف للياء لسهولة التعامل من تليفون المعلم
         arr.sort((a,b) => a.localeCompare(b, 'ar'));
 
         if(arr.length === 0) {
@@ -108,9 +106,8 @@ window.submitAttendanceLiveFromTeacher = async function() {
     const rows = document.querySelectorAll('.attendance-status-input');
     if(!classId || rows.length === 0) return;
 
-    // 📅 توحيد التاريخ بصيغة كود الكويت الصارمة لضمان قراءته في داشبورد الأدمين بشكل صحيح
     const kwDate = new Date().toLocaleDateString('ar-KW');
-    alert('⏳ جاري إرسال ورفع كشف الرصد الرقمي لايف للداشبورد الرئيسي...');
+    alert('⏳ جاري إرسال ورفع كشف الرصد الرقمي وتأمين طابور الإشعارات...');
 
     try {
         let promises = [];
@@ -118,19 +115,32 @@ window.submitAttendanceLiveFromTeacher = async function() {
             const name = row.getAttribute('data-name');
             const status = row.value;
             
-            // رفع وحقن البيانات بالكولكشن مع تدوين المعلم المسؤول عن الرصد آلياً لحفظ السجلات
+            // 1. رفع وحقن رصد الغياب والحضور بجدول السيرفر الرئيسي
             promises.push(addDoc(collection(db, 'attendance'), {
                 studentName: name,
                 name: name,
                 classId: classId,
                 status: status,
-                date: kwDate,           // صيغة التاريخ الموحدة ar-KW
-                recordedBy: teacherName, // توثيق المعلم الراصد
+                date: kwDate,           
+                recordedBy: teacherName, 
                 timestamp: serverTimestamp()
             }));
+
+            // 🔥 الميزة المطورة: حقن وإصدار تذكرة فورية بطابور الإشعارات السحابية لو الطالب غائب كما طلب التقرير
+            if(status === 'absent') {
+                promises.push(addDoc(collection(db, 'notifications_queue'), {
+                    studentName: name,
+                    classId: classId,
+                    date: kwDate,
+                    message: `إشعار رسمي: سجل المعلم غياب الطالب ${name} اليوم ${kwDate} عن الحصة المعتمدة.`,
+                    sent: false,
+                    createdAt: serverTimestamp()
+                }));
+            }
         });
+        
         await Promise.all(promises);
-        alert('✓ تم رصد واعتماد غياب وحضور الفصل بنجاح، ورفع الداتا لغرفة التحكم.');
+        alert('✓ تم رصد واعتماد غياب الفصل بنجاح، وتأمين طابور الإشعارات السحابية للإدارة والمدير.');
         document.getElementById('teacher-class-select').value = "";
         document.getElementById('students-attendance-list-area').innerHTML = "";
         document.getElementById('submit-attendance-btn').style.display = 'none';
