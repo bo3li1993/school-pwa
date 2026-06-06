@@ -1,4 +1,4 @@
-// ✉️ موديل إدارة المراسلات والتعاميم الموجهة لأولياء الأمور
+// ✉️ موديل إدارة المراسلات وبث الردود السحابية الفورية لأولياء الأمور
 import { db } from '../firebase-config.js';
 import { collection, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
@@ -24,10 +24,10 @@ export async function initMailboxModule() {
                 <table>
                     <thead>
                         <tr style="background:#f4f6f9;">
-                            <th>الطالب</th>
-                            <th style="text-align:center;">الفصل</th>
+                            <th>الطالب المستعلم</th>
+                            <th style="text-align:center; width:80px;">الفصل</th>
                             <th>نص رسالة ولي الأمر الواردة</th>
-                            <th style="text-align:center;">الإجراء المتبع</th>
+                            <th style="text-align:center; width:120px;">الإجراء المتبع</th>
                         </tr>
                     </thead>
                     <tbody id="parent-messages-tbody">
@@ -62,20 +62,24 @@ async function loadParentMailboxLive() {
     if (!tbody) return;
 
     try {
-        // قراءة رصيد المحادثات من كولكشن school_threads الموحد
         const snap = await getDocs(collection(db, 'school_threads'));
         let html = '';
         
         snap.forEach(doc => {
             const data = doc.data();
             if(data.senderRole === 'parent') {
+                // تصفيف المتغيرات لإرسالها بأمان داخل دالة الرد الفوري
+                const safeName = data.studentName ? data.studentName.replace(/'/g, "\\'") : '';
+                const safeClass = data.classId ? data.classId.replace(/'/g, "\\'") : '';
+
                 html += `
                     <tr style="border-bottom:1px solid #eee;">
                         <td><b>👤 ${data.studentName || '-'}</b></td>
                         <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
                         <td style="color:#333; font-weight:700;">${data.message || '-'}</td>
                         <td style="text-align:center;">
-                            <button onclick="alert('جاري العمل على تفعيل نظام الردود السريعة المباشرة')" style="padding:4px 10px; font-size:11px; background:var(--success-color);"><i class="bi bi-reply-fill"></i> رد رسمي</button>
+                            <!-- ✨ تفعيل زر الرد الرسمي وربطه بـ الفايرستور مباشرة -->
+                            <button onclick="window.sendAdminReplyLive('${safeName}', '${safeClass}')" style="padding:5px 12px; font-size:11px; background:var(--success-color); font-weight:bold;"><i class="bi bi-reply-fill"></i> رد رسمي حّي</button>
                         </td>
                     </tr>`;
             }
@@ -84,3 +88,23 @@ async function loadParentMailboxLive() {
         tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 الصندوق الوارد خالي من رسائل أولياء الأمور حالياً.</td></tr>';
     } catch(e) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px;">💡 بانتظار قيد أولى المراسلات لتفعيل الصندوق.</td></tr>'; }
 }
+
+// ✨ الدالة التنفيذية الملوكية لبث رد الإدارة المباشر لصفحة ولي الأمر
+window.sendAdminReplyLive = async function(studentName, classId) {
+    const replyText = prompt(`اكتب الرد الرسمي المعتمد الموجه لولي أمر الطالب:\n(${studentName}):`);
+    if(!replyText || !replyText.trim()) return;
+
+    try {
+        await addDoc(collection(db, 'school_threads'), {
+            studentName: studentName,
+            classId: classId,
+            message: replyText.trim(),
+            senderRole: 'admin',
+            createdAt: serverTimestamp()
+        });
+        alert('✅ تم إرسال وبث الرد الرسمي لولي الأمر بنجاح، وظهر بصفحته لايف.');
+        loadParentMailboxLive(); // تحديث فوري للجدول
+    } catch(err) {
+        alert('❌ فشل إرسال الرد السحابي: ' + err.message);
+    }
+};
