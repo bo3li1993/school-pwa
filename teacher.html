@@ -3,235 +3,139 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>واجهة رصد الغياب الفوري - مدرسة سالم الحسينان</title>
+<title>بوابة المعلم الرقمية - مدرسة سالم الحسينان المتوسطة للبنين</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#f5f5f5;color:#333;line-height:1.6;padding-bottom:30px}
-.header{background:#2c3e50;color:#fff;padding:1rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 4px rgba(0,0,0,.1)}
-.header h1{font-size:16px}
-.content{max-width:800px;margin:1rem auto;padding:0 1rem}
-.card{background:#fff;border-radius:8px;padding:1.2rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-select,button{width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;font-size:14px;margin-bottom:10px;outline:none}
-button{background:#2c3e50;color:#fff;font-weight:bold;cursor:pointer;border:none;transition:background .2s}
-button:hover{background:#34495e}
-.student-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee}
-.student-name{font-size:14px;font-weight:500;flex:1;text-align:right}
-.status-options{display:flex;gap:4px}
-.status-btn{padding:6px 12px;font-size:12px;border-radius:4px;border:1px solid #ddd;background:#fff;color:#555;cursor:pointer;width:auto;margin-bottom:0}
-.status-btn.active-present{background:#d4edda;color:#155724;border-color:#c3e6cb}
-.status-btn.active-absent{background:#f8d7da;color:#721c24;border-color:#f5c6cb}
-.status-btn.active-late{background:#fff3cd;color:#856404;border-color:#ffeeba}
-
-@keyframes blinker { 50% { opacity: 0.3; } }
-.medical-pulse-badge { background: #ffebee; color: #c62828; animation: blinker 1.8s linear infinite; font-weight: bold; border: 1px solid #ffcdd2; font-size:11px; padding: 2px 6px; border-radius: 4px; margin-right:6px; display:inline-block; }
-.hidden { display:none!important }
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+:root { --primary-color: #1a1a2e; --accent-color: #e67e22; --bg-light: #f5f6fa; }
+* { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
+body { background: var(--bg-light); color:#333; padding:15px; }
+.container { max-width:800px; margin:0 auto; }
+.card { background:#fff; border-radius:12px; padding:20px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.02); border-top:5px solid var(--primary-color); text-align:right; }
+button { background:var(--primary-color); color:#fff; border:none; padding:12px 20px; border-radius:6px; cursor:pointer; width:100%; font-size:14px; font-weight:700; }
+button:hover { background:var(--accent-color); }
+select { width:100%; padding:11px; border:1px solid #ddd; border-radius:6px; margin-bottom:12px; font-weight:600; text-align:right; outline:none; }
+.student-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #eee; }
+.header { background:var(--primary-color); color:#fff; padding:15px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:4px solid var(--accent-color); }
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-    <h1>📇 رصد الحصة: أ. <span id="teacher-name-display">جاري التحميل</span></h1>
-    <button onclick="logout()" style="width:auto; padding:5px 10px; background:transparent; border:1px solid #fff; font-size:12px; margin-bottom:0;">خروج</button>
-  </div>
-</div>
-
-<div class="content">
-  <div class="card">
-    <label style="font-size:13px; font-weight:bold; display:block; margin-bottom:4px;">1. حدد الفصل الدراسي:</label>
-    <select id="class-select" onchange="loadClassStudents()">
-      <option value="">-- اختر الفصل --</option>
-      <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
-      <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
-      <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option>
-      <option value="9/1">9/1</option><option value="9/2">9/2</option><option value="9/3">9/3</option><option value="9/4">9/4</option>
-    </select>
-
-    <label style="font-size:13px; font-weight:bold; display:block; margin-bottom:4px;">2. حدد رقم الحصة الدراسية الحالية:</label>
-    <select id="period-select">
-      <option value="">-- اختر الحصة --</option>
-      <option value="1">الحصة الأولى</option>
-      <option value="2">الحصة الثانية</option>
-      <option value="3">الحصة الثالثة</option>
-      <option value="4">الحصة الرابعة</option>
-      <option value="5">الحصة الخامسة</option>
-      <option value="6">الحصة السادسة</option>
-      <option value="7">الحصة السابعة</option>
-    </select>
-  </div>
-
-  <div class="card" id="students-card-area">
-    <h3 style="font-size:15px; margin-bottom:1rem; border-bottom:1px solid #eee; padding-bottom:6px; color:#2c3e50;">👥 كشف أسماء طلاب الفصل</h3>
-    <div id="students-list-container">
-      <p style="text-align:center; color:#888; padding:1rem;">يرجى اختيار الصف الدراسي أولاً لتجهيز الأسماء...</p>
+<div class="container">
+    <div class="header">
+        <div>
+            <h3 style="font-weight:900;">بوابة المعلم: أ. <span id="teacher-name-display">جاري التحميل...</span></h3>
+            <p style="font-size:11px; opacity:0.8; font-weight:bold;">المنظومة الموحدة لرصد الغياب اليومي وحصر الحصص</p>
+        </div>
+        <button onclick="localStorage.clear(); window.location.href='index.html';" style="width:auto; padding:6px 14px; background:transparent; border:1px solid #fff; font-size:12px; border-radius:4px;">خروج آمن</button>
     </div>
-    <button id="btn-save-attendance" onclick="submitAttendanceOverview()" style="margin-top:1.5rem; background:#27ae60;">💾 حفظ وإرسال غياب الحصة فوراً</button>
-  </div>
+
+    <div class="card">
+        <h2><i class="bi bi-calendar-check-fill" style="color:var(--accent-color);"></i> رصد غياب وفروق الحصص للفصل الدراسي</h2>
+        <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">اختر الفصل الدراسي الموكل إليك رصده؛ سيقوم المحرك بترتيب كشف الأسماء أبجدياً تلقائياً لراحة الرصد بالموبايل.</p>
+        
+        <label style="font-weight:700; font-size:13px; display:block; margin-bottom:4px;">اختر الفصل الدراسي</label>
+        <select id="teacher-class-select" onchange="window.loadClassStudentsForTeacher(this.value)">
+            <option value="">-- اختر الفصل الدراسي المعتمد --</option>
+            <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
+            <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
+            <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
+            <option value="9/1">9/1</option><option value="9/2">9/2</option>
+        </select>
+        
+        <div id="students-attendance-list-area" style="margin-top:15px;"></div>
+        <button id="submit-attendance-btn" onclick="window.submitAttendanceLiveFromTeacher()" style="display:none; margin-top:15px; background:var(--accent-color);"><i class="bi bi-cloud-upload-fill"></i> اعتماد ورفع سجل الحضور والغياب للداشبورد</button>
+    </div>
 </div>
 
 <script type="module">
-import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import {getFirestore,collection,getDocs,addDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db } from './js/firebase-config.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const firebaseConfig={apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9",measurementId:"G-FG9NLDJZQN"};
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+let teacherName = "";
 
-let currentUser = null;
-let currentClassStudents = [];
+// 🔒 1. فحص الحماية والجلسة الصارم للمعلم لتقييد الصلاحيات وحماية المنظومة من التداخل
+try {
+    const saved = localStorage.getItem('hs_user');
+    if(!saved) { window.location.href = 'index.html'; }
+    const u = JSON.parse(saved);
+    if(u.role !== 'teacher') { window.location.replace('admin.html'); }
+    teacherName = u.name || "عضو هيئة التعليم";
+    document.getElementById('teacher-name-display').textContent = teacherName;
+} catch(e) { window.location.href = 'index.html'; }
 
-const medicalAlertList = {
-  "1001": "يعاني من مرض السكري (النوع الأول) - يحمل جهاز فحص وجرعة إنسولين طارئة بالعيادة",
-  "1004": "حالة ربو حادة وضيق تنفس مستمر - يحتاج لبخاخ وقائي ويمنع من الإجهاد البدني الشديد",
-  "1009": "حساسية مفرطة من الفول السوداني والمكسرات - يحتاج ملاحظة دقيقة لوجبات المقصف المدرسي"
-};
-
-const savedUser = localStorage.getItem('hs_user');
-if(!savedUser){
-  window.location.href='index.html';
-} else {
-  currentUser = JSON.parse(savedUser);
-  document.getElementById('teacher-name-display').textContent = currentUser.name || 'المعلم الراصد';
-}
-
-window.logout = function() {
-  localStorage.removeItem('hs_user');
-  window.location.href='index.html';
-};
-
-window.loadClassStudents = async function() {
-  const classId = document.getElementById('class-select').value;
-  const container = document.getElementById('students-list-container');
-  
-  if(!classId) {
-    container.innerHTML = '<p style="text-align:center; color:#888; padding:1rem;">يرجى اختيار الصف الدراسي أولاً لتجهيز الأسماء...</p>';
-    return;
-  }
-  
-  container.innerHTML = '<p style="text-align:center; color:#666; padding:1rem;"><i class="bi bi-arrow-clockwise"></i> جاري مزامنة أسماء طلاب الفصل من السيرفر...</p>';
-  
-  try {
-    const snap = await getDocs(collection(db, 'students'));
-    currentClassStudents = [];
+window.loadClassStudentsForTeacher = async function(classId) {
+    const listArea = document.getElementById('students-attendance-list-area');
+    const submitBtn = document.getElementById('submit-attendance-btn');
+    if(!classId) { listArea.innerHTML = ""; submitBtn.style.display = 'none'; return; }
     
-    snap.forEach(doc => {
-      const d = doc.data();
-      if(d.classId === classId) {
-        currentClassStudents.push({ id: d.studentId, name: d.name });
-      }
-    });
-    
-    currentClassStudents.sort((a,b) => (a.name || '').localeCompare(b.name || '', 'ar'));
-    
-    if(currentClassStudents.length === 0) {
-      container.innerHTML = '<p style="text-align:center; color:#c0392b; padding:1rem;">لا يوجد طلاب مقيدين بهذا الفصل حالياً بالسيرفر.</p>';
-      return;
-    }
-    
-    let html = '';
-    currentClassStudents.forEach((student, index) => {
-      let medicalBadge = medicalAlertList[student.id] ? `<span class="medical-pulse-badge" title="${medicalAlertList[student.id]}">🩸 تنبيه طبي</span>` : '';
-      
-      html += `
-        <div class="student-row" data-id="${student.id}" data-name="${student.name}">
-          <div class="student-name">
-            ${index + 1}. ${student.name} ${medicalBadge}
-          </div>
-          <div class="status-options">
-            <button type="button" class="status-btn active-present" onclick="setRowStatus(this, 'present')">حاضر</button>
-            <button type="button" class="status-btn" onclick="setRowStatus(this, 'absent')">غائب</button>
-            <button type="button" class="status-btn" onclick="setRowStatus(this, 'late')">متأخر</button>
-          </div>
-        </div>
-      `;
-    });
-    
-    container.innerHTML = html;
-  } catch(e) {
-    container.innerHTML = `<p style="text-align:center; color:red; padding:1rem;">خطأ في الاتصال بقاعدة البيانات: ${e.message}</p>`;
-  }
-};
-
-window.setRowStatus = function(btn, status) {
-  const optionsDiv = btn.parentElement;
-  const buttons = optionsDiv.querySelectorAll('.status-btn');
-  buttons.forEach(b => { b.className = 'status-btn'; });
-  
-  if(status === 'present') btn.classList.add('active-present');
-  if(status === 'absent') btn.classList.add('active-absent');
-  if(status === 'late') btn.classList.add('active-late');
-};
-
-window.submitAttendanceOverview = async function() {
-  const classId = document.getElementById('class-select').value;
-  const periodId = document.getElementById('period-select').value;
-  if(!classId || !periodId) { alert('الرجاء التأكد من تحديد الصف والحصة قبل الحفظ الرقمي!'); return; }
-  
-  const rows = document.querySelectorAll('.student-row');
-  let successCount = 0;
-  
-  document.getElementById('btn-save-attendance').disabled = true;
-  document.getElementById('btn-save-attendance').textContent = "🔄 جاري ترحيل وحفظ البيانات...";
-
-  const todayDateStr = new Date().toLocaleDateString('en-CA').replace(/-/g, '/');
-
-  for(let row of rows) {
-    const sId = row.getAttribute('data-id');
-    const sName = row.getAttribute('data-name');
-    
-    let selectedStatus = 'present';
-    if(row.querySelector('.active-absent')) selectedStatus = 'absent';
-    if(row.querySelector('.active-late')) selectedStatus = 'late';
-    
-    const attendanceRecord = {
-      classId: classId,
-      periodId: parseInt(periodId),
-      studentId: sId,
-      studentName: sName,
-      status: selectedStatus,
-      date: todayDateStr,
-      recordedBy: currentUser.name,
-      createdAt: new Date().toISOString()
-    };
+    listArea.innerHTML = "<p style='text-align:center; padding:15px; font-weight:bold;'>⏳ جاري استدعاء كشف طلاب الفصل وفرزهم أبجدياً كويتيّاً...</p>";
+    submitBtn.style.display = 'none';
 
     try {
-      // 1. الحفظ الأساسي والسريع في Firebase للسيستم والرادارات والداشبورد
-      await addDoc(collection(db, 'attendance'), attendanceRecord);
-      
-      // 2. المزامنة التلقائية مع ملف قوقل شيت المعتمد لديك في نفس اللحظة (للغائب والمتأخر)
-      if(selectedStatus === 'absent' || selectedStatus === 'late') {
-        await syncToYourGoogleSheet(attendanceRecord);
-      }
-      
-      successCount++;
-    } catch(err) {
-      console.error("عطل في ترحيل السجل المزدوج للطالب: " + sName, err);
-    }
-  }
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+        const snap = await getDocs(q);
+        let arr = [];
+        snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
+        
+        // 🔤 ترتيب أسماء الطلاب أبجدياً من الألف للياء لسهولة التعامل من تليفون المعلم
+        arr.sort((a,b) => a.localeCompare(b, 'ar'));
 
-  alert(`🏆 تم رصد وحفظ غياب الحصة ${periodId} للفصل ${classId} بنجاح كلي، ومزامنته حياً مع ملف قوقل شيت الخاص بك!`);
-  document.getElementById('btn-save-attendance').disabled = false;
-  document.getElementById('btn-save-attendance').textContent = "💾 حفظ وإرسال غياب الحصة فوراً";
-  window.loadClassStudents();
+        if(arr.length === 0) {
+            listArea.innerHTML = "<p style='text-align:center; color:var(--danger-color); font-weight:bold;'>⚠️ لا يوجد طلاب مقيدين بهذا الفصل بالسيرفر حالياً.</p>";
+            return;
+        }
+
+        let html = '<h4 style="margin-bottom:10px; color:var(--primary-color); border-bottom:2px solid #eee; padding-bottom:5px;">قائمة رصد الحضور والغياب:</h4>';
+        arr.forEach((name) => {
+            html += `
+            <div class="student-row">
+                <span style="font-weight:700; font-size:14px;">👤 ${name}</span>
+                <select class="attendance-status-input" data-name="${name}" style="width:120px; margin-bottom:0; padding:5px; font-size:13px; font-weight:bold;">
+                    <option value="present">🟢 حضور</option>
+                    <option value="absent">🔴 غياب</option>
+                </select>
+            </div>`;
+        });
+        listArea.innerHTML = html;
+        submitBtn.style.display = 'block';
+    } catch(e) {
+        listArea.innerHTML = `<div style="color:red; font-weight:bold; text-align:center; padding:10px;">❌ تعذر جلب السجل: ${e.message}</div>`;
+    }
 };
 
-async function syncToYourGoogleSheet(payload) {
-  // 🔗 تم دمج رابط الـ Web App الشخصي المباشر الخاص بك بنجاح
-  const targetScriptURL = "https://script.google.com/macros/s/AKfycbzoIFjr6AJkX8pwjNTV1UST-1YacVw1WCmRAfF6CSRe-xLQbsvdu-phOzI-TmFhU-p-GQ/exec"; 
+window.submitAttendanceLiveFromTeacher = async function() {
+    const classId = document.getElementById('teacher-class-select').value;
+    const rows = document.querySelectorAll('.attendance-status-input');
+    if(!classId || rows.length === 0) return;
 
-  try {
-    await fetch(targetScriptURL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-  } catch (e) {
-    console.error("خطأ معالجة المزامنة العكسية مع قوقل شيت: ", e);
-  }
-}
+    // 📅 توحيد التاريخ بصيغة كود الكويت الصارمة لضمان قراءته في داشبورد الأدمين بشكل صحيح
+    const kwDate = new Date().toLocaleDateString('ar-KW');
+    alert('⏳ جاري إرسال ورفع كشف الرصد الرقمي لايف للداشبورد الرئيسي...');
+
+    try {
+        let promises = [];
+        rows.forEach(row => {
+            const name = row.getAttribute('data-name');
+            const status = row.value;
+            
+            // رفع وحقن البيانات بالكولكشن مع تدوين المعلم المسؤول عن الرصد آلياً لحفظ السجلات
+            promises.push(addDoc(collection(db, 'attendance'), {
+                studentName: name,
+                name: name,
+                classId: classId,
+                status: status,
+                date: kwDate,           // صيغة التاريخ الموحدة ar-KW
+                recordedBy: teacherName, // توثيق المعلم الراصد
+                timestamp: serverTimestamp()
+            }));
+        });
+        await Promise.all(promises);
+        alert('✓ تم رصد واعتماد غياب وحضور الفصل بنجاح، ورفع الداتا لغرفة التحكم.');
+        document.getElementById('teacher-class-select').value = "";
+        document.getElementById('students-attendance-list-area').innerHTML = "";
+        document.getElementById('submit-attendance-btn').style.display = 'none';
+    } catch(e) { alert('❌ خطأ حرج أثناء رفع البيانات: ' + e.message); }
+};
 </script>
 </body>
 </html>
