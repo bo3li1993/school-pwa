@@ -36,7 +36,6 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 .parent-link { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 13px; font-weight: bold; }
 .parent-link a { color: #2980b9; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
 
-/* 📲 ستايل زر التثبيت الذكي العائم والمحمي */
 #install-app-btn {
     display: none; background: #27ae60; color: #fff; border: none; padding: 10px 15px; 
     border-radius: 30px; font-weight: 700; font-size: 13px; margin-bottom: 15px; width: 100%;
@@ -46,7 +45,6 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 </head>
 <body>
 
-<!-- 📲 زر التثبيت السريع للـ PWA (يظهر فقط إذا كان الجهاز يدعم التثبيت ولم يثبته بعد) -->
 <div style="width: 100%; max-width: 420px;">
     <button id="install-app-btn"><i class="bi bi-phone-vibrate-fill"></i> 📲 ثبّت تطبيق المنظومة على هاتفِك الحين</button>
 </div>
@@ -56,12 +54,12 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
     <h2>المنظومة الرقمية الموحدة</h2>
     <p>مدرسة سالم الحسينان المتوسطة للبنين</p>
     
-    <form onsubmit="window.handleSystemLoginLive(event)">
+    <form id="login-form">
         <label><i class="bi bi-person-fill"></i> رقم المستخدم / المعرف (User ID)</label>
         <input type="text" id="login-user-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
         
         <label><i class="bi bi-key-fill"></i> رمز الحماية السري (Password)</label>
-        <input type="password" id="login-password" placeholder="أدخل كلمة المرور المشفرة" required>
+        <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
         
         <button type="submit" id="btn-login-submit">
             <i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة
@@ -77,7 +75,7 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 import { db } from './js/firebase-config.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// تحقق من جلسة سابقة
+// ⏳ 1. تحقق من جلسة سابقة لتسريع الدخول التلقائي
 const saved = localStorage.getItem('hs_user');
 if(saved){
     try{
@@ -86,8 +84,28 @@ if(saved){
     }catch(e){ localStorage.removeItem('hs_user'); }
 }
 
-document.getElementById('btn-login-submit').addEventListener('click', async function(e){
+// 📲 2. إدارة محرك تثبيت التطبيق PWA
+let deferredPrompt;
+const installBtn = document.getElementById('install-app-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+});
+
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});
+
+// 🔑 3. التحكم بحدث إرسال الفورم الموحد (يمنع الـ Refresh ويطابق البيانات بدقة)
+document.getElementById('login-form').addEventListener('submit', async function(e){
+    e.preventDefault(); // منع المتصفح من كراش وتحديث الصفحة
+
     const userId = document.getElementById('login-user-id').value.trim();
     const pass   = document.getElementById('login-password').value.trim();
     const btn    = document.getElementById('btn-login-submit');
@@ -95,18 +113,26 @@ document.getElementById('btn-login-submit').addEventListener('click', async func
     if(!userId || !pass){ alert('⚠️ أدخل رقم المستخدم وكلمة المرور'); return; }
 
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق الفوري...';
 
-    try{
+    try {
         const snap = await getDocs(collection(db, 'users'));
         let found = null;
 
         snap.forEach(doc => {
             const d = doc.data();
-            const uid  = String(d.userId  || '').trim();
-            const pwd  = String(d.plainPass || '').trim();
+            // تطهير كامل للبيانات وتحويلها لنصوص لمقاومة اختلاف الأنواع والمسافات الزائدة بالسيرفر
+            const uid  = String(d.userId !== undefined ? d.userId : '').trim();
+            const pwd  = String(d.plainPass !== undefined ? d.plainPass : '').trim();
+            
             if(uid === userId && pwd === pass){
-                found = { id: doc.id, name: d.name||'', role: String(d.role||'').trim().toLowerCase(), classId: d.classId||'', userId: d.userId };
+                found = { 
+                    id: doc.id, 
+                    name: d.name || 'موظف المنظومة', 
+                    role: String(d.role || '').trim().toLowerCase(), 
+                    classId: d.classId || '', 
+                    userId: uid 
+                };
             }
         });
 
@@ -117,28 +143,21 @@ document.getElementById('btn-login-submit').addEventListener('click', async func
             return;
         }
 
+        // حفظ الجلسة والتوجيه المستقر والمباشر
         localStorage.setItem('hs_user', JSON.stringify(found));
         window.location.replace(found.role === 'admin' ? 'admin.html' : 'teacher.html');
 
-    }catch(err){
-        alert('⚠️ خطأ في الاتصال: ' + err.message);
+    } catch(err) {
+        alert('⚠️ خطأ في الاتصال بالسيرفر: ' + err.message);
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة';
     }
 });
 
-// Enter key
-document.getElementById('login-password').addEventListener('keypress', e => {
-    if(e.key === 'Enter') document.getElementById('btn-login-submit').click();
-});
+// التنقل بالـ Enter لراحة المعلمين والإدارة
 document.getElementById('login-user-id').addEventListener('keypress', e => {
-    if(e.key === 'Enter') document.getElementById('login-password').focus();
+    if(e.key === 'Enter') { e.preventDefault(); document.getElementById('login-password').focus(); }
 });
-
-// Service Worker
-if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
 </script>
 </body>
 </html>
