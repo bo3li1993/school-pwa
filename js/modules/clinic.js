@@ -1,26 +1,17 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
-    authDomain: "hosainan-school.firebaseapp.com",
-    projectId: "hosainan-school",
-    storageBucket: "hosainan-school.firebasestorage.app",
-    messagingSenderId: "264264994076",
-    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// 🩺 موديل العيادة المدرسية والصحة الطلابية المربوط بالمركزي والفرز الأبجدي
+import { db } from '../firebase-config.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initClinicModule() {
     const container = document.getElementById('tab-clinic');
     if (!container) return;
 
-    container.innerHTML = `
+    // 🛡️ جدار حماية وعزل الأخطاء (Error Boundary) لضمان استقرار الشاشة
+    try {
+        container.innerHTML = `
         <div class="card" style="border-top: 5px solid #3498db; text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-heart-pulse-fill" style="color:#3498db;"></i> سجل العيادة المدرسية والصحة الطلابية</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">نظام الدخول السريع لعيادة المدرسة؛ حدد فصل الطالب لاستدعاء اسمه ومتابعة حالته الطبية.</p>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">نظام الدخول السريع لعيادة المدرسة؛ حدد فصل الطالب لاستدعاء اسمه ومتابعة حالته الطبية فوراً بدون كيبورد.</p>
             
             <form id="clinic-reg-form" onsubmit="window.handleRegisterClinicLive(event)">
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
@@ -78,10 +69,12 @@ export async function initClinicModule() {
                     </tbody>
                 </table>
             </div>
-        </div>
-    `;
+        </div>`;
 
-    loadClinicLogsLive();
+        loadClinicLogsLive();
+    } catch(e) {
+        container.innerHTML = `<div class="card" style="color:red; text-align:center; padding:20px;">⚠️ تعذر تحميل موديل العيادة: ${e.message}</div>`;
+    }
 }
 
 window.handleClinicClassChange = async function(classId) {
@@ -123,6 +116,7 @@ window.handleRegisterClinicLive = async function(e) {
     const treatment = document.getElementById('clinic-treatment').value.trim();
 
     try {
+        // الحفظ بكولكشن العيادة الرسمي الموحد
         await addDoc(collection(db, 'clinic'), {
             studentName: sName,
             classId: cId,
