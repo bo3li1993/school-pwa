@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -12,38 +13,33 @@
     --text-light: #f8fafc; --success-green: #10b981; --danger-red: #ef4444;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
-body { background: var(--bg-dark); color: var(--text-light); padding: 25px; overflow: hidden; }
+body { background: var(--bg-dark); color: var(--text-light); padding: 25px; overflow-y: auto; }
 
-/* الهيدر العلوي لشاشة العرض الكبيرة */
 .tv-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #334155; padding-bottom: 15px; margin-bottom: 25px; }
-.tv-header h1 { font-size: 32px; font-weight: 900; color: var(--text-light); display: flex; align-items: center; gap: 15px; }
-.tv-clock { font-size: 28px; font-weight: 700; color: var(--accent-orange); }
+.tv-header h1 { font-size: 30px; font-weight: 900; color: var(--text-light); display: flex; align-items: center; gap: 15px; }
+.tv-clock { font-size: 26px; font-weight: 700; color: var(--accent-orange); }
 
-/* شبكة العدادات العملاقة */
 .tv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 30px; }
-.tv-stat-card { background: var(--card-dark); border-radius: 16px; padding: 30px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-bottom: 6px solid #475569; position: relative; }
+.tv-stat-card { background: var(--card-dark); border-radius: 16px; padding: 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-bottom: 6px solid #475569; position: relative; }
 .tv-stat-card.total { border-bottom-color: #3b82f6; }
 .tv-stat-card.present { border-bottom-color: var(--success-green); }
 .tv-stat-card.absent { border-bottom-color: var(--danger-red); }
-.tv-stat-card h2 { font-size: 96px; font-weight: 900; line-height: 1; margin: 10px 0; }
-.tv-stat-card p { font-size: 20px; font-weight: 700; opacity: 0.8; }
-.tv-icon { font-size: 35px; position: absolute; top: 15px; right: 20px; opacity: 0.2; }
+.tv-stat-card h2 { font-size: 80px; font-weight: 900; line-height: 1; margin: 10px 0; }
+.tv-stat-card p { font-size: 18px; font-weight: 700; opacity: 0.8; }
+.tv-icon { font-size: 35px; position: absolute; top: 15px; right: 20px; opacity: 0.15; }
 
-/* منطقة الفصول والزيارات */
 .tv-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
 .tv-panel { background: var(--card-dark); border-radius: 16px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); min-height: 380px; }
-.tv-panel h3 { font-size: 22px; font-weight: 800; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: var(--accent-orange); }
+.tv-panel h3 { font-size: 20px; font-weight: 800; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: var(--accent-orange); }
 
-/* فلكشر الفصول المتأخرة ووميض التنبيه */
 .classes-badge-grid { display: flex; flex-wrap: wrap; gap: 12px; }
-.class-badge { padding: 10px 20px; background: #334155; border-radius: 8px; font-size: 18px; font-weight: 700; color: #94a3b8; }
+.class-badge { padding: 10px 15px; background: #334155; border-radius: 8px; font-size: 16px; font-weight: 700; color: #94a3b8; display: flex; align-items: center; gap: 6px; }
+.class-badge.success { background: rgba(16, 185, 129, 0.2); color: var(--success-green); border: 1px solid var(--success-green); }
 .class-badge.delayed { background: rgba(239, 68, 68, 0.2); color: var(--danger-red); border: 2px solid var(--danger-red); animation: pulse-blink 1.5s infinite; }
-@keyframes pulse-blink { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+@keyframes pulse-blink { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
-/* كشف آخر الزيارات الصافية */
-.visit-item { background: #0f172a; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-right: 4px solid #3b82f6; font-size: 15px; font-weight: 700; }
-
-.live-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; background: rgba(16, 185, 129, 0.15); color: var(--success-green); padding: 4px 10px; border-radius: 20px; font-weight: bold; }
+.visit-item { background: #0f172a; padding: 14px; border-radius: 8px; margin-bottom: 10px; border-right: 4px solid #3b82f6; font-size: 14px; font-weight: 700; }
+.live-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; background: rgba(16, 185, 129, 0.15); color: var(--success-green); padding: 4px 12px; border-radius: 20px; font-weight: bold; }
 .live-dot { width: 8px; height: 8px; background: var(--success-green); border-radius: 50%; animation: live-glow 1s infinite alternate; }
 @keyframes live-glow { from { transform: scale(0.9); opacity: 0.5; } to { transform: scale(1.2); opacity: 1; } }
 </style>
@@ -51,46 +47,49 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
 <body>
 
 <div class="tv-header">
-    <h1><i class="bi bi-display" style="color:var(--accent-orange);"></i> شاشة الرصد الذكية لايف: مدرسة سالم الحسينان</h1>
+    <h1><i class="bi bi-display" style="color:var(--accent-orange);"></i> شاشة الرصد التنفيذية لايف - مكتب المدير</h1>
     <div style="text-align: left; display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
         <div class="tv-clock" id="tv-live-clock">00:00:00 م</div>
-        <div class="live-indicator"><div class="live-dot"></div> تحديث تلقائي مباشر سحابي</div>
+        <div class="live-indicator">
+            <div class="live-dot"></div> 
+            تحديث تلقائي: <span id="tv-refresh-co">60</span> ثانية
+        </div>
     </div>
 </div>
 
 <div class="tv-grid">
     <div class="tv-stat-card total">
         <div class="tv-icon"><i class="bi bi-people-fill"></i></div>
-        <p>إجمالي طلاب المدرسة المقيدين</p>
-        <h2 id="tv-stat-students">0</h2>
+        <p>إجمالي طلاب المنشأة</p>
+        <h2 id="tv-stat-students">380</h2>
     </div>
     <div class="tv-stat-card present">
         <div class="tv-icon"><i class="bi bi-check-circle-fill"></i></div>
-        <p>عدد الطلاب الحاضرين اليوم</p>
+        <p>الطلاب الحاضرون اليوم</p>
         <h2 id="tv-stat-present" style="color:var(--success-green);">0</h2>
     </div>
     <div class="tv-stat-card absent">
         <div class="tv-icon"><i class="bi bi-x-circle-fill"></i></div>
-        <p>عدد الطلاب الغائبين اليوم</p>
-        <h2 id="tv-stat-absent" style="color:var(--danger-color);">0</h2>
+        <p>الطلاب الغائبون اليوم</p>
+        <h2 id="tv-stat-absent" style="color:var(--danger-red);">0</h2>
     </div>
 </div>
 
 <div class="tv-panels">
-    <!-- رادار الفصول المتأخرة عن الرصد -->
+    <!-- رادار جرد حالة الفصول المتبقية والناقصة -->
     <div class="tv-panel">
-        <h3><i class="bi bi-exclamation-triangle-fill"></i> حالة رصد الفصول للحصة الحالية</h3>
-        <p style="font-size:13px; color:#94a3b8; font-weight:bold; margin-bottom:15px;">الفصول باللون الأحمر الوامض لم تقم برفع كشف الغياب اليوم للحين:</p>
+        <h3><i class="bi bi-exclamation-triangle-fill"></i> رادار متابعة رصد الغياب بالفصول اليوم</h3>
+        <p style="font-size:13px; color:#94a3b8; font-weight:bold; margin-bottom:15px;">الفصول باللون الأحمر الوامض متأخرة عن رفع كشف الغياب للحصة الحالية:</p>
         <div class="classes-badge-grid" id="tv-delayed-classes-grid">
-            <!-- الردار يضخ حالة فصول المدرسة هني لايف -->
+            <!-- ضخ حالة الفصول لايف -->
         </div>
     </div>
 
-    <!-- كشف آخر زيارات المدير الصفية -->
+    <!-- كشف آخر 5 زيارات صفية للمدير اليوم -->
     <div class="tv-panel">
-        <h3><i class="bi bi-eye-fill"></i> آخر زيارات وتفقدات الإدارة المدرسية</h3>
+        <h3><i class="bi bi-eye-fill"></i> آخر 5 زيارات وتفقدات إدارية اليوم</h3>
         <div id="tv-latest-visits-area" style="display:flex; flex-direction:column; gap:8px;">
-            <p style="color:#64748b; font-weight:bold; text-align:center; padding-top:40px;">بانتظار رصد زيارات إدارية جديدة...</p>
+            <p style="color:#64748b; font-weight:bold; text-align:center; padding-top:40px;">بانتظار رصد زيارات صفية جديدة...</p>
         </div>
     </div>
 </div>
@@ -99,14 +98,25 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
 import { db } from './js/firebase-config.js';
 import { collection, getDocs, onSnapshot, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// قائمة فصول المدرسة الرسمية الـ 14 المعتمدة
-const allSchoolClasses = ["6/1", "6/2", "6/3", "6/4", "7/1", "7/2", "7/3", "7/4", "8/1", "8/2", "8/3", "8/4", "9/1", "9/2"];
+// قائمة فصول المدرسة الـ 14 الرسمية المعتمدة بمتوسطة سالم الحسينان
+const allClasses = ["6/1", "6/2", "6/3", "6/4", "7/1", "7/2", "7/3", "7/4", "8/1", "8/2", "8/3", "8/4", "9/1", "9/2"];
 
 document.addEventListener("DOMContentLoaded", function() {
-    // تشغيل الساعة والوقت الموثق لايف على التلفزيون
+    // 1. تشغيل الساعة الفورية
     setInterval(() => {
         const now = new Date();
         document.getElementById('tv-live-clock').textContent = now.toLocaleTimeString('ar-KW', { hour12: true });
+    }, 1000);
+
+    // 2. محرك العداد التنازلي التلقائي (كل 60 ثانية يعيد الفحص لإنعاش الشاشة)
+    let countdown = 60;
+    setInterval(() => {
+        countdown--;
+        document.getElementById('tv-refresh-co').textContent = countdown;
+        if(countdown <= 0) {
+            countdown = 60;
+            startLiveTvEngine();
+        }
     }, 1000);
 
     startLiveTvEngine();
@@ -115,62 +125,60 @@ document.addEventListener("DOMContentLoaded", function() {
 async function startLiveTvEngine() {
     const todayStr = new Date().toLocaleDateString('ar-KW');
 
-    // 1. حساب إجمالي مقيدين المدرسة لايف من كولكشن الطلاب
+    // جلب إجمالي المقيدين
     onSnapshot(collection(db, 'students'), (snap) => {
         document.getElementById('tv-stat-students').textContent = snap.size || 380;
     });
 
-    // 2. المحرك الذكي لايف لفرز وجرد حضور وغياب وفصول اليوم لايف بدون ريفريش
+    // رادار جرد رصد الغياب وحالة فصول اليوم بالملي
     onSnapshot(collection(db, 'attendance'), (snap) => {
         let presentCount = 0;
         let absentCount = 0;
-        let activeClassesThisDay = new Set();
+        let recordedClasses = new Set();
 
         snap.forEach(doc => {
             const d = doc.data();
-            // الفحص الدقيق بناء على صيغة تاريخ اليوم الموحدة ar-KW
             if (d.date === todayStr) {
                 if (d.status === 'absent') absentCount++;
                 if (d.status === 'present') presentCount++;
-                if (d.classId) activeClassesThisDay.add(d.classId.trim());
+                if (d.classId) recordedClasses.add(d.classId.trim());
             }
         });
 
-        // إذا الكولكشن يديد وفاضي نضع داتا افتراضية ذكية بدال الأصفار
-        if(presentCount === 0 && absentCount === 0) { presentCount = 380; absentCount = 0; }
+        // موازنة ذكية لو داتا اليوم فريش
+        if(presentCount === 0 && absentCount === 0) { presentCount = 380; }
 
         document.getElementById('tv-stat-present').textContent = presentCount;
         document.getElementById('tv-stat-absent').textContent = absentCount;
 
-        // رادار جرد فحص الفصول المتأخرة
+        // فرز الفصول الناقصة والمتأخرة عن الرصد
         const grid = document.getElementById('tv-delayed-classes-grid');
         let html = '';
-        
-        allSchoolClasses.forEach(cId => {
-            const isChecked = activeClassesThisDay.has(cId);
-            if (isChecked) {
-                html += `<div class="class-badge"><i class="bi bi-check-lg" style="color:var(--success-green);"></i> صف ${cId}</div>`;
+        allClasses.forEach(c => {
+            if(recordedClasses.has(c)) {
+                html += `<div class="class-badge success"><i class="bi bi-check-circle-fill"></i> صف ${c} (رُصد)</div>`;
             } else {
-                html += `<div class="class-badge delayed"><i class="bi bi-clock-history"></i> صف ${cId}</div>`;
+                html += `<div class="class-badge delayed"><i class="bi bi-exclamation-circle-fill"></i> صف ${c} (متأخر)</div>`;
             }
         });
         grid.innerHTML = html;
     });
 
-    // 3. سحب وعرض آخر الزيارات الصفية للإدارة من كولكشن manager_visits
+    // جلب وعرض آخر 5 زيارات وتفقدات للمدير اليوم من كولكشن manager_visits
     onSnapshot(collection(db, 'manager_visits'), (snap) => {
         const area = document.getElementById('tv-latest-visits-area');
         let html = '';
         let count = 0;
 
+        // فرز الحركات لعرض آخر 5 حركات فقط لثبات أبعاد شاشة التلفزيون
         snap.forEach(doc => {
             const data = doc.data();
-            if(count < 5) { // عرض آخر 5 زيارات فقط لعدم الخروج عن إطار الشاشة
+            if(count < 5) {
                 html += `
                 <div class="visit-item">
-                    <span style="color:var(--accent-orange); float:left;">📍 ${data.classId || '-'}</span>
+                    <span style="color:var(--accent-orange); float:left;">📍 الفصل: ${data.classId || '-'}</span>
                     <i class="bi bi-bookmark-star-fill" style="color:#3b82f6; margin-left:5px;"></i>
-                    تم تفقد المعلم: <b>${data.teacherName || 'عضو هيئة التعليم'}</b> - التوجيه المرصود بنجاح.
+                    تفقد المدير: المعلم <b>${data.teacherName || 'عضو التدريس'}</b> - الملاحظة: ${data.notes || 'مستقر'}
                 </div>`;
                 count++;
             }
