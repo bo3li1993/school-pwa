@@ -6,7 +6,6 @@
 <link lang="manifest" href="manifest.json">
 <title>لوحة التحكم الإدارية الموحدة - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<!-- استدعاء المكتبات الرسومية والطباعة المركزية المعتمدة بالتقرير -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -88,7 +87,6 @@ button:hover { background: var(--hover-color); }
             <span>مرحباً، <b id="lbl-admin-name">المسؤول الإداري</b></span>
         </div>
         
-        <!-- ⚡ منطقة الأزرار التنفيذية المحدثة بالتقرير الشامل -->
         <div style="display:flex; gap:10px; align-items:center;">
             <button onclick="window.generateWeeklyReport()" style="background:var(--accent-color); padding:6px 14px; font-size:12px; border-radius:4px; display:inline-flex; align-items:center; gap:6px;">
                 <i class="bi bi-file-earmark-pdf-fill"></i> <i class="bi bi-printer"></i> تقرير أسبوعي للمنطقة
@@ -97,7 +95,6 @@ button:hover { background: var(--hover-color); }
         </div>
     </div>
 
-    <!-- 🖨️ حاوية إنشاء وطباعة التقرير الأسبوعي التنفيذي المفقود سابقاً -->
     <div id="weekly-report-area" style="display:none; background:#fff;"></div>
 
     <div class="content-body">
@@ -137,7 +134,8 @@ button:hover { background: var(--hover-color); }
 </div>
 
 <script type="module">
-import { db, auth } from './js/firebase-config.js';
+// ✅ تم تعديل المسار هنا ليقرأ من مجلد modules الصحيح لإنهاء خطأ الـ 404 وتشغيل الأزرار طيران
+import { db, auth } from './js/modules/firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const moduleMap = {
