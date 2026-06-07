@@ -107,7 +107,10 @@ button:hover { background: var(--hover-color); }
                 </div>
                 <div class="card" style="border-top:5px solid var(--hover-color); text-align:center;">
                     <h2><i class="bi bi-pie-chart-fill"></i> مؤشر الغياب والحضور</h2>
-                    <canvas id="attendanceChart" style="max-height:180px; margin-top:15px;"></canvas>
+                    <!-- 🛠️ تم التعديل هنا: تغليف الكانفاس بصندوق أمان مقيد الحجم لمنع رمشة شاشة التليفون نهائياً -->
+                    <div style="position: relative; height: 180px; width: 100%; margin-top: 15px;">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -134,7 +137,6 @@ button:hover { background: var(--hover-color); }
 </div>
 
 <script type="module">
-// 🎯 تم تعديل المسار هنا ليقرأ من المجلد الرئيسي مباشرة وإنهاء الـ 404 ليرضي كافة الموديلات
 import { db, auth } from './js/firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
