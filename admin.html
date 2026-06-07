@@ -134,8 +134,8 @@ button:hover { background: var(--hover-color); }
 </div>
 
 <script type="module">
-// ✅ تم تعديل المسار هنا ليقرأ من مجلد modules الصحيح لإنهاء خطأ الـ 404 وتشغيل الأزرار طيران
-import { db, auth } from './js/modules/firebase-config.js';
+// 🎯 تم تعديل المسار هنا ليقرأ من المجلد الرئيسي مباشرة وإنهاء الـ 404 ليرضي كافة الموديلات
+import { db, auth } from './js/firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const moduleMap = {
@@ -213,7 +213,6 @@ async function loadModuleLive(tabId) {
     }
 }
 
-// 🖨️ محرك بناء وتوليد التقرير الأسبوعي الموحد لوزارة التربية (PDF)
 window.generateWeeklyReport = async function() {
     alert("⏳ جاري جرد الملفات السحابية وتجميع بنود التقرير الأسبوعي...");
     try {
