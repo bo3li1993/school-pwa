@@ -5,18 +5,18 @@ export async function initDateSearchModule() {
     const container = document.getElementById('tab-date');
     if (!container) return;
     container.innerHTML = `
-    <div class="card" style="border-top:5px solid var(--primary-color);">
+    <div class="card" style="border-top:5px solid var(--primary-color); text-align: right;">
         <h2><i class="bi bi-calendar-search"></i> محرك الأرشفة والبحث التاريخي الموحد للغياب</h2>
-        <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:15px;">ابحث بكشوف غياب الحصص المرفوعة سابقاً عبر إدخال التاريخ بالصيغة الموحدة المعتمدة للمدرسة.</p>
+        <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:15px;">ابحث بكشوف غياب الحصص المرفوعة سابقاً عبر اختيار التاريخ مباشرة من الرزنامة الذكية بدون كتابة يدوية.</p>
         <div style="display:flex; gap:10px;">
-            <input type="text" id="search-target-date-string" placeholder="مثال للصيغة المعتمدة: ٢٠٢٦/٦/٦" style="margin-bottom:0;">
-            <button onclick="window.triggerDateAttendanceSearchLive()" style="width:120px; font-weight:bold;"><i class="bi bi-search"></i> جرد التاريخ</button>
+            <input type="date" id="search-target-date-picker" style="margin-bottom:0; flex:1; padding:10px; border-radius:8px; border:1px solid #cbd5e1; font-weight:bold;">
+            <button onclick="window.triggerDateAttendanceSearchLive()" style="width:130px; font-weight:bold; background:var(--primary-color); color:#fff;"><i class="bi bi-search"></i> جرد التاريخ</button>
         </div>
     </div>
-    <div class="card" id="date-search-results-card" style="border-top-color:var(--accent-color); display:none;">
+    <div class="card" id="date-search-results-card" style="border-top-color:var(--accent-color); display:none; text-align: right;">
         <h2>📋 كشف السجلات المرصودة للتاريخ المستعلم عنه:</h2>
         <div style="overflow-x:auto; margin-top:10px;">
-            <table>
+            <table style="width:100%;">
                 <thead>
                     <tr style="background:#f8f9fa;">
                         <th>اسم الطالب المدرسي</th>
@@ -32,18 +32,25 @@ export async function initDateSearchModule() {
 }
 
 window.triggerDateAttendanceSearchLive = async function() {
-    const dateStr = document.getElementById('search-target-date-string').value.trim();
+    const datePicker = document.getElementById('search-target-date-picker');
     const resultCard = document.getElementById('date-search-results-card');
     const tbody = document.getElementById('date-search-tbody');
-    if(!dateStr) return;
+    
+    if(!datePicker || !datePicker.value) { alert('⚠️ يرجى تحديد التاريخ من الرزنامة أولاً!'); return; }
+
+    // 🔄 تحويل صيغة تاريخ الرزنامة تلقائياً لتطابق صيغة كود الفايربيس ar-KW (٢٠٢٦/٦/٦)
+    const selectedDate = new Date(datePicker.value);
+    const formattedDateStr = selectedDate.toLocaleDateString('ar-KW');
+
     resultCard.style.display = 'block';
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; font-weight:bold; padding:15px;">⏳ جاري جلب الأرشيف ومطابقة صيغة التاريخ السحابي...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; font-weight:bold; padding:15px;">⏳ جاري جلب الأرشيف ومطابقة التاريخ السحابي (${formattedDateStr})...</td></tr>`;
+    
     try {
-        // ✨ الفحص ليزري مستهدف يبحث بالصيغة الموحدة ar-KW لحل مشاكل تضارب تواريخ مكة المذكورة بالتقرير بالملي
-        const q = query(collection(db, 'attendance'), where('date', '==', dateStr));
+        const q = query(collection(db, 'attendance'), where('date', '==', formattedDateStr));
         const snap = await getDocs(q);
         let html = '';
         let count = 0;
+        
         snap.forEach(doc => {
             const data = doc.data();
             html += `
@@ -55,6 +62,7 @@ window.triggerDateAttendanceSearchLive = async function() {
                 </tr>`;
             count++;
         });
+        
         tbody.innerHTML = count === 0 ? `<tr><td colspan="4" style="text-align:center; color:var(--danger-color); padding:15px; font-weight:bold;">⚠️ تنبيه: لم يتم العثور على أي حركات رصد مرفوعة بهذا التاريخ بالسيرفر.</td></tr>` : html;
     } catch(e) { tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">خطأ: ${e.message}</td></tr>`; }
 };
