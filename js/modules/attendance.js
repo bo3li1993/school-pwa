@@ -18,7 +18,7 @@ export async function initAttendanceModule() {
                 <p style="color:#999; font-weight:bold; text-align:center; grid-column:1/-1; padding:20px;">⏳ جاري سحب وفرز كشوف الحصص لايف...</p>
             </div>
             
-            <button onclick="window.exportAsManzoumaPDF('tab-absent', 'كشف_توزيع_الغياب_الفصلي')" style="background:var(--primary-color); margin-top:20px; font-size:12px; font-weight:bold;"><i class="bi bi-printer-fill"></i> طباعة كشف الغياب الحالي PDF</button>
+            <button onclick="window.exportAsManzoumaPDF('tab-absent', 'كشف_توزيع_الغياب_الفصلي')" style="width:100%; background:var(--primary-color); margin-top:20px; font-size:12px; font-weight:bold;"><i class="bi bi-printer-fill"></i> طباعة كشف الغياب الحالي PDF</button>
         </div>`;
 
         loadTodayAbsentsGroupedByClass();
@@ -37,7 +37,6 @@ async function loadTodayAbsentsGroupedByClass() {
         const q = query(collection(db, 'attendance'), where('date', '==', todayStr), where('status', '==', 'absent'));
         const snap = await getDocs(q);
         
-        // هيكل تجميع الطلاب تحت مفتاح الفصل
         let byClass = {};
         let count = 0;
 
@@ -60,7 +59,6 @@ async function loadTodayAbsentsGroupedByClass() {
         }
 
         let html = '';
-        // فرز الفصول أبجدياً وضخها بـ ستايل ملوكي
         Object.keys(byClass).sort().forEach(cId => {
             const group = byClass[cId];
             html += `
