@@ -6,7 +6,6 @@ export async function initGatepassModule() {
     const container = document.getElementById('tab-gatepass');
     if (!container) return;
 
-    // 🛡️ جدار حماية وعزل الأخطاء (Error Boundary) لمنع تعليق اللوحة الإدارية
     try {
         container.innerHTML = `
         <div class="card" style="border-top: 5px solid var(--accent-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
@@ -18,11 +17,7 @@ export async function initGatepassModule() {
                     <div>
                         <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">1. اختر الصف / الفصل</label>
                         <select id="gate-class-select" onchange="window.handleGateClassChange(this.value)" required>
-                            <option value="">-- اختر الفصل --</option>
-                            <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
-                            <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
-                            <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
-                            <option value="9/1">9/1</option><option value="9/2">9/2</option>
+                            <option value="">-- جاري سحب الفصول... --</option>
                         </select>
                     </div>
                     <div>
@@ -54,7 +49,7 @@ export async function initGatepassModule() {
         <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-door-open"></i> كشف الطلاب المخرجين بتصاريح رسمية اليوم</h2>
             <div style="overflow-x:auto;">
-                <table>
+                <table style="width:100%;">
                     <thead>
                         <tr style="background:#f8f9fa;">
                             <th>اسم الطالب الدراسي</th>
@@ -70,9 +65,19 @@ export async function initGatepassModule() {
             </div>
         </div>`;
 
+        // جلب الفصول لايف
+        const classSelect = document.getElementById('gate-class-select');
+        const snap = await getDocs(collection(db, 'students'));
+        let classesSet = new Set();
+        snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
+        
+        let htmlClasses = '<option value="">-- اختر الفصل --</option>';
+        Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
+        classSelect.innerHTML = htmlClasses;
+
         loadGatepassLogsLive();
     } catch(e) {
-        container.innerHTML = `<div class="card" style="color:red; text-align:center; padding:20px;">⚠️ تعذر تحميل موديل تصاريح الخروج: ${e.message}</div>`;
+        container.innerHTML = `<div class="card" style="color:red; text-align:center; padding:20px;">⚠️ تعذر تحميل الموديل: ${e.message}</div>`;
     }
 }
 
@@ -115,7 +120,6 @@ window.handleRegisterGatepassLive = async function(e) {
     const reason = document.getElementById('gate-reason').value.trim();
 
     try {
-        // الحفظ بكولكشن الاستئذان الموحد
         await addDoc(collection(db, 'gatepass'), {
             studentName: sName,
             classId: cId,
