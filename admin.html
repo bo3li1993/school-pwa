@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
-<!-- ✅ حلال المشاكل: أسطر منع خطأ الأيقونة وحرف اللام في الآيفون -->
 <link rel="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>لوحة التحكم الإدارية الموحدة - مدرسة سالم الحسينان</title>
@@ -12,7 +11,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<!-- ✅ حلال المشاكل: تضمين مكتبة الإكسيل الرسمية لإنهاء التنبيه الأصفر -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
@@ -22,9 +20,10 @@
     --accent-color: #2980b9;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
-body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; }
+body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; overflow-x: hidden; }
 
-.sidebar { width: 260px; background: var(--sidebar-bg); color: var(--text-color); display: flex; flex-direction: column; transition: all 0.3s; z-index: 100; }
+/* ☰ هندسة القائمة الجانبية لتتوافق مع اللاب توب والتليفون بالشخطات */
+.sidebar { width: 260px; background: var(--sidebar-bg); color: var(--text-color); display: flex; flex-direction: column; transition: all 0.3s ease; z-index: 1000; }
 .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #2c2c3e; background: var(--primary-color); }
 .sidebar-header h3 { font-size: 15px; font-weight: 900; color: #fff; }
 .sidebar-header p { font-size: 11px; color: var(--hover-color); font-weight: bold; margin-top: 3px; }
@@ -32,38 +31,37 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #b2bec3; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.2s; }
 .menu-item:hover, .menu-item.active { background: #2c2c3e; color: #fff; border-right: 4px solid var(--hover-color); }
 
-.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
 .top-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .user-badge { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; color: var(--primary-color); }
 .content-body { padding: 20px; overflow-y: auto; flex: 1; }
 
-/* ✨ تحديث التصميم الجمالي المودرن للكروت والجداول لمنع العفسة */
-.card { background: #fff; border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; transition: 0.3s; }
+/* زر الشخطات الذكي الافتراضي */
+#hamburger-trigger { display: none; background: none; border: none; color: var(--primary-color); font-size: 24px; cursor: pointer; margin-left: 10px; }
+
+/* طبقة الظل الخفيفة خلف القائمة بالتليفون */
+.sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 999; }
+
+/* 📱 شاشات الموبايل والتليفونات (Responsive CSS) */
+@media (max-width: 768px) {
+    #hamburger-trigger { display: block; } /* إظهار زر الشخطات */
+    .sidebar { position: fixed; top: 0; right: -260px; height: 100vh; box-shadow: -5px 0 15px rgba(0,0,0,0.2); } /* إخفاء القائمة برة الشاشة يميناً */
+    .sidebar.active { right: 0; } /* سحب القائمة لداخل الشاشة عند طق الزر */
+    .sidebar-overlay.active { display: block; }
+    .top-navbar { padding: 0 15px; }
+}
+
+.card { background: #fff; border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; }
 .card h2, .card h3 { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-.table-responsive { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid #eef2f5; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; }
-th, td { padding: 14px 16px; text-align: right; border-bottom: 1px solid #edf2f7; }
-th { background: #f7fafc; font-weight: 800; color: #4a5568; }
-tr:hover { background-color: #f8fafc; }
-
-input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; transition: 0.2s; }
-input:focus, select:focus, textarea:focus { border-color: var(--hover-color); box-shadow: 0 0 0 3px rgba(230,126,34,0.1); }
+input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; }
 button { background: var(--primary-color); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; }
-button:hover { background: var(--hover-color); transform: translateY(-1px); }
-
-.badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; text-align: center; }
-.badge.danger { background: var(--danger-color); }
-.badge.info { background: #2980b9; }
-.badge.success { background: var(--success-color); }
-
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-.stat-card { color: #fff; padding: 20px; border-radius: 10px; text-align: right; }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+button:hover { background: var(--hover-color); }
 </style>
 </head>
 <body>
+
+<div class="sidebar-overlay" onclick="window.toggleSidebarLive()"></div>
 
 <div class="sidebar">
     <div class="sidebar-header">
@@ -78,6 +76,7 @@ button:hover { background: var(--hover-color); transform: translateY(-1px); }
         <li class="menu-item" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> 🩺 العيادة المدرسية</li>
         <li class="menu-item" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-ticket-perforated"></i> 🎫 حقيبة الاستئذان</li>
         <li class="menu-item" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> 🏫 الزيارات الفنية</li>
+        <li class="menu-item" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-person-workspace"></i> 📋 زيارات مدير المدرسة</li>
         <li class="menu-item" onclick="window.switchTab('tab-teacher-perf')"><i class="bi bi-speedometer2"></i> 📈 كفاءة الأداء</li>
         <li class="menu-item" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone"></i> ✉️ المراسلات والطلبات</li>
         <li class="menu-item" onclick="window.switchTab('tab-classes')"><i class="bi bi-door-open"></i> 🏫 جرد فصول المدرسة</li>
@@ -90,23 +89,22 @@ button:hover { background: var(--hover-color); transform: translateY(-1px); }
         <li class="menu-item" onclick="window.switchTab('tab-guard')"><i class="bi bi-shield-shaded"></i> 🚪 بوابة الحارس والأمن</li>
         <li class="menu-item" onclick="window.switchTab('tab-rounds')"><i class="bi bi-clipboard-check"></i> 📋 جولة الجناح اليومية</li>
         <li class="menu-item" onclick="window.switchTab('tab-classes-dist')"><i class="bi bi-shuffle"></i> 🏫 توزيع فصول الاحتياط</li>
-        <!-- ✨ التبويب الفولاذي المضاف لراحتك لإدارة الصفحة العامة بره -->
         <li class="menu-item" onclick="window.switchTab('tab-landing-manage')"><i class="bi bi-layout-text-window-reverse"></i> 🌐 إدارة الواجهة العامة</li>
     </ul>
 </div>
 
 <div class="main-content">
     <div class="top-navbar">
-        <div class="user-badge">
-            <i class="bi bi-person-circle" style="font-size:20px; color:var(--hover-color);"></i>
-            <span>مرحباً، <b id="lbl-admin-name">المسؤول الإداري</b></span>
+        <div style="display:flex; align-items:center;">
+            <button id="hamburger-trigger" onclick="window.toggleSidebarLive()"><i class="bi bi-list"></i></button>
+            <div class="user-badge">
+                <i class="bi bi-person-circle" style="font-size:20px; color:var(--hover-color);"></i>
+                <span>مرحباً، <b id="lbl-admin-name">المسؤول الإداري</b></span>
+            </div>
         </div>
-        
         <div style="display:flex; gap:10px; align-items:center;">
-            <button onclick="window.generateWeeklyReport()" style="background:var(--accent-color); padding:6px 14px; font-size:12px; border-radius:4px; display:inline-flex; align-items:center; gap:6px;">
-                <i class="bi bi-file-earmark-pdf-fill"></i> <i class="bi bi-printer"></i> تقرير أسبوعي للمنطقة
-            </button>
-            <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:6px 15px; font-size:12px;"><i class="bi bi-box-arrow-left"></i> خروج آمن</button>
+            <button onclick="window.generateWeeklyReport()" style="background:var(--accent-color); padding:6px 14px; font-size:12px; border-radius:4px;"><i class="bi bi-printer"></i> تقرير أسبوعي</button>
+            <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:6px 15px; font-size:12px;">خروج</button>
         </div>
     </div>
 
@@ -118,7 +116,7 @@ button:hover { background: var(--hover-color); transform: translateY(-1px); }
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
                 <div class="card" id="class-status" style="border-top:5px solid var(--primary-color);">
                     <h2><i class="bi bi-lightning-charge-fill" style="color:var(--hover-color);"></i> إجراءات سريعة اليوم بالمنشأة</h2>
-                    <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:15px;">بإمكانك إدارة وطباعة التقارير الموحدة للمنطقة التعليمية من هنا بضغطة واحدة.</p>
+                    <p style="font-size:12px; color:#666; font-weight:bold;">بإمكانك إدارة وطباعة التقارير الموحدة من هنا بضغطة واحدة.</p>
                 </div>
                 <div class="card" style="border-top:5px solid var(--hover-color); text-align:center;">
                     <h2><i class="bi bi-pie-chart-fill"></i> مؤشر الغياب والحضور</h2>
@@ -135,6 +133,7 @@ button:hover { background: var(--hover-color); transform: translateY(-1px); }
         <div id="tab-clinic" class="tab-content"></div>
         <div id="tab-gatepass" class="tab-content"></div>
         <div id="tab-visits" class="tab-content"></div>
+        <div id="tab-manager-visits" class="tab-content"></div>
         <div id="tab-teacher-perf" class="tab-content"></div>
         <div id="tab-announcements" class="tab-content"></div>
         <div id="tab-classes" class="tab-content"></div>
@@ -148,22 +147,16 @@ button:hover { background: var(--hover-color); transform: translateY(-1px); }
         <div id="tab-rounds" class="tab-content"></div>
         <div id="tab-classes-dist" class="tab-content"></div>
         
-        <!-- ✨ الحاوية اليديدة لكرت تحكم الواجهة العامة بره (يتم بناؤها ديناميكياً) -->
         <div id="tab-landing-manage" class="tab-content">
             <div class="card" style="border-top: 5px solid var(--accent-color);">
-                <h2><i class="bi bi-globe" style="color:var(--accent-color);"></i> لوحة التحكم في الواجهة العامة للموقع (`home.html`)</h2>
-                <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:20px;">تتيح لك هذه الصفحة تغيير محتوى موقع المدرسة العام الخارجي لجميع الزوار بكل سهولة وبدون أكواد.</p>
-                
-                <label>📢 نص الإعلان الهام المراد عرضه للماتداولين وأولياء الأمور:</label>
-                <textarea id="ctrl-landing-notice" rows="3" placeholder="اكتب نص الإعلان هنا (اتركه فارغاً لإخفاء صندوق الإعلانات)"></textarea>
-                
-                <label>🖼️ رابط صورة الفعاليات الحية (URL):</label>
+                <h2><i class="bi bi-globe" style="color:var(--accent-color);"></i> إدارة الواجهة العامة للموقع (`home.html`)</h2>
+                <label>📢 نص الإعلان الهام:</label>
+                <textarea id="ctrl-landing-notice" rows="3" placeholder="اكتب نص الإعلان هنا"></textarea>
+                <label>🖼️ رابط صورة الفعاليات (URL):</label>
                 <input type="text" id="ctrl-landing-img" placeholder="الصق رابط الصورة هنا">
-                
-                <label>📊 جدول أو تعاميم الإدارة (كود HTML مرن للجداول):</label>
-                <textarea id="ctrl-landing-table" rows="5" placeholder="أدخل كود جدول المواعيد أو اتركه فارغاً"></textarea>
-                
-                <button onclick="window.saveLandingConfigLive()"><i class="bi bi-cloud-arrow-up-fill"></i> حفظ وتحديث الواجهة العامة فوراً</button>
+                <label>📊 كود جدول أو تعاميم الإدارة (HTML):</label>
+                <textarea id="ctrl-landing-table" rows="5" placeholder="أدخل كود جدول المواعيد"></textarea>
+                <button onclick="window.saveLandingConfigLive()"><i class="bi bi-cloud-arrow-up-fill"></i> حفظ وتحديث الواجهة فوراً</button>
             </div>
         </div>
     </div>
@@ -181,6 +174,7 @@ const moduleMap = {
     'tab-clinic': { file: './js/modules/clinic.js', init: 'initClinicModule' },
     'tab-gatepass': { file: './js/modules/gatepass.js', init: 'initGatepassModule' },
     'tab-visits': { file: './js/modules/visits.js', init: 'initVisitsModule' },
+    'tab-manager-visits': { file: './js/modules/manager_visits.js', init: 'initManagerVisitsModule' },
     'tab-teacher-perf': { file: './js/modules/teacher_perf.js', init: 'initTeacherPerfModule' },
     'tab-announcements': { file: './js/modules/mailbox.js', init: 'initMailboxModule' },
     'tab-classes': { file: './js/modules/classes.js', init: 'initClassesModule' },
@@ -200,7 +194,7 @@ let loadedModules = new Set();
 document.addEventListener("DOMContentLoaded", function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
     if (!user || user.role !== 'admin') {
-        alert("🔒 الوصول مرفوض: هذه اللوحة مخصصة للإدارة العليا ومحمية بجدار الأمان.");
+        alert("🔒 الوصول مرفوض");
         window.location.replace('index.html');
         return;
     }
@@ -210,6 +204,12 @@ document.addEventListener("DOMContentLoaded", function() {
     import('./js/modules/reports.js').then(m => m.initReportsModule());
     loadLandingFieldsLive();
 });
+
+// ☰ محرك فتح وإغلاق القائمة الجانبية بالتليفون
+window.toggleSidebarLive = function() {
+    document.querySelector('.sidebar').classList.toggle('active');
+    document.querySelector('.sidebar-overlay').classList.toggle('active');
+};
 
 window.switchTab = function(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -224,6 +224,10 @@ window.switchTab = function(tabId) {
             item.classList.add('active');
         }
     });
+
+    // آلياً: إغلاق القائمة بعد اختيار الزر بالتليفون لراحة العين
+    document.querySelector('.sidebar').classList.remove('active');
+    document.querySelector('.sidebar-overlay').classList.remove('active');
 
     if(tabId !== 'tab-landing-manage') {
         loadModuleLive(tabId);
@@ -251,7 +255,6 @@ async function loadModuleLive(tabId) {
     }
 }
 
-// 🌐 محرك جلب وعرض بيانات الواجهة برة تلقائياً في خانات الأدمين
 async function loadLandingFieldsLive() {
     try {
         const docSnap = await getDoc(doc(db, 'system_config', 'public_landing'));
@@ -261,10 +264,9 @@ async function loadLandingFieldsLive() {
             document.getElementById('ctrl-landing-img').value = d.imageUrl || '';
             document.getElementById('ctrl-landing-table').value = d.tableHtml || '';
         }
-    }catch(e){console.log(e);}
+    }catch(e){}
 }
 
-// 💾 محرك حفظ تعديلات الواجهة العامة بضغطة زر سحابياً
 window.saveLandingConfigLive = async function() {
     try {
         await setDoc(doc(db, 'system_config', 'public_landing'), {
@@ -272,86 +274,8 @@ window.saveLandingConfigLive = async function() {
             imageUrl: document.getElementById('ctrl-landing-img').value,
             tableHtml: document.getElementById('ctrl-landing-table').value
         }, { merge: true });
-        alert("✅ تم حفظ التعديلات سحابياً بنجاح! صفحة الواجهة (home.html) تحدّثت الحين تلقائياً.");
+        alert("✅ تم تحديث الواجهة العامة (home.html) تلقائياً.");
     } catch(e) { alert("❌ تعذر الحفظ: " + e.message); }
-};
-
-window.generateWeeklyReport = async function() {
-    alert("⏳ جاري جرد الملفات السحابية وتجميع بنود التقرير الأسبوعي...");
-    try {
-        const todayStr = new Date().toLocaleDateString('ar-KW');
-        const [attSnap, visSnap] = await Promise.all([
-            getDocs(collection(db, 'attendance')),
-            getDocs(collection(db, 'technical_visits'))
-        ]);
-
-        const absMap = {};
-        attSnap.forEach(doc => {
-            const d = doc.data();
-            if(d.status === 'absent' && d.studentName) {
-                const key = d.studentName.trim();
-                if(!absMap[key]) absMap[key] = { name: key, classId: d.classId || '-', count: 0 };
-                absMap[key].count++;
-            }
-        });
-        const repeated = Object.values(absMap).filter(s => s.count >= 3).sort((a,b) => b.count - a.count);
-
-        const area = document.getElementById('weekly-report-area');
-        area.style.display = 'block';
-        area.innerHTML = `
-        <div id="report-print-area" style="padding:30px; direction:rtl; font-family:'Cairo',sans-serif; background:#fff; color:#000; width:750px; margin:0 auto; border:1px solid #eee;">
-            <div style="text-align:center; border-bottom:3px solid #1a1a2e; padding-bottom:15px; margin-bottom:20px;">
-                <h2 style="color:#1a1a2e; font-size:18px; font-weight:900;">وزارة التربية - الإدارة العامة لمنطقة الفروانية التعليمية</h2>
-                <h3 style="font-size:15px; font-weight:bold; margin-top:4px;">متوسطة سالم الحسينان للبنين</h3>
-                <p style="font-size:12px; color:#666; font-weight:bold; margin-top:3px;">التقرير الأسبوعي الشامل للمنشأة | تاريخ الإصدار: ${todayStr}</p>
-            </div>
-            
-            <h4 style="margin-bottom:10px; color:#e74c3c; font-weight:900; border-right:4px solid #e74c3c; padding-right:6px;">أولاً: حصر الطلاب ذوي الغياب المتكرر (3 أيام فأكثر)</h4>
-            <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
-                <thead>
-                    <tr style="background:#1a1a2e; color:#fff;">
-                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">#</th>
-                        <th style="padding:8px; text-align:right; border:1px solid #ddd;">اسم الطالب رباعي</th>
-                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">الفصل الدراسي</th>
-                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">أيام الغياب التراكمي</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${repeated.length ? repeated.map((s,i) => `
-                        <tr style="border-bottom:1px solid #eee;">
-                            <td style="padding:8px; text-align:center; border:1px solid #ddd;"><b>${i+1}</b></td>
-                            <td style="padding:8px; border:1px solid #ddd; font-weight:bold;">👤 ${s.name}</td>
-                            <td style="padding:8px; text-align:center; border:1px solid #ddd; font-weight:bold; color:#2980b9;">${s.classId}</td>
-                            <td style="padding:8px; text-align:center; border:1px solid #ddd; color:#e74c3c; font-weight:900;">${s.count} أيام غياب</td>
-                        </tr>`).join('') : 
-                        '<tr><td colspan="4" style="padding:15px; text-align:center; color:#27ae60; font-weight:bold; border:1px solid #ddd;">✅ كشوف الغياب نظيفة ومثالية بالكامل هذا الأسبوع.</td></tr>'
-                    }
-                </tbody>
-            </table>
-            
-            <h4 style="margin-bottom:10px; color:#2980b9; font-weight:900; border-right:4px solid #2980b9; padding-right:6px;">ثانياً: مؤشرات الكفاءة والزيارات الفنية المنجزة</h4>
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; font-size:13px; font-weight:bold; color:#333; margin-bottom:30px;">
-                <i class="bi bi-info-circle-fill" style="color:#2980b9;"></i> إجمالي الزيارات التفقدية الفنية المرصودة من الموجهين ورؤساء الأقسام: 
-                <span style="color:#27ae60; font-size:16px; font-weight:900; margin-right:5px;">${visSnap.size} زيارة موثقة بالسيرفر</span>
-            </div>
-
-            <div style="margin-top:60px; display:flex; justify-content:space-between; font-size:13px; font-weight:bold; padding:0 20px;">
-                <div style="text-align:center;"><p>يعتمد، مدير المدرسة</p><p style="margin-top:40px;">_________________</p></div>
-                <div style="text-align:center;"><p>ختم المنشأة الرسمي</p><div style="margin-top:10px; width:70px; height:70px; border:2px dashed #444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; color:#444;">سالم الحسينان</div></div>
-            </div>
-        </div>`;
-        
-        setTimeout(() => {
-            import('./js/modules/reports.js').then(m => {
-                if(typeof m.exportAsManzoumaPDF === 'function') {
-                    m.exportAsManzoumaPDF('report-print-area', 'التقرير_الأسبوعي_الرسمي_للمنطقة');
-                    setTimeout(() => { area.style.display = 'none'; }, 1000);
-                } else {
-                    alert("⚠️ تعذر استدعاء دالة الطباعة المركزية.");
-                }
-            });
-        }, 600);
-    } catch(err) { alert("❌ تعذر إصدار التقرير: " + err.message); }
 };
 </script>
 </body>
