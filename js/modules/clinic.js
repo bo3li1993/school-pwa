@@ -6,7 +6,6 @@ export async function initClinicModule() {
     const container = document.getElementById('tab-clinic');
     if (!container) return;
 
-    // 🛡️ جدار حماية وعزل الأخطاء (Error Boundary) لضمان استقرار الشاشة
     try {
         container.innerHTML = `
         <div class="card" style="border-top: 5px solid #3498db; text-align: right; background:#fff; padding:20px; border-radius:12px;">
@@ -18,11 +17,7 @@ export async function initClinicModule() {
                     <div>
                         <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">1. اختر الصف / الفصل</label>
                         <select id="clinic-class-select" onchange="window.handleClinicClassChange(this.value)" required>
-                            <option value="">-- اختر الفصل --</option>
-                            <option value="6/1">6/1</option><option value="6/2">6/2</option><option value="6/3">6/3</option><option value="6/4">6/4</option>
-                            <option value="7/1">7/1</option><option value="7/2">7/2</option><option value="7/3">7/3</option><option value="7/4">7/4</option>
-                            <option value="8/1">8/1</option><option value="8/2">8/2</option><option value="8/3">8/3</option><option value="8/4">8/4</option>
-                            <option value="9/1">9/1</option><option value="9/2">9/2</option>
+                            <option value="">-- جاري سحب الفصول... --</option>
                         </select>
                     </div>
                     <div>
@@ -55,7 +50,7 @@ export async function initClinicModule() {
         <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-capsule"></i> كشف زيارات العيادة المدرسية المقيدة اليوم لايف</h2>
             <div style="overflow-x:auto;">
-                <table id="clinic-logs-table">
+                <table id="clinic-logs-table" style="width:100%;">
                     <thead>
                         <tr style="background:#f8f9fa;">
                             <th>اسم الطالب المريض</th>
@@ -70,6 +65,16 @@ export async function initClinicModule() {
                 </table>
             </div>
         </div>`;
+
+        // جلب الفصول لايف
+        const classSelect = document.getElementById('clinic-class-select');
+        const snap = await getDocs(collection(db, 'students'));
+        let classesSet = new Set();
+        snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
+        
+        let htmlClasses = '<option value="">-- اختر الفصل --</option>';
+        Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
+        classSelect.innerHTML = htmlClasses;
 
         loadClinicLogsLive();
     } catch(e) {
@@ -116,7 +121,6 @@ window.handleRegisterClinicLive = async function(e) {
     const treatment = document.getElementById('clinic-treatment').value.trim();
 
     try {
-        // الحفظ بكولكشن العيادة الرسمي الموحد
         await addDoc(collection(db, 'clinic'), {
             studentName: sName,
             classId: cId,
