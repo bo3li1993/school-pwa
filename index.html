@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
+<!-- ✅ سطر الأيقونة الجديد لمنع خطأ الـ 404 في الكونسول نهائياً -->
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>بوابة الدخول الموحدة - المنظومة الرقمية الشاملة</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
@@ -72,8 +74,8 @@ button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,
 </div>
 
 <script type="module">
-// ⚠️ انتبه هنا: إذا اسم مجلد الـ js عندك كابيتال في غيت هاب خله ليكون چذي ./JS/firebase-config.js
-import { db } from './js/modules/firebase-config.js';
+// 🎯 تم تعديل المسار هنا ليقرأ من المجلد الرئيسي مباشرة ومطابقة التحديث لإنهاء الـ 404
+import { db } from './js/firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
@@ -125,7 +127,7 @@ window.handleSystemLoginLive = async function(e) {
         const userCredential = await signInWithEmailAndPassword(auth, targetEmail, pass);
         const firebaseUser = userCredential.user;
 
-        // سحب سجلات الموظف من الفايرستور (الحين بتفتح طيران لأن الرولز ملوتك تعدلت!)
+        // سحب سجلات الموظف من الفايرستور
         let userData = null;
         let q = query(collection(db, 'users'), where('userId', '==', userId));
         let snap = await getDocs(q);
