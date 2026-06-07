@@ -3,14 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link lang="manifest" href="manifest.json">
-<!-- ✅ سطر الأيقونة الجديد لمنع خطأ الـ 404 في الكونسول -->
+<link rel="manifest" href="manifest.json">
+<!-- ✅ حلال المشاكل: أسطر منع خطأ الأيقونة وحرف اللام في الآيفون -->
+<link rel="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>لوحة التحكم الإدارية الموحدة - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- ✅ حلال المشاكل: تضمين مكتبة الإكسيل الرسمية لإنهاء التنبيه الأصفر -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 :root {
@@ -34,14 +37,22 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 .user-badge { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; color: var(--primary-color); }
 .content-body { padding: 20px; overflow-y: auto; flex: 1; }
 
-.card { background: #fff; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-th, td { padding: 12px; text-align: right; border-bottom: 1px solid #eee; }
-th { background: #f8f9fa; font-weight: 700; color: var(--primary-color); }
-input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; outline: none; font-weight: 600; }
-button { background: var(--primary-color); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-button:hover { background: var(--hover-color); }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #fff; }
+/* ✨ تحديث التصميم الجمالي المودرن للكروت والجداول لمنع العفسة */
+.card { background: #fff; border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; transition: 0.3s; }
+.card h2, .card h3 { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+
+.table-responsive { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid #eef2f5; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; }
+th, td { padding: 14px 16px; text-align: right; border-bottom: 1px solid #edf2f7; }
+th { background: #f7fafc; font-weight: 800; color: #4a5568; }
+tr:hover { background-color: #f8fafc; }
+
+input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; transition: 0.2s; }
+input:focus, select:focus, textarea:focus { border-color: var(--hover-color); box-shadow: 0 0 0 3px rgba(230,126,34,0.1); }
+button { background: var(--primary-color); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; }
+button:hover { background: var(--hover-color); transform: translateY(-1px); }
+
+.badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; text-align: center; }
 .badge.danger { background: var(--danger-color); }
 .badge.info { background: #2980b9; }
 .badge.success { background: var(--success-color); }
@@ -79,6 +90,8 @@ button:hover { background: var(--hover-color); }
         <li class="menu-item" onclick="window.switchTab('tab-guard')"><i class="bi bi-shield-shaded"></i> 🚪 بوابة الحارس والأمن</li>
         <li class="menu-item" onclick="window.switchTab('tab-rounds')"><i class="bi bi-clipboard-check"></i> 📋 جولة الجناح اليومية</li>
         <li class="menu-item" onclick="window.switchTab('tab-classes-dist')"><i class="bi bi-shuffle"></i> 🏫 توزيع فصول الاحتياط</li>
+        <!-- ✨ التبويب الفولاذي المضاف لراحتك لإدارة الصفحة العامة بره -->
+        <li class="menu-item" onclick="window.switchTab('tab-landing-manage')"><i class="bi bi-layout-text-window-reverse"></i> 🌐 إدارة الواجهة العامة</li>
     </ul>
 </div>
 
@@ -109,7 +122,6 @@ button:hover { background: var(--hover-color); }
                 </div>
                 <div class="card" style="border-top:5px solid var(--hover-color); text-align:center;">
                     <h2><i class="bi bi-pie-chart-fill"></i> مؤشر الغياب والحضور</h2>
-                    <!-- 🛡️ صندوق الأمان المقيد الحجم لمنع رمشة شاشة التليفون نهائياً -->
                     <div style="position: relative; height: 180px; width: 100%; margin-top: 15px;">
                         <canvas id="attendanceChart"></canvas>
                     </div>
@@ -135,12 +147,31 @@ button:hover { background: var(--hover-color); }
         <div id="tab-guard" class="tab-content"></div>
         <div id="tab-rounds" class="tab-content"></div>
         <div id="tab-classes-dist" class="tab-content"></div>
+        
+        <!-- ✨ الحاوية اليديدة لكرت تحكم الواجهة العامة بره (يتم بناؤها ديناميكياً) -->
+        <div id="tab-landing-manage" class="tab-content">
+            <div class="card" style="border-top: 5px solid var(--accent-color);">
+                <h2><i class="bi bi-globe" style="color:var(--accent-color);"></i> لوحة التحكم في الواجهة العامة للموقع (`home.html`)</h2>
+                <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:20px;">تتيح لك هذه الصفحة تغيير محتوى موقع المدرسة العام الخارجي لجميع الزوار بكل سهولة وبدون أكواد.</p>
+                
+                <label>📢 نص الإعلان الهام المراد عرضه للماتداولين وأولياء الأمور:</label>
+                <textarea id="ctrl-landing-notice" rows="3" placeholder="اكتب نص الإعلان هنا (اتركه فارغاً لإخفاء صندوق الإعلانات)"></textarea>
+                
+                <label>🖼️ رابط صورة الفعاليات الحية (URL):</label>
+                <input type="text" id="ctrl-landing-img" placeholder="الصق رابط الصورة هنا">
+                
+                <label>📊 جدول أو تعاميم الإدارة (كود HTML مرن للجداول):</label>
+                <textarea id="ctrl-landing-table" rows="5" placeholder="أدخل كود جدول المواعيد أو اتركه فارغاً"></textarea>
+                
+                <button onclick="window.saveLandingConfigLive()"><i class="bi bi-cloud-arrow-up-fill"></i> حفظ وتحديث الواجهة العامة فوراً</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script type="module">
 import { db, auth } from './js/firebase-config.js';
-import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, doc, getDoc, setDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const moduleMap = {
     'tab-index': { file: './js/modules/today.js', init: 'initTodayModule' },
@@ -177,6 +208,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     loadModuleLive('tab-index');
     import('./js/modules/reports.js').then(m => m.initReportsModule());
+    loadLandingFieldsLive();
 });
 
 window.switchTab = function(tabId) {
@@ -193,7 +225,9 @@ window.switchTab = function(tabId) {
         }
     });
 
-    loadModuleLive(tabId);
+    if(tabId !== 'tab-landing-manage') {
+        loadModuleLive(tabId);
+    }
 };
 
 async function loadModuleLive(tabId) {
@@ -216,6 +250,31 @@ async function loadModuleLive(tabId) {
         console.error(`❌ فشل تحميل ${config.file}:`, err);
     }
 }
+
+// 🌐 محرك جلب وعرض بيانات الواجهة برة تلقائياً في خانات الأدمين
+async function loadLandingFieldsLive() {
+    try {
+        const docSnap = await getDoc(doc(db, 'system_config', 'public_landing'));
+        if(docSnap.exists()){
+            const d = docSnap.data();
+            document.getElementById('ctrl-landing-notice').value = d.notice || '';
+            document.getElementById('ctrl-landing-img').value = d.imageUrl || '';
+            document.getElementById('ctrl-landing-table').value = d.tableHtml || '';
+        }
+    }catch(e){console.log(e);}
+}
+
+// 💾 محرك حفظ تعديلات الواجهة العامة بضغطة زر سحابياً
+window.saveLandingConfigLive = async function() {
+    try {
+        await setDoc(doc(db, 'system_config', 'public_landing'), {
+            notice: document.getElementById('ctrl-landing-notice').value,
+            imageUrl: document.getElementById('ctrl-landing-img').value,
+            tableHtml: document.getElementById('ctrl-landing-table').value
+        }, { merge: true });
+        alert("✅ تم حفظ التعديلات سحابياً بنجاح! صفحة الواجهة (home.html) تحدّثت الحين تلقائياً.");
+    } catch(e) { alert("❌ تعذر الحفظ: " + e.message); }
+};
 
 window.generateWeeklyReport = async function() {
     alert("⏳ جاري جرد الملفات السحابية وتجميع بنود التقرير الأسبوعي...");
