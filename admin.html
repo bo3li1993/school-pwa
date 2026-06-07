@@ -44,9 +44,9 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 
 /* 📱 شاشات الموبايل والتليفونات (Responsive CSS) */
 @media (max-width: 768px) {
-    #hamburger-trigger { display: block; } /* إظهار زر الشخطات */
-    .sidebar { position: fixed; top: 0; right: -260px; height: 100vh; box-shadow: -5px 0 15px rgba(0,0,0,0.2); } /* إخفاء القائمة برة الشاشة يميناً */
-    .sidebar.active { right: 0; } /* سحب القائمة لداخل الشاشة عند طق الزر */
+    #hamburger-trigger { display: block; } 
+    .sidebar { position: fixed; top: 0; right: -260px; height: 100vh; box-shadow: -5px 0 15px rgba(0,0,0,0.2); } 
+    .sidebar.active { right: 0; } 
     .sidebar-overlay.active { display: block; }
     .top-navbar { padding: 0 15px; }
 }
@@ -57,6 +57,14 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; }
 button { background: var(--primary-color); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; }
 button:hover { background: var(--hover-color); }
+
+.badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; }
+.badge.danger { background: var(--danger-color); }
+.badge.success { background: var(--success-color); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 </style>
 </head>
 <body>
@@ -119,7 +127,7 @@ button:hover { background: var(--hover-color); }
                     <p style="font-size:12px; color:#666; font-weight:bold;">بإمكانك إدارة وطباعة التقارير الموحدة من هنا بضغطة واحدة.</p>
                 </div>
                 <div class="card" style="border-top:5px solid var(--hover-color); text-align:center;">
-                    <h2><i class="bi bi-pie-chart-fill"></i> مؤشر الغياب والحضور</h2>
+                    <h2><i class="bi bi-pie-chart-fill"></i> مؤشن الغياب والحضور</h2>
                     <div style="position: relative; height: 180px; width: 100%; margin-top: 15px;">
                         <canvas id="attendanceChart"></canvas>
                     </div>
@@ -202,10 +210,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     loadModuleLive('tab-index');
     import('./js/modules/reports.js').then(m => m.initReportsModule());
-    loadLandingFieldsLive();
+    // ❌ تم عزل جلب حقول الواجهة من هنا لضمان عدم تحميلها تلقائياً عند الدخول أول مرة
 });
 
-// ☰ محرك فتح وإغلاق القائمة الجانبية بالتليفون
 window.toggleSidebarLive = function() {
     document.querySelector('.sidebar').classList.toggle('active');
     document.querySelector('.sidebar-overlay').classList.toggle('active');
@@ -225,11 +232,13 @@ window.switchTab = function(tabId) {
         }
     });
 
-    // آلياً: إغلاق القائمة بعد اختيار الزر بالتليفون لراحة العين
     document.querySelector('.sidebar').classList.remove('active');
     document.querySelector('.sidebar-overlay').classList.remove('active');
 
-    if(tabId !== 'tab-landing-manage') {
+    // ✅ تشغيل ذكي: يتم جلب بيانات الواجهة السحابية فقط عندما يضغط المدير على الزر ماله برغبته
+    if(tabId === 'tab-landing-manage') {
+        loadLandingFieldsLive();
+    } else {
         loadModuleLive(tabId);
     }
 };
