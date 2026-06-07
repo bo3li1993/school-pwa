@@ -1,78 +1,6 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-<title>بوابة الدخول الموحدة - المنظومة الرقمية الشاملة</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-:root { 
-    --primary-color: #1a1a2e; --accent-color: #e67e22; 
-    --bg-dark: #0f172a; --card-bg: #ffffff; 
-}
-* { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
-body { 
-    background: linear-gradient(135deg, var(--bg-dark) 0%, #1e1e38 100%); 
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; 
-}
-.login-card { 
-    background: var(--card-bg); border-radius: 16px; padding: 35px 30px; width: 100%; max-width: 420px; 
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4); border-top: 6px solid var(--accent-color); text-align: right; 
-}
-.login-logo { font-size: 50px; color: var(--primary-color); text-align: center; margin-bottom: 10px; }
-.login-card h2 { font-size: 20px; font-weight: 900; color: var(--primary-color); text-align: center; margin-bottom: 4px; }
-.login-card p { font-size: 12px; color: #666; font-weight: bold; text-align: center; margin-bottom: 25px; }
-label { font-weight: 700; font-size: 13px; color: var(--primary-color); display: block; margin-bottom: 6px; }
-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; font-weight: 600; text-align: right; outline: none; font-size: 14px; }
-input:focus { border-color: var(--accent-color); }
-button { 
-    background: var(--primary-color); color: #fff; border: none; padding: 13px; border-radius: 8px; 
-    font-weight: 700; cursor: pointer; width: 100%; font-size: 15px; transition: all 0.2s; 
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px;
-}
-button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,126,34,0.2); }
-.parent-link { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 13px; font-weight: bold; }
-.parent-link a { color: #2980b9; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
-
-#install-app-btn {
-    display: none; background: #27ae60; color: #fff; border: none; padding: 10px 15px; 
-    border-radius: 30px; font-weight: 700; font-size: 13px; margin-bottom: 15px; width: 100%;
-    box-shadow: 0 4px 10px rgba(39,174,96,0.3); cursor: pointer; text-align: center;
-}
-</style>
-</head>
-<body>
-
-<div style="width: 100%; max-width: 420px;">
-    <button id="install-app-btn"><i class="bi bi-phone-vibrate-fill"></i> 📲 ثبّت تطبيق المنظومة على هاتفِك الحين</button>
-</div>
-
-<div class="login-card">
-    <div class="login-logo"><i class="bi bi-shield-lock-fill"></i></div>
-    <h2>المنظومة الرقمية الموحدة</h2>
-    <p>مدرسة سالم الحسينان المتوسطة للبنين</p>
-    
-    <form id="login-form-element" onsubmit="window.handleSystemLoginLive(event)">
-        <label><i class="bi bi-person-fill"></i> رقم المستخدم / المعرف (User ID)</label>
-        <input type="text" id="login-user-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
-        
-        <label><i class="bi bi-key-fill"></i> رمز الحماية السري (Password)</label>
-        <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
-        
-        <button type="submit" id="btn-login-submit">
-            <i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة
-        </button>
-    </form>
-
-    <div class="parent-link">
-        <a href="parent.html"><i class="bi bi-person-hearts"></i> هل أنت ولي أمر طالب؟ اضغط هنا للدخول</a>
-    </div>
-</div>
-
 <script type="module">
-import { db } from './js/firebase-config.js';
+// ✅ تم تعديل المسار ليقرأ مباشرة من المجلد الرئيسي برة بدون 404
+import { db } from './firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
@@ -105,7 +33,7 @@ installBtn.addEventListener('click', async () => {
     installBtn.style.display = 'none';
 });
 
-// 🔑 2. محرك الفحص والولوج الآمن عبر نظام التشفير الرسمي بعد تعديل رولز السيرفر اليوم
+// 🔑 2. محرك الفحص والولوج الآمن عبر نظام التشفير الرسمي
 window.handleSystemLoginLive = async function(e) {
     if(e) e.preventDefault(); 
 
@@ -124,7 +52,7 @@ window.handleSystemLoginLive = async function(e) {
         const userCredential = await signInWithEmailAndPassword(auth, targetEmail, pass);
         const firebaseUser = userCredential.user;
 
-        // جلب وثيقة الموظف من الفايرستور (الحين بتشتغل طيران لأننا فتحنا الرولز!)
+        // جلب وثيقة الموظف من الفايرستور
         let userData = null;
         let q = query(collection(db, 'users'), where('userId', '==', userId));
         let snap = await getDocs(q);
@@ -161,7 +89,7 @@ window.handleSystemLoginLive = async function(e) {
         }
 
     } catch(err) {
-        console.log("Auth failed or user not migrated, checking local legacy document...");
+        console.log("Auth failed, checking local legacy document...");
         try {
             const legacySnap = await getDocs(collection(db, 'users'));
             let foundLegacy = null;
@@ -194,10 +122,9 @@ window.handleSystemLoginLive = async function(e) {
     }
 };
 
-// 📲 تحويل الفوكس الذكي بين الخانات بالـ Enter بدون تداخل أو دبل كليك لإرسال الفورم بالخطأ
 document.getElementById('login-user-id').addEventListener('keypress', e => {
     if(e.key === 'Enter') {
-        e.preventDefault(); // يمنع إرسال الفورم قبل كتابة الباسورد
+        e.preventDefault();
         document.getElementById('login-password').focus();
     }
 });
@@ -206,5 +133,3 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 </script>
-</body>
-</html>
