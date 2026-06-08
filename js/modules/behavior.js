@@ -16,7 +16,7 @@ export async function initBehaviorModule() {
         container.innerHTML = `
         <div class="card" style="border-top: 5px solid var(--danger-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-shield-exclamation" style="color:var(--danger-color);"></i> نظام رصد الإجراءات التربوية والمتابعة السلوكية للطلاب</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">الرجاء تحديد الصف الدراسي لاستدعاء كشف الأسماء المعتمد، ثم اختيار الإجراء السلوكي المنفذ.</p>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">الرجاء تحديد الصف الدراسي لاستدعاء كشف الأسماء المعتمد، ثم اختيار الإجراء السلوكي وحالة المتابعة.</p>
             
             <form id="behavior-reg-form" onsubmit="window.handleRegisterBehaviorLive(event)">
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
@@ -42,6 +42,13 @@ export async function initBehaviorModule() {
                             <option value="تحويل إلى إدارة المدرسة">⚖️ تحويل رسمي مباشر إلى إدارة المدرسة</option>
                         </select>
                     </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px; color:#444;">4. حالة الإجراء والمتابعة:</label>
+                        <select id="beh-followup-status" required>
+                            <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال رسمياً</option>
+                            <option value="قيد المتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div style="margin-top:12px;">
@@ -63,17 +70,17 @@ export async function initBehaviorModule() {
                             <th style="padding:10px; border:1px solid #eee;">اسم الطالب ثلاثي/رباعي</th>
                             <th style="padding:10px; border:1px solid #eee; text-align:center;">الفصل</th>
                             <th style="padding:10px; border:1px solid #eee; text-align:center;">الإجراء التربوي المقيد</th>
+                            <th style="padding:10px; border:1px solid #eee; text-align:center;">حالة المتابعة</th>
                             <th style="padding:10px; border:1px solid #eee;">ملاحظات الأخصائي الرسمي</th>
                         </tr>
                     </thead>
                     <tbody id="behavior-logs-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">⏳ جاري جلب السجلات السلوكية الحية فوراً...</td></tr>
+                        <tr><td colspan="6" style="text-align:center; color:#999; padding:15px; font-weight:bold;">⏳ جاري جلب السجلات السلوكية الحية فوراً...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>`;
 
-        // سحب الفصول المتاحة لايف من قاعدة البيانات
         const classSelect = document.getElementById('beh-class-select');
         onSnapshot(collection(db, 'students'), (snapshot) => {
             let classesSet = new Set();
@@ -84,7 +91,7 @@ export async function initBehaviorModule() {
             if (classSelect) classSelect.innerHTML = htmlClasses;
         });
 
-        loadBehaviorLogsLive(); // تفعيل محرك البث الفوري للأرشيف
+        loadBehaviorLogsLive(); 
     } catch(e) { console.error(e); }
 }
 
@@ -124,18 +131,20 @@ window.handleRegisterBehaviorLive = async function(e) {
     const sName = document.getElementById('beh-student-select').value;
     const cId = document.getElementById('beh-class-select').value;
     const action = document.getElementById('beh-action-type').value;
+    const followup = document.getElementById('beh-followup-status').value;
     const notes = document.getElementById('beh-notes').value.trim();
 
     if(!sName || !cId) { alert("⚠️ الرجاء تحديد الطالب والصف أولاً قبل الاعتماد!"); return; }
 
     try {
-        const unifiedDate = getUnifiedDateString(); // توحيد صيغة التاريخ لمنع تضارب الأجهزة
+        const unifiedDate = getUnifiedDateString(); 
         
         await addDoc(collection(db, 'behavior'), {
             studentName: sName.trim(),
             name: sName.trim(),
             classId: cId.trim(),
             action: action,
+            followUpStatus: followup,
             notes: notes,
             dateStr: unifiedDate,
             date: unifiedDate,
@@ -159,15 +168,20 @@ function loadBehaviorLogsLive() {
         let html = '';
         snapshot.forEach(d => {
             const data = d.data();
+            const statusBadge = data.followUpStatus && data.followUpStatus.includes('تمت') ? 
+                `<span class="badge success" style="background:#27ae60; padding:3px 8px; border-radius:4px; color:#fff;">تم الإقفال</span>` : 
+                `<span class="badge warning" style="background:#e67e22; padding:3px 8px; border-radius:4px; color:#fff;">قيد المتابعة</span>`;
+
             html += `
                 <tr style="border-bottom:1px solid #eee;">
                     <td style="padding:10px; font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || data.date || '-'}</td>
                     <td style="padding:10px;"><b>👤 ${data.studentName || data.name || '-'}</b></td>
                     <td style="padding:10px; text-align:center;"><span class="badge info" style="background:var(--accent-color); padding:3px 8px; color:#fff; border-radius:4px;">${data.classId || '-'}</span></td>
                     <td style="padding:10px; text-align:center;"><span class="badge danger" style="background:#c0392b; padding:4px 8px; color:#fff; border-radius:4px; font-weight:bold;">${data.action || 'إجراء معتمد'}</span></td>
+                    <td style="padding:10px; text-align:center;">${statusBadge}</td>
                     <td style="padding:10px; color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
                 </tr>`;
         });
-        tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">✅ السجل المركزي للمتابعة السلوكية سليم تماماً.</td></tr>';
-    }, (err) => { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px;">💡 بانتظار تسجيل أولى الحالات السلوكية بالمنظومة.</td></tr>'; });
+        tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">✅ السجل المركزي للمتابعة السلوكية سليم تماماً.</td></tr>';
+    }, (err) => { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:15px;">💡 بانتظار تسجيل أولى الحالات السلوكية بالمنظومة.</td></tr>'; });
 }
