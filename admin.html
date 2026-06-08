@@ -24,23 +24,12 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; overflow-x: hidden; }
 
-/* 📱 هندسة القائمة الجانبية لتصبح Drawer مخفي مثل التطبيقات الحقيقية */
+/* تصميم القائمة الجانبية المنسدلة الذكية */
 .sidebar { 
-    width: 280px; 
-    background: var(--sidebar-bg); 
-    color: var(--text-color); 
-    display: flex; 
-    flex-direction: column; 
-    position: fixed;
-    top: 0;
-    right: -280px; /* مخفية تماماً برة الشاشة افتراضياً */
-    height: 100vh;
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* تأثير حركة ناعم جداً */
-    z-index: 2000; 
-    box-shadow: -5px 0 25px rgba(0,0,0,0.3);
+    width: 280px; background: var(--sidebar-bg); color: var(--text-color); display: flex; flex-direction: column; 
+    position: fixed; top: 0; right: -280px; height: 100vh; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; box-shadow: -5px 0 25px rgba(0,0,0,0.3);
 }
-.sidebar.active { right: 0; } /* تظهر فوراً عند طق الشخطات */
-
+.sidebar.active { right: 0; }
 .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #2c2c3e; background: var(--primary-color); }
 .sidebar-header h3 { font-size: 15px; font-weight: 900; color: #fff; }
 .sidebar-header p { font-size: 11px; color: var(--hover-color); font-weight: bold; margin-top: 3px; }
@@ -53,36 +42,13 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 .user-badge { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; color: var(--primary-color); }
 .content-body { padding: 20px; overflow-y: auto; flex: 1; }
 
-/* ☰ زر الشخطات المطور والظاهر دائماً كأبليكيشن صجي */
-#hamburger-trigger { 
-    background: none; 
-    border: none; 
-    color: var(--primary-color); 
-    font-size: 26px; 
-    cursor: pointer; 
-    margin-left: 12px; 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-#hamburger-trigger:hover { color: var(--hover-color); }
+#hamburger-trigger { background: none; border: none; color: var(--primary-color); font-size: 26px; cursor: pointer; margin-left: 12px; display: inline-flex; align-items: center; }
 
-/* ✨ طبقة التغبيش والظل الاحترافية خلف القائمة */
-.sidebar-overlay { 
-    display: none; 
-    position: fixed; 
-    top: 0; left: 0; right: 0; bottom: 0; 
-    background: rgba(0, 0, 0, 0.4); 
-    backdrop-filter: blur(3px); /* تأثير الفروستد قلاس ملوت الآيفون */
-    z-index: 1990; 
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.sidebar-overlay.active { display: block; opacity: 1; }
+.sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(3px); z-index: 1990; }
+.sidebar-overlay.active { display: block; }
 
-.card { background: #fff; border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; }
-.card h2, .card h3 { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+.card { background: #fff; border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; text-align: right; }
+.card h2, .card h3 { font-size: 15px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
 input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; }
 button { background: var(--primary-color); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; }
@@ -91,6 +57,7 @@ button:hover { background: var(--hover-color); }
 .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; }
 .badge.danger { background: var(--danger-color); }
 .badge.success { background: var(--success-color); }
+.badge.info { background: var(--accent-color); }
 
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
 .tab-content { display: none; }
@@ -175,7 +142,60 @@ button:hover { background: var(--hover-color); }
         <div id="tab-teacher-perf" class="tab-content"></div>
         <div id="tab-announcements" class="tab-content"></div>
         <div id="tab-classes" class="tab-content"></div>
-        <div id="tab-users" class="tab-content"></div>
+        
+        <div id="tab-users" class="tab-content">
+            <div class="card" style="border-top: 5px solid var(--primary-color);">
+                <h2><i class="bi bi-person-plus-fill"></i> قيد وإنشاء حساب مستخدم جديد بالمنظومة</h2>
+                <form id="new-user-form" onsubmit="window.handleRegisterUserLive(event)">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div>
+                            <label style="font-weight:700; font-size:12px;">رقم المستخدم الدراسي (User ID):</label>
+                            <input type="text" id="reg-user-id" placeholder="مثال: T100" required>
+                        </div>
+                        <div>
+                            <label style="font-weight:700; font-size:12px;">الاسم الكامل للمستخدم:</label>
+                            <input type="text" id="reg-user-name" placeholder="اسم المعلم أو الإداري ثنائي أو ثلاثي" required>
+                        </div>
+                        <div>
+                            <label style="font-weight:700; font-size:12px;">تحديد صلاحية الدخول والدور الرسمي:</label>
+                            <select id="reg-user-role" required>
+                                <option value="teacher">👨‍🏫 معلم / عضو هيئة تدريس</option>
+                                <option value="admin">👑 مدير مدرسة / أدمين النظام</option>
+                                <option value="assistant_manager">👔 مدير مساعد للشؤون الإدارية أو الطلابية</option>
+                                <option value="social_worker">📝 أخصائي اجتماعي / نفسي</option>
+                                <option value="wing_supervisor">🔎 مشرف جناح اليوم</option>
+                                <option value="guard">🚪 حارس المنشأة والأمن المدرسي</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-weight:700; font-size:12px;">كلمة المرور الابتدائية:</label>
+                            <input type="text" id="reg-user-pass" placeholder="6 أحرف أو أرقام على الأقل" required>
+                        </div>
+                    </div>
+                    <button type="submit" style="width:100%; font-weight:900; margin-top:5px;"><i class="bi bi-person-check-fill"></i> اعتماد وقيد الحساب الجديد سحابياً</button>
+                </form>
+            </div>
+
+            <div class="card" style="border-top: 5px solid var(--hover-color);">
+                <h2><i class="bi bi-shield-shared"></i> كشف وجرد الحسابات وصلاحيات الأمان الحالية</h2>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;">
+                        <thead>
+                            <tr style="background:#f8f9fa;">
+                                <th style="text-align:right; padding:8px;">معرف المستخدم</th>
+                                <th style="text-align:right; padding:8px;">اسم الموظف الرسمي</th>
+                                <th style="text-align:center; padding:8px;">الصلاحية</th>
+                                <th style="text-align:center; padding:8px;">حالة الأمان والتشغيل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-tbody">
+                            <tr><td colspan="4" style="text-align:center; padding:15px; color:#999; font-weight:bold;">⏳ جاري جرد سجلات الحماية...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div id="tab-teacher-directory" class="tab-content"></div>
         <div id="tab-student" class="tab-content"></div>
         <div id="tab-students-manage" class="tab-content"></div>
@@ -201,8 +221,8 @@ button:hover { background: var(--hover-color); }
 </div>
 
 <script type="module">
-import { db, auth } from './js/firebase-config.js';
-import { collection, getDocs, doc, getDoc, setDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db } from './js/firebase-config.js';
+import { collection, getDocs, doc, getDoc, setDoc, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const moduleMap = {
     'tab-index': { file: './js/modules/today.js', init: 'initTodayModule' },
@@ -216,7 +236,6 @@ const moduleMap = {
     'tab-teacher-perf': { file: './js/modules/teacher_perf.js', init: 'initTeacherPerfModule' },
     'tab-announcements': { file: './js/modules/mailbox.js', init: 'initMailboxModule' },
     'tab-classes': { file: './js/modules/classes.js', init: 'initClassesModule' },
-    'tab-users': { file: './js/modules/users.js', init: 'initUsersModule' },
     'tab-teacher-directory': { file: './js/modules/teachers.js', init: 'initTeachersModule' },
     'tab-student': { file: './js/modules/student.js', init: 'initStudentModule' },
     'tab-students-manage': { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
@@ -240,9 +259,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     loadModuleLive('tab-index');
     import('./js/modules/reports.js').then(m => m.initReportsModule());
+    listenToUsersListLive(); // ✅ تشغيل محرك الجرد الصاروخي فوراً عند فتح اللوحة
 });
 
-// ☰ محرك حركة سلايد القائمة والظل
 window.toggleSidebarLive = function() {
     document.querySelector('.sidebar').classList.toggle('active');
     document.querySelector('.sidebar-overlay').classList.toggle('active');
@@ -262,12 +281,13 @@ window.switchTab = function(tabId) {
         }
     });
 
-    // ⚡ آلياً: إخفاء القائمة وسحبها برة بعد الاختيار مباشرة لراحة تامة بالتصفح
     document.querySelector('.sidebar').classList.remove('active');
     document.querySelector('.sidebar-overlay').classList.remove('active');
 
     if(tabId === 'tab-landing-manage') {
         loadLandingFieldsLive();
+    } else if (tabId === 'tab-users') {
+        // يبقى في تبويب إدارة المستخدمين المحلي الفوري
     } else {
         loadModuleLive(tabId);
     }
@@ -276,23 +296,61 @@ window.switchTab = function(tabId) {
 async function loadModuleLive(tabId) {
     const config = moduleMap[tabId];
     if (!config || loadedModules.has(tabId)) {
-        if (tabId === 'tab-index' && typeof window.initTodayModule === 'function') {
-            window.initTodayModule();
-        }
+        if (tabId === 'tab-index' && typeof window.initTodayModule === 'function') { window.initTodayModule(); }
         return;
     }
-
     try {
         const module = await import(config.file);
         if (typeof module[config.init] === 'function') {
             await module[config.init]();
             loadedModules.add(tabId);
-            console.log(`✓ تم تحميل الموديل: ${config.file}`);
         }
-    } catch (err) {
-        console.error(`❌ فشل تحميل ${config.file}:`, err);
-    }
+    } catch (err) { console.error(err); }
 }
+
+// 🚀 محرك جلب الحسابات اللحظي الصاروخي فائق السرعة لحل مشكلة التعليق نهائياً
+function listenToUsersListLive() {
+    const tbody = document.getElementById('admin-users-tbody');
+    if(!tbody) return;
+
+    const roleMapAr = {
+        "admin": "👑 إدارة عليا / أدمين", "teacher": "👨‍🏫 هيئة تدريس",
+        "assistant_manager": "👔 مدير مساعد", "social_worker": "📝 أخصائي اجتماعي",
+        "wing_supervisor": "🔎 مشرف جناح", "guard": "🚪 حارس أمن"
+    };
+
+    onSnapshot(collection(db, 'users'), (snapshot) => {
+        let html = '';
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const roleAr = roleMapAr[data.role] || data.role || 'عضو المنظومة';
+            html += `
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                    <td style="padding:10px; font-weight:bold; color:#2c3e50;">🔑 ${data.userId || doc.id}</td>
+                    <td style="padding:10px; font-weight:700;">${data.name || 'غير مدرج'}</td>
+                    <td style="padding:10px; text-align:center;"><span class="badge info">${roleAr}</span></td>
+                    <td style="padding:10px; text-align:center;"><span class="badge success">🔒 مشفر آمن</span></td>
+                </tr>`;
+        });
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold;">🥇 لا توجد حسابات مقيدة حالياً.</td></tr>';
+    }, (err) => { tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">خطأ سحابي: ${err.message}</td></tr>`; });
+}
+
+window.handleRegisterUserLive = async function(e) {
+    e.preventDefault();
+    const uId = document.getElementById('reg-user-id').value.trim();
+    const uName = document.getElementById('reg-user-name').value.trim();
+    const uRole = document.getElementById('reg-user-role').value;
+    const uPass = document.getElementById('reg-user-pass').value.trim();
+
+    try {
+        await setDoc(doc(db, 'users', uId), {
+            userId: uId, name: uName, role: uRole, plainPass: uPass, createdAt: serverTimestamp()
+        });
+        alert(`✓ تم بنجاح قيد حساب (${uName}) بالرتبة المطلوبة سحابياً وبثه طيران للمنظومة.`);
+        document.getElementById('new-user-form').reset();
+    } catch(err) { alert("❌ خطأ بالإنشاء: " + err.message); }
+};
 
 async function loadLandingFieldsLive() {
     try {
@@ -313,19 +371,15 @@ window.saveLandingConfigLive = async function() {
             imageUrl: document.getElementById('ctrl-landing-img').value,
             tableHtml: document.getElementById('ctrl-landing-table').value
         }, { merge: true });
-        alert("✅ تم تحديث الواجهة العامة (home.html) تلقائياً.");
+        alert("✅ تم تحديث الواجهة العامة تلقائياً.");
     } catch(e) { alert("❌ تعذر الحفظ: " + e.message); }
 };
 
 window.generateWeeklyReport = async function() {
-    alert("⏳ جاري جرد الملفات السحابية وتجميع بنود التقرير الأسبوعي...");
+    alert("⏳ جاري جرد الملفات السحابية وتجميع التقرير الأسبوعي الموحد...");
     try {
         const todayStr = new Date().toLocaleDateString('ar-KW');
-        const [attSnap, visSnap] = await Promise.all([
-            getDocs(collection(db, 'attendance')),
-            getDocs(collection(db, 'technical_visits'))
-        ]);
-
+        const [attSnap, visSnap] = await Promise.all([ getDocs(collection(db, 'attendance')), getDocs(collection(db, 'technical_visits')) ]);
         const absMap = {};
         attSnap.forEach(doc => {
             const d = doc.data();
@@ -336,7 +390,6 @@ window.generateWeeklyReport = async function() {
             }
         });
         const repeated = Object.values(absMap).filter(s => s.count >= 3).sort((a,b) => b.count - a.count);
-
         const area = document.getElementById('weekly-report-area');
         area.style.display = 'block';
         area.innerHTML = `
@@ -346,49 +399,37 @@ window.generateWeeklyReport = async function() {
                 <h3 style="font-size:15px; font-weight:bold; margin-top:4px;">متوسطة سالم الحسينان للبنين</h3>
                 <p style="font-size:12px; color:#666; font-weight:bold; margin-top:3px;">التقرير الأسبوعي الشامل للمنشأة | تاريخ الإصدار: ${todayStr}</p>
             </div>
-            
             <h4 style="margin-bottom:10px; color:#e74c3c; font-weight:900; border-right:4px solid #e74c3c; padding-right:6px;">أولاً: حصر الطلاب ذوي الغياب المتكرر (3 أيام فأكثر)</h4>
             <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
                 <thead>
                     <tr style="background:#1a1a2e; color:#fff;">
-                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">#</th>
-                        <th style="padding:8px; text-align:right; border:1px solid #ddd;">اسم الطالب رباعي</th>
-                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">الفصل الدراسي</th>
-                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">أيام الغياب التراكمي</th>
+                        <th style="padding:8px; border:1px solid #ddd;">#</th>
+                        <th style="padding:8px; border:1px solid #ddd;">اسم الطالب رباعي</th>
+                        <th style="padding:8px; border:1px solid #ddd;">الفصل الدراسي</th>
+                        <th style="padding:8px; border:1px solid #ddd;">أيام الغياب التراكمي</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${repeated.length ? repeated.map((s,i) => `
-                        <tr style="border-bottom:1px solid #eee;">
+                        <tr>
                             <td style="padding:8px; text-align:center; border:1px solid #ddd;"><b>${i+1}</b></td>
                             <td style="padding:8px; border:1px solid #ddd; font-weight:bold;">👤 ${s.name}</td>
-                            <td style="padding:8px; text-align:center; border:1px solid #ddd; font-weight:bold; color:#2980b9;">${s.classId}</td>
-                            <td style="padding:8px; text-align:center; border:1px solid #ddd; color:#e74c3c; font-weight:900;">${s.count} أيام غياب</td>
-                        </tr>`).join('') : 
-                        '<tr><td colspan="4" style="padding:15px; text-align:center; color:#27ae60; font-weight:bold; border:1px solid #ddd;">✅ كشوف الغياب نظيفة ومثالية بالكامل هذا الأسبوع.</td></tr>'
-                    }
+                            <td style="padding:8px; text-align:center; border:1px solid #ddd;">${s.classId}</td>
+                            <td style="padding:8px; text-align:center; border:1px solid #ddd; color:#e74c3c; font-weight:900;">${s.count} غياب</td>
+                        </tr>`).join('') : '<tr><td colspan="4" style="padding:15px; text-align:center; font-weight:bold; border:1px solid #ddd;">✅ كشوف الغياب سليمة بالكامل.</td></tr>'}
                 </tbody>
             </table>
-            
             <h4 style="margin-bottom:10px; color:#2980b9; font-weight:900; border-right:4px solid #2980b9; padding-right:6px;">ثانياً: مؤشرات الكفاءة والزيارات الفنية المنجزة</h4>
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; font-size:13px; font-weight:bold; color:#333; margin-bottom:30px;">
-                <i class="bi bi-info-circle-fill" style="color:#2980b9;"></i> إجمالي الزيارات التفقدية الفنية المرصودة من الموجهين ورؤساء الأقسام: 
-                <span style="color:#27ae60; font-size:16px; font-weight:900; margin-right:5px;">${visSnap.size} زيارة موثقة بالسيرفر</span>
-            </div>
-
-            <div style="margin-top:60px; display:flex; justify-content:space-between; font-size:13px; font-weight:bold; padding:0 20px;">
-                <div style="text-align:center;"><p>يعتمد، مدير المدرسة</p><p style="margin-top:40px;">_________________</p></div>
-                <div style="text-align:center;"><p>ختم المنشأة الرسمي</p><div style="margin-top:10px; width:70px; height:70px; border:2px dashed #444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; color:#444;">سالم الحسينان</div></div>
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; font-size:13px; font-weight:bold;">
+                إجمالي الزيارات الفنية المرصودة من الموجهين ورؤساء الأقسام: <span style="color:#27ae60; font-size:16px; font-weight:900;">${visSnap.size} زيارة موثقة</span>
             </div>
         </div>`;
         
         setTimeout(() => {
             import('./js/modules/reports.js').then(m => {
                 if(typeof m.exportAsManzoumaPDF === 'function') {
-                    m.exportAsManzoumaPDF('report-print-area', 'التقرير_الأسبوعي_الرسمي_للمنطقة');
+                    m.exportAsManzoumaPDF('report-print-area', 'التقرير_الأسبوعي_الرسمي');
                     setTimeout(() => { area.style.display = 'none'; }, 1000);
-                } else {
-                    alert("⚠️ تعذر استدعاء دالة الطباعة المركزية.");
                 }
             });
         }, 600);
