@@ -38,7 +38,7 @@ export async function initBehaviorModule() {
                     <div>
                         <label style="font-weight:700; font-size:12px; color:#444;">4. الإجراء التربوي المتخذ:</label>
                         <select id="beh-action-type" required>
-                            <option value="تنبيه şفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
+                            <option value="تنبيه شفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
                             <option value="تعهد خطي رسمي">📝 أخذ تعهد خطي رسمي بحضور الأخصائي</option>
                             <option value="استدعاء ولي أمر الطالب">👥 استدعاء ولي أمر الطالب للمدرسة رسمياً</option>
                             <option value="إنذار حرمان إداري">🚫 إصدار إنذار حرمان إداري (بطاقة سلوك)</option>
@@ -91,7 +91,8 @@ export async function initBehaviorModule() {
             snapshot.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
             
             let htmlClasses = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
-            Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>'; });
+            // ✅ تم تصحيح علامات الاقتباس المزدوجة هني لتعود اللوحة للعمل فوراً
+            Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
             if (classSelect) classSelect.innerHTML = htmlClasses;
         });
 
@@ -166,7 +167,6 @@ function loadBehaviorLogsLive() {
     const tbody = document.getElementById('behavior-logs-tbody');
     if (!tbody) return;
 
-    // ✅ القراءة الصاروخية اللحظية من الكولكشن الموحد المعتمد behavior لحماية البيانات القديمة
     onSnapshot(collection(db, 'behavior'), (snapshot) => {
         let html = '';
         snapshot.forEach(d => {
