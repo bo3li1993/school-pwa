@@ -24,9 +24,9 @@ body { background: var(--bg-light); display: flex; flex-direction: column; min-h
 .header-nav h1 { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
 .header-nav p { font-size: 11px; opacity: 0.8; font-weight: 600; }
 
-.workspace-container { max-width: 900px; width: 100%; margin: 20px auto; padding: 0 15px; flex: 1; }
+.workspace-container { max-width: 1000px; width: 100%; margin: 20px auto; padding: 0 15px; flex: 1; }
 
-/* أزرار وكروت التنقل الكبيرة الذكية لتناسب التلفون */
+/* أزرار وكروت التنقل الكبيرة الذكية لتناسب التلفون واللمس السريع */
 .menu-grid-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
 .nav-card-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px 10px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; color: #34495e; text-align: center; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
 .nav-card-btn i { font-size: 24px; display: block; margin-bottom: 6px; color: var(--primary-color); }
@@ -55,8 +55,7 @@ th { background: #f8f9fa; font-weight: 900; color: var(--primary-color); }
 .badge.warning { background: var(--warning-color); }
 .badge.info { background: var(--accent-color); }
 
-/* بوكس منبثق أنيق لتحديث الحالات */
-.modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:3000; align-items:center; justify-content:center; p-15px; }
+.modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:3000; align-items:center; justify-content:center; }
 .modal-box { background:#fff; max-width:480px; width:100%; border-radius:14px; padding:25px; box-shadow:0 10px 25px rgba(0,0,0,0.2); text-align:right; border-top:5px solid var(--hover-color); }
 </style>
 </head>
@@ -76,7 +75,7 @@ th { background: #f8f9fa; font-weight: 900; color: var(--primary-color); }
         <div class="nav-card-btn active" id="btn-t-behavior" onclick="window.switchTab('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
         <div class="nav-card-btn" id="btn-t-student" onclick="window.switchTab('view-student')"><i class="bi bi-person-bounding-box"></i> ملف الطالب الشامل</div>
         <div class="nav-card-btn" id="btn-t-gatepass" onclick="window.switchTab('view-gatepass')"><i class="bi bi-ticket-perforated"></i> حقيبة الاستئذان</div>
-        <div class="nav-card-btn" id="btn-t-email" onclick="window.switchTab('view-email')"><i class="bi bi-envelope-at"></i> إيميل أولياء الأمور</div>
+        <div class="nav-card-btn" id="btn-t-email" onclick="window.switchTab('view-email')"><i class="bi bi-chat-left-dots-fill"></i> المراسلات والتعاميم</div>
         <div class="nav-card-btn" id="btn-t-profile" onclick="window.switchTab('view-profile')"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
     </div>
 
@@ -179,7 +178,7 @@ th { background: #f8f9fa; font-weight: 900; color: var(--primary-color); }
         <div class="card" style="border-top: 5px solid var(--success-color);">
             <h2><i class="bi bi-ticket-perforated"></i> إصدار بطاقة تصريح خروج مبكر (استئذان سحابي لايف للباب)</h2>
             <form id="social-gatepass-form" onsubmit="window.saveSocialGatepassLive(event)">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
                     <div>
                         <label style="font-weight:700; font-size:12px;">اسم ولي الأمر / مستلم الطالب رباعي:</label>
                         <input type="text" id="gate-relative" placeholder="أدخل اسم مستلم الطالب بالكامل" required>
@@ -194,34 +193,113 @@ th { background: #f8f9fa; font-weight: 900; color: var(--primary-color); }
                             <option value="العم/الخال">العم / الخال</option>
                         </select>
                     </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">الرقم المدني للمستلم (12 رقم):</label>
+                        <input type="number" id="gate-civil" placeholder="أدخل الرقم المدني للمستلم" required>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">رقم هاتف المستلم للتواصل والمتابعة:</label>
+                        <input type="number" id="gate-phone" placeholder="أدخل رقم الهاتف النقال" required>
+                    </div>
                 </div>
-                <label style="font-weight:700; font-size:12px;">عذر وسبب الخروج المبكر:</label>
+                <label style="font-weight:700; font-size:12px; margin-top:5px; display:block;">عذر وسبب الخروج المبكر المعتمد:</label>
                 <input type="text" id="gate-reason" placeholder="مثال: مراجعة طبية عاجلة بالمستوصف / عذر عائلي معتمد" required>
-                <button type="submit" id="btn-gate-submit" style="width:100%; background:var(--success-color);"><i class="bi bi-cloud-arrow-up"></i> بث وبث تصريح الاستئذان لايف لشاشة حارس المدرسة</button>
+                <button type="submit" id="btn-gate-submit" style="width:100%; background:var(--success-color);"><i class="bi bi-cloud-arrow-up"></i> بث تصريح الاستئذان لايف لشاشة حارس المدرسة</button>
             </form>
+        </div>
+
+        <div class="card" style="border-top: 5px solid var(--primary-color);">
+            <h2><i class="bi bi-clock-history"></i> أرشيف حركة خروج الطلاب وتصاريح الاستئذان التاريخية</h2>
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
+                <div style="flex:1;">
+                    <label style="font-weight:700; font-size:12px;">اختر تاريخ اليوم الدراسي المطلوب جرده:</label>
+                    <input type="date" id="gate-search-date" style="margin-top:5px; padding:10px;">
+                </div>
+                <button onclick="window.filterGatepassHistoryByDateLive()" style="margin-top:15px; background:var(--primary-color); padding:12px 20px;"><i class="bi bi-search"></i> جرد التاريخ</button>
+                <button onclick="window.resetGatepassHistoryLive()" id="btn-gate-reset" style="margin-top:15px; background:#7f8c8d; padding:12px 15px; display:none;"><i class="bi bi-arrow-counterclockwise"></i> 🔄 العودة</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>اسم الطالب رباعي</th>
+                            <th style="text-align:center;">الفصل</th>
+                            <th>اسم المستلم</th>
+                            <th>الصلة</th>
+                            <th>الرقم المدني</th>
+                            <th>رقم الهاتف</th>
+                            <th>العذر/السبب</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gatepass-history-tbody">
+                        <tr><td colspan="8" style="text-align:center; color:#999; font-weight:bold;">⏳ جاري جلب حركة سجلات خروج الطلاب الحالية...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <div id="view-email" class="tab-content">
         <div class="card" style="border-top: 5px solid #8e44ad;">
-            <h2><i class="bi bi-envelope-paper"></i> منشئ صيغ خطابات إيميل المدرسة الرسمي لأولياء الأمور</h2>
-            <label style="font-weight:700; font-size:12px;">اختر غرض ونوع المعاملة المراد إرسالها:</label>
+            <h2><i class="bi bi-chat-left-dots-fill"></i> لوحة بث المراسلات والتعاميم الرسمية لأولياء الأمور</h2>
+            <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:15px;">أرسل وبث الرسائل والتعاميم المباشرة للموقع السحابي لتواصل رسمي وفعّال مع أولياء الأمور.</p>
+            
+            <form id="social-msg-form" onsubmit="window.sendSocialMessageLive(event)">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">تحديد الفئة المستهدفة بالخطاب السحابي:</label>
+                        <select id="msg-target-class" required>
+                            <option value="جميع أولياء أمور المدرسة">📢 تعميم شامل لجميع أولياء أمور المدرسة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">عنوان الرسالة / موضوع الخطاب:</label>
+                        <input type="text" id="msg-title" placeholder="مثال: إشعار استدعاء رسمي أو تهنئة بالتميز" required>
+                    </div>
+                </div>
+                <label style="font-weight:700; font-size:12px;">نص الخطاب أو التعميم المراد بثه للمنظومة:</label>
+                <textarea id="msg-body" rows="4" placeholder="اكتب تفاصيل الرسالة الرسمية الموجهة لأولياء الأمور هنا..." required></textarea>
+                <button type="submit" id="btn-msg-submit" style="width:100%; background:#8e44ad;"><i class="bi bi-send-fill"></i> بث وإرسال الرسالة الرسمية للمنظومة الحين</button>
+            </form>
+        </div>
+
+        <div class="card" style="border-top: 5px solid var(--hover-color);">
+            <h2><i class="bi bi-mailbox2"></i> سجل المراسلات والتعاميم الصادرة من مكتب الخدمة الاجتماعية</h2>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>الجهة المستهدفة</th>
+                            <th>العنوان / الموضوع</th>
+                            <th>نص الخطاب المرسل</th>
+                            <th>المرسل الرسمي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="social-msg-logs-tbody">
+                        <tr><td colspan="5" style="text-align:center; color:#999; font-weight:bold;">⏳ جاري جلب أرشيف المراسلات والتعاميم الحية...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card" style="border-top: 1px solid #cbd5e1; background:#f8fafc;">
+            <h3><i class="bi bi-file-earmark-text"></i> مولّد الصيغ المعتمدة الموحدة (للنسخ السريع)</h3>
             <select id="email-template-type" onchange="window.generateEmailTemplateTextLive(this.value)">
                 <option value="غياب">🔴 خطاب غياب وإنذار انقطاع عن الدراسة</option>
                 <option value="سلوك">📑 خطاب استدعاء ولي أمر بسبب مخالفة سلوكية</option>
                 <option value="تميز">🏆 خطاب شكر وتقدير للتميز والتحفيز التربوي</option>
             </select>
-            <div style="background:#f8fafc; border:1px dashed #cbd5e1; padding:20px; border-radius:8px; margin-bottom:15px; text-align:right;">
-                <pre id="email-preview-text" style="white-space:pre-wrap; font-size:13px; font-weight:bold; color:#2c3e50; line-height:1.6;"></pre>
-            </div>
-            <button onclick="window.copyEmailTextToClipboard()" style="background:#8e44ad; width:100%;"><i class="bi bi-copy"></i> نسخ نص الخطاب الرسمي الموحد لإيميل المدرسة الحين</button>
+            <pre id="email-preview-text" style="white-space:pre-wrap; font-size:13px; font-weight:bold; color:#2c3e50; line-height:1.6; background:#fff; padding:15px; border-radius:6px; border:1px solid #eee;"></pre>
+            <button onclick="window.copyEmailTextToClipboard()" style="background:#7f8c8d; font-size:12px; padding:8px 15px; margin-top:5px;"><i class="bi bi-copy"></i> نسخ نص الصيغة المذكورة</button>
         </div>
     </div>
 
     <div id="view-profile" class="tab-content">
         <div class="card" style="border-top: 5px solid var(--accent-color);">
             <h2><i class="bi bi-sliders"></i> البيانات الوظيفية والمدنية المعتمدة للأخصائي</h2>
-            <label style="font-weight:700; font-size:12px;">🏢 القسم العلمي / المسمى الوظيفي المعتمد:</label>
+            <label style="font-weight:700; font-size:12px;">🏢 القسم العلمي / Mسمى الوظيفي المعتمد:</label>
             <input type="text" id="prof-dept" value="مكتب الخدمة الاجتماعية والنفسية">
             <label style="font-weight:700; font-size:12px;">الرقم المدني الكويتي:</label>
             <input type="number" id="prof-civil">
@@ -242,12 +320,11 @@ th { background: #f8f9fa; font-weight: 900; color: var(--primary-color); }
     <div class="modal-box">
         <h3><i class="bi bi-pencil-square" style="color:var(--hover-color);"></i> تحديث الإجراء التربوي ومذكرات المتابعة</h3>
         <input type="hidden" id="modal-doc-id">
-        
         <p style="font-size:12px; font-weight:bold; margin-bottom:10px; color:#555;">الطالب المعني: <b id="modal-student-lbl" style="color:var(--hover-color); font-size:13px;">-</b></p>
         
         <label style="font-weight:700; font-size:12px;">موقف وحالة المتابعة السلوكية الرسمية:</label>
         <select id="modal-status-select">
-            <option value="قيد Mتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
+            <option value="قيد المتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
             <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال رسمياً</option>
         </select>
         
@@ -276,7 +353,6 @@ function getUnifiedDateString() {
 document.addEventListener("DOMContentLoaded", async function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
     if (!user || user.role !== 'social_worker') {
-        alert("🔒 الوصول مرفوض، هذي البوابة مخصصة للأخصائي فقط.");
         window.location.replace('index.html');
         return;
     }
@@ -285,8 +361,14 @@ document.addEventListener("DOMContentLoaded", async function() {
     
     await loadInitialClassesLive();
     listenToSocialBehaviorLogsLive();
+    listenToGatepassLogsLive(null); // تحميل الاستئذانات الحالية لايف علطول
+    listenToSocialMessagesLive();   // تحميل المراسلات والتعاميم لايف
     await loadSocialProfileDataLive();
     window.generateEmailTemplateTextLive('غياب');
+    
+    // وضع تاريخ اليوم كخيار افتراضي في رزنامة بحث الاستئذان لتسهيل العمل
+    const today = new Date();
+    document.getElementById('gate-search-date').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 });
 
 window.switchTab = function(tabId) {
@@ -304,16 +386,23 @@ window.switchTab = function(tabId) {
 async function loadInitialClassesLive() {
     try {
         const selects = [document.getElementById('beh-class-select'), document.getElementById('prof-class-select')];
+        const msgSelect = document.getElementById('msg-target-class');
         const snap = await getDocs(collection(db, 'students'));
         let classesSet = new Set();
         snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
         
+        const sortedClasses = Array.from(classesSet).sort();
+        
         selects.forEach(sel => {
             if(!sel) return;
             let html = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
-            Array.from(classesSet).sort().forEach(c => { html += `<option value="${c}">${c}</option>`; });
+            sortedClasses.forEach(c => { html += `<option value="${c}">${c}</option>`; });
             sel.innerHTML = html;
         });
+
+        if(msgSelect) {
+            sortedClasses.forEach(c => { msgSelect.innerHTML += `<option value="أولياء أمور صف ${c}">📢 أولياء أمور صف [ ${c} ]</option>`; });
+        }
     } catch(e) { console.error(e); }
 }
 
@@ -356,7 +445,7 @@ window.saveSocialBehaviorLive = async function(e) {
             referredBy: refBy, action: action, followUpStatus: followup, notes: notes,
             dateStr: unifiedDate, date: unifiedDate, createdAt: serverTimestamp()
         });
-        alert('✓ تم رصد واعتما د الإجراء التربوي بسجل الطالب بنجاح.');
+        alert('✓ تم رصد واعتماد الإجراء التربوي بسجل الطالب بنجاح.');
         document.getElementById('social-behavior-form').reset();
         document.getElementById('beh-student-select').disabled = true;
     } catch(err) { alert('خطأ أثناء الحفظ السحابي: ' + err.message); }
@@ -374,7 +463,6 @@ function listenToSocialBehaviorLogsLive() {
             const statusBadge = data.followUpStatus && data.followUpStatus.includes('تمت') ? 
                 `<span class="badge success">تم الإقفال</span>` : `<span class="badge warning">قيد المتابعة</span>`;
             
-            // جعل السطر بالكامل قابل للضغط لفتح بوكس التحديث الملوكي لايف هني
             html += `
                 <tr onclick="window.openBehaviorModalLive('${d.id}', '${data.studentName || data.name}', '${data.followUpStatus || ''}', '${data.notes || ''}')" style="cursor:pointer; border-bottom:1px solid #eee;" title="اضغط لتحديث الملاحظات">
                     <td style="font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || data.date || '-'}</td>
@@ -406,7 +494,6 @@ window.saveBehaviorModalUpdateLive = async function() {
     const id = document.getElementById('modal-doc-id').value;
     const status = document.getElementById('modal-status-select').value;
     const notes = document.getElementById('modal-notes-area').value.trim();
-    
     try {
         await setDoc(doc(db, 'behavior', id), { followUpStatus: status, notes: notes }, { merge: true });
         alert("✅ تم تحديث مذكرات وموقف متابعة الحالة بنجاح فوري.");
@@ -512,17 +599,20 @@ window.saveSocialGatepassLive = async function(e) {
     const cId = document.getElementById('beh-class-select').value;
     const relative = document.getElementById('gate-relative').value.trim();
     const relation = document.getElementById('gate-relation').value;
+    const civil = document.getElementById('gate-civil').value.trim();
+    const phone = document.getElementById('gate-phone').value.trim();
     const reason = document.getElementById('gate-reason').value.trim();
     const submitBtn = document.getElementById('btn-gate-submit');
     
-    if(!sName) { alert("⚠️ الرجاء اختيار الصف والطالب أولاً من التبويب الأول للرصد!"); return; }
+    if(!sName) { alert("⚠️ الرجاء الانتقال لتبويب رصد السلوك لاختيار الصف والطالب أولاً!"); return; }
 
     submitBtn.disabled = true;
     try {
         const unifiedDate = getUnifiedDateString();
         await addDoc(collection(db, 'gatepass'), {
             studentName: sName, name: sName, classId: cId, relative: relative,
-            relation: relation, reason: reason, dateStr: unifiedDate, date: unifiedDate,
+            relation: relation, relativeCivilId: civil, relativePhone: phone,
+            reason: reason, dateStr: unifiedDate, date: unifiedDate,
             status: 'approved', createdAt: serverTimestamp()
         });
         alert(`✓ تم إرسال وبث تصريح استئذان الطالب (${sName}) لايف لشاشة الحارس بنجاح.`);
@@ -531,12 +621,99 @@ window.saveSocialGatepassLive = async function(e) {
     submitBtn.disabled = false;
 };
 
+// 🚀 محرك جلب وبث الأرشيف التاريخي للاستئذانات لايف صفر بطء
+function listenToGatepassLogsLive(dateFilter = null) {
+    const tbody = document.getElementById('gatepass-history-tbody');
+    if (!tbody) return;
+
+    onSnapshot(collection(db, 'gatepass'), (snapshot) => {
+        let html = '';
+        snapshot.forEach(d => {
+            const data = d.data();
+            if (dateFilter && data.dateStr !== dateFilter) return; 
+            html += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || '-'}</td>
+                    <td><b>👤 ${data.studentName || '-'}</b></td>
+                    <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
+                    <td>${data.relative || '-'}</td>
+                    <td><span class="badge success">${data.relation || '-'}</span></td>
+                    <td><code>${data.relativeCivilId || '-'}</code></td>
+                    <td><a href="tel:${data.relativePhone}" style="color:var(--accent-color); font-weight:bold; text-decoration:none;"><i class="bi bi-telephone-outbound"></i> ${data.relativePhone || '-'}</a></td>
+                    <td style="color:#2980b9; font-weight:bold;">${data.reason || '-'}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center; font-weight:bold; color:#999;">💡 لا توجد تصاريح استئذان مسجلة للتاريخ المحدد.</td></tr>';
+    });
+}
+
+window.filterGatepassHistoryByDateLive = function() {
+    const dateVal = document.getElementById('gate-search-date').value;
+    if(!dateVal) { alert("⚠️ يرجى تحديد التاريخ للبحث!"); return; }
+    const parts = dateVal.split('-');
+    const targetStr = `${parseInt(parts[0])}/${parseInt(parts[1])}/${parseInt(parts[2])}`;
+    document.getElementById('btn-gate-reset').style.display = 'inline-block';
+    listenToGatepassLogsLive(targetStr);
+};
+
+window.resetGatepassHistoryLive = function() {
+    document.getElementById('btn-gate-reset').style.display = 'none';
+    listenToGatepassLogsLive(null);
+};
+
+// 💬 نظام الرسائل والتعاميم المباشر (نفس لوحة المدير) لإرسال تعاميم أولياء الأمور
+window.sendSocialMessageLive = async function(e) {
+    e.preventDefault();
+    const target = document.getElementById('msg-target-class').value;
+    const title = document.getElementById('msg-title').value.trim();
+    const body = document.getElementById('msg-body').value.trim();
+    const submitBtn = document.getElementById('btn-msg-submit');
+    const user = JSON.parse(localStorage.getItem('hs_user')) || { name: "الأخصائي الاجتماعي" };
+
+    submitBtn.disabled = true;
+    try {
+        const unifiedDate = getUnifiedDateString();
+        // الحفظ بداخل الكولكشن المركزي للتعاميم ليتطابق مع شاشة بث المدير
+        await addDoc(collection(db, 'announcements'), {
+            target: target, title: title, body: body,
+            sender: "أ. " + user.name, role: "social_worker",
+            dateStr: unifiedDate, createdAt: serverTimestamp()
+        });
+        alert('✓ تم بنجاح بث ونشر التعميم الرسمي لأولياء الأمور بالمنظومة السحابية.');
+        document.getElementById('social-msg-form').reset();
+    } catch(err) { alert('خطأ في الإرسال: ' + err.message); }
+    submitBtn.disabled = false;
+};
+
+function listenToSocialMessagesLive() {
+    const tbody = document.getElementById('social-msg-logs-tbody');
+    if(!tbody) return;
+
+    onSnapshot(collection(db, 'announcements'), (snapshot) => {
+        let html = '';
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if(data.role === 'social_worker') {
+                html += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || '-'}</td>
+                    <td><span class="badge info">${data.target || '-'}</span></td>
+                    <td style="font-weight:700; color:var(--primary-color);">${data.title || '-'}</td>
+                    <td style="color:#555; font-size:12px; font-weight:600; white-space:pre-wrap;">${data.body || '-'}</td>
+                    <td style="font-weight:bold; color:var(--hover-color);">${data.sender || 'الأخصائي'}</td>
+                </tr>`;
+            }
+        });
+        tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; font-weight:bold; color:#999;">💡 لا توجد رسائل صادرة من مكتبك لغاية الآن.</td></tr>';
+    });
+}
+
 window.generateEmailTemplateTextLive = function(type) {
     const preview = document.getElementById('email-preview-text');
     let text = "";
     if(type === 'غياب') {
         text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nنحيطكم علماً بأن ابنكم قد تكرر غيابه وانقطاعه عن الدراسة بدون عذر مقبول، يرجى مراجعة مكتب الخدمة الاجتماعية بالمدرسة فوراً مصطحبين معكم الأعذار الطبية أو الرسمية المعتمدة تلافياً لتطبيق لائحة الغياب بوزارة التربية بحقه.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
-    } else if(type === 'سلوك') {
+    } else if(type === 'sلوك') {
         text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nيرجى مراجعة مكتب الأخصائي الاجتماعي بالمدرسة يوم غدٍ في تمام الساعة التاسعة صباحاً لأمر هام يخص السلوك والانضباط التربوي لابنكم داخل الفصل الدراسي ولأهمية الأمر يرجى عدم التأخر.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
     } else {
         text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nيسر مكتب الخدمة الاجتماعية وإدارة المدرسة أن تتقدم لكم بخالص التهنئة والتقدير على التميز السلوكي والدراسي الأخاذ لابنكم، ونشكر لكم حسن تعاونكم ومتابعتكم المستمرة التي أثمرت هذا التفوق الباهر.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
@@ -547,7 +724,7 @@ window.generateEmailTemplateTextLive = function(type) {
 window.copyEmailTextToClipboard = function() {
     const text = document.getElementById('email-preview-text').textContent;
     navigator.clipboard.writeText(text);
-    alert("📋 تم نسخ صيغة الخطاب الرسمي الموحد بنجاح، بإمكانك لصقها وإرسالها عبر إيميل المدرسة الحين!");
+    alert("📋 تم نسخ الخطاب!");
 };
 
 async function loadSocialProfileDataLive() {
@@ -564,21 +741,21 @@ async function loadSocialProfileDataLive() {
 }
 
 window.updateSocialProfileLive = async function() {
-    const dept = document.getElementById('prof-dept').value.trim();
-    const civil = document.getElementById('prof-civil').value.trim();
-    const phone = document.getElementById('prof-phone').value.trim();
-    const file = document.getElementById('prof-file').value.trim();
-    const newPass = document.getElementById('prof-new-pass').value.trim();
+    const d = document.getElementById('prof-dept').value.trim();
+    const c = document.getElementById('prof-civil').value.trim();
+    const p = document.getElementById('prof-phone').value.trim();
+    const f = document.getElementById('prof-file').value.trim();
+    const np = document.getElementById('prof-new-pass').value.trim();
 
-    if(!civil || !phone || !file) { alert("⚠️ يرجى تعبئة كافة الخانات الرسمية المطلوبة!"); return; }
+    if(!c || !p || !f) { alert("⚠️ يرجى تعبئة كافة الخانات المطلوبة!"); return; }
     try {
-        let updateData = { department: dept, civilId: civil, phone: phone, fileNumber: file, updatedAt: serverTimestamp() };
-        if(newPass !== "") updateData.plainPass = newPass;
+        let updateData = { department: d, civilId: c, phone: p, fileNumber: f, updatedAt: serverTimestamp() };
+        if(np !== "") updateData.plainPass = np;
 
         await setDoc(doc(db, 'users', currentSocialId), updateData, { merge: true });
-        alert("✅ تم تحديث وحفظ ملفك الوظيفي وتأمين الاتصال السحابي.");
+        alert("✅ تم تحديث وحفظ بيانات الحساب بنجاح.");
         document.getElementById('prof-new-pass').value = "";
-    } catch(e) { alert("خطأ في التحديث: " + e.message); }
+    } catch(e) { alert("خطأ: " + e.message); }
 };
 </script>
 </body>
