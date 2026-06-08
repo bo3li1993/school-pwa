@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>لوحة التحكم الإدارية الموحدة - مدرسة سالم الحسينان</title>
+<title>المنظومة الرقمية الموحدة - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -24,14 +24,14 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; overflow-x: hidden; }
 
-/* تصميم القائمة الجانبية المنسدلة الذكية */
+/* هندسة القائمة الجانبية لتصبح Drawer مخفي من اليمين انسيابي وثابت */
 .sidebar { 
     width: 280px; background: var(--sidebar-bg); color: var(--text-color); display: flex; flex-direction: column; 
     position: fixed; top: 0; right: -280px; height: 100vh; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; box-shadow: -5px 0 25px rgba(0,0,0,0.3);
 }
 .sidebar.active { right: 0; }
 .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #2c2c3e; background: var(--primary-color); }
-.sidebar-header h3 { font-size: 15px; font-weight: 900; color: #fff; }
+.sidebar-header h3 { font-size: 14px; font-weight: 900; color: #fff; }
 .sidebar-header p { font-size: 11px; color: var(--hover-color); font-weight: bold; margin-top: 3px; }
 .menu-list { list-style: none; padding: 15px 0; overflow-y: auto; flex: 1; }
 .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #b2bec3; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.2s; }
@@ -43,16 +43,19 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 .content-body { padding: 20px; overflow-y: auto; flex: 1; }
 
 #hamburger-trigger { background: none; border: none; color: var(--primary-color); font-size: 26px; cursor: pointer; margin-left: 12px; display: inline-flex; align-items: center; }
-
 .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(3px); z-index: 1990; }
 .sidebar-overlay.active { display: block; }
 
 .card { background: #fff; border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; text-align: right; }
 .card h2, .card h3 { font-size: 15px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; }
+input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; color: #333; }
 button { background: var(--primary-color); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; }
 button:hover { background: var(--hover-color); }
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+th, td { padding: 12px 10px; border: 1px solid #eef2f5; text-align: right; }
+th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
 
 .badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; }
 .badge.danger { background: var(--danger-color); }
@@ -71,30 +74,29 @@ button:hover { background: var(--hover-color); }
 <div class="sidebar">
     <div class="sidebar-header">
         <h3>مدرسة سالم الحسينان</h3>
-        <p><i class="bi bi-shield-check"></i> لوحة الإدارة العليا</p>
+        <p id="lbl-sidebar-role"><i class="bi bi-shield-check"></i> لوحة الإدارة العليا</p>
     </div>
-    <ul class="menu-list">
-        <li class="menu-item active" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up-arrow"></i> 📊 اليوم والمؤشرات</li>
-        <li class="menu-item" onclick="window.switchTab('tab-absent')"><i class="bi bi-person-x"></i> 🔴 الغائبون اليوم</li>
-        <li class="menu-item" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-octagon"></i> ⚠️ الغياب المتكرر</li>
-        <li class="menu-item" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> 📑 سلوك الطلاب</li>
-        <li class="menu-item" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> 🩺 العيادة المدرسية</li>
-        <li class="menu-item" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-ticket-perforated"></i> 🎫 حقيبة الاستئذان</li>
-        <li class="menu-item" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> 🏫 الزيارات الفنية</li>
-        <li class="menu-item" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-person-workspace"></i> 📋 زيارات مدير المدرسة</li>
-        <li class="menu-item" onclick="window.switchTab('tab-teacher-perf')"><i class="bi bi-speedometer2"></i> 📈 كفاءة الأداء</li>
-        <li class="menu-item" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone"></i> ✉️ المراسلات والطلبات</li>
-        <li class="menu-item" onclick="window.switchTab('tab-classes')"><i class="bi bi-door-open"></i> 🏫 جرد فصول المدرسة</li>
-        <li class="menu-item" onclick="window.switchTab('tab-users')"><i class="bi bi-lock"></i> 🔐 إدارة المستخدمين</li>
-        <li class="menu-item" onclick="window.switchTab('tab-teacher-directory')"><i class="bi bi-address-card"></i> 📇 دليل المعلمين</li>
-        <li class="menu-item" onclick="window.switchTab('tab-student')"><i class="bi bi-person-bounding-box"></i> 👤 ملف الطالب الشامل</li>
-        <li class="menu-item" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-person-plus"></i> 📁 قيد وإدارة الطلاب</li>
-        <li class="menu-item" onclick="window.switchTab('tab-honors_board')"><i class="bi bi-trophy"></i> 🏆 لوحة الشرف</li>
-        <li class="menu-item" onclick="window.switchTab('tab-date')"><i class="bi bi-calendar-search"></i> 📅 بحث بتاريخ سابق</li>
-        <li class="menu-item" onclick="window.switchTab('tab-guard')"><i class="bi bi-shield-shaded"></i> 🚪 بوابة الحارس والأمن</li>
-        <li class="menu-item" onclick="window.switchTab('tab-rounds')"><i class="bi bi-clipboard-check"></i> 📋 جولة الجناح اليومية</li>
-        <li class="menu-item" onclick="window.switchTab('tab-classes-dist')"><i class="bi bi-shuffle"></i> 🏫 توزيع فصول الاحتياط</li>
-        <li class="menu-item" onclick="window.switchTab('tab-landing-manage')"><i class="bi bi-layout-text-window-reverse"></i> 🌐 إدارة الواجهة العامة</li>
+    <ul class="menu-list" id="sidebar-menu-list">
+        <li class="menu-item active" id="m-index" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up-arrow"></i> 📊 اليوم والمؤشرات</li>
+        <li class="menu-item" id="m-absent" onclick="window.switchTab('tab-absent')"><i class="bi bi-person-x"></i> 🔴 الغائبون اليوم</li>
+        <li class="menu-item" id="m-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-octagon"></i> ⚠️ الغياب المتكرر</li>
+        <li class="menu-item" id="m-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> 📑 سلوك الطلاب</li>
+        <li class="menu-item" id="m-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> 🩺 العيادة المدرسية</li>
+        <li class="menu-item" id="m-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-ticket-perforated"></i> 🎫 حقيبة الاستئذان</li>
+        <li class="menu-item" id="m-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> 🏫 الزيارات الفنية</li>
+        <li class="menu-item" id="m-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-person-workspace"></i> 📋 زيارات مدير المدرسة</li>
+        <li class="menu-item" id="m-teacher-perf" onclick="window.switchTab('tab-teacher-perf')"><i class="bi bi-speedometer2"></i> 📈 كفاءة الأداء</li>
+        <li class="menu-item" id="m-announcements" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone"></i> ✉️ المراسلات والتعاميم</li>
+        <li class="menu-item" id="m-classes" onclick="window.switchTab('tab-classes')"><i class="bi bi-door-open"></i> 🏫 جرد فصول المدرسة</li>
+        <li class="menu-item" id="m-users" onclick="window.switchTab('tab-users')"><i class="bi bi-lock"></i> 🔐 إدارة المستخدمين</li>
+        <li class="menu-item" id="m-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person-bounding-box"></i> 👤 ملف الطالب الشامل</li>
+        <li class="menu-item" id="m-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-person-plus"></i> 📁 قيد وإدارة الطلاب</li>
+        <li class="menu-item" id="m-honors" onclick="window.switchTab('tab-honors_board')"><i class="bi bi-trophy"></i> 🏆 لوحة الشرف</li>
+        <li class="menu-item" id="m-date" onclick="window.switchTab('tab-date')"><i class="bi bi-calendar-search"></i> 📅 بحث بتاريخ سابق</li>
+        <li class="menu-item" id="m-guard" onclick="window.switchTab('tab-guard')"><i class="bi bi-shield-shaded"></i> 🚪 بوابة الحارس والأمن</li>
+        <li class="menu-item" id="m-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-clipboard-check"></i> 📋 جولة الجناح اليومية</li>
+        <li class="menu-item" id="m-classes-dist" onclick="window.switchTab('tab-classes-dist')"><i class="bi bi-shuffle"></i> 🏫 توزيع فصول الاحتياط</li>
+        <li class="menu-item" id="m-landing" onclick="window.switchTab('tab-landing-manage')"><i class="bi bi-layout-text-window-reverse"></i> 🌐 إدارة الواجهة العامة</li>
     </ul>
 </div>
 
@@ -104,7 +106,8 @@ button:hover { background: var(--hover-color); }
             <button id="hamburger-trigger" onclick="window.toggleSidebarLive()"><i class="bi bi-list"></i></button>
             <div class="user-badge">
                 <i class="bi bi-person-circle" style="font-size:20px; color:var(--hover-color);"></i>
-                <span>مرحباً، <b id="lbl-admin-name">المسؤول الإداري</b></span>
+                <span>مرحباً: <b id="lbl-admin-name">جاري التحقق...</b></span>
+                <span id="lbl-badge-role-title" class="badge info" style="margin-right:5px;">رتبة معتمدة</span>
             </div>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
@@ -116,6 +119,7 @@ button:hover { background: var(--hover-color); }
     <div id="weekly-report-area" style="display:none; background:#fff;"></div>
 
     <div class="content-body">
+        
         <div id="tab-index" class="tab-content active">
             <div class="stats-grid" id="stats-cards"></div>
             <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
@@ -132,91 +136,94 @@ button:hover { background: var(--hover-color); }
             </div>
         </div>
 
-        <div id="tab-absent" class="tab-content"></div>
-        <div id="tab-repeat" class="tab-content"></div>
-        <div id="tab-behavior" class="tab-content"></div>
-        <div id="tab-clinic" class="tab-content"></div>
-        <div id="tab-gatepass" class="tab-content"></div>
-        <div id="tab-visits" class="tab-content"></div>
-        <div id="tab-manager-visits" class="tab-content"></div>
-        <div id="tab-teacher-perf" class="tab-content"></div>
-        <div id="tab-announcements" class="tab-content"></div>
-        <div id="tab-classes" class="tab-content"></div>
-        
         <div id="tab-users" class="tab-content">
             <div class="card" style="border-top: 5px solid var(--primary-color);">
                 <h2><i class="bi bi-person-plus-fill"></i> قيد وإنشاء حساب مستخدم جديد بالمنظومة</h2>
                 <form id="new-user-form" onsubmit="window.handleRegisterUserLive(event)">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
                         <div>
-                            <label style="font-weight:700; font-size:12px;">رقم المستخدم الدراسي (User ID):</label>
-                            <input type="text" id="reg-user-id" placeholder="مثال: T100" required>
+                            <label style="font-weight:700; font-size:12px;">رقم المستخدم / المعرف (User ID):</label>
+                            <input type="text" id="reg-user-id" placeholder="مثال: 1005" required>
                         </div>
                         <div>
-                            <label style="font-weight:700; font-size:12px;">الاسم الكامل للمستخدم:</label>
-                            <input type="text" id="reg-user-name" placeholder="اسم المعلم أو الإداري ثنائي أو ثلاثي" required>
+                            <label style="font-weight:700; font-size:12px;">الاسم الكامل للموظف:</label>
+                            <input type="text" id="reg-user-name" placeholder="أدخل الاسم الثلاثي أو الرباعي" required>
                         </div>
                         <div>
-                            <label style="font-weight:700; font-size:12px;">تحديد صلاحية الدخول والدور الرسمي:</label>
+                            <label style="font-weight:700; font-size:12px;">تحديد صلاحية ورتبة الدخول الرسمية:</label>
                             <select id="reg-user-role" required>
-                                <option value="teacher">👨‍🏫 معلم / عضو هيئة تدريس</option>
-                                <option value="admin">👑 مدير مدرسة / أدمين النظام</option>
-                                <option value="assistant_manager">👔 مدير مساعد للشؤون الإدارية أو الطلابية</option>
+                                <option value="teacher">👨‍🏫 معلم / عضو هيئة التدريس</option>
                                 <option value="social_worker">📝 أخصائي اجتماعي / نفسي</option>
-                                <option value="wing_supervisor">🔎 مشرف جناح اليوم</option>
                                 <option value="guard">🚪 حارس المنشأة والأمن المدرسي</option>
+                                <option value="wing_supervisor">🔎 مشرف جناح اليوم</option>
+                                <option value="assistant_manager">👔 مدير مساعد للشؤون الإدارية أو الطلابية</option>
+                                <option value="admin">👑 مدير مدرسة / أدمين النظام الأعلى</option>
                             </select>
                         </div>
                         <div>
                             <label style="font-weight:700; font-size:12px;">كلمة المرور الابتدائية:</label>
-                            <input type="text" id="reg-user-pass" placeholder="6 أحرف أو أرقام على الأقل" required>
+                            <input type="text" id="reg-user-pass" placeholder="6 أرقام أو أحرف كحد أدنى" required>
                         </div>
                     </div>
-                    <button type="submit" style="width:100%; font-weight:900; margin-top:5px;"><i class="bi bi-person-check-fill"></i> اعتماد وقيد الحساب الجديد سحابياً</button>
+                    <button type="submit" style="width:100%; font-weight:900;"><i class="bi bi-person-check-fill"></i> اعتماد وقيد الحساب الجديد سحابياً فوراً</button>
                 </form>
             </div>
 
             <div class="card" style="border-top: 5px solid var(--hover-color);">
                 <h2><i class="bi bi-shield-shared"></i> كشف وجرد الحسابات وصلاحيات الأمان الحالية</h2>
                 <div style="overflow-x:auto;">
-                    <table style="width:100%;">
+                    <table>
                         <thead>
-                            <tr style="background:#f8f9fa;">
-                                <th style="text-align:right; padding:8px;">معرف المستخدم</th>
-                                <th style="text-align:right; padding:8px;">اسم الموظف الرسمي</th>
-                                <th style="text-align:center; padding:8px;">الصلاحية</th>
-                                <th style="text-align:center; padding:8px;">حالة الأمان والتشغيل</th>
+                            <tr>
+                                <th>معرف المستخدم</th>
+                                <th>اسم الموظف الرسمي</th>
+                                <th style="text-align:center;">الصلاحية والرتبة</th>
+                                <th style="text-align:center;">حالة التوثيق السحابي</th>
                             </tr>
                         </thead>
                         <tbody id="admin-users-tbody">
-                            <tr><td colspan="4" style="text-align:center; padding:15px; color:#999; font-weight:bold;">⏳ جاري جرد سجلات الحماية...</td></tr>
+                            <tr><td colspan="4" style="text-align:center; padding:15px; color:#999; font-weight:bold;">⏳ جاري جرد سجلات الحماية بشكل صاروخي...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
+        <div id="tab-manager-visits" class="tab-content"></div>
+
+        <div id="tab-visits" class="tab-content"></div>
+
+        <div id="tab-rounds" class="tab-content"></div>
+
+        <div id="tab-absent" class="tab-content"></div>
+        <div id="tab-repeat" class="tab-content"></div>
+        <div id="tab-behavior" class="tab-content"></div>
+        <div id="tab-clinic" class="tab-content"></div>
+        <div id="tab-gatepass" class="tab-content"></div>
+        <div id="tab-teacher-perf" class="tab-content"></div>
+        <div id="tab-announcements" class="tab-content"></div>
+        <div id="tab-classes" class="tab-content"></div>
         <div id="tab-teacher-directory" class="tab-content"></div>
         <div id="tab-student" class="tab-content"></div>
         <div id="tab-students-manage" class="tab-content"></div>
         <div id="tab-honors_board" class="tab-content"></div>
         <div id="tab-date" class="tab-content"></div>
         <div id="tab-guard" class="tab-content"></div>
-        <div id="tab-rounds" class="tab-content"></div>
         <div id="tab-classes-dist" class="tab-content"></div>
         
         <div id="tab-landing-manage" class="tab-content">
             <div class="card" style="border-top: 5px solid var(--accent-color);">
                 <h2><i class="bi bi-globe" style="color:var(--accent-color);"></i> إدارة الواجهة العامة للموقع (`home.html`)</h2>
-                <label>📢 نص الإعلان الهام:</label>
-                <textarea id="ctrl-landing-notice" rows="3" placeholder="اكتب نص الإعلان هنا"></textarea>
-                <label>🖼️ رابط صورة الفعاليات (URL):</label>
+                <label>📢 نص الإعلان الهام والمثبت بالصفحة:</label>
+                <textarea id="ctrl-landing-notice" rows="3" placeholder="اكتب نص الإعلان الرسمي هنا"></textarea>
+                <label>🖼️ رابط صورة الفعاليات المدرسية (URL):</label>
                 <input type="text" id="ctrl-landing-img" placeholder="الصق رابط الصورة هنا">
-                <label>📊 كود جدول أو تعاميم الإدارة (HTML):</label>
-                <textarea id="ctrl-landing-table" rows="5" placeholder="أدخل كود جدول المواعيد"></textarea>
-                <button onclick="window.saveLandingConfigLive()"><i class="bi bi-cloud-arrow-up-fill"></i> حفظ وتحديث الواجهة فوراً</button>
+                <label>📊 كود جدول المواعيد أو تعاميم الإدارة (HTML):</label>
+                <textarea id="ctrl-landing-table" rows="5" placeholder="أدخل كود جدول المواعيد المعتمد"></textarea>
+                <button onclick="window.saveLandingConfigLive()"><i class="bi bi-cloud-arrow-up-fill"></i> حفظ وبث تحديث الواجهة فوراً</button>
             </div>
         </div>
+
     </div>
 </div>
 
@@ -247,20 +254,68 @@ const moduleMap = {
 };
 
 let loadedModules = new Set();
+const allowedRoles = ['admin', 'assistant_manager', 'social_worker', 'wing_supervisor', 'guard'];
 
 document.addEventListener("DOMContentLoaded", function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
-    if (!user || user.role !== 'admin') {
-        alert("🔒 الوصول مرفوض");
+    
+    // ✅ تحديث جدار الحماية للسماح لجميع رتب المدرسة بالدخول بدون طرد
+    if (!user || !allowedRoles.includes(user.role)) {
+        alert("🔒 الوصول مرفوض، هذا الحساب غير مصرح له بدخول لوحة التحكم الإدارية.");
         window.location.replace('index.html');
         return;
     }
-    document.getElementById('lbl-admin-name').textContent = user.name || "مسؤول النظام";
+
+    document.getElementById('lbl-admin-name').textContent = user.name || "عضو المنظومة";
+    
+    // إعداد المسميات العربية للرتب في النبار العلوي والقائمة الجانبية بالملي
+    const roleTitles = {
+        "admin": "👑 مدير المدرسة", "assistant_manager": "👔 المدير المساعد",
+        "social_worker": "📝 الأخصائي الاجتماعي", "wing_supervisor": "🔎 مشرف الجناح", "guard": "🚪 حارس الأمن"
+    };
+    
+    const roleStr = roleTitles[user.role] || "مسؤول النظام";
+    document.getElementById('lbl-badge-role-title').textContent = roleStr;
+    document.getElementById('lbl-sidebar-role').innerHTML = `<i class="bi bi-shield-check"></i> ${roleStr}`;
+
+    // ⚡ محرك فرز وتخصيص الأزرار تلقائياً حسب الرتبة لعدم تعقيد المستخدمين
+    applyRolePermissionsLive(user.role);
 
     loadModuleLive('tab-index');
     import('./js/modules/reports.js').then(m => m.initReportsModule());
-    listenToUsersListLive(); // ✅ تشغيل محرك الجرد الصاروخي فوراً عند فتح اللوحة
+    listenToUsersListLive(); 
 });
+
+// دالة التحكم في إخفاء وإظهار الأزرار والتبويبات حسب الرتبة لحماية الخصوصية والسرعة
+function applyRolePermissionsLive(role) {
+    if(role === 'admin' || role === 'assistant_manager') return; // الإدارة العليا ترى كل شيء
+
+    // إخفاء كل الخيارات أولاً ثم إظهار المسموح به فقط للرتبة
+    const items = document.querySelectorAll('.menu-list .menu-item');
+    items.forEach(el => el.style.display = 'none');
+
+    // تفعيل خيار لوحة المؤشرات دائماً للجميع
+    document.getElementById('m-index').style.display = 'flex';
+
+    if(role === 'social_worker') { // الأخصائي الاجتماعي والنفسي
+        document.getElementById('m-absent').style.display = 'flex';
+        document.getElementById('m-repeat').style.display = 'flex';
+        document.getElementById('m-behavior').style.display = 'flex';
+        document.getElementById('m-clinic').style.display = 'flex';
+        document.getElementById('m-gatepass').style.display = 'flex';
+        document.getElementById('m-student').style.display = 'flex';
+        document.getElementById('m-honors').style.display = 'flex';
+        document.getElementById('m-date').style.display = 'flex';
+    } 
+    else if(role === 'wing_supervisor') { // مشرف الجناح
+        document.getElementById('m-rounds').style.display = 'flex';
+        document.getElementById('m-classes').style.display = 'flex';
+        document.getElementById('m-classes-dist').style.display = 'flex';
+    } 
+    else if(role === 'guard') { // حارس المنشأة والأمن
+        document.getElementById('m-guard').style.display = 'flex';
+    }
+}
 
 window.toggleSidebarLive = function() {
     document.querySelector('.sidebar').classList.toggle('active');
@@ -287,7 +342,7 @@ window.switchTab = function(tabId) {
     if(tabId === 'tab-landing-manage') {
         loadLandingFieldsLive();
     } else if (tabId === 'tab-users') {
-        // يبقى في تبويب إدارة المستخدمين المحلي الفوري
+        // إدارة المستخدمين تبويب محلي سريع
     } else {
         loadModuleLive(tabId);
     }
@@ -308,7 +363,7 @@ async function loadModuleLive(tabId) {
     } catch (err) { console.error(err); }
 }
 
-// 🚀 محرك جلب الحسابات اللحظي الصاروخي فائق السرعة لحل مشكلة التعليق نهائياً
+// 🚀 محرك جلب الحسابات اللحظي السريع جداً لمنع أي بطء أو تعليق نهائياً للشاشة
 function listenToUsersListLive() {
     const tbody = document.getElementById('admin-users-tbody');
     if(!tbody) return;
@@ -347,7 +402,7 @@ window.handleRegisterUserLive = async function(e) {
         await setDoc(doc(db, 'users', uId), {
             userId: uId, name: uName, role: uRole, plainPass: uPass, createdAt: serverTimestamp()
         });
-        alert(`✓ تم بنجاح قيد حساب (${uName}) بالرتبة المطلوبة سحابياً وبثه طيران للمنظومة.`);
+        alert(`✓ تم بنجاح إنشاء حساب (${uName}) بالرتبة المختارة وبثه طيران للمنظومة.`);
         document.getElementById('new-user-form').reset();
     } catch(err) { alert("❌ خطأ بالإنشاء: " + err.message); }
 };
