@@ -3,212 +3,123 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- ✅ أسطر منع الخروج لسفاري في الآيفون -->
+<link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>بوابة الدخول الموحدة - المنظومة الرقمية الشاملة</title>
+<title>بوابة الدخول الموحدة - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-:root { 
-    --primary-color: #1a1a2e; --accent-color: #e67e22; 
-    --bg-dark: #0f172a; --card-bg: #ffffff; 
+:root {
+    --primary-color: #1a1a2e; --hover-color: #e67e22; --bg-light: #f4f6f9;
 }
-* { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
-body { 
-    background: linear-gradient(135deg, var(--bg-dark) 0%, #1e1e38 100%); 
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; 
-}
-.login-card { 
-    background: var(--card-bg); border-radius: 16px; padding: 35px 30px; width: 100%; max-width: 420px; 
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4); border-top: 6px solid var(--accent-color); text-align: right; 
-}
-.login-logo { font-size: 50px; color: var(--primary-color); text-align: center; margin-bottom: 10px; }
-.login-card h2 { font-size: 20px; font-weight: 900; color: var(--primary-color); text-align: center; margin-bottom: 4px; }
-.login-card p { font-size: 12px; color: #666; font-weight: bold; text-align: center; margin-bottom: 25px; }
-label { font-weight: 700; font-size: 13px; color: var(--primary-color); display: block; margin-bottom: 6px; }
-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; font-weight: 600; text-align: right; outline: none; font-size: 14px; }
-input:focus { border-color: var(--accent-color); }
-button { 
-    background: var(--primary-color); color: #fff; border: none; padding: 13px; border-radius: 8px; 
-    font-weight: 700; cursor: pointer; width: 100%; font-size: 15px; transition: all 0.2s; 
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px;
-}
-button:hover { background: var(--accent-color); box-shadow: 0 4px 10px rgba(230,126,34,0.2); }
-.parent-link { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #eee; font-size: 13px; font-weight: bold; }
-.parent-link a { color: #2980b9; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
+body { background: var(--bg-light); display: flex; align-items: center; justify-content: center; min-height: 100vh; direction: rtl; padding: 15px; }
 
-#install-app-btn {
-    display: none; background: #27ae60; color: #fff; border: none; padding: 10px 15px; 
-    border-radius: 30px; font-weight: 700; font-size: 13px; margin-bottom: 15px; width: 100%;
-    box-shadow: 0 4px 10px rgba(39,174,96,0.3); cursor: pointer; text-align: center;
-}
+.login-container { max-width: 420px; width: 100%; background: #fff; padding: 35px 25px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: 1px solid #eef2f5; text-align: center; }
+.school-logo { width: 85px; height: 85px; margin-bottom: 15px; }
+.login-container h1 { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 5px; }
+.login-container p { font-size: 12px; color: #666; font-weight: bold; margin-bottom: 25px; }
+
+.form-group { text-align: right; margin-bottom: 18px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; color: #444; margin-bottom: 6px; }
+.form-group input { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-weight: 600; font-size: 13px; transition: 0.2s; text-align: right; }
+.form-group input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26,26,46,0.05); }
+
+.btn-login { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 14px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+.btn-login:hover { background: var(--hover-color); }
+
+.footer-text { font-size: 10px; color: #999; margin-top: 25px; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<div style="width: 100%; max-width: 420px;">
-    <button id="install-app-btn"><i class="bi bi-phone-vibrate-fill"></i> 📲 ثبّت تطبيق المنظومة على هاتفِك الحين</button>
-</div>
-
-<div class="login-card">
-    <div class="login-logo"><i class="bi bi-shield-lock-fill"></i></div>
-    <h2>المنظومة الرقمية الموحدة</h2>
-    <p>مدرسة سالم الحسينان المتوسطة للبنين</p>
+<div class="login-container">
+    <img src="./logo.png" alt="شعّار المدرسة" class="school-logo" onerror="this.src='https://placehold.co/100'">
+    <h1>المنظومة الرقمية الشاملة للمنشأة</h1>
+    <p>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</p>
     
-    <form id="login-form-element" onsubmit="window.handleSystemLoginLive(event)">
-        <label><i class="bi bi-person-fill"></i> رقم المستخدم / المعرف (User ID)</label>
-        <input type="text" id="login-user-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
+    <form id="main-login-form" onsubmit="window.handleSystemLoginLive(event)">
+        <div class="form-group">
+            <label><i class="bi bi-person-badge"></i> الرقم الوظيفي / معرف المستخدم (User ID):</label>
+            <input type="text" id="txt-login-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
+        </div>
         
-        <label><i class="bi bi-key-fill"></i> رمز الحماية السري (Password)</label>
-        <input type="password" id="login-password" placeholder="أدخل كلمة المرور" required>
+        <div class="form-group">
+            <label><i class="bi bi-lock-fill"></i> كلمة المرور السرية (Password):</label>
+            <input type="password" id="txt-login-pass" placeholder="أدخل كلمة المرور" required>
+        </div>
         
-        <button type="submit" id="btn-login-submit">
-            <i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة
-        </button>
+        <button type="submit" id="btn-submit" class="btn-login"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة</button>
     </form>
-
-    <div class="parent-link">
-        <a href="parent.html"><i class="bi bi-person-hearts"></i> هل أنت ولي أمر طالب؟ اضغط هنا للدخول</a>
-    </div>
+    
+    <div class="footer-text">نظام حماية البيانات السحابي الموحد للمدرسة © 2026</div>
 </div>
 
 <script type="module">
-// 🎯 تم تعديل المسار هنا ليقرأ من المجلد الرئيسي مباشرة ومطابقة التحديث لإنهاء الـ 404
 import { db } from './js/firebase-config.js';
-import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// ⏳ 1. فحص الجلسات السابقة المستقرة لتسريع الدخول التلقائي لراحتك
-const saved = localStorage.getItem('hs_user');
-if(saved){
-    try{
-        const u = JSON.parse(saved);
-        if(u && u.role) window.location.replace(u.role === 'admin' ? 'admin.html' : 'teacher.html');
-    }catch(e){ localStorage.removeItem('hs_user'); }
-}
-
-// لقطة الأوتكيشن المباشرة المتوافقة مع اتصال الفايرستور المركزي مالتك
-const auth = getAuth(db.app);
-
-let deferredPrompt;
-const installBtn = document.getElementById('install-app-btn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.style.display = 'block';
-});
-
-installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    installBtn.style.display = 'none';
-});
-
-// 🔑 2. محرك الفحص والولوج الآمن المتوافق مع الفايربيس أوتكيشن والرولز اليديدة ملوتك
 window.handleSystemLoginLive = async function(e) {
-    if(e) e.preventDefault(); 
+    e.preventDefault();
+    const userId = document.getElementById('txt-login-id').value.trim();
+    const userPass = document.getElementById('txt-login-pass').value.trim();
+    const submitBtn = document.getElementById('btn-submit');
 
-    const userId = document.getElementById('login-user-id').value.trim();
-    const pass   = document.getElementById('login-password').value.trim();
-    const btn    = document.getElementById('btn-login-submit');
-
-    if(!userId || !pass) return;
-
-    const targetEmail = `${userId}@hosainan.school`;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق من التشفير الرقمي...';
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص سجلات الحماية والاتصال...`;
 
     try {
-        // 🔥 تسجيل الدخول الحقيقي والمشفر من سيرفرات قوقل الآمنة
-        const userCredential = await signInWithEmailAndPassword(auth, targetEmail, pass);
-        const firebaseUser = userCredential.user;
+        // فحص وثيقة المستخدم مباشرة بداخل كولكشن المستخدمين الموحد
+        const userDocRef = doc(db, 'users', userId);
+        const docSnap = await getDoc(userDocRef);
 
-        // سحب سجلات الموظف من الفايرستور
-        let userData = null;
-        let q = query(collection(db, 'users'), where('userId', '==', userId));
-        let snap = await getDocs(q);
-
-        if (snap.empty && !isNaN(userId)) {
-            q = query(collection(db, 'users'), where('userId', '==', Number(userId)));
-            snap = await getDocs(q);
-        }
-        
-        snap.forEach(doc => { userData = doc.data(); });
-
-        if(!userData) {
-            if(userId === '6464') {
-                userData = { name: "أ. حسين إسماعيل (المدير)", role: "admin", userId: "6464" };
-            } else {
-                userData = { name: "معلم المنظومة", role: "teacher", userId: userId };
-            }
+        if (!docSnap.exists()) {
+            alert("🔒 خطأ: معرف المستخدم غير مسجل بالنظام السحابي للمدرسة.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            return;
         }
 
-        const finalSessionUser = { 
-            id: firebaseUser.uid,
-            name: userData.name || 'موظف المنظومة', 
-            role: String(userData.role || 'teacher').trim().toLowerCase(), 
-            classId: userData.classId || '', 
-            userId: String(userId)
-        };
+        const userData = docSnap.data();
 
-        localStorage.setItem('hs_user', JSON.stringify(finalSessionUser));
+        // مطابقة كلمة المرور المدخلة نصياً
+        if (userData.plainPass !== userPass) {
+            alert("🔒 خطأ: كلمة المرور المدخلة غير صحيحة، يرجى إعادة المحاولة.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            return;
+        }
 
-        if(finalSessionUser.role === 'admin') {
+        // حفظ جلسة العمل الحالية في الجهاز المضيف
+        localStorage.setItem('hs_user', JSON.stringify({
+            userId: userData.userId || userId,
+            name: userData.name || "عضو المنظومة",
+            role: userData.role
+        }));
+
+        // 🚀 محرك التوجيه الإداري المطور لتأمين دخول كافة الرتب الرسمية دون حظر
+        const administrativeRoles = ['admin', 'assistant_manager', 'social_worker', 'wing_supervisor', 'guard'];
+
+        if (userData.role === 'teacher') {
+            window.location.replace('teacher.html');
+        } else if (administrativeRoles.includes(userData.role)) {
             window.location.replace('admin.html');
         } else {
-            window.location.replace('teacher.html');
+            alert("🔒 خطأ وظيفي: هذا الحساب لا يمتلك رتبة صلاحيات معتمدة داخل المنظومة.");
+            localStorage.removeItem('hs_user');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
         }
 
-    } catch(err) {
-        console.log("Auth fail, checking legacy entries locally...");
-        try {
-            const legacySnap = await getDocs(collection(db, 'users'));
-            let foundLegacy = null;
-            
-            legacySnap.forEach(doc => {
-                const d = doc.data();
-                const u = String(d.userId || '').trim();
-                const p = String(d.plainPass || '').trim();
-                if(u === userId && p === pass) {
-                    foundLegacy = {
-                        id: doc.id,
-                        name: d.name || 'موظف المنظومة',
-                        role: String(d.role || 'teacher').trim().toLowerCase(),
-                        classId: d.classId || '',
-                        userId: u
-                    };
-                }
-            });
-
-            if(foundLegacy) {
-                localStorage.setItem('hs_user', JSON.stringify(foundLegacy));
-                window.location.replace(foundLegacy.role === 'admin' ? 'admin.html' : 'teacher.html');
-                return;
-            }
-        } catch(fsErr) { console.log(fsErr); }
-
-        alert('❌ عذراً: رمز الحماية السري أو رقم المستخدم غير صحيح.');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-box-arrow-in-right"></i> تسجيل دخول آمن للمنصة';
+    } catch (err) {
+        alert("❌ فشل الاتصال بالسيرفر المركزي: " + err.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
     }
 };
-
-document.getElementById('login-user-id').addEventListener('keypress', e => {
-    if(e.key === 'Enter') {
-        e.preventDefault();
-        document.getElementById('login-password').focus();
-    }
-});
-
-if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
 </script>
 </body>
 </html>
