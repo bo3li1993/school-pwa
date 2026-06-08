@@ -6,7 +6,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="./logo.png">
+<link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>بوابة الدخول الموحدة - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -100,11 +100,14 @@ window.handleSystemLoginLive = async function(e) {
             role: userData.role
         }));
 
-        // 🚀 محرك التوجيه الإداري المطور لتأمين دخول كافة الرتب الرسمية دون حظر
-        const administrativeRoles = ['admin', 'assistant_manager', 'social_worker', 'wing_supervisor', 'guard'];
+        // 🚀 محرك التوجيه الإداري المطور والمفصل بالكامل لرتبة الأخصائي
+        const administrativeRoles = ['admin', 'assistant_manager', 'wing_supervisor', 'guard'];
 
         if (userData.role === 'teacher') {
             window.location.replace('teacher.html');
+        } else if (userData.role === 'social_worker') {
+            // تحويل الأخصائي مباشرة إلى صفحته المستقلة الجديدة الملوكية والأزرار الكبيرة
+            window.location.replace('social.html');
         } else if (administrativeRoles.includes(userData.role)) {
             window.location.replace('admin.html');
         } else {
