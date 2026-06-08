@@ -61,6 +61,7 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
 .badge.danger { background: var(--danger-color); }
 .badge.success { background: var(--success-color); }
 .badge.info { background: var(--accent-color); }
+.badge.warning { background: var(--hover-color); }
 
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
 .tab-content { display: none; }
@@ -97,6 +98,7 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
         <li class="menu-item" id="m-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-clipboard-check"></i> 📋 جولة الجناح اليومية</li>
         <li class="menu-item" id="m-classes-dist" onclick="window.switchTab('tab-classes-dist')"><i class="bi bi-shuffle"></i> 🏫 توزيع فصول الاحتياط</li>
         <li class="menu-item" id="m-landing" onclick="window.switchTab('tab-landing-manage')"><i class="bi bi-layout-text-window-reverse"></i> 🌐 إدارة الواجهة العامة</li>
+        <li class="menu-item" id="m-profile" onclick="window.switchTab('tab-profile')" style="border-top: 1px solid #2c2c3e; margin-top: 5px;"><i class="bi bi-sliders"></i> 👤 إعدادات حسابي</li>
     </ul>
 </div>
 
@@ -182,24 +184,45 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
                             </tr>
                         </thead>
                         <tbody id="admin-users-tbody">
-                            <tr><td colspan="4" style="text-align:center; padding:15px; color:#999; font-weight:bold;">⏳ جاري جرد سجلات الحماية بشكل صاروخي...</td></tr>
+                            <tr><td colspan="4" style="text-align:center; padding:15px; color:#999; font-weight:bold;">⏳ جاري جرد سجلات الحماية...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <div id="tab-manager-visits" class="tab-content"></div>
+        <div id="tab-profile" class="tab-content">
+            <div class="card" style="border-top: 5px solid #2980b9;">
+                <h2><i class="bi bi-sliders"></i> البيانات الشخصية والملف الرقمي للموظف بالمنشأة</h2>
+                <p style="font-size:11px; color:#666; font-weight:bold; margin-bottom:15px;">يرجى استكمال وتحديث الخانات الرسمية لمطابقتها مع السجلات الإدارية المعتمدة للمدرسة.</p>
+                
+                <label style="font-weight:700; font-size:12px; color:#444;">🏢 القسم الإداري / المسمى الوظيفي المعتمد:</label>
+                <input type="text" id="admin-prof-dept" placeholder="مثال: الخدمة الاجتماعية والنفسية / شؤون الطلاب">
 
-        <div id="tab-visits" class="tab-content"></div>
+                <label style="font-weight:700; font-size:12px; color:#444;">الرقم المدني الكويتي (12 رقم):</label>
+                <input type="number" id="admin-prof-civil" placeholder="أدخل الرقم المدني الرسمي">
 
-        <div id="tab-rounds" class="tab-content"></div>
+                <label style="font-weight:700; font-size:12px; color:#444;">رقم الهاتف الجوال للتواصل والمتابعة:</label>
+                <input type="number" id="admin-prof-phone" placeholder="أدخل رقم الهاتف النقال">
+
+                <label style="font-weight:700; font-size:12px; color:#444;">رقم الملف الشخصي بوزارة التربية:</label>
+                <input type="text" id="admin-prof-file-num" placeholder="أدخل رقم ملفك الإداري">
+
+                <h2 style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;"><i class="bi bi-lock-fill"></i> تعديل كلمة المرور السرية للحساب الشخصي</h2>
+                <label style="font-weight:700; font-size:12px; color:#444;">كلمة المرور الجديدة:</label>
+                <input type="text" id="admin-prof-new-pass" placeholder="اترك الحقل فارغاً في حال عدم الرغبة في تغيير كلمة المرور الحالية">
+
+                <button onclick="window.updateAdminProfileLive()" style="background:#2980b9; font-weight:bold; width:100%; padding:14px;"><i class="bi bi-check-all"></i> حفظ وتحديث ملفي الشخصي وكلمة المرور الحين</button>
+            </div>
+        </div>
 
         <div id="tab-absent" class="tab-content"></div>
         <div id="tab-repeat" class="tab-content"></div>
         <div id="tab-behavior" class="tab-content"></div>
         <div id="tab-clinic" class="tab-content"></div>
         <div id="tab-gatepass" class="tab-content"></div>
+        <div id="tab-visits" class="tab-content"></div>
+        <div id="tab-manager-visits" class="tab-content"></div>
         <div id="tab-teacher-perf" class="tab-content"></div>
         <div id="tab-announcements" class="tab-content"></div>
         <div id="tab-classes" class="tab-content"></div>
@@ -209,6 +232,7 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
         <div id="tab-honors_board" class="tab-content"></div>
         <div id="tab-date" class="tab-content"></div>
         <div id="tab-guard" class="tab-content"></div>
+        <div id="tab-rounds" class="tab-content"></div>
         <div id="tab-classes-dist" class="tab-content"></div>
         
         <div id="tab-landing-manage" class="tab-content">
@@ -223,7 +247,6 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
                 <button onclick="window.saveLandingConfigLive()"><i class="bi bi-cloud-arrow-up-fill"></i> حفظ وبث تحديث الواجهة فوراً</button>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -254,21 +277,19 @@ const moduleMap = {
 };
 
 let loadedModules = new Set();
+let currentAdminUserId = "";
 const allowedRoles = ['admin', 'assistant_manager', 'social_worker', 'wing_supervisor', 'guard'];
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
-    
-    // ✅ تحديث جدار الحماية للسماح لجميع رتب المدرسة بالدخول بدون طرد
     if (!user || !allowedRoles.includes(user.role)) {
-        alert("🔒 الوصول مرفوض، هذا الحساب غير مصرح له بدخول لوحة التحكم الإدارية.");
+        alert("🔒 الوصول مرفوض، هذا الحساب غير مصرح له بدخول لوحة التحكم.");
         window.location.replace('index.html');
         return;
     }
-
+    currentAdminUserId = user.userId;
     document.getElementById('lbl-admin-name').textContent = user.name || "عضو المنظومة";
     
-    // إعداد المسميات العربية للرتب في النبار العلوي والقائمة الجانبية بالملي
     const roleTitles = {
         "admin": "👑 مدير المدرسة", "assistant_manager": "👔 المدير المساعد",
         "social_worker": "📝 الأخصائي الاجتماعي", "wing_supervisor": "🔎 مشرف الجناح", "guard": "🚪 حارس الأمن"
@@ -278,26 +299,23 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('lbl-badge-role-title').textContent = roleStr;
     document.getElementById('lbl-sidebar-role').innerHTML = `<i class="bi bi-shield-check"></i> ${roleStr}`;
 
-    // ⚡ محرك فرز وتخصيص الأزرار تلقائياً حسب الرتبة لعدم تعقيد المستخدمين
     applyRolePermissionsLive(user.role);
-
     loadModuleLive('tab-index');
     import('./js/modules/reports.js').then(m => m.initReportsModule());
     listenToUsersListLive(); 
+    await loadAdminProfileDataLive(); // تحميل معلومات الملف الشخصي للأخصائي/المدير
 });
 
-// دالة التحكم في إخفاء وإظهار الأزرار والتبويبات حسب الرتبة لحماية الخصوصية والسرعة
 function applyRolePermissionsLive(role) {
-    if(role === 'admin' || role === 'assistant_manager') return; // الإدارة العليا ترى كل شيء
+    if(role === 'admin' || role === 'assistant_manager') return; 
 
-    // إخفاء كل الخيارات أولاً ثم إظهار المسموح به فقط للرتبة
     const items = document.querySelectorAll('.menu-list .menu-item');
-    items.forEach(el => el.style.display = 'none');
+    items.forEach(el => { if(el.id !== 'm-profile') el.style.display = 'none'; });
 
-    // تفعيل خيار لوحة المؤشرات دائماً للجميع
     document.getElementById('m-index').style.display = 'flex';
+    document.getElementById('m-profile').style.display = 'flex'; 
 
-    if(role === 'social_worker') { // الأخصائي الاجتماعي والنفسي
+    if(role === 'social_worker') { 
         document.getElementById('m-absent').style.display = 'flex';
         document.getElementById('m-repeat').style.display = 'flex';
         document.getElementById('m-behavior').style.display = 'flex';
@@ -307,12 +325,12 @@ function applyRolePermissionsLive(role) {
         document.getElementById('m-honors').style.display = 'flex';
         document.getElementById('m-date').style.display = 'flex';
     } 
-    else if(role === 'wing_supervisor') { // مشرف الجناح
+    else if(role === 'wing_supervisor') { 
         document.getElementById('m-rounds').style.display = 'flex';
         document.getElementById('m-classes').style.display = 'flex';
         document.getElementById('m-classes-dist').style.display = 'flex';
     } 
-    else if(role === 'guard') { // حارس المنشأة والأمن
+    else if(role === 'guard') { 
         document.getElementById('m-guard').style.display = 'flex';
     }
 }
@@ -331,21 +349,15 @@ window.switchTab = function(tabId) {
 
     const menuItems = document.querySelectorAll('.menu-item');
     menuItems.forEach(item => {
-        if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(tabId)) {
-            item.classList.add('active');
-        }
+        if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(tabId)) { item.classList.add('active'); }
     });
 
     document.querySelector('.sidebar').classList.remove('active');
     document.querySelector('.sidebar-overlay').classList.remove('active');
 
-    if(tabId === 'tab-landing-manage') {
-        loadLandingFieldsLive();
-    } else if (tabId === 'tab-users') {
-        // إدارة المستخدمين تبويب محلي سريع
-    } else {
-        loadModuleLive(tabId);
-    }
+    if(tabId === 'tab-landing-manage') { loadLandingFieldsLive(); } 
+    else if (tabId === 'tab-users' || tabId === 'tab-profile') { } 
+    else { loadModuleLive(tabId); }
 };
 
 async function loadModuleLive(tabId) {
@@ -356,14 +368,10 @@ async function loadModuleLive(tabId) {
     }
     try {
         const module = await import(config.file);
-        if (typeof module[config.init] === 'function') {
-            await module[config.init]();
-            loadedModules.add(tabId);
-        }
+        if (typeof module[config.init] === 'function') { await module[config.init](); loadedModules.add(tabId); }
     } catch (err) { console.error(err); }
 }
 
-// 🚀 محرك جلب الحسابات اللحظي السريع جداً لمنع أي بطء أو تعليق نهائياً للشاشة
 function listenToUsersListLive() {
     const tbody = document.getElementById('admin-users-tbody');
     if(!tbody) return;
@@ -388,7 +396,7 @@ function listenToUsersListLive() {
                 </tr>`;
         });
         tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold;">🥇 لا توجد حسابات مقيدة حالياً.</td></tr>';
-    }, (err) => { tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">خطأ سحابي: ${err.message}</td></tr>`; });
+    }, (err) => { });
 }
 
 window.handleRegisterUserLive = async function(e) {
@@ -399,12 +407,43 @@ window.handleRegisterUserLive = async function(e) {
     const uPass = document.getElementById('reg-user-pass').value.trim();
 
     try {
-        await setDoc(doc(db, 'users', uId), {
-            userId: uId, name: uName, role: uRole, plainPass: uPass, createdAt: serverTimestamp()
-        });
+        await setDoc(doc(db, 'users', uId), { userId: uId, name: uName, role: uRole, plainPass: uPass, createdAt: serverTimestamp() });
         alert(`✓ تم بنجاح إنشاء حساب (${uName}) بالرتبة المختارة وبثه طيران للمنظومة.`);
         document.getElementById('new-user-form').reset();
     } catch(err) { alert("❌ خطأ بالإنشاء: " + err.message); }
+};
+
+// 👤 محرك جلب وإدخال المعلومات الشخصية المخصصة للأخصائي بداخل لوحة الإدارة
+async function loadAdminProfileDataLive() {
+    try {
+        const docSnap = await getDoc(doc(db, 'users', currentAdminUserId));
+        if(docSnap.exists()) {
+            const d = docSnap.data();
+            if(d.department) document.getElementById('admin-prof-dept').value = d.department;
+            if(d.civilId) document.getElementById('admin-prof-civil').value = d.civilId;
+            if(d.phone) document.getElementById('admin-prof-phone').value = d.phone;
+            if(d.fileNumber) document.getElementById('admin-prof-file-num').value = d.fileNumber;
+        }
+    } catch(e) { console.log(e); }
+}
+
+window.updateAdminProfileLive = async function() {
+    const dept = document.getElementById('admin-prof-dept').value.trim();
+    const civil = document.getElementById('admin-prof-civil').value.trim();
+    const phone = document.getElementById('admin-prof-phone').value.trim();
+    const fileNum = document.getElementById('admin-prof-file-num').value.trim();
+    const newPass = document.getElementById('admin-prof-new-pass').value.trim();
+
+    if(!civil || !phone || !fileNum) { alert("⚠️ يرجى ملء البيانات المدنية والوظيفية المطلوبة!"); return; }
+
+    try {
+        let updateData = { department: dept, civilId: civil, phone: phone, fileNumber: fileNum, updatedAt: serverTimestamp() };
+        if(newPass !== "") { updateData.plainPass = newPass; }
+
+        await setDoc(doc(db, 'users', currentAdminUserId), updateData, { merge: true });
+        alert("✅ تم تحديث بيانات ملفك الإداري وسيرفر الأمان بنجاح.");
+        document.getElementById('admin-prof-new-pass').value = ""; 
+    } catch(e) { alert("خطأ أثناء تحديث الملف: " + e.message); }
 };
 
 async function loadLandingFieldsLive() {
@@ -421,11 +460,7 @@ async function loadLandingFieldsLive() {
 
 window.saveLandingConfigLive = async function() {
     try {
-        await setDoc(doc(db, 'system_config', 'public_landing'), {
-            notice: document.getElementById('ctrl-landing-notice').value,
-            imageUrl: document.getElementById('ctrl-landing-img').value,
-            tableHtml: document.getElementById('ctrl-landing-table').value
-        }, { merge: true });
+        await setDoc(doc(db, 'system_config', 'public_landing'), { notice: document.getElementById('ctrl-landing-notice').value, imageUrl: document.getElementById('ctrl-landing-img').value, tableHtml: document.getElementById('ctrl-landing-table').value }, { merge: true });
         alert("✅ تم تحديث الواجهة العامة تلقائياً.");
     } catch(e) { alert("❌ تعذر الحفظ: " + e.message); }
 };
@@ -454,40 +489,12 @@ window.generateWeeklyReport = async function() {
                 <h3 style="font-size:15px; font-weight:bold; margin-top:4px;">متوسطة سالم الحسينان للبنين</h3>
                 <p style="font-size:12px; color:#666; font-weight:bold; margin-top:3px;">التقرير الأسبوعي الشامل للمنشأة | تاريخ الإصدار: ${todayStr}</p>
             </div>
-            <h4 style="margin-bottom:10px; color:#e74c3c; font-weight:900; border-right:4px solid #e74c3c; padding-right:6px;">أولاً: حصر الطلاب ذوي الغياب المتكرر (3 أيام فأكثر)</h4>
             <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
-                <thead>
-                    <tr style="background:#1a1a2e; color:#fff;">
-                        <th style="padding:8px; border:1px solid #ddd;">#</th>
-                        <th style="padding:8px; border:1px solid #ddd;">اسم الطالب رباعي</th>
-                        <th style="padding:8px; border:1px solid #ddd;">الفصل الدراسي</th>
-                        <th style="padding:8px; border:1px solid #ddd;">أيام الغياب التراكمي</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${repeated.length ? repeated.map((s,i) => `
-                        <tr>
-                            <td style="padding:8px; text-align:center; border:1px solid #ddd;"><b>${i+1}</b></td>
-                            <td style="padding:8px; border:1px solid #ddd; font-weight:bold;">👤 ${s.name}</td>
-                            <td style="padding:8px; text-align:center; border:1px solid #ddd;">${s.classId}</td>
-                            <td style="padding:8px; text-align:center; border:1px solid #ddd; color:#e74c3c; font-weight:900;">${s.count} غياب</td>
-                        </tr>`).join('') : '<tr><td colspan="4" style="padding:15px; text-align:center; font-weight:bold; border:1px solid #ddd;">✅ كشوف الغياب سليمة بالكامل.</td></tr>'}
-                </tbody>
+                <thead><tr style="background:#1a1a2e; color:#fff;"><th>#</th><th>اسم الطالب رباعي</th><th>الفصل الدراسي</th><th>أيام الغياب التراكمي</th></tr></thead>
+                <tbody>${repeated.length ? repeated.map((s,i) => `<tr><td><b>${i+1}</b></td><td>👤 ${s.name}</td><td>${s.classId}</td><td style="color:red; font-weight:bold;">${s.count} غياب</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center; font-weight:bold;">✅ كشوف الغياب سليمة بالكامل.</td></tr>'}</tbody>
             </table>
-            <h4 style="margin-bottom:10px; color:#2980b9; font-weight:900; border-right:4px solid #2980b9; padding-right:6px;">ثانياً: مؤشرات الكفاءة والزيارات الفنية المنجزة</h4>
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; font-size:13px; font-weight:bold;">
-                إجمالي الزيارات الفنية المرصودة من الموجهين ورؤساء الأقسام: <span style="color:#27ae60; font-size:16px; font-weight:900;">${visSnap.size} زيارة موثقة</span>
-            </div>
         </div>`;
-        
-        setTimeout(() => {
-            import('./js/modules/reports.js').then(m => {
-                if(typeof m.exportAsManzoumaPDF === 'function') {
-                    m.exportAsManzoumaPDF('report-print-area', 'التقرير_الأسبوعي_الرسمي');
-                    setTimeout(() => { area.style.display = 'none'; }, 1000);
-                }
-            });
-        }, 600);
+        setTimeout(() => { import('./js/modules/reports.js').then(m => { if(typeof m.exportAsManzoumaPDF === 'function') { m.exportAsManzoumaPDF('report-print-area', 'التقرير_الأسبوعي_الرسمي'); setTimeout(() => { area.style.display = 'none'; }, 1000); } }); }, 600);
     } catch(err) { alert("❌ تعذر إصدار التقرير: " + err.message); }
 };
 </script>
