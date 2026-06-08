@@ -1,8 +1,7 @@
-// 📑 موديل رصد ومتابعة البطاقات السلوكية والمخالفات المفرزة أبجدياً - معتمد رسمياً
+// 📑 موديل رصد ومتابعة البطاقات السلوكية والمخالفات المفرزة أبجدياً - معتمد رسمياً بوزارة التربية
 import { db } from '../firebase-config.js';
 import { collection, addDoc, query, where, serverTimestamp, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// دالة مركزية ثابتة لتوحيد صيغة قراءة وكتابة التاريخ ومنع اختفاء السجلات القديمة بين الأجهزة
 function getUnifiedDateString() {
     const d = new Date();
     return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
@@ -33,9 +32,13 @@ export async function initBehaviorModule() {
                         </select>
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:12px; color:#444;">3. الإجراء التربوي المتخذ:</label>
+                        <label style="font-weight:700; font-size:12px; color:#444;">3. المعلم المحيل للحالة (جهة الإحالة):</label>
+                        <input type="text" id="beh-referred-by" placeholder="مثال: أ. محمد الشمري" required style="padding:12px;">
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px; color:#444;">4. الإجراء التربوي المتخذ:</label>
                         <select id="beh-action-type" required>
-                            <option value="تنبيه شفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
+                            <option value="تنبيه şفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
                             <option value="تعهد خطي رسمي">📝 أخذ تعهد خطي رسمي بحضور الأخصائي</option>
                             <option value="استدعاء ولي أمر الطالب">👥 استدعاء ولي أمر الطالب للمدرسة رسمياً</option>
                             <option value="إنذار حرمان إداري">🚫 إصدار إنذار حرمان إداري (بطاقة سلوك)</option>
@@ -43,7 +46,7 @@ export async function initBehaviorModule() {
                         </select>
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:12px; color:#444;">4. حالة الإجراء والمتابعة:</label>
+                        <label style="font-weight:700; font-size:12px; color:#444;">5. موقف وحالة المتابعة السلوكية:</label>
                         <select id="beh-followup-status" required>
                             <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال رسمياً</option>
                             <option value="قيد المتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
@@ -71,11 +74,12 @@ export async function initBehaviorModule() {
                             <th style="padding:10px; border:1px solid #eee; text-align:center;">الفصل</th>
                             <th style="padding:10px; border:1px solid #eee; text-align:center;">الإجراء التربوي المقيد</th>
                             <th style="padding:10px; border:1px solid #eee; text-align:center;">حالة المتابعة</th>
+                            <th style="padding:10px; border:1px solid #eee;">المعلم المحيل</th>
                             <th style="padding:10px; border:1px solid #eee;">ملاحظات الأخصائي الرسمي</th>
                         </tr>
                     </thead>
                     <tbody id="behavior-logs-tbody">
-                        <tr><td colspan="6" style="text-align:center; color:#999; padding:15px; font-weight:bold;">⏳ جاري جلب السجلات السلوكية الحية فوراً...</td></tr>
+                        <tr><td colspan="7" style="text-align:center; color:#999; padding:15px; font-weight:bold;">⏳ جاري جلب السجلات السلوكية الحية فوراً...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -121,15 +125,14 @@ window.handleBehClassChange = async function(classId) {
             studentSelect.innerHTML = arr.length === 0 ? '<option value="">⚠️ لا يوجد طلاب بالفصل</option>' : html;
             studentSelect.disabled = arr.length === 0;
         });
-    } catch (e) {
-        studentSelect.innerHTML = '<option value="">❌ خطأ في استدعاء البيانات</option>';
-    }
+    } catch (e) { studentSelect.innerHTML = '<option value="">❌ خطأ في استدعاء البيانات</option>'; }
 };
 
 window.handleRegisterBehaviorLive = async function(e) {
     e.preventDefault();
     const sName = document.getElementById('beh-student-select').value;
     const cId = document.getElementById('beh-class-select').value;
+    const refBy = document.getElementById('beh-referred-by').value.trim();
     const action = document.getElementById('beh-action-type').value;
     const followup = document.getElementById('beh-followup-status').value;
     const notes = document.getElementById('beh-notes').value.trim();
@@ -143,6 +146,7 @@ window.handleRegisterBehaviorLive = async function(e) {
             studentName: sName.trim(),
             name: sName.trim(),
             classId: cId.trim(),
+            referredBy: refBy,
             action: action,
             followUpStatus: followup,
             notes: notes,
@@ -155,15 +159,14 @@ window.handleRegisterBehaviorLive = async function(e) {
         document.getElementById('behavior-reg-form').reset();
         document.getElementById('beh-student-select').innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
         document.getElementById('beh-student-select').disabled = true;
-    } catch(err) {
-        alert('خطأ أثناء الحفظ السحابي: ' + err.message);
-    }
+    } catch(err) { alert('خطأ أثناء الحفظ السحابي: ' + err.message); }
 };
 
 function loadBehaviorLogsLive() {
     const tbody = document.getElementById('behavior-logs-tbody');
     if (!tbody) return;
 
+    // ✅ القراءة الصاروخية اللحظية من الكولكشن الموحد المعتمد behavior لحماية البيانات القديمة
     onSnapshot(collection(db, 'behavior'), (snapshot) => {
         let html = '';
         snapshot.forEach(d => {
@@ -179,9 +182,10 @@ function loadBehaviorLogsLive() {
                     <td style="padding:10px; text-align:center;"><span class="badge info" style="background:var(--accent-color); padding:3px 8px; color:#fff; border-radius:4px;">${data.classId || '-'}</span></td>
                     <td style="padding:10px; text-align:center;"><span class="badge danger" style="background:#c0392b; padding:4px 8px; color:#fff; border-radius:4px; font-weight:bold;">${data.action || 'إجراء معتمد'}</span></td>
                     <td style="padding:10px; text-align:center;">${statusBadge}</td>
+                    <td style="padding:10px; font-weight:700; color:#2980b9;">أ. ${data.referredBy || 'غير محدد'}</td>
                     <td style="padding:10px; color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
                 </tr>`;
         });
-        tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">✅ السجل المركزي للمتابعة السلوكية سليم تماماً.</td></tr>';
-    }, (err) => { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:15px;">💡 بانتظار تسجيل أولى الحالات السلوكية بالمنظومة.</td></tr>'; });
+        tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">✅ السجل المركزي للمتابعة السلوكية سليم تماماً.</td></tr>';
+    }, (err) => { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:15px;">💡 بانتظار تسجيل أولى الحالات السلوكية بالمنظومة.</td></tr>'; });
 }
