@@ -15,7 +15,7 @@ export async function initBehaviorModule() {
     try {
         container.innerHTML = `
         <div class="card" style="border-top: 5px solid var(--danger-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
-            <h2><i class="bi bi-sidebar-check" style="color:var(--danger-color);"></i> نظام رصد الإجراءات التربوية والمتابعة السلوكية للطلاب</h2>
+            <h2><i class="bi bi-shield-exclamation" style="color:var(--danger-color);"></i> نظام رصد الإجراءات التربوية والمتابعة السلوكية للطلاب</h2>
             <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">الرجاء تحديد الصف الدراسي لاستدعاء كشف الأسماء المعتمد، ثم اختيار الإجراء السلوكي المنفذ.</p>
             
             <form id="behavior-reg-form" onsubmit="window.handleRegisterBehaviorLive(event)">
@@ -35,21 +35,21 @@ export async function initBehaviorModule() {
                     <div>
                         <label style="font-weight:700; font-size:12px; color:#444;">3. الإجراء التربوي المتخذ:</label>
                         <select id="beh-action-type" required>
-                            <option value="تنبيه شفهي مبدئي">⚠️ تنبيه شفهي مبدئي</option>
-                            <option value="تعهد خطي رسمي">📝 تعهد خطي رسمي من الأخصائي</option>
-                            <option value="استدعاء ولي أمر الطالب">👥 استدعاء ولي أمر الطالب للمدرسة</option>
-                            <option value="إنذار حرمان إداري">🚫 إنذار حرمان إداري (بطاقة سلوك)</option>
-                            <option value="تحويل إلى إدارة المدرسة">⚖️ تحويل رسمي إلى إدارة المنشأة</option>
+                            <option value="تنبيه شفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
+                            <option value="تعهد خطي رسمي">📝 أخذ تعهد خطي رسمي بحضور الأخصائي</option>
+                            <option value="استدعاء ولي أمر الطالب">👥 استدعاء ولي أمر الطالب للمدرسة رسمياً</option>
+                            <option value="إنذار حرمان إداري">🚫 إصدار إنذار حرمان إداري (بطاقة سلوك)</option>
+                            <option value="تحويل إلى إدارة المدرسة">⚖️ تحويل رسمي مباشر إلى إدارة المدرسة</option>
                         </select>
                     </div>
                 </div>
                 
                 <div style="margin-top:12px;">
-                    <label style="font-weight:700; font-size:12px; color:#444;">تفاصيل وملاحظات حالة المتابعة السلوكية:</label>
-                    <input type="text" id="beh-notes" placeholder="أدخل ملخص الإجراء المتخذ وأسباب المتابعة بدقة..." required style="padding:12px;">
+                    <label style="font-weight:700; font-size:12px; color:#444;">تفاصيل وملاحظات حالة المتابعة السلوكية للائحة:</label>
+                    <textarea id="beh-notes" rows="3" placeholder="أدخل ملخص الإجراء المتخذ، أسباب المتابعة، وتفاصيل المقابلة بدقة..." required style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-weight:600; font-size:13px; outline:none; margin-top:5px; color:#333;"></textarea>
                 </div>
                 
-                <button type="submit" style="width:100%; background:var(--danger-color); color:#fff; font-weight:900; margin-top:10px; padding:15px; border-radius:8px; cursor:pointer; border:none;"><i class="bi bi-file-earmark-plus-fill"></i> اعتماد وتسجيل الإجراء التربوي بسجل الطالب</button>
+                <button type="submit" style="width:100%; background:var(--danger-color); color:#fff; font-weight:900; margin-top:15px; padding:15px; border-radius:8px; cursor:pointer; border:none;"><i class="bi bi-file-earmark-plus-fill"></i> اعتماد وتسجيل الإجراء التربوي بسجل الطالب</button>
             </form>
         </div>
 
@@ -75,16 +75,16 @@ export async function initBehaviorModule() {
 
         // سحب الفصول المتاحة لايف من قاعدة البيانات
         const classSelect = document.getElementById('beh-class-select');
-        const snap = await onSnapshot(collection(db, 'students'), (snapshot) => {
+        onSnapshot(collection(db, 'students'), (snapshot) => {
             let classesSet = new Set();
             snapshot.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
             
             let htmlClasses = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
-            Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
+            Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>'; });
             if (classSelect) classSelect.innerHTML = htmlClasses;
         });
 
-        loadBehaviorLogsLive(); // تفعيل محرك البث الفوري
+        loadBehaviorLogsLive(); // تفعيل محرك البث الفوري للأرشيف
     } catch(e) { console.error(e); }
 }
 
@@ -103,7 +103,7 @@ window.handleBehClassChange = async function(classId) {
 
     try {
         const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
-        const snap = await onSnapshot(q, (snapshot) => {
+        onSnapshot(q, (snapshot) => {
             let arr = [];
             snapshot.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
             arr.sort((a, b) => a.localeCompare(b, 'ar'));
@@ -151,7 +151,6 @@ window.handleRegisterBehaviorLive = async function(e) {
     }
 };
 
-// محرك البث اللحظي السريع جداً لجرد السجلات السلوكية
 function loadBehaviorLogsLive() {
     const tbody = document.getElementById('behavior-logs-tbody');
     if (!tbody) return;
@@ -164,8 +163,8 @@ function loadBehaviorLogsLive() {
                 <tr style="border-bottom:1px solid #eee;">
                     <td style="padding:10px; font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || data.date || '-'}</td>
                     <td style="padding:10px;"><b>👤 ${data.studentName || data.name || '-'}</b></td>
-                    <td style="padding:10px; text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
-                    <td style="padding:10px; text-align:center;"><span class="badge danger" style="background:#c0392b;">${data.action || 'إجراء معتمد'}</span></td>
+                    <td style="padding:10px; text-align:center;"><span class="badge info" style="background:var(--accent-color); padding:3px 8px; color:#fff; border-radius:4px;">${data.classId || '-'}</span></td>
+                    <td style="padding:10px; text-align:center;"><span class="badge danger" style="background:#c0392b; padding:4px 8px; color:#fff; border-radius:4px; font-weight:bold;">${data.action || 'إجراء معتمد'}</span></td>
                     <td style="padding:10px; color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
                 </tr>`;
         });
