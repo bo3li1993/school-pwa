@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<title>بوابة الخدمات الإرشادية والاجتماعية - مدرسة سالم الحسينان</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+:root {
+    --primary-color: #2c3e50; --hover-color: #e67e22; --bg-light: #f4f6f9;
+    --success-color: #27ae60; --danger-color: #e74c3c; --warning-color: #f39c12; --accent-color: #2980b9;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
+body { background: var(--bg-light); display: flex; flex-direction: column; min-height: 100vh; direction: rtl; }
+
+/* الهيدر الملكي المخصص للأخصائي */
+.header-nav { background: var(--primary-color); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--hover-color); }
+.header-nav h1 { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+.header-nav p { font-size: 11px; opacity: 0.8; font-weight: 600; }
+
+.workspace-container { max-width: 900px; width: 100%; margin: 20px auto; padding: 0 15px; flex: 1; }
+
+/* أزرار وكروت التنقل الكبيرة الذكية لتناسب التلفون */
+.menu-grid-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.nav-card-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px 10px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; color: #34495e; text-align: center; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+.nav-card-btn i { font-size: 24px; display: block; margin-bottom: 6px; color: var(--primary-color); }
+.nav-card-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+.nav-card-btn.active i { color: var(--hover-color); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #eef2f5; text-align: right; }
+.card h2, .card h3 { font-size: 14px; font-weight: 900; color: var(--primary-color); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; color: #333; }
+input:focus, select:focus, textarea:focus { border-color: var(--primary-color); }
+
+button { background: var(--primary-color); color: #fff; border: none; padding: 14px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 13px; transition: 0.2s; }
+button:hover { background: var(--hover-color); }
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+th, td { padding: 10px; border: 1px solid #eef2f5; text-align: right; }
+th { background: #f8f9fa; font-weight: 900; color: var(--primary-color); }
+
+.badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #fff; }
+.badge.danger { background: var(--danger-color); }
+.badge.success { background: var(--success-color); }
+.badge.warning { background: var(--warning-color); }
+.badge.info { background: var(--accent-color); }
+
+/* بوكس منبثق أنيق لتحديث الحالات */
+.modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:3000; align-items:center; justify-content:center; p-15px; }
+.modal-box { background:#fff; max-width:480px; width:100%; border-radius:14px; padding:25px; box-shadow:0 10px 25px rgba(0,0,0,0.2); text-align:right; border-top:5px solid var(--hover-color); }
+</style>
+</head>
+<body>
+
+<div class="header-nav">
+    <div>
+        <h1 id="lbl-social-header"><i class="bi bi-person-hearts"></i> بوابة الأخصائي الاجتماعي والنفسي</h1>
+        <p>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</p>
+    </div>
+    <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:6px 14px; font-size:12px; font-weight:bold;">تسجيل الخروج</button>
+</div>
+
+<div class="workspace-container">
+
+    <div class="menu-grid-nav">
+        <div class="nav-card-btn active" id="btn-t-behavior" onclick="window.switchTab('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
+        <div class="nav-card-btn" id="btn-t-student" onclick="window.switchTab('view-student')"><i class="bi bi-person-bounding-box"></i> ملف الطالب الشامل</div>
+        <div class="nav-card-btn" id="btn-t-gatepass" onclick="window.switchTab('view-gatepass')"><i class="bi bi-ticket-perforated"></i> حقيبة الاستئذان</div>
+        <div class="nav-card-btn" id="btn-t-email" onclick="window.switchTab('view-email')"><i class="bi bi-envelope-at"></i> إيميل أولياء الأمور</div>
+        <div class="nav-card-btn" id="btn-t-profile" onclick="window.switchTab('view-profile')"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
+    </div>
+
+    <div id="view-behavior" class="tab-content active">
+        <div class="card" style="border-top: 5px solid var(--danger-color);">
+            <h2><i class="bi bi-clipboard-plus"></i> تسجيل إجراء تربوي ومتابعة سلوكية جديدة</h2>
+            <form id="social-behavior-form" onsubmit="window.saveSocialBehaviorLive(event)">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">1. الصف الدراسي:</label>
+                        <select id="beh-class-select" onchange="window.handleBehClassChange(this.value)" required>
+                            <option value="">-- جاري سحب الفصول... --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">2. اسم الطالب رباعي:</label>
+                        <select id="beh-student-select" disabled required>
+                            <option value="">-- بانتظار اختيار الفصل --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">3. المعلم المُحيل للحالة:</label>
+                        <input type="text" id="beh-referred-by" placeholder="مثال: أ. محمد الشمري" required>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">4. القرار والإجراء التربوي:</label>
+                        <select id="beh-action-type" required>
+                            <option value="تنبيه شفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
+                            <option value="تعهد خطي رسمي">📝 أخذ تعهد خطي رسمي بحضور الأخصائي</option>
+                            <option value="استدعاء ولي أمر الطالب">👥 استدعاء ولي أمر الطالب للمدرسة رسمياً</option>
+                            <option value="إنذار حرمان إداري">🚫 إصدار إنذار حرمان إداري (بطاقة سلوك)</option>
+                            <option value="تحويل إلى إدارة المدرسة">⚖️ تحويل رسمي مباشر إلى إدارة المدرسة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">5. موقف وحالة المتابعة الحالية:</label>
+                        <select id="beh-followup-status" required>
+                            <option value="قيد المتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
+                            <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال رسمياً</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top:5px;">
+                    <label style="font-weight:700; font-size:12px;">ملاحظات وتفاصيل خط سير الحالة:</label>
+                    <textarea id="beh-notes" rows="2" placeholder="اكتب تفاصيل المخالفة ومجريات المقابلة الإرشادية هنا..." required></textarea>
+                </div>
+                <button type="submit" id="btn-beh-submit" style="width:100%; background:var(--danger-color);"><i class="bi bi-file-earmark-plus"></i> اعتماد وتسجيل الإجراء التربوي بسجل الطالب</button>
+            </form>
+        </div>
+
+        <div class="card" style="border-top: 5px solid var(--primary-color);">
+            <h2><i class="bi bi-collection-play"></i> الأرشيف المركزي لقرارات الضبط والمتابعة (اضغط على السطر للتعديل)</h2>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>اسم الطالب رباعي</th>
+                            <th style="text-align:center;">الفصل</th>
+                            <th>الإجراء والقرار</th>
+                            <th style="text-align:center;">حالة المتابعة</th>
+                            <th>المعلم المُحيل</th>
+                            <th>ملاحظات الأخصائي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="social-behavior-tbody">
+                        <tr><td colspan="7" style="text-align:center; font-weight:bold; color:#999;">⏳ جاري جلب السجلات السلوكية الحية...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-student" class="tab-content">
+        <div class="card" style="border-top: 5px solid var(--accent-color);">
+            <h2><i class="bi bi-search"></i> محرك الاستعلام الرقمي الموحد عن الطالب</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                <div>
+                    <label style="font-weight:700; font-size:12px;">الصف الدراسي:</label>
+                    <select id="prof-class-select" onchange="window.handleStudentClassChange(this.value)">
+                        <option value="">-- جاري تحميل الفصول... --</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight:700; font-size:12px;">اسم الطالب:</label>
+                    <select id="prof-student-select" disabled>
+                        <option value="">-- بانتظار اختيار الفصل --</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button onclick="window.fetchStudentCompleteArchiveLive()" style="flex:1; background:var(--accent-color);"><i class="bi bi-database-check"></i> تجميع وجلب السجل التاريخي الشامل الحين</button>
+                <button onclick="window.resetStudentView()" id="btn-reset-std" style="background:#7f8c8d; display:none;"><i class="bi bi-arrow-counterclockwise"></i> 🔄 العودة وتصفير الفلتر</button>
+            </div>
+        </div>
+        <div id="student-profile-dashboard-display"></div>
+    </div>
+
+    <div id="view-gatepass" class="tab-content">
+        <div class="card" style="border-top: 5px solid var(--success-color);">
+            <h2><i class="bi bi-ticket-perforated"></i> إصدار بطاقة تصريح خروج مبكر (استئذان سحابي لايف للباب)</h2>
+            <form id="social-gatepass-form" onsubmit="window.saveSocialGatepassLive(event)">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">اسم ولي الأمر / مستلم الطالب رباعي:</label>
+                        <input type="text" id="gate-relative" placeholder="أدخل اسم مستلم الطالب بالكامل" required>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">صلة القرابة الرسمية بالبطاقة المدنية:</label>
+                        <select id="gate-relation" required>
+                            <option value="الأب">الأب</option>
+                            <option value="الأم">الأم</option>
+                            <option value="الجد">الجد</option>
+                            <option value="الأخ">الأخ</option>
+                            <option value="العم/الخال">العم / الخال</option>
+                        </select>
+                    </div>
+                </div>
+                <label style="font-weight:700; font-size:12px;">عذر وسبب الخروج المبكر:</label>
+                <input type="text" id="gate-reason" placeholder="مثال: مراجعة طبية عاجلة بالمستوصف / عذر عائلي معتمد" required>
+                <button type="submit" id="btn-gate-submit" style="width:100%; background:var(--success-color);"><i class="bi bi-cloud-arrow-up"></i> بث وبث تصريح الاستئذان لايف لشاشة حارس المدرسة</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="view-email" class="tab-content">
+        <div class="card" style="border-top: 5px solid #8e44ad;">
+            <h2><i class="bi bi-envelope-paper"></i> منشئ صيغ خطابات إيميل المدرسة الرسمي لأولياء الأمور</h2>
+            <label style="font-weight:700; font-size:12px;">اختر غرض ونوع المعاملة المراد إرسالها:</label>
+            <select id="email-template-type" onchange="window.generateEmailTemplateTextLive(this.value)">
+                <option value="غياب">🔴 خطاب غياب وإنذار انقطاع عن الدراسة</option>
+                <option value="سلوك">📑 خطاب استدعاء ولي أمر بسبب مخالفة سلوكية</option>
+                <option value="تميز">🏆 خطاب شكر وتقدير للتميز والتحفيز التربوي</option>
+            </select>
+            <div style="background:#f8fafc; border:1px dashed #cbd5e1; padding:20px; border-radius:8px; margin-bottom:15px; text-align:right;">
+                <pre id="email-preview-text" style="white-space:pre-wrap; font-size:13px; font-weight:bold; color:#2c3e50; line-height:1.6;"></pre>
+            </div>
+            <button onclick="window.copyEmailTextToClipboard()" style="background:#8e44ad; width:100%;"><i class="bi bi-copy"></i> نسخ نص الخطاب الرسمي الموحد لإيميل المدرسة الحين</button>
+        </div>
+    </div>
+
+    <div id="view-profile" class="tab-content">
+        <div class="card" style="border-top: 5px solid var(--accent-color);">
+            <h2><i class="bi bi-sliders"></i> البيانات الوظيفية والمدنية المعتمدة للأخصائي</h2>
+            <label style="font-weight:700; font-size:12px;">🏢 القسم العلمي / المسمى الوظيفي المعتمد:</label>
+            <input type="text" id="prof-dept" value="مكتب الخدمة الاجتماعية والنفسية">
+            <label style="font-weight:700; font-size:12px;">الرقم المدني الكويتي:</label>
+            <input type="number" id="prof-civil">
+            <label style="font-weight:700; font-size:12px;">رقم هاتف النقال المعتمد:</label>
+            <input type="number" id="prof-phone">
+            <label style="font-weight:700; font-size:12px;">رقم الملف الوظيفي بوزارة التربية:</label>
+            <input type="text" id="prof-file">
+            
+            <h3 style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;"><i class="bi bi-lock-fill"></i> تعديل كلمة المرور الأمنية للحساب</h3>
+            <input type="text" id="prof-new-pass" placeholder="اترك الخانة فارغة في حال عدم الرغبة في التغيير">
+            <button onclick="window.updateSocialProfileLive()" style="background:var(--accent-color); width:100%;"><i class="bi bi-check-all"></i> حفظ وتحديث بيانات حسابي الشخصي</button>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-overlay" id="behavior-modal" onclick="if(event.target===this) window.closeBehaviorModalLive()">
+    <div class="modal-box">
+        <h3><i class="bi bi-pencil-square" style="color:var(--hover-color);"></i> تحديث الإجراء التربوي ومذكرات المتابعة</h3>
+        <input type="hidden" id="modal-doc-id">
+        
+        <p style="font-size:12px; font-weight:bold; margin-bottom:10px; color:#555;">الطالب المعني: <b id="modal-student-lbl" style="color:var(--hover-color); font-size:13px;">-</b></p>
+        
+        <label style="font-weight:700; font-size:12px;">موقف وحالة المتابعة السلوكية الرسمية:</label>
+        <select id="modal-status-select">
+            <option value="قيد Mتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
+            <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال رسمياً</option>
+        </select>
+        
+        <label style="font-weight:700; font-size:12px;">إضافة مذكرات وملاحظات أخصائي جديدة:</label>
+        <textarea id="modal-notes-area" rows="4" placeholder="أدخل هنا آخر التطورات الإرشادية أو مجريات الاتصال بولي الأمر..."></textarea>
+        
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button onclick="window.saveBehaviorModalUpdateLive()" style="flex:1; background:var(--success-color); font-weight:900;"><i class="bi bi-cloud-check"></i> حفظ التحديث الحين</button>
+            <button onclick="window.closeBehaviorModalLive()" style="background:#95a5a6; font-weight:700;">إلغاء</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { db } from './js/firebase-config.js';
+import { collection, getDocs, doc, getDoc, setDoc, addDoc, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+let currentSocialId = "";
+let localStudentsMap = {};
+
+function getUnifiedDateString() {
+    const d = new Date();
+    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+document.addEventListener("DOMContentLoaded", async function() {
+    const user = JSON.parse(localStorage.getItem('hs_user'));
+    if (!user || user.role !== 'social_worker') {
+        alert("🔒 الوصول مرفوض، هذي البوابة مخصصة للأخصائي فقط.");
+        window.location.replace('index.html');
+        return;
+    }
+    currentSocialId = user.userId;
+    document.getElementById('lbl-social-header').innerHTML = `<i class="bi bi-person-hearts"></i> بوابة الأخصائي: أ. ${user.name || ''}`;
+    
+    await loadInitialClassesLive();
+    listenToSocialBehaviorLogsLive();
+    await loadSocialProfileDataLive();
+    window.generateEmailTemplateTextLive('غياب');
+});
+
+window.switchTab = function(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-card-btn').forEach(el => el.classList.remove('active'));
+    
+    const target = document.getElementById(tabId);
+    if(target) target.classList.add('active');
+    
+    const btnId = 'btn-t-' + tabId.replace('view-', '');
+    const btn = document.getElementById(btnId);
+    if(btn) btn.classList.add('active');
+};
+
+async function loadInitialClassesLive() {
+    try {
+        const selects = [document.getElementById('beh-class-select'), document.getElementById('prof-class-select')];
+        const snap = await getDocs(collection(db, 'students'));
+        let classesSet = new Set();
+        snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
+        
+        selects.forEach(sel => {
+            if(!sel) return;
+            let html = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
+            Array.from(classesSet).sort().forEach(c => { html += `<option value="${c}">${c}</option>`; });
+            sel.innerHTML = html;
+        });
+    } catch(e) { console.error(e); }
+}
+
+window.handleBehClassChange = async function(classId) {
+    const studentSelect = document.getElementById('beh-student-select');
+    if (!studentSelect) return;
+    if (!classId) { studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>'; studentSelect.disabled = true; return; }
+    
+    studentSelect.innerHTML = '<option value="">⏳ جاري جلب وفرز الكشف أبجدياً...</option>';
+    studentSelect.disabled = true;
+    try {
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+        const snap = await getDocs(q);
+        let arr = [];
+        snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
+        arr.sort((a,b) => a.localeCompare(b, 'ar'));
+        
+        let html = '<option value="">-- اختر اسم الطالب المعني --</option>';
+        arr.forEach(n => { html += `<option value="${n}">${n}</option>`; });
+        studentSelect.innerHTML = arr.length === 0 ? '<option value="">⚠️ لا يوجد طلاب</option>' : html;
+        studentSelect.disabled = arr.length === 0;
+    } catch(e) { studentSelect.innerHTML = '<option value="">❌ خطأ بالاتصال</option>'; }
+};
+
+window.saveSocialBehaviorLive = async function(e) {
+    e.preventDefault();
+    const cId = document.getElementById('beh-class-select').value;
+    const sName = document.getElementById('beh-student-select').value;
+    const refBy = document.getElementById('beh-referred-by').value.trim();
+    const action = document.getElementById('beh-action-type').value;
+    const followup = document.getElementById('beh-followup-status').value;
+    const notes = document.getElementById('beh-notes').value.trim();
+    const submitBtn = document.getElementById('btn-beh-submit');
+
+    submitBtn.disabled = true;
+    try {
+        const unifiedDate = getUnifiedDateString();
+        await addDoc(collection(db, 'behavior'), {
+            studentName: sName.trim(), name: sName.trim(), classId: cId.trim(),
+            referredBy: refBy, action: action, followUpStatus: followup, notes: notes,
+            dateStr: unifiedDate, date: unifiedDate, createdAt: serverTimestamp()
+        });
+        alert('✓ تم رصد واعتما د الإجراء التربوي بسجل الطالب بنجاح.');
+        document.getElementById('social-behavior-form').reset();
+        document.getElementById('beh-student-select').disabled = true;
+    } catch(err) { alert('خطأ أثناء الحفظ السحابي: ' + err.message); }
+    submitBtn.disabled = false;
+};
+
+function listenToSocialBehaviorLogsLive() {
+    const tbody = document.getElementById('social-behavior-tbody');
+    if (!tbody) return;
+
+    onSnapshot(collection(db, 'behavior'), (snapshot) => {
+        let html = '';
+        snapshot.forEach(d => {
+            const data = d.data();
+            const statusBadge = data.followUpStatus && data.followUpStatus.includes('تمت') ? 
+                `<span class="badge success">تم الإقفال</span>` : `<span class="badge warning">قيد المتابعة</span>`;
+            
+            // جعل السطر بالكامل قابل للضغط لفتح بوكس التحديث الملوكي لايف هني
+            html += `
+                <tr onclick="window.openBehaviorModalLive('${d.id}', '${data.studentName || data.name}', '${data.followUpStatus || ''}', '${data.notes || ''}')" style="cursor:pointer; border-bottom:1px solid #eee;" title="اضغط لتحديث الملاحظات">
+                    <td style="font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || data.date || '-'}</td>
+                    <td><b>👤 ${data.studentName || data.name || '-'}</b></td>
+                    <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
+                    <td><span class="badge danger" style="background:#c0392b;">${data.action || 'إجراء'}</span></td>
+                    <td style="text-align:center;">${statusBadge}</td>
+                    <td style="font-weight:700; color:#2980b9;">أ. ${data.referredBy || 'الهيئة'}</td>
+                    <td style="color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center; font-weight:bold;">💡 لا توجد حالات سلوكية مرصودة حالياً.</td></tr>';
+    });
+}
+
+window.openBehaviorModalLive = function(id, name, status, notes) {
+    document.getElementById('modal-doc-id').value = id;
+    document.getElementById('modal-student-lbl').textContent = name;
+    document.getElementById('modal-status-select').value = status.includes('تمت') ? 'تمت المتابعة والإقفال' : 'قيد المتابعة والمراجعة';
+    document.getElementById('modal-notes-area').value = notes;
+    document.getElementById('behavior-modal').style.display = 'flex';
+};
+
+window.closeBehaviorModalLive = function() {
+    document.getElementById('behavior-modal').style.display = 'none';
+};
+
+window.saveBehaviorModalUpdateLive = async function() {
+    const id = document.getElementById('modal-doc-id').value;
+    const status = document.getElementById('modal-status-select').value;
+    const notes = document.getElementById('modal-notes-area').value.trim();
+    
+    try {
+        await setDoc(doc(db, 'behavior', id), { followUpStatus: status, notes: notes }, { merge: true });
+        alert("✅ تم تحديث مذكرات وموقف متابعة الحالة بنجاح فوري.");
+        window.closeBehaviorModalLive();
+    } catch(e) { alert("خطأ في الحفظ السحابي: " + e.message); }
+};
+
+window.handleStudentClassChange = async function(classId) {
+    const studentSelect = document.getElementById('prof-student-select');
+    if (!studentSelect) return;
+    if (!classId) { studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>'; studentSelect.disabled = true; return; }
+    
+    studentSelect.innerHTML = '<option value="">⏳ جاري جلب أسماء الصف...</option>';
+    studentSelect.disabled = true;
+    localStudentsMap = {};
+    try {
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+        const snap = await getDocs(q);
+        let list = [];
+        snap.forEach(doc => {
+            const data = doc.data();
+            if(data.name) {
+                const clean = data.name.trim();
+                list.push(clean);
+                localStudentsMap[clean] = { id: doc.id, ...data };
+            }
+        });
+        list.sort((a,b) => a.localeCompare(b, 'ar'));
+        let html = '<option value="">-- اختر اسم الطالب من الكشف المعتمد --</option>';
+        list.forEach(n => { html += `<option value="${n}">${n}</option>`; });
+        studentSelect.innerHTML = list.length === 0 ? '<option value="">⚠️ لا يوجد طلاب</option>' : html;
+        studentSelect.disabled = list.length === 0;
+    } catch(e) { console.error(e); }
+};
+
+window.fetchStudentCompleteArchiveLive = async function() {
+    const sName = document.getElementById('prof-student-select').value;
+    const displayArea = document.getElementById('student-profile-dashboard-display');
+    const resetBtn = document.getElementById('btn-reset-std');
+    
+    if(!sName || !localStudentsMap[sName]) { alert('⚠️ يرجى اختيار اسم الطالب أولاً!'); return; }
+    
+    displayArea.innerHTML = `<p style="text-align:center; padding:20px; font-weight:bold; color:var(--hover-color);">⏳ جاري جرد وتجميع السجل الكامل والملف التراكمي للطالب...</p>`;
+    resetBtn.style.display = 'inline-block';
+
+    try {
+        const studentNameClean = sName.trim();
+        const [attSnap, behSnap, rewSnap] = await Promise.all([
+            getDocs(query(collection(db, 'attendance'), where('studentName', '==', studentNameClean))),
+            getDocs(query(collection(db, 'behavior'), where('studentName', '==', studentNameClean))),
+            getDocs(query(collection(db, 'rewards'), where('studentName', '==', studentNameClean)))
+        ]);
+
+        let attRows = '';
+        attSnap.forEach(doc => {
+            const d = doc.data();
+            if(d.status==='absent'||d.status==='late') {
+                const b = d.status==='absent'?'<span class="badge danger">🔴 غياب</span>':'<span class="badge warning">🟡 تأخر</span>';
+                attRows += `<tr><td>📅 ${d.dateStr||'-'}</td><td>${d.period||'-'}</td><td>${b}</td><td>أ. ${d.recordedBy||'-'}</td></tr>`;
+            }
+        });
+        if(!attRows) attRows = '<tr><td colspan="4" style="text-align:center; color:green; font-weight:bold;">✅ سجل غياب الحصص سليم 100%.</td></tr>';
+
+        let behRows = '';
+        behSnap.forEach(doc => {
+            const d = doc.data();
+            const fBadge = d.followUpStatus && d.followUpStatus.includes('تمت') ? `<span class="badge success">مغلق</span>` : `<span class="badge warning">مفتوح</span>`;
+            behRows += `<tr><td>📅 ${d.dateStr||'-'}</td><td><span class="badge danger">${d.action||'-'}</span></td><td style="text-align:center;">${fBadge}</td><td style="color:#2980b9; font-weight:bold;">أ. ${d.referredBy||'-'}</td><td>${d.notes||'-'}</td></tr>`;
+        });
+        if(!behRows) behRows = '<tr><td colspan="5" style="text-align:center; color:green; font-weight:bold;">✅ ملف الطالب السلوكي نظيف وخالٍ من العقوبات.</td></tr>';
+
+        let rewRows = '';
+        rewSnap.forEach(doc => {
+            const d = doc.data();
+            rewRows += `<tr><td>📅 ${d.dateStr||'-'}</td><td style="color:green; font-weight:bold;">🏆 ${d.rewardType||'تميز'}</td><td>${d.notes||'-'}</td></tr>`;
+        });
+        if(!rewRows) rewRows = '<tr><td colspan="3" style="text-align:center; color:#999;">💡 الطالب ليلحين ما عنده شهادات تميز بالمنظومة.</td></tr>';
+
+        displayArea.innerHTML = `
+        <div class="card" style="border-top:5px solid var(--hover-color); margin-top:15px;">
+            <div style="background:#f8fafc; padding:12px; border-radius:6px; margin-bottom:15px; border-right:4px solid var(--primary-color);">
+                <span style="font-weight:900; font-size:14px; color:var(--primary-color);">👤 الاسم الكامل: ${studentNameClean} | الصف: ${localStudentsMap[sName].classId || '-'}</span>
+            </div>
+            <h4>📌 غياب وتأخير الحصص اليومي الدراسي:</h4>
+            <table><thead><tr><th>التاريخ</th><th>الحصة</th><th>الحالة</th><th>المعلم الراصد</th></tr></thead><tbody>${attRows}</tbody></table>
+            <h4 style="margin-top:20px;">📌 سجل قرارات الضبط والمتابعة السلوكية الرسمية:</h4>
+            <table><thead><tr><th>تاريخ الإجراء</th><th>القرار الصادر</th><th>حالة المتابعة</th><th>المعلم المُحيل</th><th>ملاحظات الأخصائي</th></tr></thead><tbody>${behRows}</tbody></table>
+            <h4 style="margin-top:20px;">📌 لوحة التعزيز الإيجابي والمكافآت المستعادة:</h4>
+            <table><thead><tr><th>التاريخ</th><th>نوع المكافأة المعتمدة</th><th>أسباب التميز</th></tr></thead><tbody>${rewRows}</tbody></table>
+        </div>`;
+    } catch(e) { displayArea.innerHTML = `<p style="color:red;">خطأ: ${e.message}</p>`; }
+};
+
+window.resetStudentView = function() {
+    document.getElementById('student-profile-dashboard-display').innerHTML = '';
+    document.getElementById('btn-reset-std').style.display = 'none';
+    document.getElementById('prof-student-select').value = '';
+};
+
+window.saveSocialGatepassLive = async function(e) {
+    e.preventDefault();
+    const sName = document.getElementById('beh-student-select').value;
+    const cId = document.getElementById('beh-class-select').value;
+    const relative = document.getElementById('gate-relative').value.trim();
+    const relation = document.getElementById('gate-relation').value;
+    const reason = document.getElementById('gate-reason').value.trim();
+    const submitBtn = document.getElementById('btn-gate-submit');
+    
+    if(!sName) { alert("⚠️ الرجاء اختيار الصف والطالب أولاً من التبويب الأول للرصد!"); return; }
+
+    submitBtn.disabled = true;
+    try {
+        const unifiedDate = getUnifiedDateString();
+        await addDoc(collection(db, 'gatepass'), {
+            studentName: sName, name: sName, classId: cId, relative: relative,
+            relation: relation, reason: reason, dateStr: unifiedDate, date: unifiedDate,
+            status: 'approved', createdAt: serverTimestamp()
+        });
+        alert(`✓ تم إرسال وبث تصريح استئذان الطالب (${sName}) لايف لشاشة الحارس بنجاح.`);
+        document.getElementById('social-gatepass-form').reset();
+    } catch(e) { alert("خطأ سحابي: " + e.message); }
+    submitBtn.disabled = false;
+};
+
+window.generateEmailTemplateTextLive = function(type) {
+    const preview = document.getElementById('email-preview-text');
+    let text = "";
+    if(type === 'غياب') {
+        text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nنحيطكم علماً بأن ابنكم قد تكرر غيابه وانقطاعه عن الدراسة بدون عذر مقبول، يرجى مراجعة مكتب الخدمة الاجتماعية بالمدرسة فوراً مصطحبين معكم الأعذار الطبية أو الرسمية المعتمدة تلافياً لتطبيق لائحة الغياب بوزارة التربية بحقه.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
+    } else if(type === 'سلوك') {
+        text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nيرجى مراجعة مكتب الأخصائي الاجتماعي بالمدرسة يوم غدٍ في تمام الساعة التاسعة صباحاً لأمر هام يخص السلوك والانضباط التربوي لابنكم داخل الفصل الدراسي ولأهمية الأمر يرجى عدم التأخر.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
+    } else {
+        text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nيسر مكتب الخدمة الاجتماعية وإدارة المدرسة أن تتقدم لكم بخالص التهنئة والتقدير على التميز السلوكي والدراسي الأخاذ لابنكم، ونشكر لكم حسن تعاونكم ومتابعتكم المستمرة التي أثمرت هذا التفوق الباهر.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
+    }
+    preview.textContent = text;
+};
+
+window.copyEmailTextToClipboard = function() {
+    const text = document.getElementById('email-preview-text').textContent;
+    navigator.clipboard.writeText(text);
+    alert("📋 تم نسخ صيغة الخطاب الرسمي الموحد بنجاح، بإمكانك لصقها وإرسالها عبر إيميل المدرسة الحين!");
+};
+
+async function loadSocialProfileDataLive() {
+    try {
+        const docSnap = await getDoc(doc(db, 'users', currentSocialId));
+        if(docSnap.exists()) {
+            const d = docSnap.data();
+            if(d.department) document.getElementById('prof-dept').value = d.department;
+            if(d.civilId) document.getElementById('prof-civil').value = d.civilId;
+            if(d.phone) document.getElementById('prof-phone').value = d.phone;
+            if(d.fileNumber) document.getElementById('prof-file').value = d.fileNumber;
+        }
+    } catch(e) { console.error(e); }
+}
+
+window.updateSocialProfileLive = async function() {
+    const dept = document.getElementById('prof-dept').value.trim();
+    const civil = document.getElementById('prof-civil').value.trim();
+    const phone = document.getElementById('prof-phone').value.trim();
+    const file = document.getElementById('prof-file').value.trim();
+    const newPass = document.getElementById('prof-new-pass').value.trim();
+
+    if(!civil || !phone || !file) { alert("⚠️ يرجى تعبئة كافة الخانات الرسمية المطلوبة!"); return; }
+    try {
+        let updateData = { department: dept, civilId: civil, phone: phone, fileNumber: file, updatedAt: serverTimestamp() };
+        if(newPass !== "") updateData.plainPass = newPass;
+
+        await setDoc(doc(db, 'users', currentSocialId), updateData, { merge: true });
+        alert("✅ تم تحديث وحفظ ملفك الوظيفي وتأمين الاتصال السحابي.");
+        document.getElementById('prof-new-pass').value = "";
+    } catch(e) { alert("خطأ في التحديث: " + e.message); }
+};
+</script>
+</body>
+</html>
