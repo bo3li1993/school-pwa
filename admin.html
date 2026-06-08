@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- ✅ أسطر منع الخروج لسفاري في الآيفون -->
+<link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>لوحة التحكم الإدارية الموحدة - مدرسة سالم الحسينان</title>
@@ -25,8 +24,23 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; overflow-x: hidden; }
 
-/* ☰ هندسة القائمة الجانبية لتتوافق مع اللاب توب والتليفون بالشخطات */
-.sidebar { width: 260px; background: var(--sidebar-bg); color: var(--text-color); display: flex; flex-direction: column; transition: all 0.3s ease; z-index: 1000; }
+/* 📱 هندسة القائمة الجانبية لتصبح Drawer مخفي مثل التطبيقات الحقيقية */
+.sidebar { 
+    width: 280px; 
+    background: var(--sidebar-bg); 
+    color: var(--text-color); 
+    display: flex; 
+    flex-direction: column; 
+    position: fixed;
+    top: 0;
+    right: -280px; /* مخفية تماماً برة الشاشة افتراضياً */
+    height: 100vh;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* تأثير حركة ناعم جداً */
+    z-index: 2000; 
+    box-shadow: -5px 0 25px rgba(0,0,0,0.3);
+}
+.sidebar.active { right: 0; } /* تظهر فوراً عند طق الشخطات */
+
 .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #2c2c3e; background: var(--primary-color); }
 .sidebar-header h3 { font-size: 15px; font-weight: 900; color: #fff; }
 .sidebar-header p { font-size: 11px; color: var(--hover-color); font-weight: bold; margin-top: 3px; }
@@ -35,24 +49,37 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 .menu-item:hover, .menu-item.active { background: #2c2c3e; color: #fff; border-right: 4px solid var(--hover-color); }
 
 .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
-.top-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.top-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 90; }
 .user-badge { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; color: var(--primary-color); }
 .content-body { padding: 20px; overflow-y: auto; flex: 1; }
 
-/* زر الشخطات الذكي الافتراضي */
-#hamburger-trigger { display: none; background: none; border: none; color: var(--primary-color); font-size: 24px; cursor: pointer; margin-left: 10px; }
-
-/* طبقة الظل الخفيفة خلف القائمة بالتليفون */
-.sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 999; }
-
-/* 📱 شاشات الموبايل والتليفونات (Responsive CSS) */
-@media (max-width: 768px) {
-    #hamburger-trigger { display: block; } 
-    .sidebar { position: fixed; top: 0; right: -260px; height: 100vh; box-shadow: -5px 0 15px rgba(0,0,0,0.2); } 
-    .sidebar.active { right: 0; } 
-    .sidebar-overlay.active { display: block; }
-    .top-navbar { padding: 0 15px; }
+/* ☰ زر الشخطات المطور والظاهر دائماً كأبليكيشن صجي */
+#hamburger-trigger { 
+    background: none; 
+    border: none; 
+    color: var(--primary-color); 
+    font-size: 26px; 
+    cursor: pointer; 
+    margin-left: 12px; 
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
 }
+#hamburger-trigger:hover { color: var(--hover-color); }
+
+/* ✨ طبقة التغبيش والظل الاحترافية خلف القائمة */
+.sidebar-overlay { 
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; right: 0; bottom: 0; 
+    background: rgba(0, 0, 0, 0.4); 
+    backdrop-filter: blur(3px); /* تأثير الفروستد قلاس ملوت الآيفون */
+    z-index: 1990; 
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.sidebar-overlay.active { display: block; opacity: 1; }
 
 .card { background: #fff; border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; }
 .card h2, .card h3 { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
@@ -130,7 +157,7 @@ button:hover { background: var(--hover-color); }
                     <p style="font-size:12px; color:#666; font-weight:bold;">بإمكانك إدارة وطباعة التقارير الموحدة من هنا بضغطة واحدة.</p>
                 </div>
                 <div class="card" style="border-top:5px solid var(--hover-color); text-align:center;">
-                    <h2><i class="bi bi-pie-chart-fill"></i> مؤشن الغياب والحضور</h2>
+                    <h2><i class="bi bi-pie-chart-fill"></i> مؤشر الغياب والحضور</h2>
                     <div style="position: relative; height: 180px; width: 100%; margin-top: 15px;">
                         <canvas id="attendanceChart"></canvas>
                     </div>
@@ -213,9 +240,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     loadModuleLive('tab-index');
     import('./js/modules/reports.js').then(m => m.initReportsModule());
-    // ❌ تم عزل جلب حقول الواجهة من هنا لضمان عدم تحميلها تلقائياً عند الدخول أول مرة
 });
 
+// ☰ محرك حركة سلايد القائمة والظل
 window.toggleSidebarLive = function() {
     document.querySelector('.sidebar').classList.toggle('active');
     document.querySelector('.sidebar-overlay').classList.toggle('active');
@@ -235,10 +262,10 @@ window.switchTab = function(tabId) {
         }
     });
 
+    // ⚡ آلياً: إخفاء القائمة وسحبها برة بعد الاختيار مباشرة لراحة تامة بالتصفح
     document.querySelector('.sidebar').classList.remove('active');
     document.querySelector('.sidebar-overlay').classList.remove('active');
 
-    // ✅ تشغيل ذكي: يتم جلب بيانات الواجهة السحابية فقط عندما يضغط المدير على الزر ماله برغبته
     if(tabId === 'tab-landing-manage') {
         loadLandingFieldsLive();
     } else {
@@ -288,6 +315,84 @@ window.saveLandingConfigLive = async function() {
         }, { merge: true });
         alert("✅ تم تحديث الواجهة العامة (home.html) تلقائياً.");
     } catch(e) { alert("❌ تعذر الحفظ: " + e.message); }
+};
+
+window.generateWeeklyReport = async function() {
+    alert("⏳ جاري جرد الملفات السحابية وتجميع بنود التقرير الأسبوعي...");
+    try {
+        const todayStr = new Date().toLocaleDateString('ar-KW');
+        const [attSnap, visSnap] = await Promise.all([
+            getDocs(collection(db, 'attendance')),
+            getDocs(collection(db, 'technical_visits'))
+        ]);
+
+        const absMap = {};
+        attSnap.forEach(doc => {
+            const d = doc.data();
+            if(d.status === 'absent' && d.studentName) {
+                const key = d.studentName.trim();
+                if(!absMap[key]) absMap[key] = { name: key, classId: d.classId || '-', count: 0 };
+                absMap[key].count++;
+            }
+        });
+        const repeated = Object.values(absMap).filter(s => s.count >= 3).sort((a,b) => b.count - a.count);
+
+        const area = document.getElementById('weekly-report-area');
+        area.style.display = 'block';
+        area.innerHTML = `
+        <div id="report-print-area" style="padding:30px; direction:rtl; font-family:'Cairo',sans-serif; background:#fff; color:#000; width:750px; margin:0 auto; border:1px solid #eee;">
+            <div style="text-align:center; border-bottom:3px solid #1a1a2e; padding-bottom:15px; margin-bottom:20px;">
+                <h2 style="color:#1a1a2e; font-size:18px; font-weight:900;">وزارة التربية - الإدارة العامة لمنطقة الفروانية التعليمية</h2>
+                <h3 style="font-size:15px; font-weight:bold; margin-top:4px;">متوسطة سالم الحسينان للبنين</h3>
+                <p style="font-size:12px; color:#666; font-weight:bold; margin-top:3px;">التقرير الأسبوعي الشامل للمنشأة | تاريخ الإصدار: ${todayStr}</p>
+            </div>
+            
+            <h4 style="margin-bottom:10px; color:#e74c3c; font-weight:900; border-right:4px solid #e74c3c; padding-right:6px;">أولاً: حصر الطلاب ذوي الغياب المتكرر (3 أيام فأكثر)</h4>
+            <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
+                <thead>
+                    <tr style="background:#1a1a2e; color:#fff;">
+                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">#</th>
+                        <th style="padding:8px; text-align:right; border:1px solid #ddd;">اسم الطالب رباعي</th>
+                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">الفصل الدراسي</th>
+                        <th style="padding:8px; text-align:center; border:1px solid #ddd;">أيام الغياب التراكمي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${repeated.length ? repeated.map((s,i) => `
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:8px; text-align:center; border:1px solid #ddd;"><b>${i+1}</b></td>
+                            <td style="padding:8px; border:1px solid #ddd; font-weight:bold;">👤 ${s.name}</td>
+                            <td style="padding:8px; text-align:center; border:1px solid #ddd; font-weight:bold; color:#2980b9;">${s.classId}</td>
+                            <td style="padding:8px; text-align:center; border:1px solid #ddd; color:#e74c3c; font-weight:900;">${s.count} أيام غياب</td>
+                        </tr>`).join('') : 
+                        '<tr><td colspan="4" style="padding:15px; text-align:center; color:#27ae60; font-weight:bold; border:1px solid #ddd;">✅ كشوف الغياب نظيفة ومثالية بالكامل هذا الأسبوع.</td></tr>'
+                    }
+                </tbody>
+            </table>
+            
+            <h4 style="margin-bottom:10px; color:#2980b9; font-weight:900; border-right:4px solid #2980b9; padding-right:6px;">ثانياً: مؤشرات الكفاءة والزيارات الفنية المنجزة</h4>
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #ddd; font-size:13px; font-weight:bold; color:#333; margin-bottom:30px;">
+                <i class="bi bi-info-circle-fill" style="color:#2980b9;"></i> إجمالي الزيارات التفقدية الفنية المرصودة من الموجهين ورؤساء الأقسام: 
+                <span style="color:#27ae60; font-size:16px; font-weight:900; margin-right:5px;">${visSnap.size} زيارة موثقة بالسيرفر</span>
+            </div>
+
+            <div style="margin-top:60px; display:flex; justify-content:space-between; font-size:13px; font-weight:bold; padding:0 20px;">
+                <div style="text-align:center;"><p>يعتمد، مدير المدرسة</p><p style="margin-top:40px;">_________________</p></div>
+                <div style="text-align:center;"><p>ختم المنشأة الرسمي</p><div style="margin-top:10px; width:70px; height:70px; border:2px dashed #444; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:9px; color:#444;">سالم الحسينان</div></div>
+            </div>
+        </div>`;
+        
+        setTimeout(() => {
+            import('./js/modules/reports.js').then(m => {
+                if(typeof m.exportAsManzoumaPDF === 'function') {
+                    m.exportAsManzoumaPDF('report-print-area', 'التقرير_الأسبوعي_الرسمي_للمنطقة');
+                    setTimeout(() => { area.style.display = 'none'; }, 1000);
+                } else {
+                    alert("⚠️ تعذر استدعاء دالة الطباعة المركزية.");
+                }
+            });
+        }, 600);
+    } catch(err) { alert("❌ تعذر إصدار التقرير: " + err.message); }
 };
 </script>
 </body>
