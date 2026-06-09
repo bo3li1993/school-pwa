@@ -1,4 +1,4 @@
-PE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -60,7 +60,7 @@ body { background: var(--bg-light); display: flex; align-items: center; justify-
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { doc, getDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 window.handleSystemLoginLive = async function(e) {
     e.preventDefault();
@@ -72,17 +72,26 @@ window.handleSystemLoginLive = async function(e) {
     submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص سجلات الحماية والاتصال...`;
 
     try {
-        // 🔍 البحث بـ userId كحقل وليس كـ Document ID
-        const snap = await getDocs(collection(db, 'users'));
         let userData = null;
 
-        snap.forEach(doc => {
-            const d = doc.data();
-            if (String(d.userId || '').trim() === userId) {
-                userData = d;
-            }
-        });
+        // 🕵️‍♂️ الخطوة 1: جلب البيانات مباشرة عن طريق Document ID (أسرع وأضمن)
+        const userDocRef = doc(db, 'users', userId);
+        const docSnap = await getDoc(userDocRef);
 
+        if (docSnap.exists()) {
+            userData = docSnap.data();
+        } else {
+            // 🔄 الخطوة 2 (الخطة البديلة): إذا مو مخزن كـ Document ID، نجرد الحقول الداخلية للكولكشن بالكامل
+            const snap = await getDocs(collection(db, 'users'));
+            snap.forEach(doc => {
+                const d = doc.data();
+                if (String(d.userId || '').trim() === userId) {
+                    userData = d;
+                }
+            });
+        }
+
+        // إذا ما لقيناه بالطريقتين يعطي قفل حماية
         if (!userData) {
             alert("🔒 خطأ: معرف المستخدم غير مسجل بالنظام السحابي للمدرسة.");
             submitBtn.disabled = false;
@@ -90,7 +99,7 @@ window.handleSystemLoginLive = async function(e) {
             return;
         }
 
-        // مطابقة كلمة المرور المدخلة نصياً
+        // 🔐 تحصين المقارنة وتوحيد القيم لنصوص (Text) لمنع مشاكل الـ Numbers في الفايربيس
         if (String(userData.plainPass || '').trim() !== userPass) {
             alert("🔒 خطأ: كلمة المرور المدخلة غير صحيحة، يرجى إعادة المحاولة.");
             submitBtn.disabled = false;
@@ -105,13 +114,12 @@ window.handleSystemLoginLive = async function(e) {
             role: userData.role
         }));
 
-        // 🚀 محرك التوجيه الإداري المطور والمفصل بالكامل لرتبة الأخصائي
+        // محرك التوجيه الإداري المطور والمفصل بالكامل لرتبة الأخصائي وباقي الرتب
         const administrativeRoles = ['admin', 'assistant_manager', 'wing_supervisor', 'guard'];
 
         if (userData.role === 'teacher') {
             window.location.replace('teacher.html');
         } else if (userData.role === 'social_worker') {
-            // تحويل الأخصائي مباشرة إلى صفحته المستقلة الجديدة الملوكية والأزرار الكبيرة
             window.location.replace('social.html');
         } else if (administrativeRoles.includes(userData.role)) {
             window.location.replace('admin.html');
