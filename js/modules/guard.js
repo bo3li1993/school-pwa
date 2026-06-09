@@ -1,10 +1,10 @@
 // 🛡️ منظومة الأمن والسلامة المدرسية ودفتر الزوار الرقمي - مدرسة سالم الحسينان ٢٠٢٦
-// الكود مطور ليعمل عند الحارس المباشر أو عند استعراضه من لوحة المدير
+// كود ذكي مطور خصيصاً لنسف كروت الغياب القديمة واحتلال الشاشة للحارس
 import { db } from '../firebase-config.js';
 import { collection, addDoc, doc, updateDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initGuardModule() {
-    console.log("🚀 تم تفعيل وتشغيل موديول الحارس المطور بنجاح");
+    console.log("🚀 تم إطلاق موديول الحارس المطور بنظام النسف التلقائي للكروت القديمة");
     
     let currentGuardName = "مسؤول الأمن والسلامة";
     const user = JSON.parse(localStorage.getItem('hs_user'));
@@ -26,20 +26,33 @@ export async function initGuardModule() {
         return `${hours}:${minutes} ${ampm}`;
     }
 
-    // 🕵️‍♂️ استهداف حاوية تبويب الحارس بجميع مسمياتها المتوقعة في لوحة المدير
-    const container = document.getElementById('tab-guard') || 
-                      document.getElementById('view-guard') || 
-                      document.getElementById('guard-tab') ||
-                      document.getElementById('guard-content');
-                      
-    if (!container) {
-        console.error("⚠️ لم يتم العثور على حاوية الحارس المخصصة في هذه الصفحة بعد.");
+    // 🕵️‍♂️ خطة النسف الذكية: البحث عن الحاوية مالت كروت الغياب ومسحها بالكامل
+    let mainContainer = document.getElementById('tab-guard') || 
+                        document.getElementById('view-guard') || 
+                        document.getElementById('main-content');
+
+    // 🎯 إذا ما لقى الحاوية بالأسماء التقليدية، يفتش بالمتصفح عن كروت الغياب وينسف الحاوية مالتهم فوراً
+    if (!mainContainer) {
+        const allElements = document.querySelectorAll('div, section, main');
+        for (let el of allElements) {
+            if (el.textContent.includes('مؤشر الغياب والحضور') || el.textContent.includes('لم يتم تسجيل الغياب')) {
+                mainContainer = el.closest('.workspace-container') || el.closest('.container') || el.parentElement;
+                if (mainContainer) break;
+            }
+        }
+    }
+
+    // إذا مالقاها، ياخذ جسم الصفحة الرئيسي لضمان الحقن
+    if (!mainContainer) { mainContainer = document.querySelector('.workspace-container') || document.body.querySelector('main') || document.getElementById('app'); }
+
+    if (!mainContainer) {
+        console.error("❌ تعذر العثور على منطقة الحقن بالصفحة");
         return;
     }
 
-    // 🔥 حقن الواجهة الأمنية الكبيرة المخصصة للباب والزوار فوراً بداخل التبويب
-    container.innerHTML = `
-    <div style="direction: rtl; text-align: right; font-family: 'Cairo', sans-serif; padding: 5px;">
+    // 🔥 نسف كروت الغياب القديمة تماماً وحقن لوحة الحارس الأمنية ودفتر الزوار الجديد
+    mainContainer.innerHTML = `
+    <div style="direction: rtl; text-align: right; font-family: 'Cairo', sans-serif; padding: 5px; width:100%;">
         
         <div id="box-live-gatepass" style="background: #fff; padding: 22px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border-top: 6px solid #ef4444; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
             <h2 style="font-size: 15px; font-weight: 900; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">
@@ -55,7 +68,7 @@ export async function initGuardModule() {
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: right;">اسم الطالب رباعي مأذون له</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: right;">اسم مستلم الطالب</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: right;">الصلة</th>
-                            <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: right;">الرقم المدني للمستلم</th>
+                            <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: right;">الالقم المدني للمستلم</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: right;">رقم الهاتف</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: right;">السبب / العذر</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: center; width: 150px;">إجراء حارس الباب</th>
@@ -127,16 +140,12 @@ export async function initGuardModule() {
 
     </div>`;
 
-    // 📡 ربط الدوال بمحرك النافذة لتعمل فوراً عند الضغط
+    // 📡 ربط الدوال بالـ window عشان تشتغل الكليكات فورا
     window.markStudentExitedLive = async function(docId, studentName) {
-        if (!confirm(`هل تؤكد مغادرة الطالب (${studentName}) أسوار المدرسة الآن برفقة ولي أمره؟`)) return;
+        if (!confirm(`هل تؤكد مغادرة الطالب (${studentName}) أسوار المدرسة الآن؟`)) return;
         try {
-            await updateDoc(doc(db, 'gatepass', docId), {
-                status: 'exited',
-                exitedAtStr: getUnifiedTimeString(),
-                guardName: currentGuardName
-            });
-            alert(`✓ تم إثبات خروج الطالب (${studentName}) وتحديث لوحة الإدارة والأخصائي فورا.`);
+            await updateDoc(doc(db, 'gatepass', docId), { status: 'exited', exitedAtStr: getUnifiedTimeString(), guardName: currentGuardName });
+            alert(`✓ تم إثبات خروج الطالب (${studentName}) بنجاح.`);
         } catch (e) { alert("خطأ: " + e.message); }
     };
 
@@ -146,18 +155,18 @@ export async function initGuardModule() {
         const civil = document.getElementById('vis-civil').value.trim();
         const phone = document.getElementById('vis-phone').value.trim();
         const reason = document.getElementById('vis-reason').value;
-        if (civil.length !== 12) { alert("⚠️ خطأ أمني: الرقم المدني الكويتي يجب أن يتكون من 12 رقم بالملي!"); return; }
+        if (civil.length !== 12) { alert("⚠️ الرقم المدني يجب أن يكون 12 رقم!"); return; }
         try {
             await addDoc(collection(db, 'visitors'), {
                 visitorName: name, civilId: civil, phone: phone, reason: reason,
-                dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(),
-                guardName: currentGuardName, createdAt: serverTimestamp()
+                dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), guardName: currentGuardName, createdAt: serverTimestamp()
             });
-            alert(`✓ تم اعتماد الزائر [ ${name} ] بنجاح، وأرشفة السجل بقاعدة البيانات.`);
+            alert(`✓ تم تسجيل الزائر [ ${name} ] بالدفتر السحابي.`);
             document.getElementById('guard-visitor-form').reset();
         } catch(err) { alert("خطأ: " + err.message); }
     };
 
+    // تشغيل بث الـ Live
     listenToTodayLiveGatepasses();
     listenToTodayVisitorsLogs();
 
@@ -178,7 +187,7 @@ export async function initGuardModule() {
                         <td style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: bold; color: #2c3e50;">${data.relative || '-'}</td>
                         <td style="padding: 12px 10px; border: 1px solid #e2e8f0;"><span style="display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; background: #10b981;">${data.relation || '-'}</span></td>
                         <td style="padding: 12px 10px; border: 1px solid #e2e8f0;"><code>${data.relativeCivilId || '-'}</code></td>
-                        <td style="padding: 12px 10px; border: 1px solid #e2e8f0;"><a href="tel:${data.relativePhone}" style="text-decoration: none; color: #3b82f6; font-weight: 700;"><i class="bi bi-telephone-outbound"></i> ${data.relativePhone || '-'}</a></td>
+                        <td style="padding: 12px 10px; border: 1px solid #e2e8f0;"><a href="tel:${data.relativePhone}" style="text-decoration: none; color: #3b82f6; font-weight: 700;"><i class="bi bi-telephone"></i> ${data.relativePhone || '-'}</a></td>
                         <td style="padding: 12px 10px; border: 1px solid #e2e8f0; color: #7f8c8d; font-size: 12px;">${data.reason || '-'}</td>
                         <td style="text-align: center; padding: 12px 10px; border: 1px solid #e2e8f0;">
                             <button style="background: #10b981; color: #fff; border: none; width: 100%; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 12px; cursor: pointer;" onclick="window.markStudentExitedLive('${d.id}', '${data.studentName || data.name}')"><i class="bi bi-check-circle-fill"></i> تم المغادرة الكلية ✅</button>
@@ -186,12 +195,7 @@ export async function initGuardModule() {
                     </tr>`;
                 }
             });
-            const liveBox = document.getElementById('box-live-gatepass');
-            if (liveBox) {
-                if (hasActivePass) { liveBox.style.animation = 'blinker 1.5s linear infinite'; liveBox.style.background = '#fef2f2'; liveBox.style.border = '2px dashed #ef4444'; }
-                else { liveBox.style.animation = 'none'; liveBox.style.background = '#fff'; liveBox.style.border = '1px solid #e2e8f0'; }
-            }
-            tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; color: #10b981; padding: 25px; font-weight: bold;">✅ البوابة آمنة تماماً. لا توجد تصاريح خروج معلقة بانتظار أهالي الطلاب حالياً.</td></tr>';
+            tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; color: #10b981; padding: 25px; font-weight: bold;">✅ البوابة آمنة. لا توجد تصاريح خروج معلقة حالياً.</td></tr>';
         });
     }
 
@@ -214,11 +218,15 @@ export async function initGuardModule() {
                     </tr>`;
                 }
             });
-            tbody.innerHTML = html || '<tr><td colspan="6" style="text-align: center; color: #999; padding: 15px; font-weight: bold;">💡 لم يتم تسجيل دخول أي زوار للمدرسة لغاية الآن اليوم.</td></tr>';
+            tbody.innerHTML = html || '<tr><td colspan="6" style="text-align: center; color: #999; padding: 15px; font-weight: bold;">💡 لم يتم تسجيل دخول أي زوار للمدرسة اليوم بعد.</td></tr>';
         });
     }
 }
 
-// 🚀 تشغيل فوري وتلقائي لتسهيل العرض عند المدير فورا عند فتح الصفحة
+// تشغيل ذاتي قسري فوري لنسف أي كروت غياب معروضة حالاً بالصفحة
 window.initGuardModule = initGuardModule;
-setTimeout(() => { initGuardModule(); }, 350);
+setTimeout(() => { initGuardModule(); }, 200);
+setInterval(() => { 
+    const isGuardActive = document.getElementById('guard-live-gatepass-tbody');
+    if (!isGuardActive) { initGuardModule(); }
+}, 2000);
