@@ -1,10 +1,10 @@
 // 🛡️ منظومة الأمن والسلامة المدرسية ودفتر الزوار الرقمي - مدرسة سالم الحسينان ٢٠٢٦
+// الكود مطور ليعمل عند الحارس المباشر أو عند استعراضه من لوحة المدير
 import { db } from '../firebase-config.js';
 import { collection, addDoc, doc, updateDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// 🚀 الدالة الرسمية المعتمدة والمطلوبة من محرك المنظومة الأساسي عندك
 export async function initGuardModule() {
-    console.log("🚀 تم تشغيل موديول الحارس المطور بنجاح عالي السرعة");
+    console.log("🚀 تم تفعيل وتشغيل موديول الحارس المطور بنجاح");
     
     let currentGuardName = "مسؤول الأمن والسلامة";
     const user = JSON.parse(localStorage.getItem('hs_user'));
@@ -26,21 +26,20 @@ export async function initGuardModule() {
         return `${hours}:${minutes} ${ampm}`;
     }
 
-    // 🕵️‍♂️ محرك الحقن الذكي المتوافق مع جميع حاويات لوحة التحكم عندك
+    // 🕵️‍♂️ استهداف حاوية تبويب الحارس بجميع مسمياتها المتوقعة في لوحة المدير
     const container = document.getElementById('tab-guard') || 
                       document.getElementById('view-guard') || 
-                      document.getElementById('main-content') ||
-                      document.querySelector('.workspace-container') ||
-                      document.getElementById('app');
+                      document.getElementById('guard-tab') ||
+                      document.getElementById('guard-content');
                       
     if (!container) {
-        console.error("❌ تعذر العثور على حاوية الحارس بالصفحة");
+        console.error("⚠️ لم يتم العثور على حاوية الحارس المخصصة في هذه الصفحة بعد.");
         return;
     }
 
-    // 🔥 نسف كروت الغياب القديمة وحقن اللوحة الأمنية الكبيرة المخصصة للباب الحين
+    // 🔥 حقن الواجهة الأمنية الكبيرة المخصصة للباب والزوار فوراً بداخل التبويب
     container.innerHTML = `
-    <div style="direction: rtl; text-align: right; font-family: 'Cairo', sans-serif; padding: 10px;">
+    <div style="direction: rtl; text-align: right; font-family: 'Cairo', sans-serif; padding: 5px;">
         
         <div id="box-live-gatepass" style="background: #fff; padding: 22px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border-top: 6px solid #ef4444; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
             <h2 style="font-size: 15px; font-weight: 900; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px;">
@@ -128,7 +127,7 @@ export async function initGuardModule() {
 
     </div>`;
 
-    // 📡 ربط الدوال بالـ window لضمان اشتغال الأزرار والـ Forms لايف فوراً
+    // 📡 ربط الدوال بمحرك النافذة لتعمل فوراً عند الضغط
     window.markStudentExitedLive = async function(docId, studentName) {
         if (!confirm(`هل تؤكد مغادرة الطالب (${studentName}) أسوار المدرسة الآن برفقة ولي أمره؟`)) return;
         try {
@@ -159,7 +158,6 @@ export async function initGuardModule() {
         } catch(err) { alert("خطأ: " + err.message); }
     };
 
-    // تشغيل الرادارات لايف
     listenToTodayLiveGatepasses();
     listenToTodayVisitorsLogs();
 
@@ -221,8 +219,6 @@ export async function initGuardModule() {
     }
 }
 
-// تشغيل ذاتي فوري احتياطي في حال استدعاء الملف بشكل مباشر
-setTimeout(() => {
-    const u = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    if (u.role === 'guard') { initGuardModule(); }
-}, 350);
+// 🚀 تشغيل فوري وتلقائي لتسهيل العرض عند المدير فورا عند فتح الصفحة
+window.initGuardModule = initGuardModule;
+setTimeout(() => { initGuardModule(); }, 350);
