@@ -85,7 +85,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
     </div>
 
     <div class="card" style="border-top: 6px solid #e67e22;">
-        <h2><i class="bi bi-pencil-square" style="color: #e67e22;"></i> دفتر تسجيل وتوثيق الزوار الموحد للمدرسة</h2>
+        <h2><i class="bi bi-pencil-square" style="color: #e67e22;"></i> notebook دفتر تسجيل وتوثيق الزوار الموحد للمدرسة</h2>
         <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تسجيل بيانات أي شخص يدخل حرم المدرسة لتوثيق التحركات الأمنية لحماية المنشأة.</p>
         
         <form id="guard-visitor-form" onsubmit="window.saveNewVisitorLogLive(event)">
@@ -117,7 +117,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
     </div>
 
     <div class="card" style="border-top: 6px solid #3b82f6; background:#f8fafc;">
-        <h2><i class="bi bi-gear-fill" style="color: #3b82f6;"></i> ⚙️ إعدادات الحساب وتغيير كلمة المرور للحارس</h2>
+        <h2><i class="bi bi-gear-fill" style="color: #3b82f6;"></i> إعدادات الحساب وتغيير كلمة المرور للحارس</h2>
         <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تعديل اسمك المعتمد بالسجلات السحابية أو تحديث باسورك السري لمنع الاختراقات.</p>
         
         <form id="guard-profile-form" onsubmit="window.updateGuardProfileLive(event)">
@@ -213,7 +213,6 @@ document.addEventListener("DOMContentLoaded", function() {
     listenToTodayVisitorsLogs();
 });
 
-// 🛠️ دالة تحديث بيانات الحارس والباسورد بالفايربيس مع قفل الحماية للدمج Smart Merge
 window.updateGuardProfileLive = async function(e) {
     e.preventDefault();
     const newName = document.getElementById('guard-profile-name').value.trim();
@@ -225,13 +224,10 @@ window.updateGuardProfileLive = async function(e) {
         const userDocRef = doc(db, 'users', currentGuardId);
         let updatedFields = { name: newName };
         
-        // إذا كتب باسورد يديد نحدثه، غيره ما نلمسه
         if (newPass) { updatedFields.plainPass = newPass; }
 
-        // استخدام التحديث الذكي المعزول لحماية الحقول
         await updateDoc(userDocRef, updatedFields);
         
-        // تحديث اللوكال ستورج بالجلسة الحالية فوراً
         const localData = JSON.parse(localStorage.getItem('hs_user') || '{}');
         localData.name = newName;
         localStorage.setItem('hs_user', JSON.stringify(localData));
@@ -242,7 +238,6 @@ window.updateGuardProfileLive = async function(e) {
     } catch (err) { alert("❌ خطأ سحابي أثناء الحفظ: " + err.message); }
 };
 
-// 🚨 دالة إرسال نداء الطوارئ الفوري للإدارة
 window.triggerEmergencyAlert = async function() {
     if(!confirm("🚨 هل أنت متأكد من رغبتك في إطلاق نداء استغاثة عاجل لمكتب المدير؟")) return;
     try {
