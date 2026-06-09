@@ -122,13 +122,16 @@ window.handleSystemLoginLive = async function(e) {
             role: String(userData.role || '').trim().toLowerCase()
         }));
 
-        const administrativeRoles = ['admin', 'assistant_manager', 'wing_supervisor', 'guard'];
+        // عزل رتبة الحارس عن توجيه الإدارة المركزي
+        const administrativeRoles = ['admin', 'assistant_manager', 'wing_supervisor'];
         const cleanRole = String(userData.role || '').trim().toLowerCase();
 
         if (cleanRole === 'teacher') {
             window.location.replace('teacher.html');
         } else if (cleanRole === 'social_worker') {
             window.location.replace('social.html');
+        } else if (cleanRole === 'guard') {
+            window.location.replace('guard.html'); // 🚀 طيران مباشر لصفحة الحارس المستقلة الجديدة
         } else if (administrativeRoles.includes(cleanRole)) {
             window.location.replace('admin.html');
         } else {
