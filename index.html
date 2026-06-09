@@ -69,71 +69,76 @@ window.handleSystemLoginLive = async function(e) {
     const submitBtn = document.getElementById('btn-submit');
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص الحماية السحابية المسرّعة...`;
+    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص السجلات...`;
 
     try {
         let userData = null;
+        let findMethod = "";
 
-        // 🕵️‍♂️ 1. المسار الصاروخي الأول: جلب مباشر وخاطف عن طريق الـ Document ID
+        // 🕵️‍♂️ 1. الفحص بالـ Document ID مباشر
         const userDocRef = doc(db, 'users', userId);
         const docSnap = await getDoc(userDocRef);
 
         if (docSnap.exists()) {
             userData = docSnap.data();
+            findMethod = "Document ID مباشر";
         } else {
-            // 🚀 2. المسار المطور عالي السرعة: الفحص الذكي الموجه بالـ Query دون تحميل الكولكشن بالكامل
-            // فحص أولاً إذا كان معرف المستخدم مخزن كنص (String)
+            // 🚀 2. الفحص كـ حقل نصي داخلي userId
             const qString = query(collection(db, 'users'), where('userId', '==', userId));
             const snapString = await getDocs(qString);
             
             if (!snapString.empty) {
                 userData = snapString.docs[0].data();
+                findMethod = "حقل userId نصي";
             } else {
-                // فحص ثانياً إذا كان المعرف مخزن كرقم (Number) لحل مشكلة يوزر 6464 نهائياً
+                // 🔄 3. الفحص كـ حقل رقمي داخلي userId
                 if (!isNaN(userId)) {
                     const qNumber = query(collection(db, 'users'), where('userId', '==', Number(userId)));
                     const snapNumber = await getDocs(qNumber);
                     if (!snapNumber.empty) {
                         userData = snapNumber.docs[0].data();
+                        findMethod = "حقل userId رقمي";
                     }
                 }
             }
         }
 
-        // قفل الأمان إذا كان الحساب مو موجود نهائياً بالسيرفر
+        // 🛑 إذا لم يتم العثور على الحساب نهائياً بالسيرفر
         if (!userData) {
-            alert("🔒 خطأ: معرف المستخدم غير مسجل بالنظام السحابي للمدرسة.");
+            alert(`🔒 خطأ: المعرف (${userId}) غير مسجل نهائياً بالسيرفر، شيك على خانات الـ Firebase تأكد من وجود وثيقة بهذا الرقم.`);
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
             return;
         }
 
-        // 🔐 تحصين مطابقة كلمة المرور وتوحيدها كنصوص مسحوبة بدقة من الفايربيس
+        // 🔐 فحص وتوحيد كلمة المرور
         const dbPass = String(userData.plainPass !== undefined ? userData.plainPass : '').trim();
         if (dbPass !== userPass) {
-            alert("🔒 خطأ: كلمة المرور المدخلة غير صحيحة، يرجى إعادة المحاولة.");
+            alert(`🔒 خطأ في كلمة المرور لليوزر (${userId})!\n\nالمسجل بالسيرفر هو: [ ${dbPass} ]\nواللي أنت كتبته بالحقل هو: [ ${userPass} ]\n\nتأكد من مطابقتهم بالـ Firebase.`);
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
             return;
         }
 
-        // حفظ جلسة العمل الحالية في الجهاز المضيف
+        // حفظ الجلسة
         localStorage.setItem('hs_user', JSON.stringify({
             userId: userData.userId || userId,
             name: userData.name || "عضو المنظومة",
-            role: userData.role
+            role: String(userData.role || '').trim()
         }));
 
         const administrativeRoles = ['admin', 'assistant_manager', 'wing_supervisor', 'guard'];
+        const cleanRole = String(userData.role || '').trim().toLowerCase();
 
-        if (userData.role === 'teacher') {
+        // 🎯 كاشف التوجيه - يخبرك وين قاعد يوديك السيستم بالضبط
+        if (cleanRole === 'teacher') {
             window.location.replace('teacher.html');
-        } else if (userData.role === 'social_worker') {
+        } else if (cleanRole === 'social_worker') {
             window.location.replace('social.html');
-        } else if (administrativeRoles.includes(userData.role)) {
+        } else if (administrativeRoles.includes(cleanRole)) {
             window.location.replace('admin.html');
         } else {
-            alert("🔒 خطأ وظيفي: هذا الحساب لا يمتلك رتبة صلاحيات معتمدة داخل المنظومة.");
+            alert(`🔒 خطأ بالصلاحيات:\nلقينا اليوزر والباسورد صح، بس رتبته المخزنة بالـ Firebase هي: [ ${userData.role} ] وهي رتبة غير مدعومة بالتوجيه حالياً، تأكد من كتابتها social_worker بالحروف الصغيرة.`);
             localStorage.removeItem('hs_user');
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
