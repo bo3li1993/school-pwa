@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+PE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -60,7 +60,7 @@ body { background: var(--bg-light); display: flex; align-items: center; justify-
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 window.handleSystemLoginLive = async function(e) {
     e.preventDefault();
@@ -72,21 +72,26 @@ window.handleSystemLoginLive = async function(e) {
     submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص سجلات الحماية والاتصال...`;
 
     try {
-        // فحص وثيقة المستخدم مباشرة بداخل كولكشن المستخدمين الموحد
-        const userDocRef = doc(db, 'users', userId);
-        const docSnap = await getDoc(userDocRef);
+        // 🔍 البحث بـ userId كحقل وليس كـ Document ID
+        const snap = await getDocs(collection(db, 'users'));
+        let userData = null;
 
-        if (!docSnap.exists()) {
+        snap.forEach(doc => {
+            const d = doc.data();
+            if (String(d.userId || '').trim() === userId) {
+                userData = d;
+            }
+        });
+
+        if (!userData) {
             alert("🔒 خطأ: معرف المستخدم غير مسجل بالنظام السحابي للمدرسة.");
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
             return;
         }
 
-        const userData = docSnap.data();
-
         // مطابقة كلمة المرور المدخلة نصياً
-        if (userData.plainPass !== userPass) {
+        if (String(userData.plainPass || '').trim() !== userPass) {
             alert("🔒 خطأ: كلمة المرور المدخلة غير صحيحة، يرجى إعادة المحاولة.");
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
