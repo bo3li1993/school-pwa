@@ -19,7 +19,6 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; flex-direction: column; min-height: 100vh; direction: rtl; }
 
-/* هيدر أمني خاص بالحارس */
 .header-nav { background: var(--primary-color); color: #fff; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--hover-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 .header-nav h1 { font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
 .header-nav p { font-size: 11px; opacity: 0.8; font-weight: 600; margin-top: 2px; }
@@ -28,7 +27,6 @@ body { background: var(--bg-light); display: flex; flex-direction: column; min-h
 .card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; text-align: right; }
 .card h2 { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
 
-/* أزرار وخانات كبيرة جداً مخصصة للمس السريع بالآيفون لمنع الأخطاء تحت الشمس */
 input, select { width: 100%; padding: 16px; border: 2px solid #cbd5e1; border-radius: 12px; margin-bottom: 15px; outline: none; font-weight: 700; font-size: 15px; color: #1e293b; background: #fff; text-align: right; transition: 0.2s; }
 input:focus, select:focus { border-color: var(--hover-color); box-shadow: 0 0 0 4px rgba(230,126,34,0.05); }
 
@@ -39,11 +37,6 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: rig
 th, td { padding: 16px 12px; border: 1px solid #e2e8f0; font-weight: 700; }
 th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
-.badge { display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; }
-.badge.danger { background: var(--danger-color); }
-.badge.success { background: var(--success-color); }
-
-/* تأثير الوميض الذكي لشد انتباه الحارس فوراً (Live Flash Alert) */
 @keyframes blinker { 50% { opacity: 0.3; background: #fff0f0; } }
 .blink-alert { animation: blinker 1.5s linear infinite; border: 2px dashed var(--danger-color) !important; }
 </style>
@@ -55,10 +48,16 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         <h1 id="lbl-guard-header"><i class="bi bi-shield-lock-fill" style="color:var(--hover-color);"></i> بوابة الأمن والسلامة المدرسية</h1>
         <p>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</p>
     </div>
-    <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:10px 18px; font-size:13px; font-weight:bold; border-radius:8px; display:flex; align-items:center; gap:5px;"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</button>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:10px 18px; font-size:13px; font-weight:bold; border-radius:8px; display:flex; align-items:center; gap:5px;"><i class="bi bi-box-arrow-right"></i> خروج</button>
+    </div>
 </div>
 
 <div class="workspace-container">
+
+    <div class="card" style="border: 2px solid var(--danger-color); background: #fff5f5; text-align:center; padding:15px;">
+        <button onclick="window.triggerEmergencyAlert()" style="background:var(--danger-color); width:100%; padding:15px; font-size:16px; font-weight:900; border-radius:10px; box-shadow:0 4px 10px rgba(239,68,68,0.3);"><i class="bi bi-exclamation-triangle-fill"></i> 🚨 إطلاق نداء طوارئ عاجل لمكتب المدير والإدارة</button>
+    </div>
 
     <div id="box-live-gatepass" class="card" style="border-top: 6px solid var(--danger-color);">
         <h2><i class="bi bi-bell-fill" style="color: var(--danger-color);"></i> تصاريح خروج الطلاب المعتمدة الحين (لايف من الأخصائي)</h2>
@@ -79,7 +78,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     </tr>
                 </thead>
                 <tbody id="guard-live-gatepass-tbody">
-                    <tr><td colspan="8" style="text-align: center; color: #7f8c8d; padding: 30px; font-weight: bold;">⏳ جاري الاتصال بالسيرفر المركزي وفحص رادار الأخصائي...</td></tr>
+                    <tr><td colspan="8" style="text-align: center; color: #7f8c8d; padding: 30px; font-weight: bold;">⏳ جاري فحص رادار الأخصائي وبث الاستئذانات...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -87,13 +86,13 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
     <div class="card" style="border-top: 6px solid #e67e22;">
         <h2><i class="bi bi-pencil-square" style="color: #e67e22;"></i> دفتر تسجيل وتوثيق الزوار الموحد للمدرسة</h2>
-        <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تسجيل بيانات أي شخص يدخل حرم المدرسة لتوثيق التحركات الأمنية بوزارة التربية لحماية المنشأة.</p>
+        <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تسجيل بيانات أي شخص يدخل حرم المدرسة لتوثيق التحركات الأمنية لحماية المنشأة.</p>
         
         <form id="guard-visitor-form" onsubmit="window.saveNewVisitorLogLive(event)">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 5px;">
                 <div>
                     <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;"><i class="bi bi-person-fill"></i> اسم الزائر رباعي:</label>
-                    <input type="text" id="vis-name" placeholder="اكتب اسم الزائر بالكامل" Republic required>
+                    <input type="text" id="vis-name" placeholder="اكتب اسم الزائر بالكامل" required>
                 </div>
                 <div>
                     <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;"><i class="bi bi-card-list"></i> الرقم المدني للزائر (12 رقم):</label>
@@ -113,7 +112,26 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     </select>
                 </div>
             </div>
-            <button type="submit" style="width: 100%; background: #e67e22; color: #fff; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 16px; box-shadow: 0 4px 10px rgba(230,126,34,0.15);"><i class="bi bi-shield-check"></i> حفظ وأرشفة بيانات الزائر الحين وتصفير الخانات</button>
+            <button type="submit" style="width: 100%; background: #e67e22; color: #fff; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 16px;"><i class="bi bi-shield-check"></i> حفظ وأرشفة بيانات الزائر الحين وتصفير الخانات</button>
+        </form>
+    </div>
+
+    <div class="card" style="border-top: 6px solid #3b82f6; background:#f8fafc;">
+        <h2><i class="bi bi-gear-fill" style="color: #3b82f6;"></i> ⚙️ إعدادات الحساب وتغيير كلمة المرور للحارس</h2>
+        <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تعديل اسمك المعتمد بالسجلات السحابية أو تحديث باسورك السري لمنع الاختراقات.</p>
+        
+        <form id="guard-profile-form" onsubmit="window.updateGuardProfileLive(event)">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 5px;">
+                <div>
+                    <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;">اسم مسؤول الأمن الحالي:</label>
+                    <input type="text" id="guard-profile-name" placeholder="اكتب اسمك الكامل" required>
+                </div>
+                <div>
+                    <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;">كلمة المرور الجديدة (Password):</label>
+                    <input type="text" id="guard-profile-pass" placeholder="اتركها فاضية إذا لا ترغب بالتغيير">
+                </div>
+            </div>
+            <button type="submit" style="background:#3b82f6; color:#fff; width:100%; padding:14px; font-size:14px; border-radius:10px;"><i class="bi bi-cloud-arrow-up-fill"></i> تحديث بيانات الملف الشخصي وكلمة المرور فوراً</button>
         </form>
     </div>
 
@@ -123,16 +141,16 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
             <table>
                 <thead>
                     <tr style="background: #f1f5f9; color: #1e293b;">
-                        <th style="width:110px;">توقيت الدخول</th>
+                        <th>توقيت الدخول</th>
                         <th>اسم الزائر الكريم</th>
-                        <th style="width:140px;">الرقم المدني للزائر</th>
-                        <th style="width:120px;">رقم التلفون</th>
+                        <th>الرقم المدني للزائر</th>
+                        <th>رقم التلفون</th>
                         <th>سبب وهدف الزيارة الموثق</th>
-                        <th style="width:140px;">مسؤول الأمن الراصد</th>
+                        <th>مسؤول الأمن الراصد</th>
                     </tr>
                 </thead>
                 <tbody id="guard-visitors-archive-tbody">
-                    <tr><td colspan="6" style="text-align: center; color: #999; padding: 15px; font-weight: bold;">⏳ جاري جلب دفتر الزوار من السيرفر السحابي...</td></tr>
+                    <tr><td colspan="6" style="text-align: center; color: #999; padding: 15px; font-weight: bold;">⏳ جاري جلب دفتر الزوار...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -144,6 +162,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 import { db } from './js/firebase-config.js';
 import { collection, addDoc, doc, updateDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+let currentGuardId = "";
 let currentGuardName = "حارس الأمن";
 let lastCount = 0;
 
@@ -163,7 +182,6 @@ function getUnifiedTimeString() {
     return `${hours}:${minutes} ${ampm}`;
 }
 
-// 🔊 جرس تنبيه أمني ذكي يشتغل بدون ملفات صوتية للتنبيه عند نزول إذن خروج جديد
 function playSecurityBeep() {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -172,11 +190,11 @@ function playSecurityBeep() {
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // نغمة حادة لتنبيه الحارس
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
         gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + 0.3);
-    } catch (e) { console.log("Audio not allowed yet"); }
+    } catch (e) { }
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -185,27 +203,69 @@ document.addEventListener("DOMContentLoaded", function() {
         window.location.replace('index.html');
         return;
     }
+    currentGuardId = user.userId;
     currentGuardName = user.name || "حارس الأمن";
+    
     document.getElementById('lbl-guard-header').innerHTML = `<i class="bi bi-shield-lock-fill" style="color:var(--hover-color);"></i> بوابة الأمن: أ. ${currentGuardName}`;
+    document.getElementById('guard-profile-name').value = currentGuardName;
     
     listenToTodayLiveGatepasses();
     listenToTodayVisitorsLogs();
 });
 
-// 🟢 3️⃣ زر "تم المغادرة بنجاح" الكبير الأخضر للطالب
-window.markStudentExitedLive = async function(docId, studentName) {
-    if (!confirm(`هل تؤكد مغادرة الطالب (${studentName}) أسوار المدرسة الآن برفقة ولي أمره؟`)) return;
+// 🛠️ دالة تحديث بيانات الحارس والباسورد بالفايربيس مع قفل الحماية للدمج Smart Merge
+window.updateGuardProfileLive = async function(e) {
+    e.preventDefault();
+    const newName = document.getElementById('guard-profile-name').value.trim();
+    const newPass = document.getElementById('guard-profile-pass').value.trim();
+
+    if (!newName) { alert("⚠️ خطأ: الاسم مطلوب ولا يمكن تركه فارغاً."); return; }
+
     try {
-        await updateDoc(doc(db, 'gatepass', docId), { 
-            status: 'exited', 
-            exitedAtStr: getUnifiedTimeString(), 
-            guardName: currentGuardName 
-        });
-        alert(`✓ تم إثبات خروج الطالب (${studentName}) وتحديث لوحة الإدارة والأخصائي فورا.`);
-    } catch (e) { alert("خطأ سحابي: " + e.message); }
+        const userDocRef = doc(db, 'users', currentGuardId);
+        let updatedFields = { name: newName };
+        
+        // إذا كتب باسورد يديد نحدثه، غيره ما نلمسه
+        if (newPass) { updatedFields.plainPass = newPass; }
+
+        // استخدام التحديث الذكي المعزول لحماية الحقول
+        await updateDoc(userDocRef, updatedFields);
+        
+        // تحديث اللوكال ستورج بالجلسة الحالية فوراً
+        const localData = JSON.parse(localStorage.getItem('hs_user') || '{}');
+        localData.name = newName;
+        localStorage.setItem('hs_user', JSON.stringify(localData));
+        
+        alert("✓ تم تحديث بياناتك وكلمة المرور بنجاح تام بقاعدة البيانات السحابية.");
+        document.getElementById('guard-profile-pass').value = '';
+        window.location.reload();
+    } catch (err) { alert("❌ خطأ سحابي أثناء الحفظ: " + err.message); }
 };
 
-// 💾 2️⃣ حفظ وأرشفة بيانات الزائر وتصفير الخانات فوراً بالدفتر السحابي
+// 🚨 دالة إرسال نداء الطوارئ الفوري للإدارة
+window.triggerEmergencyAlert = async function() {
+    if(!confirm("🚨 هل أنت متأكد من رغبتك في إطلاق نداء استغاثة عاجل لمكتب المدير؟")) return;
+    try {
+        await addDoc(collection(db, 'system_alerts'), {
+            title: "🚨 نداء طوارئ عاجل عند البوابة الخارجية",
+            sender: currentGuardName,
+            timeStr: getUnifiedTimeString(),
+            dateStr: getUnifiedDateString(),
+            status: 'active',
+            createdAt: serverTimestamp()
+        });
+        alert("✓ طار البلاغ! تم إرسال إشعار الطوارئ الوميضي للوحة التحكم المركزية للمدير والإدارة الحين.");
+    } catch(e) { alert("خطأ: " + e.message); }
+};
+
+window.markStudentExitedLive = async function(docId, studentName) {
+    if (!confirm(`هل تؤكد مغادرة الطالب (${studentName}) أسوار المدرسة الآن؟`)) return;
+    try {
+        await updateDoc(doc(db, 'gatepass', docId), { status: 'exited', exitedAtStr: getUnifiedTimeString(), guardName: currentGuardName });
+        alert(`✓ تم إثبات خروج الطالب (${studentName}) وتحديث لوحة المنظومة.`);
+    } catch (e) { alert("خطأ: " + e.message); }
+};
+
 window.saveNewVisitorLogLive = async function(e) {
     e.preventDefault();
     const name = document.getElementById('vis-name').value.trim();
@@ -213,45 +273,36 @@ window.saveNewVisitorLogLive = async function(e) {
     const phone = document.getElementById('vis-phone').value.trim();
     const reason = document.getElementById('vis-reason').value;
     
-    if (civil.length !== 12) { alert("⚠️ خطأ أمني: الرقم المدني الكويتي يجب أن يتكون من 12 رقم بالملي!"); return; }
+    if (civil.length !== 12) { alert("⚠️ الرقم المدني الكويتي يجب أن يتكون من 12 رقم!"); return; }
     try {
         await addDoc(collection(db, 'visitors'), {
             visitorName: name, civilId: civil, phone: phone, reason: reason,
             dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), guardName: currentGuardName, createdAt: serverTimestamp()
         });
-        alert(`✓ تم اعتماد الزائر [ ${name} ] بنجاح، وأرشفة السجل بقاعدة بيانات المنشأة وتصفير الخانات.`);
+        alert(`✓ تم حفظ وأرشفة بيانات الزائر بنجاح.`);
         document.getElementById('guard-visitor-form').reset();
-    } catch(err) { alert("خطأ في الحفظ السحابي: " + err.message); }
+    } catch(err) { alert("خطأ: " + err.message); }
 };
 
 function listenToTodayLiveGatepasses() {
     const tbody = document.getElementById('guard-live-gatepass-tbody');
     if (!tbody) return;
-    
     onSnapshot(collection(db, 'gatepass'), (snapshot) => {
-        let html = '';
-        let currentActiveCount = 0;
-        let hasActivePass = false;
-        
+        let html = ''; let currentActiveCount = 0; let hasActivePass = false;
         snapshot.forEach(d => {
             const data = d.data();
             if (data.dateStr === getUnifiedDateString() && data.status === 'approved') {
-                hasActivePass = true;
-                currentActiveCount++;
-                
-                // 4️⃣ القائمة الأمنية السوداء والتحذير الصارم (Blacklist Alert)
+                hasActivePass = true; currentActiveCount++;
                 let rowStyle = 'border-bottom: 2px solid #fee2e2; background: #fffdfd;';
                 let nameStyle = 'color: #ef4444; font-size: 15px; font-weight:900;';
                 let warningBadge = '';
                 
-                // رادار كشف الكلمات الخطرة الصادر من مكتب الأخصائي أو الإدارة
                 const unsafeReason = String(data.reason || '');
                 if (unsafeReason.includes('منع') || unsafeReason.includes('تحذير') || unsafeReason.includes('خلاف') || unsafeReason.includes('مشكلة')) {
                     rowStyle = 'border-bottom: 4px solid #ef4444; background: #fef2f2;';
                     nameStyle = 'color: #b91c1c; font-size: 16px; font-weight:900;';
-                    warningBadge = `<br><span style="background:#b91c1c; color:#fff; font-size:11px; padding:3px 8px; border-radius:4px; font-weight:bold; display:inline-block; margin-top:4px;"><i class="bi bi-exclamation-octagon-fill"></i> 🛑 حظر: راجع الإدارة فوراً</span>`;
+                    warningBadge = `<br><span style="background:#b91c1c; color:#fff; font-size:11px; padding:3px 8px; border-radius:4px; font-weight:bold; display:inline-block; margin-top:4px;"><i class="bi bi-exclamation-octagon-fill"></i> حظر: مراجعة الإدارة</span>`;
                 }
-
                 html += `
                 <tr style="${rowStyle}">
                     <td style="text-align: center; vertical-align:middle;"><span style="display: inline-block; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; color: #fff; background: #ef4444;">${data.classId || '-'}</span></td>
@@ -262,21 +313,15 @@ function listenToTodayLiveGatepasses() {
                     <td style="vertical-align:middle;"><a href="tel:${data.relativePhone}" style="text-decoration: none; color: #3b82f6; font-weight: 700; font-size:14px;"><i class="bi bi-telephone-outbound-fill"></i> ${data.relativePhone || '-'}</a></td>
                     <td style="color: #475569; font-size: 13px; font-weight:bold; vertical-align:middle;">${data.reason || '-'}</td>
                     <td style="text-align: center; vertical-align:middle;">
-                        <button style="background: #10b981; color: #fff; border: none; width: 100%; padding: 15px 10px; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 4px 6px rgba(16,185,129,0.15);" onclick="window.markStudentExitedLive('${d.id}', '${data.studentName || data.name}')"><i class="bi bi-check-circle-fill"></i> تم المغادرة بنجاح ✅</button>
+                        <button style="background: #10b981; color: #fff; border: none; width: 100%; padding: 15px 10px; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer;" onclick="window.markStudentExitedLive('${d.id}', '${data.studentName || data.name}')"><i class="bi bi-check-circle-fill"></i> تم المغادرة بنجاح ✅</button>
                     </td>
                 </tr>`;
             }
         });
-        
-        // 1️⃣ تفعيل صندوق "الخروج العاجل" الوميضي (Live Flash Alert) وتفعيل الصوت
         const liveBox = document.getElementById('box-live-gatepass');
         if (liveBox) {
-            if (hasActivePass) { 
-                liveBox.classList.add('blink-alert'); 
-                if (currentActiveCount > lastCount) { playSecurityBeep(); } // إطلاق الجرس فوراً لو نزل إذن يديد
-            } else { 
-                liveBox.classList.remove('blink-alert'); 
-            }
+            if (hasActivePass) { liveBox.classList.add('blink-alert'); if (currentActiveCount > lastCount) { playSecurityBeep(); } }
+            else { liveBox.classList.remove('blink-alert'); }
         }
         lastCount = currentActiveCount;
         tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; color: #10b981; padding: 30px; font-weight: bold; font-size:14px;">✅ البوابة آمنة تماماً ومقفلة. لا توجد تصاريح خروج معلقة بانتظار أهالي الطلاب حالياً.</td></tr>';
@@ -286,7 +331,6 @@ function listenToTodayLiveGatepasses() {
 function listenToTodayVisitorsLogs() {
     const tbody = document.getElementById('guard-visitors-archive-tbody');
     if (!tbody) return;
-    
     onSnapshot(collection(db, 'visitors'), (snapshot) => {
         let html = '';
         snapshot.forEach(doc => {
