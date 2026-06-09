@@ -60,7 +60,7 @@ body { background: var(--bg-light); display: flex; align-items: center; justify-
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { doc, getDoc, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { doc, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 window.handleSystemLoginLive = async function(e) {
     e.preventDefault();
@@ -69,29 +69,38 @@ window.handleSystemLoginLive = async function(e) {
     const submitBtn = document.getElementById('btn-submit');
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص سجلات الحماية والاتصال...`;
+    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص الحماية السحابية المسرّعة...`;
 
     try {
         let userData = null;
 
-        // 🕵️‍♂️ الخطوة 1: جلب البيانات مباشرة عن طريق Document ID (أسرع وأضمن)
+        // 🕵️‍♂️ 1. المسار الصاروخي الأول: جلب مباشر وخاطف عن طريق الـ Document ID
         const userDocRef = doc(db, 'users', userId);
         const docSnap = await getDoc(userDocRef);
 
         if (docSnap.exists()) {
             userData = docSnap.data();
         } else {
-            // 🔄 الخطوة 2 (الخطة البديلة): إذا مو مخزن كـ Document ID، نجرد الحقول الداخلية للكولكشن بالكامل
-            const snap = await getDocs(collection(db, 'users'));
-            snap.forEach(doc => {
-                const d = doc.data();
-                if (String(d.userId || '').trim() === userId) {
-                    userData = d;
+            // 🚀 2. المسار المطور عالي السرعة: الفحص الذكي الموجه بالـ Query دون تحميل الكولكشن بالكامل
+            // فحص أولاً إذا كان معرف المستخدم مخزن كنص (String)
+            const qString = query(collection(db, 'users'), where('userId', '==', userId));
+            const snapString = await getDocs(qString);
+            
+            if (!snapString.empty) {
+                userData = snapString.docs[0].data();
+            } else {
+                // فحص ثانياً إذا كان المعرف مخزن كرقم (Number) لحل مشكلة يوزر 6464 نهائياً
+                if (!isNaN(userId)) {
+                    const qNumber = query(collection(db, 'users'), where('userId', '==', Number(userId)));
+                    const snapNumber = await getDocs(qNumber);
+                    if (!snapNumber.empty) {
+                        userData = snapNumber.docs[0].data();
+                    }
                 }
-            });
+            }
         }
 
-        // إذا ما لقيناه بالطريقتين يعطي قفل حماية
+        // قفل الأمان إذا كان الحساب مو موجود نهائياً بالسيرفر
         if (!userData) {
             alert("🔒 خطأ: معرف المستخدم غير مسجل بالنظام السحابي للمدرسة.");
             submitBtn.disabled = false;
@@ -99,8 +108,9 @@ window.handleSystemLoginLive = async function(e) {
             return;
         }
 
-        // 🔐 تحصين المقارنة وتوحيد القيم لنصوص (Text) لمنع مشاكل الـ Numbers في الفايربيس
-        if (String(userData.plainPass || '').trim() !== userPass) {
+        // 🔐 تحصين مطابقة كلمة المرور وتوحيدها كنصوص مسحوبة بدقة من الفايربيس
+        const dbPass = String(userData.plainPass !== undefined ? userData.plainPass : '').trim();
+        if (dbPass !== userPass) {
             alert("🔒 خطأ: كلمة المرور المدخلة غير صحيحة، يرجى إعادة المحاولة.");
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
@@ -114,7 +124,6 @@ window.handleSystemLoginLive = async function(e) {
             role: userData.role
         }));
 
-        // محرك التوجيه الإداري المطور والمفصل بالكامل لرتبة الأخصائي وباقي الرتب
         const administrativeRoles = ['admin', 'assistant_manager', 'wing_supervisor', 'guard'];
 
         if (userData.role === 'teacher') {
