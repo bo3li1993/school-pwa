@@ -55,10 +55,12 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <div class="workspace-container">
 
+    <!-- كرت نداء الطوارئ العاجل -->
     <div class="card" style="border: 2px solid var(--danger-color); background: #fff5f5; text-align:center; padding:15px;">
         <button onclick="window.triggerEmergencyAlert()" style="background:var(--danger-color); width:100%; padding:15px; font-size:16px; font-weight:900; border-radius:10px; box-shadow:0 4px 10px rgba(239,68,68,0.3);"><i class="bi bi-exclamation-triangle-fill"></i> 🚨 إطلاق نداء طوارئ عاجل لمكتب المدير والإدارة</button>
     </div>
 
+    <!-- كرت رادار الطلاب لايف -->
     <div id="box-live-gatepass" class="card" style="border-top: 6px solid var(--danger-color);">
         <h2><i class="bi bi-bell-fill" style="color: var(--danger-color);"></i> تصاريح خروج الطلاب المعتمدة الحين (لايف من الأخصائي)</h2>
         <p style="font-size: 11px; color: #555; font-weight: bold; margin-bottom: 15px;">⚠️ إجراء أمني صارم: يرجى مطابقة هوية مستلم الطالب بالبطاقة المدنية الأصلية قبل فتح البوابة الخارجية.</p>
@@ -84,8 +86,9 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
+    <!-- كرت تسجيل الزوار -->
     <div class="card" style="border-top: 6px solid #e67e22;">
-        <h2><i class="bi bi-pencil-square" style="color: #e67e22;"></i> notebook دفتر تسجيل وتوثيق الزوار الموحد للمدرسة</h2>
+        <h2><i class="bi bi-pencil-square" style="color: #e67e22;"></i> دفتر تسجيل وتوثيق الزوار الموحد للمدرسة</h2>
         <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تسجيل بيانات أي شخص يدخل حرم المدرسة لتوثيق التحركات الأمنية لحماية المنشأة.</p>
         
         <form id="guard-visitor-form" onsubmit="window.saveNewVisitorLogLive(event)">
@@ -116,6 +119,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </form>
     </div>
 
+    <!-- كرت الإعدادات الشخصية للحارس وتغيير الباسورد -->
     <div class="card" style="border-top: 6px solid #3b82f6; background:#f8fafc;">
         <h2><i class="bi bi-gear-fill" style="color: #3b82f6;"></i> إعدادات الحساب وتغيير كلمة المرور للحارس</h2>
         <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تعديل اسمك المعتمد بالسجلات السحابية أو تحديث باسورك السري لمنع الاختراقات.</p>
@@ -135,6 +139,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </form>
     </div>
 
+    <!-- كرت جدول الأرشيف لايف للزوار -->
     <div class="card" style="border-top: 6px solid var(--primary-color);">
         <h2><i class="bi bi-journal-text"></i> السجل المركزي لحركة الزوار اليوم (تحديث حي مباشر)</h2>
         <div style="overflow-x: auto;">
@@ -239,7 +244,7 @@ window.updateGuardProfileLive = async function(e) {
 };
 
 window.triggerEmergencyAlert = async function() {
-    if(!confirm("🚨 هل أنت متأكد من رغبتك في إطلاق نداء استغاثة عاجل لمكتب المدير؟")) return;
+    if(!confirm("🚨 هل أنت متأكد من رغبتك في إطلاق نداء استغاثة عاجل لمكتب المدير?")) return;
     try {
         await addDoc(collection(db, 'system_alerts'), {
             title: "🚨 نداء طوارئ عاجل عند البوابة الخارجية",
