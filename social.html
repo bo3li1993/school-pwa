@@ -65,6 +65,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <div class="workspace-container">
 
+    <!-- صف الكروت الإحصائية الحية مالت السيرفر -->
     <div class="stats-grid">
         <div class="stat-card red">
             <div><h3>إجمالي المخالفات السلوكية المرصودة</h3><div class="num" id="lbl-stat-negative">0</div></div>
@@ -80,6 +81,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
+    <!-- منيو التبويبات الخمسة المكتملة -->
     <div class="tabs-nav">
         <div class="tab-btn active" id="tab-btn-gatepass" onclick="window.switchTabView('view-gatepass')"><i class="bi bi-ticket-perforated-fill"></i> حقيبة الاستئذان</div>
         <div class="tab-btn" id="tab-btn-behavior" onclick="window.switchTabView('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
@@ -88,6 +90,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         <div class="tab-btn" id="tab-btn-settings" onclick="window.switchTabView('view-settings')"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
     </div>
 
+    <!-- 🎫 التبويب الأول: حقيبة الاستئذان -->
     <div id="view-gatepass" class="tab-view active-view">
         <div class="card" style="border-top: 4px solid var(--success-color);">
             <h2><i class="bi bi-card-list"></i> إصدار بطاقة تصريح خروج مبكر (استئذان سحابي لايف للباب)</h2>
@@ -159,6 +162,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
+    <!-- 🛡️ التبويب الثاني: رصد ومتابعة السلوك -->
     <div id="view-behavior" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--danger-color);">
             <h2><i class="bi bi-shield-exclamation"></i> وثيقة رصد وإثبات حالة سلوكية ومدرسية للطلاب</h2>
@@ -214,6 +218,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
+    <!-- 👤 التبويب الثالث: ملف الطالب الشامل المطور -->
     <div id="view-profile" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--warning-color);">
             <h2><i class="bi bi-person-bounding-box"></i> البحث الذكي وفحص ملف الطالب الشامل (رادار ٣٦٠ درجة)</h2>
@@ -245,6 +250,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                 <p style="font-size:13px; font-weight:700; color:#475569;" id="lbl-profile-student-class">الفصل المعتمد: </p>
             </div>
 
+            <!-- سجل الانتظام والغياب والتأخير الصباحي -->
             <div class="card" style="border-right: 5px solid #64748b;">
                 <h4 style="font-size:14px; font-weight:900; color:#475569; margin-bottom:10px;"><i class="bi bi-calendar-x-fill"></i> سجل الانتظام، الغياب والتأخير الصباحي المباشر</h4>
                 <div style="overflow-x: auto;">
@@ -288,6 +294,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
+    <!-- 📋 التبويب الرابع: المراسلات والتعاميم الفورية -->
     <div id="view-messages" class="tab-view">
         <div class="card" style="border-top: 4px solid #a855f7;">
             <h2><i class="bi bi-chat-right-quote"></i> إصدار وبث تعميم / تنبيه إداري فوري بالمنظومة</h2>
@@ -327,6 +334,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
+    <!-- ⚙️ التبويب الخامس: إعدادات حساب الأخصائي وتغيير باسورده -->
     <div id="view-settings" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--primary-color); background:#f8fafc;">
             <h2><i class="bi bi-sliders2"></i> إعدادات ملف الأخصائي وتعديل كلمة المرور</h2>
@@ -386,6 +394,7 @@ window.switchTabView = function(viewId) {
     if(viewId === 'view-settings') document.getElementById('tab-btn-settings').classList.add('active');
 };
 
+// 🎯 محرك السحب المركزي المفرز أبجدياً بشكل صحيح وثابت
 window.populateStudentsDropdownUnified = async function(classSelectId, studentSelectId) {
     const classId = document.getElementById(classSelectId).value;
     const nameSelect = document.getElementById(studentSelectId);
@@ -407,11 +416,12 @@ window.populateStudentsDropdownUnified = async function(classSelectId, studentSe
             return;
         }
         
+        // 🌟 عملية الفرز العربي الفولاذية والمصححة تماماً
         const sortedNames = Array.from(uniqueNames).sort((a, b) => a.localeCompare(b, 'ar'));
         
         let optionsHtml = '<option value="">👇 اختر اسم الطالب الحين</option>';
         sortedNames.forEach(name => {
-            optionsHtml += `<option value="${name}">${name}</option>';
+            optionsHtml += `<option value="${name}">${name}</option>`;
         });
         nameSelect.innerHTML = optionsHtml;
     } catch (err) {
@@ -464,7 +474,6 @@ async function saveBehaviorLogLive(e) {
     } catch(err) { alert("خطأ بالحفظ: " + err.message); }
 }
 
-// 👤 فحص واستخراج ملف الطالب الشامل التكاملي (سلوك، غياب، تأخير، وأذونات خروج)
 window.searchStudentFullProfileLive = async function() {
     const sClass = document.getElementById('txt-profile-search-class').value;
     const sName = document.getElementById('txt-profile-search-name').value;
@@ -483,7 +492,6 @@ window.searchStudentFullProfileLive = async function() {
     document.getElementById('lbl-profile-student-name').innerText = `👤 ملف الطالب الشامل: ${sName}`;
     document.getElementById('lbl-profile-student-class').innerText = `الفصل الدراسي المعتمد بالفحص: صف ( ${sClass} )`;
 
-    // 1. جلب وتصفية سجلات الحضور والغياب والتأخير الصباحي (attendance_logs)
     try {
         const qAtt = query(collection(db, 'attendance_logs'), where('studentName', '==', sName));
         const snapAtt = await getDocs(qAtt);
@@ -503,7 +511,6 @@ window.searchStudentFullProfileLive = async function() {
         tableAtt.innerHTML = hAtt || `<tr><td colspan="4" style="text-align:center; color:#999;">✨ سجل الطالب ممتاز تماماً، لا توجد أي حالات غياب أو تأخير صباحي مرصودة بالصف ${sClass}.</td></tr>`;
     } catch(e) { tableAtt.innerHTML = `<tr><td colspan="4">خطأ في الحضور: ${e.message}</td></tr>`; }
 
-    // 2. جلب السجل السلوكي
     try {
         const qBeh = query(collection(db, 'behavior_logs'), where('studentName', '==', sName));
         const snapBeh = await getDocs(qBeh);
@@ -523,7 +530,6 @@ window.searchStudentFullProfileLive = async function() {
         tableBeh.innerHTML = hBeh || `<tr><td colspan="4" style="text-align:center; color:#999;">✅ السجل السلوكي للطالب نظيف تماماً في الصف ${sClass}.</td></tr>`;
     } catch(e) { tableBeh.innerHTML = `<tr><td colspan="4">خطأ في السلوك: ${e.message}</td></tr>`; }
 
-    // 3. جلب تاريخ أذونات الخروج
     try {
         const qGate = query(collection(db, 'gatepass'), where('studentName', '==', sName));
         const snapGate = await getDocs(qGate);
