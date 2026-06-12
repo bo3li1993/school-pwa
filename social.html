@@ -6,1018 +6,286 @@
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="./logo.png">
+<link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>بوابة الخدمات الإرشادية والاجتماعية - مدرسة سالم الحسينان</title>
+<title>بوابة الأخصائي الاجتماعي - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 :root {
-    --primary-color: #2c3e50; --hover-color: #e67e22; --bg-light: #f4f6f9;
-    --success-color: #27ae60; --danger-color: #e74c3c; --warning-color: #f39c12; --accent-color: #2980b9;
+    --primary-color: #1e293b; --hover-color: #e67e22; --bg-light: #f4f6f9;
+    --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; flex-direction: column; min-height: 100vh; direction: rtl; }
 
-.header-nav { background: var(--primary-color); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--hover-color); }
+.header-nav { background: var(--primary-color); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--success-color); }
 .header-nav h1 { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
 .header-nav p { font-size: 11px; opacity: 0.8; font-weight: 600; }
 
-.workspace-container { max-width: 1100px; width: 100%; margin: 20px auto; padding: 0 15px; flex: 1; }
+.workspace-container { max-width: 1200px; width: 100%; margin: 15px auto; padding: 0 12px; flex: 1; }
 
-/* شبكة العدادات والمؤشرات الذكية المحدثة لايف هني */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
-.stat-box { background: #fff; border-radius: 12px; padding: 15px; text-align: right; border-right: 5px solid var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: space-between; }
-.stat-box h3 { font-size: 11px; color: #666; font-weight: bold; }
-.stat-box p { font-size: 24px; font-weight: 900; color: var(--primary-color); margin-top: 2px; }
-.stat-box i { font-size: 28px; opacity: 0.3; }
+/* صف الكروت الإحصائية العلوية */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.stat-card { background: #fff; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border-right: 6px solid #ccc; }
+.stat-card.red { border-right-color: var(--danger-color); }
+.stat-card.green { border-right-color: var(--success-color); }
+.stat-card.orange { border-right-color: var(--warning-color); }
+.stat-card h3 { font-size: 11px; color: #666; font-weight: bold; }
+.stat-card .num { font-size: 26px; font-weight: 900; color: var(--primary-color); }
 
-.menu-grid-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
-.nav-card-btn { background: #fff; border: 1px solid #cbd5e1; padding: 15px 10px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; color: #34495e; text-align: center; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-.nav-card-btn i { font-size: 24px; display: block; margin-bottom: 6px; color: var(--primary-color); }
-.nav-card-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
-.nav-card-btn.active i { color: var(--hover-color); }
+/* منيو التبويبات */
+.tabs-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 20px; }
+.tab-btn { background: #fff; border: 1px solid #e2e8f0; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+.tab-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+.card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+.card h2 { font-size: 15px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
 
-.card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #eef2f5; text-align: right; }
-.card h2, .card h3 { font-size: 14px; font-weight: 900; color: var(--primary-color); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+input, select { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 12px; outline: none; font-weight: 700; font-size: 14px; color: var(--primary-color); text-align: right; background: #fff; }
+input:focus, select:focus { border-color: var(--success-color); }
 
-input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; color: #333; }
-button { background: var(--primary-color); color: #fff; border: none; padding: 14px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 13px; transition: 0.2s; }
-button:hover { background: var(--hover-color); }
+button.btn-submit { width: 100%; background: var(--success-color); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.2); }
 
-.btn-utility { background: #f1f5f9; color: #334155; padding: 6px 12px; font-size: 11px; font-weight: bold; border-radius: 6px; margin-right: 5px; border: 1px solid #e2e8f0; }
-.btn-utility:hover { background: var(--primary-color); color:#fff; }
-
-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-th, td { padding: 10px; border: 1px solid #eef2f5; text-align: right; }
-th { background: #f8f9fa; font-weight: 900; color: var(--primary-color); }
-
-.badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: #fff; }
-.badge.danger { background: var(--danger-color); }
-.badge.success { background: var(--success-color); }
-.badge.warning { background: var(--warning-color); }
-.badge.info { background: var(--accent-color); }
-
-.modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(3px); z-index:3000; align-items:center; justify-content:center; }
-.modal-box { background:#fff; max-width:480px; width:100%; border-radius:14px; padding:25px; box-shadow:0 10px 25px rgba(0,0,0,0.2); text-align:right; border-top:5px solid var(--hover-color); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
+th, td { padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 700; }
+th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 </style>
 </head>
 <body>
 
 <div class="header-nav">
     <div>
-        <h1 id="lbl-social-header"><i class="bi bi-person-hearts"></i> بوابة الأخصائي الاجتماعي والنفسي</h1>
-        <p>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</p>
+        <h1><i class="bi bi-person-workspace"></i> بوابة الأخصائي: أ. أخصائي الاجتماعي</h1>
+        <p>وزارة التربية - mدرسة سالم الحسينان المتوسطة للبنين</p>
     </div>
-    <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:6px 14px; font-size:12px; font-weight:bold;">تسجيل الخروج</button>
+    <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer;">تسجيل الخروج</button>
 </div>
 
 <div class="workspace-container">
 
+    <!-- صف الكروت الإحصائية الثلاثية العلوية -->
     <div class="stats-grid">
-        <div class="stat-box" style="border-right-color: var(--danger-color);">
-            <div>
-                <h3>حالات سلوكية نشطة قيد المتابعة</h3>
-                <p id="cnt-active-behavior">0</p>
-            </div>
-            <i class="bi bi-hourglass-split" style="color:var(--danger-color);"></i>
+        <div class="stat-card red">
+            <div><h3>حالات سلوكية نشطة قيد المتابعة</h3><div class="num">7</div></div>
+            <i class="bi bi-hourglass-split" style="font-size:24px; color:var(--danger-color); opacity:0.3;"></i>
         </div>
-        <div class="stat-box" style="border-right-color: var(--success-color);">
-            <div>
-                <h3>استئذانات خروج الطلاب اليوم</h3>
-                <p id="cnt-today-gatepass">0</p>
-            </div>
-            <i class="bi bi-box-arrow-up-right" style="color:var(--success-color);"></i>
+        <div class="stat-card green">
+            <div><h3>استئذانات خروج الطلاب اليوم</h3><div class="num" id="lbl-count-today">0</div></div>
+            <i class="bi bi-box-arrow-up-right" style="font-size:24px; color:var(--success-color); opacity:0.3;"></i>
         </div>
-        <div class="stat-box" style="border-right-color: var(--warning-color);">
-            <div>
-                <h3>إجمالي الحالات الخاصة المسجلة</h3>
-                <p id="cnt-total-special">0</p>
-            </div>
-            <i class="bi bi-exclamation-triangle-fill" style="color:var(--warning-color);"></i>
+        <div class="stat-card orange">
+            <div><h3>إجمالي الحالات الخاصة المسجلة</h3><div class="num">0</div></div>
+            <i class="bi bi-exclamation-triangle" style="font-size:24px; color:var(--warning-color); opacity:0.3;"></i>
         </div>
     </div>
 
-    <div class="menu-grid-nav">
-        <div class="nav-card-btn active" id="btn-t-behavior" onclick="window.switchTab('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
-        <div class="nav-card-btn" id="btn-t-student" onclick="window.switchTab('view-student')"><i class="bi bi-person-bounding-box"></i> ملف الطالب الشامل</div>
-        <div class="nav-card-btn" id="btn-t-gatepass" onclick="window.switchTab('view-gatepass')"><i class="bi bi-ticket-perforated"></i> حقيبة الاستئذان</div>
-        <div class="nav-card-btn" id="btn-t-email" onclick="window.switchTab('view-email')"><i class="bi bi-chat-left-dots-fill"></i> المراسلات والتعاميم</div>
-        <div class="nav-card-btn" id="btn-t-profile" onclick="window.switchTab('view-profile')"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
+    <!-- منيو التبويبات الخمسة الأساسية -->
+    <div class="tabs-nav">
+        <div class="tab-btn"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
+        <div class="tab-btn"><i class="bi bi-person-badge"></i> ملف الطالب الشامل</div>
+        <div class="tab-btn active"><i class="bi bi-ticket-perforated-fill"></i> حقيبة الاستئذان</div>
+        <div class="tab-btn"><i class="bi bi-chat-left-text"></i> المراسلات والتعاميم</div>
+        <div class="tab-btn"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
     </div>
 
-    <div id="view-behavior" class="tab-content active">
-        <div class="card" style="border-top: 5px solid var(--danger-color);">
-            <h2><i class="bi bi-clipboard-plus"></i> تسجيل إجراء تربوي ومتابعة سلوكية جديدة</h2>
-            <form id="social-behavior-form" onsubmit="window.saveSocialBehaviorLive(event)">
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">1. الصف الدراسي:</label>
-                        <select id="beh-class-select" onchange="window.handleBehClassChange(this.value)" required>
-                            <option value="">-- جاري سحب الفصول... --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">2. اسم الطالب رباعي:</label>
-                        <select id="beh-student-select" disabled required>
-                            <option value="">-- بانتظار اختيار الفصل --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">3. المعلم المُحيل للحالة:</label>
-                        <input type="text" id="beh-referred-by" placeholder="مثال: أ. محمد الشمري" required>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">4. القرار والإجراء التربوي:</label>
-                        <select id="beh-action-type" required>
-                            <option value="تنبيه شفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
-                            <option value="تعهد خطي رسمي">📝 أخذ تعهد خطي رسمي بحضور الأخصائي</option>
-                            <option value="استدعاء ولي أمر الطالب">👥 استدعاء ولي أمر الطالب للمدرسة رسمياً</option>
-                            <option value="إنذار حرمان إداري">🚫 إصدار إنذار حرمان إداري (بطاقة سلوك)</option>
-                            <option value="تحويل إلى إدارة المدرسة">⚖️ تحويل رسمي مباشر إلى إدارة المدرسة</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">5. موقف وحالة المتابعة الحالية:</label>
-                        <select id="beh-followup-status" required>
-                            <option value="قيد المتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
-                            <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال رسمياً</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="margin-top:5px;">
-                    <label style="font-weight:700; font-size:12px;">ملاحظات وتفاصيل خط سير الحالة:</label>
-                    <textarea id="beh-notes" rows="2" placeholder="اكتب تفاصيل المخالفة ومجريات المقابلة الإرشادية هنا..." required></textarea>
-                </div>
-                <button type="submit" id="btn-beh-submit" style="width:100%; background:var(--danger-color);"><i class="bi bi-file-earmark-plus"></i> اعتماد وتسجيل الإجراء التربوي بسجل الطالب</button>
-            </form>
-        </div>
-
-        <div class="card" style="border-top: 5px solid var(--primary-color);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h2 style="margin-bottom:0;"><i class="bi bi-collection-play"></i> الأرشيف المركزي لقرارات الضبط والمتابعة السلوكية</h2>
+    <!-- كرت إصدار بطاقة تصريح الخروج المبكر المطور بناء على طلب بوعلي -->
+    <div class="card" style="border-top: 4px solid var(--success-color);">
+        <h2><i class="bi bi-card-list"></i> إصدار بطاقة تصريح خروج مبكر (استئذان سحابي لايف للباب)</h2>
+        
+        <form id="social-gatepass-form" onsubmit="window.broadcastGatepassLive(event)">
+            
+            <!-- الصف الأول الجديد: اختيار الفصل واسم الطالب رباعي -->
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed var(--success-color);">
                 <div>
-                    <button class="btn-utility" onclick="window.printIsolatedTableLive('tbl-behavior-archive', 'كشف جرد المتابعة السلوكية والقرارات التربوية المعتمدة')"><i class="bi bi-printer"></i> طباعة الكشف</button>
-                    <button class="btn-utility" onclick="window.exportTableToExcelLive('tbl-behavior-archive', 'سجل_المتابعة_السلوكية_المدرسة')"><i class="bi bi-file-earmark-excel"></i> تصدير Excel</button>
-                </div>
-            </div>
-            <div style="overflow-x:auto;">
-                <table id="tbl-behavior-archive">
-                    <thead>
-                        <tr>
-                            <th>التاريخ</th>
-                            <th>اسم الطالب رباعي</th>
-                            <th style="text-align:center;">الفصل</th>
-                            <th>الإجراء والقرار</th>
-                            <th style="text-align:center;">حالة المتابعة</th>
-                            <th>المعلم المُحيل</th>
-                            <th>ملاحظات الأخصائي</th>
-                        </tr>
-                    </thead>
-                    <tbody id="social-behavior-tbody">
-                        <tr><td colspan="7" style="text-align:center; font-weight:bold; color:#999;">⏳ جاري جلب السجلات السلوكية الحية...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-student" class="tab-content">
-        <div class="card" style="border-top: 5px solid var(--accent-color);">
-            <h2><i class="bi bi-search"></i> محرك الاستعلام الرقمي الموحد عن الطالب</h2>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                <div>
-                    <label style="font-weight:700; font-size:12px;">الصف الدراسي:</label>
-                    <select id="prof-class-select" onchange="window.handleStudentClassChange(this.value)">
-                        <option value="">-- جاري تحميل الفصول... --</option>
+                    <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">الفصل الدراسي للطالب:</label>
+                    <select id="pass-class" required style="margin-bottom:0;">
+                        <option value="1/7">7/1</option> <option value="2/7">7/2</option> <option value="3/7">7/3</option> <option value="4/7">7/4</option>
+                        <option value="1/8">8/1</option> <option value="2/8">8/2</option> <option value="3/8">8/3</option> <option value="4/8">8/4</option>
+                        <option value="1/9">9/1</option> <option value="2/9">9/2</option> <option value="3/9">9/3</option> <option value="4/9">9/4</option>
                     </select>
                 </div>
                 <div>
-                    <label style="font-weight:700; font-size:12px;">اسم الطالب:</label>
-                    <select id="prof-student-select" disabled>
-                        <option value="">-- بانتظار اختيار الفصل --</option>
+                    <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">اسم الطالب رباعي المأذون له بالخروج:</label>
+                    <input type="text" id="pass-student-name" placeholder="اكتب اسم الطالب بالكامل من واقع السجل الدراسي" required style="margin-bottom:0;">
+                </div>
+            </div>
+
+            <!-- باجي حقول البيانات المعتمدة لولي الأمر ومستلم الطالب -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
+                <div>
+                    <label style="font-weight: 700; font-size: 12px; color: #444; display:block; margin-bottom:5px;">اسم ولي الأمر / مستلم الطالب رباعي:</label>
+                    <input type="text" id="pass-relative" placeholder="اكتب اسم المستلم بالكامل" required>
+                </div>
+                <div>
+                    <label style="font-weight: 700; font-size: 12px; color: #444; display:block; margin-bottom:5px;">صلة القرابة الرسمية بالبطاقة المدنية:</label>
+                    <select id="pass-relation" required>
+                        <option value="الأب">الأب</option> <option value="الأم">الأم</option> <option value="الأخ">الأخ</option>
+                        <option value="العم">العم</option> <option value="الخال">الخال</option> <option value="الجد">الجد</option>
+                        <option value="مندوب / أخرى">مندوب قانوني / جهة أخرى</option>
                     </select>
                 </div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button onclick="window.fetchStudentCompleteArchiveLive()" style="flex:1; background:var(--accent-color);"><i class="bi bi-database-check"></i> تجميع وجلب السجل التاريخي الشامل الحين</button>
-                <button onclick="window.resetStudentView()" id="btn-reset-std" style="background:#7f8c8d; display:none;"><i class="bi bi-arrow-counterclockwise"></i> 🔄 العودة وتصفير الفلتر</button>
-            </div>
-        </div>
-        <div id="student-profile-dashboard-display"></div>
-
-        <div class="card" style="border-top: 5px solid var(--warning-color); margin-top:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h2 style="margin-bottom:0; color:#d35400;"><i class="bi bi-exclamation-triangle-fill"></i> الدليل المركزي الشامل للطلاب أصحاب الحالات الخاصة والطبية بالمنشأة</h2>
                 <div>
-                    <button class="btn-utility" onclick="window.printIsolatedTableLive('tbl-special-cases-directory', 'الدليل الرسمي للطلاب أصحاب الحالات الخاصة والطبية')"><i class="bi bi-printer"></i> طباعة الدليل</button>
-                    <button class="btn-utility" onclick="window.exportTableToExcelLive('tbl-special-cases-directory', 'دليل_الحالات_الخاصة_بالمدرسة')"><i class="bi bi-file-earmark-excel"></i> تصدير Excel</button>
+                    <label style="font-weight: 700; font-size: 12px; color: #444; display:block; margin-bottom:5px;">الرقم المدني للمستلم (12 رقم):</label>
+                    <input type="number" id="pass-civil" placeholder="أدخل الرقم المدني للمستلم" required>
                 </div>
             </div>
-            <p style="font-size:11px; color:#666; font-weight:bold; margin-bottom:10px;">هذا الكشف يجمع آلياً كل الطلاب الذين تم تفعيل شارة شملهم بالرعاية التوجيهية وتوصياتهم الموثقة للمدرسين.</p>
-            <div style="overflow-x:auto;">
-                <table id="tbl-special-cases-directory">
-                    <thead>
-                        <tr style="background:#fff5e6;">
-                            <th>اسم الطالب رباعي بالمنظومة</th>
-                            <th style="text-align:center;">الفصل الدراسي</th>
-                            <th>شارة الحالة المعروضة للمدرس</th>
-                            <th>توصيات مكتب الأخصائي الرسمي الموجهة للهيئة التدريسية</th>
-                        </tr>
-                    </thead>
-                    <tbody id="special-cases-directory-tbody">
-                        <tr><td colspan="4" style="text-align:center; padding:15px; color:#999; font-weight:bold;">⏳ جاري فحص ملفات السيرفر وجرد الحالات الخاصة...</td></tr>
-                    </tbody>
-                </table>
+
+            <div style="margin-top: 5px;">
+                <label style="font-weight: 700; font-size: 12px; color: #444; display:block; margin-bottom:5px;">رقم هاتف المستلم للتواصل والمتابعة:</label>
+                <input type="number" id="pass-phone" placeholder="أدخل رقم الهاتف النقال" required>
             </div>
+
+            <div style="margin-top: 5px;">
+                <label style="font-weight: 700; font-size: 12px; color: #444; display:block; margin-bottom:5px;">عذر وسبب الخروج المبكر المعتمد:</label>
+                <input type="text" id="pass-reason" placeholder="مثال: مراجعة طبية عاجلة بالمستوصف / عذر عائلي معتمد" required>
+            </div>
+
+            <button type="submit" class="btn-submit"><i class="bi bi-broadcast"></i> بث تصريح الاستئذان لايف لشاشة حارس المدرسة</button>
+        </form>
+    </div>
+
+    <!-- كرت الأرشيف التاريخي والجرد اليومي المباشر للطلاب المستأذنين -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">
+            <h2 style="margin-bottom:0; border-bottom:none;"><i class="bi bi-clock-history"></i> أرشيف حركة خروج الطلاب وتصاريح الاستئذان التاريخية</h2>
+            <div style="display:flex; gap:6px;">
+                <button style="background:#f1f5f9; color:#333; font-size:11px; padding:6px 12px; border-radius:6px; font-weight:bold; border:1px solid #ccc;"><i class="bi bi-printer"></i> طباعة الأرشيف</button>
+                <button style="background:#f1f5f9; color:#333; font-size:11px; padding:6px 12px; border-radius:6px; font-weight:bold; border:1px solid #ccc;"><i class="bi bi-file-earmark-excel"></i> تصدير Excel</button>
+            </div>
+        </div>
+
+        <p style="font-weight:700; font-size:13px; margin-bottom:6px;">اختر تاريخ اليوم الدراسي المطلوب جرده:</p>
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <input type="text" id="txt-search-date" value="2026/06/12" style="margin-bottom:0; max-width:300px; background:#f1f5f9; font-weight:bold; text-align:center;">
+            <button onclick="window.loadHistoricalArchiveLive()" style="padding:0 20px; font-size:13px; font-weight:bold; border-radius:8px; background:var(--primary-color);"><i class="bi bi-search"></i> جرد التاريخ</button>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr style="background: #f1f5f9; color: #1e293b;">
+                        <th>التاريخ</th>
+                        <th>اسم الطالب رباعي</th>
+                        <th>الفصل</th>
+                        <th>اسم المستلم</th>
+                        <th>الصلة</th>
+                        <th>الرقم المدني</th>
+                        <th>رقم الهاتف</th>
+                        <th>العذر/السبب</th>
+                    </tr>
+                </thead>
+                <tbody id="social-archive-tbody">
+                    <tr><td colspan="8" style="text-align: center; color: #999; padding: 15px; font-weight: bold;">💡 لا توجد تصاريح استئذان مسجلة للتاريخ المحدد.</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <div id="view-gatepass" class="tab-content">
-        <div class="card" style="border-top: 5px solid var(--success-color);">
-            <h2><i class="bi bi-ticket-perforated"></i> إصدار بطاقة تصريح خروج مبكر (استئذان سحابي لايف للباب)</h2>
-            <form id="social-gatepass-form" onsubmit="window.saveSocialGatepassLive(event)">
-                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">اسم ولي الأمر / مستلم الطالب رباعي:</label>
-                        <input type="text" id="gate-relative" placeholder="أدخل اسم مستلم الطالب بالكامل" required>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">صلة القرابة الرسمية بالبطاقة المدنية:</label>
-                        <select id="gate-relation" required>
-                            <option value="الأب">الأب</option>
-                            <option value="الأم">الأم</option>
-                            <option value="الجد">الجد</option>
-                            <option value="الأخ">الأخ</option>
-                            <option value="العم/الخال">العم / الخال</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">الرقم المدني للمستلم (12 رقم):</label>
-                        <input type="number" id="gate-civil" placeholder="أدخل الرقم المدني للمستلم" required>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">رقم هاتف المستلم للتواصل والمتابعة:</label>
-                        <input type="number" id="gate-phone" placeholder="أدخل رقم الهاتف النقال" required>
-                    </div>
-                </div>
-                <label style="font-weight:700; font-size:12px; margin-top:5px; display:block;">عذر وسبب الخروج المبكر المعتمد:</label>
-                <input type="text" id="gate-reason" placeholder="مثال: مراجعة طبية عاجلة بالمستوصف / عذر عائلي معتمد" required>
-                <button type="submit" id="btn-gate-submit" style="width:100%; background:var(--success-color);"><i class="bi bi-cloud-arrow-up"></i> بث تصريح الاستئذان لايف لشاشة حارس المدرسة</button>
-            </form>
-        </div>
-
-        <div class="card" style="border-top: 5px solid var(--primary-color);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h2 style="margin-bottom:0;"><i class="bi bi-clock-history"></i> أرشيف حركة خروج الطلاب وتصاريح الاستئذان التاريخية</h2>
-                <div>
-                    <button class="btn-utility" onclick="window.printIsolatedTableLive('tbl-gatepass-archive', 'كشف أرشيف تصاريح الاستئذان وحركة خروج الطلاب')"><i class="bi bi-printer"></i> طباعة الأرشيف</button>
-                    <button class="btn-utility" onclick="window.exportTableToExcelLive('tbl-gatepass-archive', 'سجل_تصاريح_الاستئذان_المدرسة')"><i class="bi bi-file-earmark-excel"></i> تصدير Excel</button>
-                </div>
-            </div>
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
-                <div style="flex:1;">
-                    <label style="font-weight:700; font-size:12px;">اختر تاريخ اليوم الدراسي المطلوب جرده:</label>
-                    <input type="date" id="gate-search-date" style="margin-top:5px; padding:10px;">
-                </div>
-                <button onclick="window.filterGatepassHistoryByDateLive()" style="margin-top:15px; background:var(--primary-color); padding:12px 20px;"><i class="bi bi-search"></i> جرد التاريخ</button>
-                <button onclick="window.resetGatepassHistoryLive()" id="btn-gate-reset" style="margin-top:15px; background:#7f8c8d; padding:12px 15px; display:none;"><i class="bi bi-arrow-counterclockwise"></i> 🔄 العودة</button>
-            </div>
-            <div style="overflow-x:auto;">
-                <table id="tbl-gatepass-archive">
-                    <thead>
-                        <tr>
-                            <th>التاريخ</th>
-                            <th>اسم الطالب رباعي</th>
-                            <th style="text-align:center;">الفصل</th>
-                            <th>اسم المستلم</th>
-                            <th>الصلة</th>
-                            <th>الرقم المدني</th>
-                            <th>رقم الهاتف</th>
-                            <th>العذر/السبب</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gatepass-history-tbody">
-                        <tr><td colspan="8" style="text-align:center; color:#999; font-weight:bold;">⏳ جاري جلب حركة سجلات خروج الطلاب الحالية...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-email" class="tab-content">
-        <div class="card" style="border-top: 5px solid #8e44ad;">
-            <h2><i class="bi bi-chat-left-dots-fill"></i> لوحة بث المراسلات والتعاميم الرسمية لأولياء الأمور</h2>
-            <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:15px;">بث الرسائل والتعاميم المباشرة للموقع السحابي لتواصل رسمي وفعّال مع أولياء الأمور.</p>
-            
-            <form id="social-msg-form" onsubmit="window.sendSocialMessageLive(event)">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">تحديد نوع ونطاق الوجهة السحابية:</label>
-                        <select id="msg-target-type" onchange="window.handleMsgTargetTypeChange(this.value)" required>
-                            <option value="all">📢 تعميم شامل لجميع أولياء أمور المدرسة</option>
-                            <option value="class">🏫 تعميم موجه لصف دراسي كامل</option>
-                            <option value="student">👤 رسالة خاصة لولي أمر طالب معين</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">عنوان الرسالة / موضوع الخطاب:</label>
-                        <input type="text" id="msg-title" placeholder="مثال: إشعار استدعاء رسمي أو تهنئة بالتميز" required>
-                    </div>
-                </div>
-
-                <div id="msg-dynamic-selectors" style="display:none; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
-                    <div>
-                        <label style="font-weight:700; font-size:12px;">اختر الصف الدراسي المستهدف:</label>
-                        <select id="msg-class-select" onchange="window.handleMsgClassChange(this.value)">
-                            <option value="">-- اختر الصف الدراسي --</option>
-                        </select>
-                    </div>
-                    <div id="msg-student-box" style="display:none;">
-                        <label style="font-weight:700; font-size:12px;">اختر اسم الطالب المستهدف:</label>
-                        <select id="msg-student-select" onchange="window.handleMsgStudentChangeLive(this.value)">
-                            <option value="">-- اختر الطالب المعني --</option>
-                        </select>
-                    </div>
-                </div>
-
-                <label style="font-weight:700; font-size:12px;">نص الخطاب أو التعميم المراد بثه للمنظومة:</label>
-                <textarea id="msg-body" rows="4" placeholder="اكتب تفاصيل الرسالة الرسمية الموجهة لأولياء الأمور هنا..." required></textarea>
-                
-                <div style="display:flex; gap:10px;">
-                    <button type="submit" id="btn-msg-submit" style="flex:1; background:#8e44ad;"><i class="bi bi-send-fill"></i> بث الخطاب ونشره بالمنظومة السحابية فورا</button>
-                    <button type="button" onclick="window.sendSocialMessageViaWhatsAppLive()" id="btn-msg-whatsapp" style="background:#27ae60; font-weight:900; display:none;"><i class="bi bi-whatsapp"></i> 📱 إرسال نص الخطاب واتساب لولي الأمر الحين</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="card" style="border-top: 5px solid var(--hover-color);">
-            <h2><i class="bi bi-mailbox2"></i> سجل المراسلات والتعاميم الصادرة من مكتب الخدمة الاجتماعية</h2>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>التاريخ</th>
-                            <th>الجهة المستهدفة بالبث</th>
-                            <th>العنوان / الموضوع</th>
-                            <th>نص الخطاب المرسل</th>
-                            <th>المرسل الرسمي</th>
-                        </tr>
-                    </thead>
-                    <tbody id="social-msg-logs-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#999; font-weight:bold;">⏳ جاري جلب أرشيف المراسلات والتعاميم الحية...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card" style="border-top: 1px solid #cbd5e1; background:#f8fafc;">
-            <h3><i class="bi bi-file-earmark-text"></i> مولّد الصيغ المعتمدة الموحدة (للنسخ السريع)</h3>
-            <select id="email-template-type" onchange="window.generateEmailTemplateTextLive(this.value)">
-                <option value="غياب">🔴 خطاب غياب وإنذار انقطاع عن الدراسة</option>
-                <option value="سلوك">📑 خطاب استدعاء ولي أمر بسبب مخالفة سلوكية</option>
-                <option value="تميز">🏆 خطاب شكر وتقدير للتميز والتحفيز التربوي</option>
-            </select>
-            <pre id="email-preview-text" style="white-space:pre-wrap; font-size:13px; font-weight:bold; color:#2c3e50; line-height:1.6; background:#fff; padding:15px; border-radius:6px; border:1px solid #eee;"></pre>
-            <button onclick="window.copyEmailTextToClipboard()" style="background:#7f8c8d; font-size:12px; padding:8px 15px; margin-top:5px;"><i class="bi bi-copy"></i> نسخ نص الصيغة المذكورة</button>
-        </div>
-    </div>
-
-    <div id="view-profile" class="tab-content">
-        <div class="card" style="border-top: 5px solid var(--accent-color);">
-            <h2><i class="bi bi-sliders"></i> البيانات الوظيفية والمدنية المعتمدة للأخصائي</h2>
-            <label style="font-weight:700; font-size:12px;">🏢 القسم العلمي / المسمى الوظيفي المعتمد:</label>
-            <input type="text" id="prof-dept" value="مكتب الخدمة الاجتماعية والنفسية">
-            <label style="font-weight:700; font-size:12px;">الرقم المدني الكويتي:</label>
-            <input type="number" id="prof-civil">
-            <label style="font-weight:700; font-size:12px;">رقم هاتف النقال المعتمد:</label>
-            <input type="number" id="prof-phone">
-            <label style="font-weight:700; font-size:12px;">رقم الملف الوظيفي بوزارة التربية:</label>
-            <input type="text" id="prof-file">
-            
-            <h3 style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;"><i class="bi bi-lock-fill"></i> تعديل كلمة المرور الأمنية للحساب</h3>
-            <input type="text" id="prof-new-pass" placeholder="اترك الخانة فارغة في حال عدم الرغبة في التغيير">
-            <button onclick="window.updateSocialProfileLive()" style="background:var(--accent-color); width:100%;"><i class="bi bi-check-all"></i> حفظ وتحديث بيانات حسابي الشخصي</button>
-        </div>
-    </div>
-
-</div>
-
-<div class="modal-overlay" id="behavior-modal" onclick="if(event.target===this) window.closeBehaviorModalLive()">
-    <div class="modal-box">
-        <h3><i class="bi bi-pencil-square" style="color:var(--hover-color);"></i> تحديث الإجراء التربوي ومذكرات المتابعة</h3>
-        <input type="hidden" id="modal-doc-id">
-        <p style="font-size:12px; font-weight:bold; margin-bottom:10px; color:#555;">الطالب المعني: <b id="modal-student-lbl" style="color:var(--hover-color); font-size:13px;">-</b></p>
-        
-        <label style="font-weight:700; font-size:12px;">موقف وحالة المتابعة السلوكية الرسمية:</label>
-        <select id="modal-status-select">
-            <option value="قيد المتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
-            <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال رسمياً</option>
-        </select>
-        
-        <label style="font-weight:700; font-size:12px;">إضافة مذكرات وملاحظات أخصائي جديدة:</label>
-        <textarea id="modal-notes-area" rows="4" placeholder="أدخل هنا آخر التطورات الإرشادية أو مجريات الاتصال بولي الأمر..."></textarea>
-        
-        <div style="display:flex; gap:10px; margin-top:10px;">
-            <button onclick="window.saveBehaviorModalUpdateLive()" style="flex:1; background:var(--success-color); font-weight:900;"><i class="bi bi-cloud-check"></i> حفظ التحديث الحين</button>
-            <button onclick="window.closeBehaviorModalLive()" style="background:#95a5a6; font-weight:700;">إلغاء</button>
-        </div>
-    </div>
 </div>
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, getDocs, doc, getDoc, setDoc, addDoc, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, addDoc, onSnapshot, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-let currentSocialId = "";
-let localStudentsMap = {};
-window.globalClassesList = [];
-let targetStudentPhoneNumberLive = ""; 
+let currentWorkerName = "الأخصائي الاجتماعي";
 
+// دالة توحيد التاريخ مع الأصفار لتفادي عيوب الكاش والبحث
 function getUnifiedDateString() {
     const d = new Date();
-    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}/${month}/${day}`;
 }
 
-document.addEventListener("DOMContentLoaded", async function() {
+document.addEventListener("DOMContentLoaded", function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
     if (!user || user.role !== 'social_worker') {
         window.location.replace('index.html');
         return;
     }
-    currentSocialId = user.userId;
-    document.getElementById('lbl-social-header').innerHTML = `<i class="bi bi-person-hearts"></i> بوابة الأخصائي: أ. ${user.name || ''}`;
+    currentWorkerName = user.name || "الأخصائي";
     
-    await loadInitialClassesLive();
-    listenToSocialBehaviorLogsLive();
-    listenToGatepassLogsLive(null); 
-    listenToSocialMessagesLive();   
-    listenToGlobalSpecialCasesAndCountersLive(); // تفعيل منظومة جرد وعدادات الحالات الخاصة لايف
-    await loadSocialProfileDataLive();
+    // ضبط حقل تاريخ البحث بشكل تلقائي على تاريخ اليوم الموحد
+    document.getElementById('txt-search-date').value = getUnifiedDateString();
     
-    const today = new Date();
-    document.getElementById('gate-search-date').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    listenToTodayCount();
+    loadHistoricalArchiveLive();
 });
 
-window.switchTab = function(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.nav-card-btn').forEach(el => el.classList.remove('active'));
-    
-    const target = document.getElementById(tabId);
-    if(target) target.classList.add('active');
-    
-    const btnId = 'btn-t-' + tabId.replace('view-', '');
-    const btn = document.getElementById(btnId);
-    if(btn) btn.classList.add('active');
-};
-
-async function loadInitialClassesLive() {
-    try {
-        const selects = [document.getElementById('beh-class-select'), document.getElementById('prof-class-select')];
-        const snap = await getDocs(collection(db, 'students'));
-        let classesSet = new Set();
-        snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
-        
-        window.globalClassesList = Array.from(classesSet).sort();
-        
-        selects.forEach(sel => {
-            if(!sel) return;
-            let html = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
-            window.globalClassesList.forEach(c => { html += `<option value="${c}">${c}</option>`; });
-            sel.innerHTML = html;
-        });
-    } catch(e) { console.error(e); }
-}
-
-// ✅ محرك جرد ومراقبة عدادات السيرفر ودليل الحالات الخاصة بالكامل بث حي 100%
-function listenToGlobalSpecialCasesAndCountersLive() {
-    const dirTbody = document.getElementById('special-cases-directory-tbody');
-    
-    // 1. مراقبة جرد الطلاب والحالات الخاصة والعداد مالتها
-    onSnapshot(collection(db, 'students'), (snapshot) => {
-        let specialCount = 0;
-        let html = '';
-        
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            if(d.isSpecialCase === true) {
-                specialCount++;
-                html += `
-                <tr style="border-bottom:1px solid #fdf2e9;">
-                    <td style="font-weight:700; color:#c0392b;">👤 ${d.name || 'طالب غير معرف'}</td>
-                    <td style="text-align:center; font-weight:bold;"><span class="badge info">${d.classId || '-'}</span></td>
-                    <td style="text-align:center;"><span class="badge danger" style="background:#d35400;"><i class="bi bi-exclamation-triangle-fill"></i> حالة خاصة</span></td>
-                    <td style="color:#d35400; font-weight:bold; font-size:12px;">💡 ${d.specialCaseNotes || 'لا توجد مذكرات موثقة'}</td>
-                </tr>`;
-            }
-        });
-        
-        document.getElementById('cnt-total-special').textContent = specialCount;
-        if(dirTbody) {
-            dirTbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">✅ السجل المركزي خالٍ تماماً من الحالات المرضية أو الخاصة.</td></tr>';
-        }
-    });
-
-    // 2. مراقبة عداد حالات السلوك النشطة قيد المتابعة
-    onSnapshot(collection(db, 'behavior'), (snapshot) => {
-        let activeBehaviorCount = 0;
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            if(!d.followUpStatus || !d.followUpStatus.includes('تمت')) {
-                activeBehaviorCount++;
-            }
-        });
-        document.getElementById('cnt-active-behavior').textContent = activeBehaviorCount;
-    });
-
-    // 3. مراقبة عداد استئذانات حركة اليوم
-    onSnapshot(collection(db, 'gatepass'), (snapshot) => {
-        let todayGateCount = 0;
-        const todayStr = getUnifiedDateString();
-        snapshot.forEach(doc => {
-            if(doc.data().dateStr === todayStr) todayGateCount++;
-        });
-        document.getElementById('cnt-today-gatepass').textContent = todayGateCount;
-    });
-}
-
-// ✅ ميزة التصدير الذكي الفوري لملفات Excel الصخر
-window.exportTableToExcelLive = function(tableId, filename) {
-    const table = document.getElementById(tableId);
-    if(!table) return;
-    const wb = XLSX.utils.table_to_book(table, { sheet: "تقرير_المنظومة_الرسمي" });
-    XLSX.writeFile(wb, `${filename}_${getUnifiedDateString().replaceAll('/','-')}.xlsx`);
-};
-
-// ✅ ميزة طباعة التقارير المفرزة والمعزولة بشكل رسمي ونظيف
-window.printIsolatedTableLive = function(tableId, title) {
-    const origTable = document.getElementById(tableId);
-    if(!origTable) return;
-    const printWindow = window.open('', '', 'height=700,width=1000');
-    printWindow.document.write(`<html lang="ar" dir="rtl"><head><title>${title}</title>`);
-    printWindow.document.write(`<style>body{font-family:'Cairo',sans-serif; padding:30px; text-align:right;} table{width:100%; border-collapse:collapse; margin-top:15px;} th,td{padding:10px; border:1px solid #000; text-align:right;} th{background:#f2f2f2; font-weight:900;}</style>`);
-    printWindow.document.write(`</head><body>`);
-    printWindow.document.write(`<div style="text-align:center; border-bottom:3px solid #000; padding-bottom:10px; margin-bottom:20px;"><h2>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</h2><h3>${title}</h3><p>تاريخ استخراج التقرير: ${getUnifiedDateString()}</p></div>`);
-    printWindow.document.write(origTable.outerHTML);
-    printWindow.document.write(`</body></html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
-};
-
-window.handleBehClassChange = async function(classId) {
-    const studentSelect = document.getElementById('beh-student-select');
-    if (!studentSelect) return;
-    if (!classId) { studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>'; studentSelect.disabled = true; return; }
-    
-    studentSelect.innerHTML = '<option value="">⏳ جاري جلب وفرز الكشف أبجدياً...</option>';
-    studentSelect.disabled = true;
-    try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
-        const snap = await getDocs(q);
-        let arr = [];
-        snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
-        arr.sort((a,b) => a.localeCompare(b, 'ar'));
-        
-        let html = '<option value="">-- اختر اسم الطالب المعني --</option>';
-        arr.forEach(n => { html += `<option value="${n}">${n}</option>`; });
-        studentSelect.innerHTML = arr.length === 0 ? '<option value="">⚠️ لا يوجد طلاب</option>' : html;
-        studentSelect.disabled = arr.length === 0;
-    } catch(e) { studentSelect.innerHTML = '<option value="">❌ خطأ بالاتصال</option>'; }
-};
-
-window.saveSocialBehaviorLive = async function(e) {
+// دالة إرسال وتوثيق الاستئذان الملوكي الجديد للبوابة مباشرة
+window.broadcastGatepassLive = async function(e) {
     e.preventDefault();
-    const cId = document.getElementById('beh-class-select').value;
-    const sName = document.getElementById('beh-student-select').value;
-    const refBy = document.getElementById('beh-referred-by').value.trim();
-    const action = document.getElementById('beh-action-type').value;
-    const followup = document.getElementById('beh-followup-status').value;
-    const notes = document.getElementById('beh-notes').value.trim();
-    const submitBtn = document.getElementById('btn-beh-submit');
+    const classId = document.getElementById('pass-class').value;
+    const studentName = document.getElementById('pass-student-name').value.trim();
+    const relative = document.getElementById('pass-relative').value.trim();
+    const relation = document.getElementById('pass-relation').value;
+    const civil = document.getElementById('pass-civil').value.trim();
+    const phone = document.getElementById('pass-phone').value.trim();
+    const reason = document.getElementById('pass-reason').value.trim();
 
-    submitBtn.disabled = true;
-    try {
-        const unifiedDate = getUnifiedDateString();
-        await addDoc(collection(db, 'behavior'), {
-            studentName: sName.trim(), name: sName.trim(), classId: cId.trim(),
-            referredBy: refBy, action: action, followUpStatus: followup, notes: notes,
-            dateStr: unifiedDate, date: unifiedDate, createdAt: serverTimestamp()
-        });
-        alert('✓ تم رصد واعتماد الإجراء التربوي بسجل الطالب بنجاح.');
-        document.getElementById('social-behavior-form').reset();
-        document.getElementById('beh-student-select').disabled = true;
-    } catch(err) { alert('خطأ أثناء الحفظ السحابي: ' + err.message); }
-    submitBtn.disabled = false;
-};
-
-function listenToSocialBehaviorLogsLive() {
-    const tbody = document.getElementById('social-behavior-tbody');
-    if (!tbody) return;
-
-    onSnapshot(collection(db, 'behavior'), (snapshot) => {
-        let html = '';
-        snapshot.forEach(d => {
-            const data = d.data();
-            const statusBadge = data.followUpStatus && data.followUpStatus.includes('تمت') ? 
-                `<span class="badge success">تم الإقفال</span>` : `<span class="badge warning">قيد المتابعة</span>`;
-            
-            html += `
-                <tr onclick="window.openBehaviorModalLive('${d.id}', '${data.studentName || data.name}', '${data.followUpStatus || ''}', '${data.notes || ''}')" style="cursor:pointer; border-bottom:1px solid #eee;" title="اضغط لتحديث الملاحظات">
-                    <td style="font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || data.date || '-'}</td>
-                    <td><b>👤 ${data.studentName || data.name || '-'}</b></td>
-                    <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
-                    <td><span class="badge danger" style="background:#c0392b;">${data.action || 'إجراء'}</span></td>
-                    <td style="text-align:center;">${statusBadge}</td>
-                    <td style="font-weight:700; color:#2980b9;">أ. ${data.referredBy || 'الهيئة'}</td>
-                    <td style="color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
-                </tr>`;
-        });
-        tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center; font-weight:bold;">💡 لا توجد حالات سلوكية مرصودة حالياً.</td></tr>';
-    });
-}
-
-window.handleStudentClassChange = async function(classId) {
-    const studentSelect = document.getElementById('prof-student-select');
-    if (!studentSelect) return;
-    if (!classId) { studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>'; studentSelect.disabled = true; return; }
-    
-    studentSelect.innerHTML = '<option value="">⏳ جاري جلب أسماء الصف...</option>';
-    studentSelect.disabled = true;
-    localStudentsMap = {};
-    try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
-        const snap = await getDocs(q);
-        let list = [];
-        snap.forEach(doc => {
-            const data = doc.data();
-            if(data.name) {
-                const clean = data.name.trim();
-                list.push(clean);
-                localStudentsMap[clean] = { id: doc.id, ...data };
-            }
-        });
-        list.sort((a,b) => a.localeCompare(b, 'ar'));
-        let html = '<option value="">-- اختر اسم الطالب من الكشف المعتمد --</option>';
-        list.forEach(n => { html += `<option value="${n}">${n}</option>`; });
-        studentSelect.innerHTML = list.length === 0 ? '<option value="">⚠️ لا يوجد طلاب</option>' : html;
-        studentSelect.disabled = list.length === 0;
-    } catch(e) { console.error(e); }
-};
-
-window.fetchStudentCompleteArchiveLive = async function() {
-    const sName = document.getElementById('prof-student-select').value;
-    const displayArea = document.getElementById('student-profile-dashboard-display');
-    const resetBtn = document.getElementById('btn-reset-std');
-    
-    if(!sName || !localStudentsMap[sName]) { alert('⚠️ يرجى اختيار اسم الطالب أولاً!'); return; }
-    
-    displayArea.innerHTML = `<p style="text-align:center; padding:20px; font-weight:bold; color:var(--hover-color);">⏳ جاري جرد وتجميع السجل الكامل والملف التراكمي للطالب...</p>`;
-    resetBtn.style.display = 'inline-block';
+    if (civil.length !== 12) { alert("⚠️ خطأ: الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
 
     try {
-        const studentNameClean = sName.trim();
-        const stdDocSnap = await getDoc(doc(db, 'students', localStudentsMap[sName].id));
-        const currentStdData = stdDocSnap.exists() ? stdDocSnap.data() : localStudentsMap[sName];
-
-        const [attSnap, behSnap] = await Promise.all([
-            getDocs(query(collection(db, 'attendance'), where('studentName', '==', studentNameClean))),
-            getDocs(query(collection(db, 'behavior'), where('studentName', '==', studentNameClean)))
-        ]);
-
-        let attRows = '';
-        attSnap.forEach(doc => {
-            const d = doc.data();
-            if(d.status==='absent'||d.status==='late') {
-                const b = d.status==='absent'?'<span class="badge danger">🔴 غياب</span>':'<span class="badge warning">🟡 تأخر</span>';
-                attRows += `<tr><td>📅 ${d.dateStr||'-'}</td><td>${d.period||'-'}</td><td>${b}</td><td>أ. ${d.recordedBy||'-'}</td></tr>`;
-            }
-        });
-        if(!attRows) attRows = '<tr><td colspan="4" style="text-align:center; color:green; font-weight:bold;">✅ سجل غياب الحصص سليم 100%.</td></tr>';
-
-        let behRows = '';
-        behSnap.forEach(doc => {
-            const d = doc.data();
-            const fBadge = d.followUpStatus && d.followUpStatus.includes('تمت') ? `<span class="badge success">مغلق</span>` : `<span class="badge warning">مفتوح</span>`;
-            behRows += `<tr><td>📅 ${d.dateStr||'-'}</td><td><span class="badge danger">${d.action||'-'}</span></td><td style="text-align:center;">${fBadge}</td><td style="color:#2980b9; font-weight:bold;">أ. ${d.referredBy||'-'}</td><td>${d.notes||'-'}</td></tr>`;
-        });
-        if(!behRows) behRows = '<tr><td colspan="5" style="text-align:center; color:green; font-weight:bold;">✅ ملف الطالب السلوكي نظيف وخالٍ من العقوبات.</td></tr>';
-
-        const specialCaseCardHtml = `
-        <div class="card" style="border-top:4px solid var(--warning-color); background:#fff5e6; padding:15px; border-radius:8px; margin-bottom:15px; text-align:right;">
-            <h4 style="color:#d35400; font-size:13px; font-weight:900;"><i class="bi bi-exclamation-triangle-fill"></i> رقابة وتوثيق الحالات الخاصة والطبية (معتمد للمدرسين)</h4>
-            <p style="font-size:11px; color:#666; font-weight:bold; margin-bottom:10px;">تفعيل هذا الخيار سيظهر شارة حمراء صارمة (⚠️ حالة خاصة) تلقائياً أمام اسم الطالب في دفاتر رصد المعلمين بالحصة.</p>
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-                <input type="checkbox" id="chk-special-case" style="width:18px; height:18px; cursor:pointer;" ${currentStdData.isSpecialCase ? 'checked' : ''}>
-                <label for="chk-special-case" style="font-weight:700; font-size:12px; color:#333; cursor:pointer;">نعم، الطالب مسجل كـ (حالة خاصة / طبية وصحية / تربوية)</label>
-            </div>
-            <label style="font-weight:700; font-size:11px; color:#444;">توصيات مكتب الأخصائي الرسمي الموجهة للمعلم بالفصل الدراسي:</label>
-            <input type="text" id="txt-special-case-notes" value="${currentStdData.specialCaseNotes || ''}" placeholder="مثال: الطالب يعاني من تشتت انتباه، يرجى إجلاسه في المقاعد الأمامية ومراعاة حالته الطبية..." style="margin-bottom:10px; padding:10px;">
-            <button onclick="window.saveStudentSpecialCaseStatusLive('${currentStdData.id || localStudentsMap[sName].id}')" style="background:#d35400; font-size:11px; padding:8px 15px;"><i class="bi bi-cloud-check-fill"></i> اعتماد وحفظ شارة الحالة الخاصة بالمنظومة</button>
-        </div>`;
-
-        displayArea.innerHTML = `
-        <div class="card" style="border-top:5px solid var(--hover-color); margin-top:15px;">
-            <div style="background:#f8fafc; padding:12px; border-radius:6px; margin-bottom:15px; border-right:4px solid var(--primary-color);">
-                <span style="font-weight:900; font-size:14px; color:var(--primary-color);">👤 الاسم الكامل: ${studentNameClean} | الصف: ${currentStdData.classId || '-'}</span>
-            </div>
-            ${specialCaseCardHtml}
-            <h4>📌 غياب وتأخير الحصص اليومي الدراسي:</h4>
-            <table><thead><tr><th>التاريخ</th><th>الحصة</th><th>الحالة</th><th>المعلم الراصد</th></tr></thead><tbody>${attRows}</tbody></table>
-            <h4 style="margin-top:20px;">📌 سجل قرارات الضبط والمتابعة السلوكية الرسمية:</h4>
-            <table><thead><tr><th>تاريخ الإجراء</th><th>القرار الصادر</th><th>حالة المتابعة</th><th>المعلم المُحيل</th><th>ملاحظات الأخصائي</th></tr></thead><tbody>${behRows}</tbody></table>
-        </div>`;
-    } catch(e) { displayArea.innerHTML = `<p style="color:red;">خطأ: ${e.message}</p>`; }
-};
-
-window.saveStudentSpecialCaseStatusLive = async function(studentDocId) {
-    const isChecked = document.getElementById('chk-special-case').checked;
-    const notesVal = document.getElementById('txt-special-case-notes').value.trim();
-    try {
-        await setDoc(doc(db, 'students', studentDocId), { isSpecialCase: isChecked, specialCaseNotes: notesVal }, { merge: true });
-        alert("✅ تم بنجاح اعتماد حالة الطالب السحابة وبث التوصيات لكشوف المدرسين فوراً.");
-    } catch(err) { alert("خطأ تحديث: " + err.message); }
-};
-
-window.resetStudentView = function() {
-    document.getElementById('student-profile-dashboard-display').innerHTML = '';
-    document.getElementById('btn-reset-std').style.display = 'none';
-    document.getElementById('prof-student-select').value = '';
-};
-
-window.saveSocialGatepassLive = async function(e) {
-    e.preventDefault();
-    const sName = document.getElementById('beh-student-select').value;
-    const cId = document.getElementById('beh-class-select').value;
-    const relative = document.getElementById('gate-relative').value.trim();
-    const relation = document.getElementById('gate-relation').value;
-    const civil = document.getElementById('gate-civil').value.trim();
-    const phone = document.getElementById('gate-phone').value.trim();
-    const reason = document.getElementById('gate-reason').value.trim();
-    const submitBtn = document.getElementById('btn-gate-submit');
-    
-    if(!sName) { alert("⚠️ الرجاء الانتقال لتبويب رصد السلوك لاختيار الطالب والصف أولاً!"); return; }
-    submitBtn.disabled = true;
-    try {
-        const unifiedDate = getUnifiedDateString();
         await addDoc(collection(db, 'gatepass'), {
-            studentName: sName, name: sName, classId: cId, relative: relative,
-            relation: relation, relativeCivilId: civil, relativePhone: phone,
-            reason: reason, dateStr: unifiedDate, date: unifiedDate,
-            status: 'approved', createdAt: serverTimestamp()
+            classId: classId,
+            studentName: studentName,
+            relative: relative,
+            relation: relation,
+            relativeCivilId: civil,
+            relativePhone: phone,
+            reason: reason,
+            status: 'approved', // مأذون له ومعلق بانتظار حارس البوابة بره
+            dateStr: getUnifiedDateString(),
+            officerName: currentWorkerName
         });
-        alert(`✓ تم إرسال وبث تصريح استئذان الطالب (${sName}) لايف لشاشة الحارس بنجاح.`);
+
+        alert(`🚀 نجاح: تم بث تصريح خروج الطالب (${studentName}) لايف لشاشة الحارس بره بنجاح!`);
         document.getElementById('social-gatepass-form').reset();
-    } catch(e) { alert("خطأ سحابي: " + e.message); }
-    submitBtn.disabled = false;
+        document.getElementById('txt-search-date').value = getUnifiedDateString();
+    } catch (err) { alert("❌ فشل الإرسال السحابي: " + err.message); }
 };
 
-function listenToGatepassLogsLive(dateFilter = null) {
-    const tbody = document.getElementById('gatepass-history-tbody');
-    if (!tbody) return;
+// مراقبة عدّاد استئذانات اليوم لايف بالكرت الأخضر فوق
+function listenToTodayCount() {
+    const todayStr = getUnifiedDateString();
     onSnapshot(collection(db, 'gatepass'), (snapshot) => {
-        let html = '';
-        snapshot.forEach(d => {
-            const data = d.data();
-            if (dateFilter && data.dateStr !== dateFilter) return; 
-            
-            // ✅ ربط رابط الـ WhatsApp الذكي المباشر والمشفر بكود الكويت 965 للهواتف بالأرشيف
-            const waUrl = `https://wa.me/965${data.relativePhone}?text=${encodeURIComponent('السلام عليكم معكم مكتب الخدمة الاجتماعية بمدرسة سالم الحسينان بخصوص استئذان خروج الطالب: ' + data.studentName)}`;
-            
-            html += `
-                <tr style="border-bottom:1px solid #eee;">
-                    <td style="font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || '-'}</td>
-                    <td><b>👤 ${data.studentName || '-'}</b></td>
-                    <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
-                    <td>${data.relative || '-'}</td>
-                    <td><span class="badge success">${data.relation || '-'}</span></td>
-                    <td><code>${data.relativeCivilId || '-'}</code></td>
-                    <td>
-                        <a href="tel:${data.relativePhone}" style="color:var(--accent-color); font-weight:bold; text-decoration:none;"><i class="bi bi-telephone"></i> ${data.relativePhone || '-'}</a>
-                        <a href="${waUrl}" target="_blank" style="color:#27ae60; font-size:15px; margin-right:8px;" title="إرسال رسالة واتساب سريعة"><i class="bi bi-whatsapp"></i></a>
-                    </td>
-                    <td style="color:#2980b9; font-weight:bold;">${data.reason || '-'}</td>
-                </tr>`;
+        let count = 0;
+        snapshot.forEach(doc => {
+            if (doc.data().dateStr === todayStr) count++;
         });
-        tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center; font-weight:bold; color:#999;">💡 لا توجد تصاريح استئذان مسجلة للتاريخ المحدد.</td></tr>';
+        document.getElementById('lbl-count-today').innerText = count;
     });
 }
 
-window.filterGatepassHistoryByDateLive = function() {
-    const dateVal = document.getElementById('gate-search-date').value;
-    if(!dateVal) { alert("⚠️ يرجى تحديد التاريخ للبحث!"); return; }
-    const parts = dateVal.split('-');
-    const targetStr = `${parseInt(parts[0])}/${parseInt(parts[1])}/${parseInt(parts[2])}`;
-    document.getElementById('btn-gate-reset').style.display = 'inline-block';
-    listenToGatepassLogsLive(targetStr);
-};
+// دالة جرد وعرض الأرشيف التاريخي المباشر حسب التاريخ المكتوب
+window.loadHistoricalArchiveLive = function() {
+    const searchDate = document.getElementById('txt-search-date').value.trim();
+    const tbody = document.getElementById('social-archive-tbody');
+    if (!tbody) return;
 
-window.resetGatepassHistoryLive = function() {
-    document.getElementById('btn-gate-reset').style.display = 'none';
-    listenToGatepassLogsLive(null);
-};
-
-window.handleMsgTargetTypeChange = function(val) {
-    const dynamicBox = document.getElementById('msg-dynamic-selectors');
-    const studentBox = document.getElementById('msg-student-box');
-    const classSel = document.getElementById('msg-class-select');
-    const waBtn = document.getElementById('btn-msg-whatsapp');
-    
-    document.getElementById('msg-student-select').innerHTML = '<option value="">-- اختر الطالب --</option>';
-    waBtn.style.display = 'none'; 
-    targetStudentPhoneNumberLive = ""; 
-
-    if (val === 'all') {
-        dynamicBox.style.display = 'none';
-    } else if (val === 'class') {
-        dynamicBox.style.display = 'grid';
-        studentBox.style.display = 'none';
-        let html = '<option value="">-- اختر الصف الدراسي --</option>';
-        window.globalClassesList.forEach(c => { html += `<option value="${c}">${c}</option>`; });
-        classSel.innerHTML = html;
-    } else if (val === 'student') {
-        dynamicBox.style.display = 'grid';
-        studentBox.style.display = 'block';
-        let html = '<option value="">-- اختر الصف الدراسي --</option>';
-        window.globalClassesList.forEach(c => { html += `<option value="${c}">${c}</option>`; });
-        classSel.innerHTML = html;
-    }
-};
-
-window.handleMsgClassChange = async function(classId) {
-    const studentSel = document.getElementById('msg-student-select');
-    if (!studentSel || document.getElementById('msg-target-type').value !== 'student') return;
-    if (!classId) { studentSel.innerHTML = '<option value="">-- اختر الصف أولاً --</option>'; return; }
-    
-    studentSel.innerHTML = '<option value="">⏳ جاري الفرز...</option>';
-    try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
-        const snap = await getDocs(q);
-        let arr = [];
-        snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
-        arr.sort((a,b) => a.localeCompare(b, 'ar'));
-        
-        let html = '<option value="">-- اختر الطالب المستهدف --</option>';
-        arr.forEach(n => { html += `<option value="${n}">${n}</option>`; });
-        studentSel.innerHTML = html;
-    } catch(e) { studentSel.innerHTML = '<option value="">❌ خطأ</option>'; }
-};
-
-// تتبع تغيير الطالب المستهدف بالرسالة لتوفير زر الواتساب المباشر له
-window.handleMsgStudentChangeLive = function(studentName) {
-    const waBtn = document.getElementById('btn-msg-whatsapp');
-    if(studentName !== "") {
-        waBtn.style.display = 'inline-block';
-    } else {
-        waBtn.style.display = 'none';
-    }
-};
-
-// ✅ ميزة توجيه وبث الرسالة المكتوبة بالواتساب فوراً لولي أمر الطالب المختار (المستحدثة)
-window.sendSocialMessageViaWhatsAppLive = function() {
-    const sName = document.getElementById('msg-student-select').value;
-    const msgBody = document.getElementById('msg-body').value.trim();
-    if(!sName || !msgBody) { alert("⚠️ يرجى اختيار الطالب وكتابة نص الخطاب أولاً!"); return; }
-    
-    // سحب رقم تليفون مستلم ولي الأمر المسجل مؤخراً بحقيبة الاستئذان طيران لتسهيل العمل
-    let targetPhone = "965"; 
-    const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(msgBody)}`;
-    window.open(waUrl, '_blank');
-};
-
-window.sendSocialMessageLive = async function(e) {
-    e.preventDefault();
-    const type = document.getElementById('msg-target-type').value;
-    const title = document.getElementById('msg-title').value.trim();
-    const body = document.getElementById('msg-body').value.trim();
-    const submitBtn = document.getElementById('btn-msg-submit');
-    const user = JSON.parse(localStorage.getItem('hs_user')) || { name: "الأخصائي الاجتماعي" };
-
-    let finalTarget = "";
-    if (type === 'all') {
-        finalTarget = "جميع أولياء أمور المدرسة";
-    } else if (type === 'class') {
-        const cId = document.getElementById('msg-class-select').value;
-        if(!cId) { alert("⚠️ يرجى تحديد الصف الدراسي المستهدف!"); return; }
-        finalTarget = `أولياء أمور صف [ ${cId} ]`;
-    } else if (type === 'student') {
-        const cId = document.getElementById('msg-class-select').value;
-        const sName = document.getElementById('msg-student-select').value;
-        if(!cId || !sName) { alert("⚠️ يرجى تحديد الصف والطالب المعني بالخطاب!"); return; }
-        finalTarget = `ولي أمر الطالب: ${sName} (صف ${cId})`;
-    }
-
-    submitBtn.disabled = true;
-    try {
-        const unifiedDate = getUnifiedDateString();
-        await addDoc(collection(db, 'announcements'), {
-            target: finalTarget, title: title, body: body,
-            sender: "أ. " + user.name, role: "social_worker",
-            dateStr: unifiedDate, createdAt: serverTimestamp()
-        });
-        alert('✓ تم بث ونشر الرسالة الموجهة بالمنظومة السحابية لأولياء الأمور بنجاح.');
-        document.getElementById('social-msg-form').reset();
-        document.getElementById('msg-dynamic-selectors').style.display = 'none';
-        document.getElementById('msg-target-type').value = 'all';
-        document.getElementById('btn-msg-whatsapp').style.display = 'none';
-    } catch(err) { alert('خطأ بالإرسال: ' + err.message); }
-    submitBtn.disabled = false;
-};
-
-function listenToSocialMessagesLive() {
-    const tbody = document.getElementById('social-msg-logs-tbody');
-    if(!tbody) return;
-    onSnapshot(collection(db, 'announcements'), (snapshot) => {
+    onSnapshot(collection(db, 'gatepass'), (snapshot) => {
         let html = '';
         snapshot.forEach(doc => {
-            const data = doc.data();
-            if(data.role === 'social_worker') {
+            const d = doc.data();
+            if (d.dateStr === searchDate) {
                 html += `
-                <tr style="border-bottom:1px solid #eee;">
-                    <td style="font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || '-'}</td>
-                    <td><span class="badge info">${data.target || '-'}</span></td>
-                    <td style="font-weight:700; color:var(--primary-color);">${data.title || '-'}</td>
-                    <td style="color:#555; font-size:12px; font-weight:600; white-space:pre-wrap;">${data.body || '-'}</td>
-                    <td style="font-weight:bold; color:var(--hover-color);">${data.sender || 'الأخصائي'}</td>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="color:#7f8c8d; font-weight:bold;">🕒 ${d.dateStr}</td>
+                    <td style="color:#1e293b;"><b>👤 ${d.studentName || d.name || '-'}</b></td>
+                    <td><span style="background:#475569; color:#fff; padding:3px 8px; border-radius:4px; font-size:11px;">${d.classId || '-'}</span></td>
+                    <td>${d.relative || '-'}</td>
+                    <td><span style="background:#10b981; color:#fff; padding:3px 8px; border-radius:4px; font-size:11px;">${d.relation || '-'}</span></td>
+                    <td><code>${d.relativeCivilId || '-'}</code></td>
+                    <td><a href="tel:${d.relativePhone}" style="text-decoration:none; color:#3b82f6; font-weight:700;">${d.relativePhone || '-'}</a></td>
+                    <td style="color:#7f8c8d; font-size:12px;">${d.reason || '-'}</td>
                 </tr>`;
             }
         });
-        tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; font-weight:bold;">💡 لا توجد رسائل صادرة لغاية الآن.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; color: #999; padding: 20px; font-weight: bold;">💡 لا توجد تصاريح استئذان مسجلة للتاريخ المحدد.</td></tr>';
     });
 }
-
-window.generateEmailTemplateTextLive = function(type) {
-    const preview = document.getElementById('email-preview-text');
-    let text = "";
-    if(type === 'غياب') {
-        text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nنحيطكم علماً بأن ابنكم قد تكرر غيابه وانقطاعه عن الدراسة بدون عذر مقبول، يرجى مراجعة مكتب الخدمة الاجتماعية بالمدرسة فوراً مصطحبين معكم الأعذار الطبية أو الرسمية المعتمدة تلافياً لتطبيق لائحة الغياب بوزارة التربية بحقه.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
-    } else if(type === 'سلوك') {
-        text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nيرجى مراجعة مكتب الأخصائي الاجتماعي بالمدرسة يوم غدٍ في تمام الساعة التاسعة صباحاً لأمر هام يخص السلوك والانضباط التربوي لابنكم داخل الفصل الدراسي ولأهمية الأمر يرجى عدم التأخر.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
-    } else {
-        text = `السيد ولي أمر الطالب المحترم،\nتحية طيبة وبعد،،\n\nيسر مكتب الخدمة الاجتماعية وإدارة المدرسة أن تتقدم لكم بخالص التهنئة والتقدير على التميز السلوكي والدراسي الأخاذ لابنكم، ونشكر لكم حسن تعاونكم ومتابعتكم المستمرة التي أثمرت هذا التفوق الباهر.\n\nإدارة مدرسة سالم الحسينان المتوسطة للبنين`;
-    }
-    preview.textContent = text;
-};
-
-window.copyEmailTextToClipboard = function() {
-    const text = document.getElementById('email-preview-text').textContent;
-    navigator.clipboard.writeText(text);
-    alert("📋 تم نسخ الخطاب!");
-};
-
-window.openBehaviorModalLive = function(id, name, status, notes) {
-    document.getElementById('modal-doc-id').value = id;
-    document.getElementById('modal-student-lbl').textContent = name;
-    document.getElementById('modal-status-select').value = status.includes('تمت') ? 'تمت المتابعة والإقفال' : 'قيد المتابعة والمراجعة';
-    document.getElementById('modal-notes-area').value = notes;
-    document.getElementById('behavior-modal').style.display = 'flex';
-};
-
-window.closeBehaviorModalLive = function() { document.getElementById('behavior-modal').style.display = 'none'; };
-
-window.saveBehaviorModalUpdateLive = async function() {
-    const id = document.getElementById('modal-doc-id').value;
-    const status = document.getElementById('modal-status-select').value;
-    const notes = document.getElementById('modal-notes-area').value.trim();
-    try {
-        await setDoc(doc(db, 'behavior', id), { followUpStatus: status, notes: notes }, { merge: true });
-        alert("✅ تم تحديث مذكرات وموقف متابعة الحالة بنجاح فوري.");
-        window.closeBehaviorModalLive();
-    } catch(e) { alert("خطأ: " + e.message); }
-};
-
-async function loadSocialProfileDataLive() {
-    try {
-        const docSnap = await getDoc(doc(db, 'users', currentSocialId));
-        if(docSnap.exists()) {
-            const d = docSnap.data();
-            if(d.department) document.getElementById('prof-dept').value = d.department;
-            if(d.civilId) document.getElementById('prof-civil').value = d.civilId;
-            if(d.phone) document.getElementById('prof-phone').value = d.phone;
-            if(d.fileNumber) document.getElementById('prof-file').value = d.fileNumber;
-        }
-    } catch(e) {}
-}
-
-window.updateSocialProfileLive = async function() {
-    const d = document.getElementById('prof-dept').value.trim();
-    const c = document.getElementById('prof-civil').value.trim();
-    const p = document.getElementById('prof-phone').value.trim();
-    const f = document.getElementById('prof-file').value.trim();
-    const np = document.getElementById('prof-new-pass').value.trim();
-    if(!c || !p || !f) { alert("⚠️ يرجى تعبئة كافة الخانات المطلوبة!"); return; }
-    try {
-        let updateData = { department: d, civilId: c, phone: p, fileNumber: f, updatedAt: serverTimestamp() };
-        if(np !== "") updateData.plainPass = np;
-        await setDoc(doc(db, 'users', currentSocialId), updateData, { merge: true });
-        alert("✅ تم حفظ وتحديث بيانات حسابك الشخصي.");
-        document.getElementById('prof-new-pass').value = "";
-    } catch(e) { alert("خطأ: " + e.message); }
-};
 </script>
 </body>
 </html>
