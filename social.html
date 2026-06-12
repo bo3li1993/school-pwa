@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>بوابة الأخصائي الاجتماعي - مدرسة سالم الحسينان</title>
+<title>بوابة الأخصائي الاجتماعي - mدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
@@ -65,7 +65,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <div class="workspace-container">
 
-    <!-- صف الكروت الإحصائية الحية مالت السيرفر -->
     <div class="stats-grid">
         <div class="stat-card red">
             <div><h3>إجمالي المخالفات السلوكية المرصودة</h3><div class="num" id="lbl-stat-negative">0</div></div>
@@ -81,7 +80,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- منيو التبويبات الخمسة المكتملة -->
     <div class="tabs-nav">
         <div class="tab-btn active" id="tab-btn-gatepass" onclick="window.switchTabView('view-gatepass')"><i class="bi bi-ticket-perforated-fill"></i> حقيبة الاستئذان</div>
         <div class="tab-btn" id="tab-btn-behavior" onclick="window.switchTabView('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
@@ -90,7 +88,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         <div class="tab-btn" id="tab-btn-settings" onclick="window.switchTabView('view-settings')"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
     </div>
 
-    <!-- 🎫 التبويب الأول: حقيبة الاستئذان -->
     <div id="view-gatepass" class="tab-view active-view">
         <div class="card" style="border-top: 4px solid var(--success-color);">
             <h2><i class="bi bi-card-list"></i> إصدار بطاقة تصريح خروج مبكر (استئذان سحابي لايف للباب)</h2>
@@ -162,7 +159,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 🛡️ التبويب الثاني: رصد ومتابعة السلوك -->
     <div id="view-behavior" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--danger-color);">
             <h2><i class="bi bi-shield-exclamation"></i> وثيقة رصد وإثبات حالة سلوكية ومدرسية للطلاب</h2>
@@ -218,7 +214,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 👤 التبويب الثالث: ملف الطالب الشامل -->
     <div id="view-profile" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--warning-color);">
             <h2><i class="bi bi-person-bounding-box"></i> البحث الذكي وفحص ملف الطالب الشامل (رادار ٣٦٠ درجة)</h2>
@@ -276,7 +271,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 📋 التبويب الرابع: المراسلات والتعاميم الفورية -->
     <div id="view-messages" class="tab-view">
         <div class="card" style="border-top: 4px solid #a855f7;">
             <h2><i class="bi bi-chat-right-quote"></i> إصدار وبث تعميم / تنبيه إداري فوري بالمنظومة</h2>
@@ -316,7 +310,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- ⚙️ التبويب الخامس: إعدادات حساب الأخصائي وتغيير باسورده -->
     <div id="view-settings" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--primary-color); background:#f8fafc;">
             <h2><i class="bi bi-sliders2"></i> إعدادات ملف الأخصائي وتعديل كلمة المرور</h2>
@@ -376,7 +369,7 @@ window.switchTabView = function(viewId) {
     if(viewId === 'view-settings') document.getElementById('tab-btn-settings').classList.add('active');
 };
 
-// 🎯 محرك السحب المركزي الفولاذي: يقرأ الكشوف الحقيقية ويرتب الأسماء أبجدياً بشكل صارم
+// 🎯 محرك السحب المركزي الفولاذي: يقرأ الكشوف الحقيقية ويرتب الأسماء أبجدياً بشكل صارم وصحيح 100%
 window.populateStudentsDropdownUnified = async function(classSelectId, studentSelectId) {
     const classId = document.getElementById(classSelectId).value;
     const nameSelect = document.getElementById(studentSelectId);
@@ -399,8 +392,8 @@ window.populateStudentsDropdownUnified = async function(classSelectId, studentSe
             return;
         }
         
-        // 🔥 فرز وترتيب اللائحة أبجدياً بالملي قبل صبها في القائمة المنسدلة
-        const sortedNames = Array.from(uniqueNames).sort((a, b) => a.localeCompare('ar'));
+        // 🔥 تصحيح الفرز والترتيب الأبجدي العربي بالملي (مقارنة السلسلة a بالسلسلة b)
+        const sortedNames = Array.from(uniqueNames).sort((a, b) => a.localeCompare(b, 'ar'));
         
         let optionsHtml = '<option value="">👇 اختر اسم الطالب الحين</option>';
         sortedNames.forEach(name => {
@@ -625,7 +618,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     startSocialCentralListeners();
     
-    // سحب أولي مرتب أبجدياً تلقائياً عند فتح الشاشة
+    // سحب أولي مرتب أبجدياً صحيحاً عند فتح الشاشة
     window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
     window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
     window.populateStudentsDropdownUnified('txt-profile-search-class', 'txt-profile-search-name');
