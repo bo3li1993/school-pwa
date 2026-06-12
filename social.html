@@ -65,7 +65,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <div class="workspace-container">
 
-    <!-- صف الكروت الإحصائية الحية المربوطة بالسيرفر -->
+    <!-- صف الكروت الإحصائية الحية مالت السيرفر -->
     <div class="stats-grid">
         <div class="stat-card red">
             <div><h3>إجمالي المخالفات السلوكية المرصودة</h3><div class="num" id="lbl-stat-negative">0</div></div>
@@ -81,7 +81,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- منيو التبويبات -->
+    <!-- منيو التبويبات الخمسة المكتملة -->
     <div class="tabs-nav">
         <div class="tab-btn active" id="tab-btn-gatepass" onclick="window.switchTabView('view-gatepass')"><i class="bi bi-ticket-perforated-fill"></i> حقيبة الاستئذان</div>
         <div class="tab-btn" id="tab-btn-behavior" onclick="window.switchTabView('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
@@ -97,8 +97,8 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
             <form id="social-gatepass-form" onsubmit="window.broadcastGatepassLive(event)">
                 <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed var(--success-color);">
                     <div>
-                        <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">الفصل الدراسي للطلاب:</label>
-                        <select id="pass-class" required style="margin-bottom:0;">
+                        <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">1. اختر الفصل:</label>
+                        <select id="pass-class" onchange="window.populateStudentsDropdownUnified('pass-class', 'pass-student-name')">
                             <option value="6/1">6/1</option> <option value="6/2">6/2</option> <option value="6/3">6/3</option> <option value="6/4">6/4</option> <option value="6/5">6/5</option>
                             <option value="7/1">7/1</option> <option value="7/2">7/2</option> <option value="7/3">7/3</option> <option value="7/4">7/4</option> <option value="7/5">7/5</option>
                             <option value="8/1">8/1</option> <option value="8/2">8/2</option> <option value="8/3">8/3</option> <option value="8/4">8/4</option> <option value="8/5">8/5</option>
@@ -106,8 +106,10 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                         </select>
                     </div>
                     <div>
-                        <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">اسم الطالب رباعي المأذون له بالخروج:</label>
-                        <input type="text" id="pass-student-name" placeholder="اكتب اسم الطالب بالكامل من واقع السجل الدراسي" required style="margin-bottom:0;">
+                        <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">2. اختر اسم الطالب من الكشف فورا:</label>
+                        <select id="pass-student-name" required>
+                            <option value="">⏳ جاري تحميل اللائحة...</option>
+                        </select>
                     </div>
                 </div>
 
@@ -167,8 +169,8 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
             <form id="social-behavior-form" onsubmit="window.saveBehaviorLogLive(event)">
                 <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px;">
                     <div>
-                        <label style="font-weight:700; font-size:12px;">فصل الطالب:</label>
-                        <select id="beh-class" required>
+                        <label style="font-weight:700; font-size:12px;">1. فصل الطالب:</label>
+                        <select id="beh-class" onchange="window.populateStudentsDropdownUnified('beh-class', 'beh-student-name')">
                             <option value="6/1">6/1</option> <option value="6/2">6/2</option> <option value="6/3">6/3</option> <option value="6/4">6/4</option> <option value="6/5">6/5</option>
                             <option value="7/1">7/1</option> <option value="7/2">7/2</option> <option value="7/3">7/3</option> <option value="7/4">7/4</option> <option value="7/5">7/5</option>
                             <option value="8/1">8/1</option> <option value="8/2">8/2</option> <option value="8/3">8/3</option> <option value="8/4">8/4</option> <option value="8/5">8/5</option>
@@ -176,8 +178,10 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                         </select>
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:12px;">اسم الطالب رباعي:</label>
-                        <input type="text" id="beh-student-name" placeholder="اكتب اسم الطالب رباعي بالكامل" required>
+                        <label style="font-weight:700; font-size:12px;">2. اختر اسم الطالب من اللائحة فورا:</label>
+                        <select id="beh-student-name" required>
+                            <option value="">⏳ جاري جلب الأسماء...</option>
+                        </select>
                     </div>
                 </div>
                 <div>
@@ -214,7 +218,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 👤 التبويب الثالث: ملف الطالب الشامل (تعديل الأزرار والقوائم المنسدلة الملوكية) -->
+    <!-- 👤 التبويب الثالث: ملف الطالب الشامل -->
     <div id="view-profile" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--warning-color);">
             <h2><i class="bi bi-person-bounding-box"></i> البحث الذكي وفحص ملف الطالب الشامل (رادار ٣٦٠ درجة)</h2>
@@ -223,7 +227,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
             <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 15px; background: #fffbf5; padding: 15px; border-radius: 10px; border: 1px solid #ffe8cc;">
                 <div>
                     <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">1. اختر الفصل الدراسي:</label>
-                    <select id="txt-profile-search-class" onchange="window.populateStudentNamesDropdown()">
+                    <select id="txt-profile-search-class" onchange="window.populateStudentsDropdownUnified('txt-profile-search-class', 'txt-profile-search-name')">
                         <option value="6/1">6/1</option> <option value="6/2">6/2</option> <option value="6/3">6/3</option> <option value="6/4">6/4</option> <option value="6/5">6/5</option>
                         <option value="7/1">7/1</option> <option value="7/2">7/2</option> <option value="7/3">7/3</option> <option value="7/4">7/4</option> <option value="7/5">7/5</option>
                         <option value="8/1">8/1</option> <option value="8/2">8/2</option> <option value="8/3">8/3</option> <option value="8/4">8/4</option> <option value="8/5">8/5</option>
@@ -372,56 +376,51 @@ window.switchTabView = function(viewId) {
     if(viewId === 'view-settings') document.getElementById('tab-btn-settings').classList.add('active');
 };
 
-// 🔥 دالة ذكية جداً لتعبئة القائمة المنسدلة بالطلاب الذين لهم تاريخ بهذا الصف تلقائياً
-window.populateStudentNamesDropdown = async function() {
-    const sClass = document.getElementById('txt-profile-search-class').value;
-    const nameSelect = document.getElementById('txt-profile-search-name');
+// 🎯 محرك السحب المركزي الحقيقي: يقرأ فقط الكشوف الأصلية المرفوعة بكولكشن 'students' في الفايربيس
+window.populateStudentsDropdownUnified = async function(classSelectId, studentSelectId) {
+    const classId = document.getElementById(classSelectId).value;
+    const nameSelect = document.getElementById(studentSelectId);
     if (!nameSelect) return;
     
-    nameSelect.innerHTML = '<option value="">⏳ جاري فحص سجلات الفصول وجلب الأسماء...</option>';
+    nameSelect.innerHTML = '<option value="">⏳ جاري سحب الأسماء من السيرفر السحابي...</option>';
     
     try {
         const uniqueNames = new Set();
         
-        // 1. مسح وفحص كولكشن السلوك
-        const qBeh = query(collection(db, 'behavior_logs'), where('classId', '==', sClass));
-        const snapBeh = await getDocs(qBeh);
-        snapBeh.forEach(doc => {
-            if (doc.data().studentName) uniqueNames.add(doc.data().studentName.trim());
+        // فحص وجلب بيانات الطلاب الحقيقية من كولكشن الكشوف الرئيسي
+        const qStudents = query(collection(db, 'students'), where('classId', '==', classId));
+        const snapStud = await getDocs(qStudents);
+        snapStud.forEach(doc => {
+            if (doc.data().name) uniqueNames.add(doc.data().name.trim());
         });
         
-        // 2. مسح وفحص كولكشن الاستئذانات
-        const qGate = query(collection(db, 'gatepass'), where('classId', '==', sClass));
-        const snapGate = await getDocs(qGate);
-        snapGate.forEach(doc => {
-            if (doc.data().studentName) uniqueNames.add(doc.data().studentName.trim());
-        });
-        
+        // الحظر التام وحذف ميزة السمارات ديمو
         if (uniqueNames.size === 0) {
-            nameSelect.innerHTML = '<option value="">❌ لا يوجد طلاب مسجلين لهم تاريخ أو أذونات في هذا الصف حالياً</option>';
+            nameSelect.innerHTML = '<option value="">❌ لا يوجد طلاب مسجلين في هذا الفصل حالياً</option>';
             return;
         }
         
-        let optionsHtml = '<option value="">👇 اختر اسم الطالب من القائمة فوراً</option>';
+        let optionsHtml = '<option value="">👇 اختر اسم الطالب الحين</option>';
         uniqueNames.forEach(name => {
             optionsHtml += `<option value="${name}">${name}</option>`;
         });
         nameSelect.innerHTML = optionsHtml;
     } catch (err) {
-        nameSelect.innerHTML = '<option value="">❌ خطأ سحابي أثناء استدعاء الكشوف</option>';
+        nameSelect.innerHTML = '<option value="">❌ خطأ في سحب كشف الأسماء</option>';
     }
 };
 
 async function broadcastGatepassLive(e) {
     e.preventDefault();
     const classId = document.getElementById('pass-class').value;
-    const studentName = document.getElementById('pass-student-name').value.trim();
+    const studentName = document.getElementById('pass-student-name').value;
     const relative = document.getElementById('pass-relative').value.trim();
     const relation = document.getElementById('pass-relation').value;
     const civil = document.getElementById('pass-civil').value.trim();
     const phone = document.getElementById('pass-phone').value.trim();
     const reason = document.getElementById('pass-reason').value.trim();
 
+    if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً من القائمة!"); return; }
     if (civil.length !== 12) { alert("⚠️ الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
 
     try {
@@ -431,16 +430,19 @@ async function broadcastGatepassLive(e) {
         });
         alert(`🚀 تم بث استئذان الطالب [ ${studentName} ] بنجاح لشاشة الحارس عند البوابة.`);
         document.getElementById('social-gatepass-form').reset();
+        window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
     } catch (err) { alert("خطأ: " + err.message); }
 }
 
 async function saveBehaviorLogLive(e) {
     e.preventDefault();
     const classId = document.getElementById('beh-class').value;
-    const studentName = document.getElementById('beh-student-name').value.trim();
+    const studentName = document.getElementById('beh-student-name').value;
     const type = document.getElementById('beh-type').value;
     const details = document.getElementById('beh-details').value.trim();
     const action = document.getElementById('beh-action').value.trim();
+
+    if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً لرصد حالته!"); return; }
 
     try {
         await addDoc(collection(db, 'behavior_logs'), {
@@ -449,6 +451,7 @@ async function saveBehaviorLogLive(e) {
         });
         alert(`✓ تم توثيق ورصد الحالة السلوكية بنجاح للطالب [ ${studentName} ].`);
         document.getElementById('social-behavior-form').reset();
+        window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
     } catch(err) { alert("خطأ بالحفظ: " + err.message); }
 }
 
@@ -619,7 +622,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('txt-search-date').value = getUnifiedDateString();
     
     startSocialCentralListeners();
-    window.populateStudentNamesDropdown(); // تعبئة أولية عند الفتح لأول صف بالقائمة
+    
+    // تعبئة حقيقية تلقائية عند فتح السستم بناءً على الصفوف المختارة
+    window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
+    window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
+    window.populateStudentsDropdownUnified('txt-profile-search-class', 'txt-profile-search-name');
 });
 </script>
 </body>
