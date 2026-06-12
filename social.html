@@ -25,7 +25,6 @@ body { background: var(--bg-light); display: flex; flex-direction: column; min-h
 
 .workspace-container { max-width: 1200px; width: 100%; margin: 15px auto; padding: 0 12px; flex: 1; }
 
-/* صف الكروت الإحصائية العلوية */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-bottom: 20px; }
 .stat-card { background: #fff; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border-right: 6px solid #ccc; }
 .stat-card.red { border-right-color: var(--danger-color); }
@@ -34,7 +33,6 @@ body { background: var(--bg-light); display: flex; flex-direction: column; min-h
 .stat-card h3 { font-size: 11px; color: #666; font-weight: bold; }
 .stat-card .num { font-size: 26px; font-weight: 900; color: var(--primary-color); }
 
-/* منيو التبويبات */
 .tabs-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 20px; }
 .tab-btn { background: #fff; border: 1px solid #e2e8f0; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; color: #475569; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
 .tab-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
@@ -56,15 +54,14 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <div class="header-nav">
     <div>
-        <h1><i class="bi bi-person-workspace"></i> بوابة الأخصائي: أ. أخصائي الاجتماعي</h1>
-        <p>وزارة التربية - mدرسة سالم الحسينان المتوسطة للبنين</p>
+        <h1><i class="bi bi-person-workspace"></i> بوابة الأخصائي: أ. الأخصائي الاجتماعي</h1>
+        <p>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</p>
     </div>
     <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer;">تسجيل الخروج</button>
 </div>
 
 <div class="workspace-container">
 
-    <!-- صف الكروت الإحصائية الثلاثية العلوية -->
     <div class="stats-grid">
         <div class="stat-card red">
             <div><h3>حالات سلوكية نشطة قيد المتابعة</h3><div class="num">7</div></div>
@@ -80,29 +77,33 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- منيو التبويبات الخمسة الأساسية -->
     <div class="tabs-nav">
-        <div class="tab-btn"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
-        <div class="tab-btn"><i class="bi bi-person-badge"></i> ملف الطالب الشامل</div>
+        <div class="tab-btn" onclick="alert('جاري العمل على تجهيز صفحة السلوك خطوة بخطوة مَع بوعلي ⚙️')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
+        <div class="tab-btn" onclick="alert('جاري العمل على تجهيز صفحة ملف الطالب الشامل خطوة بخطوة مَع بوعلي ⚙️')"><i class="bi bi-person-badge"></i> ملف الطالب الشامل</div>
         <div class="tab-btn active"><i class="bi bi-ticket-perforated-fill"></i> حقيبة الاستئذان</div>
-        <div class="tab-btn"><i class="bi bi-chat-left-text"></i> المراسلات والتعاميم</div>
-        <div class="tab-btn"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
+        <div class="tab-btn" onclick="alert('جاري العمل على تجهيز صفحة المراسلات خطوة بخطوة مَع بوعلي ⚙️')"><i class="bi bi-chat-left-text"></i> المراسلات والتعاميم</div>
+        <div class="tab-btn" onclick="alert('جاري العمل على تجهيز صفحة إعدادات حسابي خطوة بخطوة مَع بوعلي ⚙️')"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
     </div>
 
-    <!-- كرت إصدار بطاقة تصريح الخروج المبكر المطور بناء على طلب بوعلي -->
+    <!-- كرت إصدار بطاقة تصريح الخروج المطور بالكامل -->
     <div class="card" style="border-top: 4px solid var(--success-color);">
         <h2><i class="bi bi-card-list"></i> إصدار بطاقة تصريح خروج مبكر (استئذان سحابي لايف للباب)</h2>
         
         <form id="social-gatepass-form" onsubmit="window.broadcastGatepassLive(event)">
             
-            <!-- الصف الأول الجديد: اختيار الفصل واسم الطالب رباعي -->
+            <!-- تم إضافة صفوف سادس بالكامل وتوسيع القائمة بالملي -->
             <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed var(--success-color);">
                 <div>
-                    <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">الفصل الدراسي للطالب:</label>
+                    <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">الفصل الدراسي للطلاب:</label>
                     <select id="pass-class" required style="margin-bottom:0;">
-                        <option value="1/7">7/1</option> <option value="2/7">7/2</option> <option value="3/7">7/3</option> <option value="4/7">7/4</option>
-                        <option value="1/8">8/1</option> <option value="2/8">8/2</option> <option value="3/8">8/3</option> <option value="4/8">8/4</option>
-                        <option value="1/9">9/1</option> <option value="2/9">9/2</option> <option value="3/9">9/3</option> <option value="4/9">9/4</option>
+                        <!-- فصول سادس المفقودة -->
+                        <option value="6/1">6/1</option> <option value="6/2">6/2</option> <option value="6/3">6/3</option> <option value="6/4">6/4</option> <option value="6/5">6/5</option>
+                        <!-- فصول سابع -->
+                        <option value="7/1">7/1</option> <option value="7/2">7/2</option> <option value="7/3">7/3</option> <option value="7/4">7/4</option> <option value="7/5">7/5</option>
+                        <!-- فصول ثامن -->
+                        <option value="8/1">8/1</option> <option value="8/2">8/2</option> <option value="8/3">8/3</option> <option value="8/4">8/4</option> <option value="8/5">8/5</option>
+                        <!-- فصول تاسع -->
+                        <option value="9/1">9/1</option> <option value="9/2">9/2</option> <option value="9/3">9/3</option> <option value="9/4">9/4</option> <option value="9/5">9/5</option>
                     </select>
                 </div>
                 <div>
@@ -111,7 +112,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                 </div>
             </div>
 
-            <!-- باجي حقول البيانات المعتمدة لولي الأمر ومستلم الطالب -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;">
                 <div>
                     <label style="font-weight: 700; font-size: 12px; color: #444; display:block; margin-bottom:5px;">اسم ولي الأمر / مستلم الطالب رباعي:</label>
@@ -145,7 +145,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </form>
     </div>
 
-    <!-- كرت الأرشيف التاريخي والجرد اليومي المباشر للطلاب المستأذنين -->
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">
             <h2 style="margin-bottom:0; border-bottom:none;"><i class="bi bi-clock-history"></i> أرشيف حركة خروج الطلاب وتصاريح الاستئذان التاريخية</h2>
@@ -176,7 +175,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     </tr>
                 </thead>
                 <tbody id="social-archive-tbody">
-                    <tr><td colspan="8" style="text-align: center; color: #999; padding: 15px; font-weight: bold;">💡 لا توجد تصاريح استئذان مسجلة للتاريخ المحدد.</td></tr>
+                    <tr><td colspan="8" style="text-align: center; color: #999; padding: 20px; font-weight: bold;">💡 لا توجد تصاريح استئذان مسجلة للتاريخ المحدد.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -186,11 +185,10 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, addDoc, onSnapshot, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, addDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentWorkerName = "الأخصائي الاجتماعي";
 
-// دالة توحيد التاريخ مع الأصفار لتفادي عيوب الكاش والبحث
 function getUnifiedDateString() {
     const d = new Date();
     const year = d.getFullYear();
@@ -199,55 +197,7 @@ function getUnifiedDateString() {
     return `${year}/${month}/${day}`;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    if (!user || user.role !== 'social_worker') {
-        window.location.replace('index.html');
-        return;
-    }
-    currentWorkerName = user.name || "الأخصائي";
-    
-    // ضبط حقل تاريخ البحث بشكل تلقائي على تاريخ اليوم الموحد
-    document.getElementById('txt-search-date').value = getUnifiedDateString();
-    
-    listenToTodayCount();
-    loadHistoricalArchiveLive();
-});
-
-// دالة إرسال وتوثيق الاستئذان الملوكي الجديد للبوابة مباشرة
-window.broadcastGatepassLive = async function(e) {
-    e.preventDefault();
-    const classId = document.getElementById('pass-class').value;
-    const studentName = document.getElementById('pass-student-name').value.trim();
-    const relative = document.getElementById('pass-relative').value.trim();
-    const relation = document.getElementById('pass-relation').value;
-    const civil = document.getElementById('pass-civil').value.trim();
-    const phone = document.getElementById('pass-phone').value.trim();
-    const reason = document.getElementById('pass-reason').value.trim();
-
-    if (civil.length !== 12) { alert("⚠️ خطأ: الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
-
-    try {
-        await addDoc(collection(db, 'gatepass'), {
-            classId: classId,
-            studentName: studentName,
-            relative: relative,
-            relation: relation,
-            relativeCivilId: civil,
-            relativePhone: phone,
-            reason: reason,
-            status: 'approved', // مأذون له ومعلق بانتظار حارس البوابة بره
-            dateStr: getUnifiedDateString(),
-            officerName: currentWorkerName
-        });
-
-        alert(`🚀 نجاح: تم بث تصريح خروج الطالب (${studentName}) لايف لشاشة الحارس بره بنجاح!`);
-        document.getElementById('social-gatepass-form').reset();
-        document.getElementById('txt-search-date').value = getUnifiedDateString();
-    } catch (err) { alert("❌ فشل الإرسال السحابي: " + err.message); }
-};
-
-// مراقبة عدّاد استئذانات اليوم لايف بالكرت الأخضر فوق
+// 🔐 ترتيب الدوال بشكل صحيح لمنع الكراش والأخطاء المخفية بالسستم مالت الأزرار
 function listenToTodayCount() {
     const todayStr = getUnifiedDateString();
     onSnapshot(collection(db, 'gatepass'), (snapshot) => {
@@ -255,13 +205,15 @@ function listenToTodayCount() {
         snapshot.forEach(doc => {
             if (doc.data().dateStr === todayStr) count++;
         });
-        document.getElementById('lbl-count-today').innerText = count;
+        const countLbl = document.getElementById('lbl-count-today');
+        if (countLbl) countLbl.innerText = count;
     });
 }
 
-// دالة جرد وعرض الأرشيف التاريخي المباشر حسب التاريخ المكتوب
-window.loadHistoricalArchiveLive = function() {
-    const searchDate = document.getElementById('txt-search-date').value.trim();
+function loadHistoricalArchiveLive() {
+    const searchDateInput = document.getElementById('txt-search-date');
+    if (!searchDateInput) return;
+    const searchDate = searchDateInput.value.trim();
     const tbody = document.getElementById('social-archive-tbody');
     if (!tbody) return;
 
@@ -286,6 +238,55 @@ window.loadHistoricalArchiveLive = function() {
         tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; color: #999; padding: 20px; font-weight: bold;">💡 لا توجد تصاريح استئذان مسجلة للتاريخ المحدد.</td></tr>';
     });
 }
+
+async function broadcastGatepassLive(e) {
+    e.preventDefault();
+    const classId = document.getElementById('pass-class').value;
+    const studentName = document.getElementById('pass-student-name').value.trim();
+    const relative = document.getElementById('pass-relative').value.trim();
+    const relation = document.getElementById('pass-relation').value;
+    const civil = document.getElementById('pass-civil').value.trim();
+    const phone = document.getElementById('pass-phone').value.trim();
+    const reason = document.getElementById('pass-reason').value.trim();
+
+    if (civil.length !== 12) { alert("⚠️ خطأ: الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
+
+    try {
+        await addDoc(collection(db, 'gatepass'), {
+            classId: classId,
+            studentName: studentName,
+            relative: relative,
+            relation: relation,
+            relativeCivilId: civil,
+            relativePhone: phone,
+            reason: reason,
+            status: 'approved',
+            dateStr: getUnifiedDateString(),
+            officerName: currentWorkerName
+        });
+
+        alert(`🚀 نجاح: تم بث تصريح خروج الطالب (${studentName}) لايف لشاشة الحارس بره بنجاح!`);
+        document.getElementById('social-gatepass-form').reset();
+        document.getElementById('txt-search-date').value = getUnifiedDateString();
+    } catch (err) { alert("❌ فشل الإرسال السحابي: " + err.message); }
+}
+
+// ربط الأزرار بالـ window الحين بشكل سليم بعد التحميل لمنع المشاكل
+window.broadcastGatepassLive = broadcastGatepassLive;
+window.loadHistoricalArchiveLive = loadHistoricalArchiveLive;
+
+document.addEventListener("DOMContentLoaded", function() {
+    const user = JSON.parse(localStorage.getItem('hs_user'));
+    if (!user || user.role !== 'social_worker') {
+        window.location.replace('index.html');
+        return;
+    }
+    currentWorkerName = user.name || "الأخصائي";
+    document.getElementById('txt-search-date').value = getUnifiedDateString();
+    
+    listenToTodayCount();
+    loadHistoricalArchiveLive();
+});
 </script>
 </body>
 </html>
