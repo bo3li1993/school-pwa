@@ -376,32 +376,34 @@ window.switchTabView = function(viewId) {
     if(viewId === 'view-settings') document.getElementById('tab-btn-settings').classList.add('active');
 };
 
-// 🎯 محرك السحب المركزي الحقيقي: يقرأ فقط الكشوف الأصلية المرفوعة بكولكشن 'students' في الفايربيس
+// 🎯 محرك السحب المركزي الفولاذي: يقرأ الكشوف الحقيقية ويرتب الأسماء أبجدياً بشكل صارم
 window.populateStudentsDropdownUnified = async function(classSelectId, studentSelectId) {
     const classId = document.getElementById(classSelectId).value;
     const nameSelect = document.getElementById(studentSelectId);
     if (!nameSelect) return;
     
-    nameSelect.innerHTML = '<option value="">⏳ جاري سحب الأسماء من السيرفر السحابي...</option>';
+    nameSelect.innerHTML = '<option value="">⏳ جاري جرد الأسماء وترتيبها أبجدياً...</option>';
     
     try {
         const uniqueNames = new Set();
         
-        // فحص وجلب بيانات الطلاب الحقيقية من كولكشن الكشوف الرئيسي
+        // جلب بيانات الطلاب الأصلية من الفايربيس
         const qStudents = query(collection(db, 'students'), where('classId', '==', classId));
         const snapStud = await getDocs(qStudents);
         snapStud.forEach(doc => {
             if (doc.data().name) uniqueNames.add(doc.data().name.trim());
         });
         
-        // الحظر التام وحذف ميزة السمارات ديمو
         if (uniqueNames.size === 0) {
             nameSelect.innerHTML = '<option value="">❌ لا يوجد طلاب مسجلين في هذا الفصل حالياً</option>';
             return;
         }
         
+        // 🔥 فرز وترتيب اللائحة أبجدياً بالملي قبل صبها في القائمة المنسدلة
+        const sortedNames = Array.from(uniqueNames).sort((a, b) => a.localeCompare('ar'));
+        
         let optionsHtml = '<option value="">👇 اختر اسم الطالب الحين</option>';
-        uniqueNames.forEach(name => {
+        sortedNames.forEach(name => {
             optionsHtml += `<option value="${name}">${name}</option>`;
         });
         nameSelect.innerHTML = optionsHtml;
@@ -623,7 +625,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     startSocialCentralListeners();
     
-    // تعبئة حقيقية تلقائية عند فتح السستم بناءً على الصفوف المختارة
+    // سحب أولي مرتب أبجدياً تلقائياً عند فتح الشاشة
     window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
     window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
     window.populateStudentsDropdownUnified('txt-profile-search-class', 'txt-profile-search-name');
