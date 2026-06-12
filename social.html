@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>بوابة الأخصائي الاجتماعي - mدرسة سالم الحسينان</title>
+<title>بوابة الأخصائي الاجتماعي - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
@@ -245,7 +245,24 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                 <p style="font-size:13px; font-weight:700; color:#475569;" id="lbl-profile-student-class">الفصل المعتمد: </p>
             </div>
 
-            <div class="card">
+            <div class="card" style="border-right: 5px solid #64748b;">
+                <h4 style="font-size:14px; font-weight:900; color:#475569; margin-bottom:10px;"><i class="bi bi-calendar-x-fill"></i> سجل الانتظام، الغياب والتأخير الصباحي المباشر</h4>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr style="background:#f8fafc;">
+                                <th>التاريخ الدراسي</th>
+                                <th>نوع الحالة</th>
+                                <th>السبب الموثق / العذر</th>
+                                <th>المسجل المسؤول</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-profile-attendance"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card" style="border-right: 5px solid var(--danger-color);">
                 <h4 style="font-size:14px; font-weight:900; color:var(--danger-color); margin-bottom:10px;"><i class="bi bi-shield-slash"></i> أرشيف الملف السلوكي للطالب (إيجابي / سلبي)</h4>
                 <div style="overflow-x: auto;">
                     <table>
@@ -257,7 +274,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style="border-right: 5px solid var(--success-color);">
                 <h4 style="font-size:14px; font-weight:900; color:var(--success-color); margin-bottom:10px;"><i class="bi bi-ticket-detailed"></i> السجل التاريخي للأذونات وخروج الطالب من المدرسة</h4>
                 <div style="overflow-x: auto;">
                     <table>
@@ -369,7 +386,6 @@ window.switchTabView = function(viewId) {
     if(viewId === 'view-settings') document.getElementById('tab-btn-settings').classList.add('active');
 };
 
-// 🎯 محرك السحب المركزي الفولاذي: يقرأ الكشوف الحقيقية ويرتب الأسماء أبجدياً بشكل صارم وصحيح 100%
 window.populateStudentsDropdownUnified = async function(classSelectId, studentSelectId) {
     const classId = document.getElementById(classSelectId).value;
     const nameSelect = document.getElementById(studentSelectId);
@@ -380,7 +396,6 @@ window.populateStudentsDropdownUnified = async function(classSelectId, studentSe
     try {
         const uniqueNames = new Set();
         
-        // جلب بيانات الطلاب الأصلية من الفايربيس
         const qStudents = query(collection(db, 'students'), where('classId', '==', classId));
         const snapStud = await getDocs(qStudents);
         snapStud.forEach(doc => {
@@ -392,12 +407,11 @@ window.populateStudentsDropdownUnified = async function(classSelectId, studentSe
             return;
         }
         
-        // 🔥 تصحيح الفرز والترتيب الأبجدي العربي بالملي (مقارنة السلسلة a بالسلسلة b)
         const sortedNames = Array.from(uniqueNames).sort((a, b) => a.localeCompare(b, 'ar'));
         
         let optionsHtml = '<option value="">👇 اختر اسم الطالب الحين</option>';
         sortedNames.forEach(name => {
-            optionsHtml += `<option value="${name}">${name}</option>`;
+            optionsHtml += `<option value="${name}">${name}</option>';
         });
         nameSelect.innerHTML = optionsHtml;
     } catch (err) {
@@ -450,6 +464,7 @@ async function saveBehaviorLogLive(e) {
     } catch(err) { alert("خطأ بالحفظ: " + err.message); }
 }
 
+// 👤 فحص واستخراج ملف الطالب الشامل التكاملي (سلوك، غياب، تأخير، وأذونات خروج)
 window.searchStudentFullProfileLive = async function() {
     const sClass = document.getElementById('txt-profile-search-class').value;
     const sName = document.getElementById('txt-profile-search-name').value;
@@ -458,7 +473,9 @@ window.searchStudentFullProfileLive = async function() {
     const boxResults = document.getElementById('box-profile-results');
     const tableBeh = document.getElementById('table-profile-behavior');
     const tableGate = document.getElementById('table-profile-gatepass');
+    const tableAtt = document.getElementById('table-profile-attendance');
     
+    tableAtt.innerHTML = '<tr><td colspan="4" style="text-align:center;">🔍 جاري فحص ملف الانتظام الدراسي والغيابات...</td></tr>';
     tableBeh.innerHTML = '<tr><td colspan="4" style="text-align:center;">🔍 جاري فحص ملف المتابعة السلوكية...</td></tr>';
     tableGate.innerHTML = '<tr><td colspan="5" style="text-align:center;">🔍 جاري فحص أرشيف الأذونات وبوابة الأمن...</td></tr>';
     boxResults.style.display = 'block';
@@ -466,6 +483,27 @@ window.searchStudentFullProfileLive = async function() {
     document.getElementById('lbl-profile-student-name').innerText = `👤 ملف الطالب الشامل: ${sName}`;
     document.getElementById('lbl-profile-student-class').innerText = `الفصل الدراسي المعتمد بالفحص: صف ( ${sClass} )`;
 
+    // 1. جلب وتصفية سجلات الحضور والغياب والتأخير الصباحي (attendance_logs)
+    try {
+        const qAtt = query(collection(db, 'attendance_logs'), where('studentName', '==', sName));
+        const snapAtt = await getDocs(qAtt);
+        let hAtt = '';
+        snapAtt.forEach(doc => {
+            const d = doc.data();
+            if (d.classId === sClass) {
+                const badgeColor = d.type === 'غياب' ? 'background:var(--danger-color);' : 'background:var(--warning-color);';
+                hAtt += `<tr>
+                    <td>🕒 ${d.dateStr || '-'}</td>
+                    <td><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type || '-'}</span></td>
+                    <td style="font-weight:bold;">${d.reason || d.details || 'بدون عذر موثق'}</td>
+                    <td>${d.teacherName || d.officerName || 'سستم الحضور الآلي'}</td>
+                </tr>`;
+            }
+        });
+        tableAtt.innerHTML = hAtt || `<tr><td colspan="4" style="text-align:center; color:#999;">✨ سجل الطالب ممتاز تماماً، لا توجد أي حالات غياب أو تأخير صباحي مرصودة بالصف ${sClass}.</td></tr>`;
+    } catch(e) { tableAtt.innerHTML = `<tr><td colspan="4">خطأ في الحضور: ${e.message}</td></tr>`; }
+
+    // 2. جلب السجل السلوكي
     try {
         const qBeh = query(collection(db, 'behavior_logs'), where('studentName', '==', sName));
         const snapBeh = await getDocs(qBeh);
@@ -483,8 +521,9 @@ window.searchStudentFullProfileLive = async function() {
             }
         });
         tableBeh.innerHTML = hBeh || `<tr><td colspan="4" style="text-align:center; color:#999;">✅ السجل السلوكي للطالب نظيف تماماً في الصف ${sClass}.</td></tr>`;
-    } catch(e) { tableBeh.innerHTML = `<tr><td colspan="4">خطأ: ${e.message}</td></tr>`; }
+    } catch(e) { tableBeh.innerHTML = `<tr><td colspan="4">خطأ في السلوك: ${e.message}</td></tr>`; }
 
+    // 3. جلب تاريخ أذونات الخروج
     try {
         const qGate = query(collection(db, 'gatepass'), where('studentName', '==', sName));
         const snapGate = await getDocs(qGate);
@@ -501,7 +540,7 @@ window.searchStudentFullProfileLive = async function() {
             }
         });
         tableGate.innerHTML = hGate || `<tr><td colspan="5" style="text-align:center; color:#999;">💡 لم يتم رصد أي استئذانات سابقة للطالب بالصف ${sClass} خلال العام الدراسي.</td></tr>`;
-    } catch(e) { tableGate.innerHTML = `<tr><td colspan="5">خطأ: ${e.message}</td></tr>`; }
+    } catch(e) { tableGate.innerHTML = `<tr><td colspan="5">خطأ في الأذونات: ${e.message}</td></tr>`; }
 };
 
 async function saveNewCircularLive(e) {
@@ -536,7 +575,7 @@ async function updateSocialProfileLive(e) {
         localStorage.setItem('hs_user', JSON.stringify(localData));
 
         alert("✓ تم تحديث ملفك الشخصي وكلمة المرور بنجاح تام بقاعدة البيانات.");
-        window.location.reload();
+        window.location.replace('social.html');
     } catch(err) { alert("خطأ في الحفظ: " + err.message); }
 }
 
@@ -618,7 +657,6 @@ document.addEventListener("DOMContentLoaded", function() {
     
     startSocialCentralListeners();
     
-    // سحب أولي مرتب أبجدياً صحيحاً عند فتح الشاشة
     window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
     window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
     window.populateStudentsDropdownUnified('txt-profile-search-class', 'txt-profile-search-name');
