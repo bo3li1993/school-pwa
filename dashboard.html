@@ -1,97 +1,53 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>المركز الرئيسي - متوسطة سالم الحسينان</title>
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: #f4f7f6; color: #333; }
-    .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; padding: 2rem 1.5rem; text-align: center; border-bottom: 4px solid #667eea; }
-    .header h1 { font-size: 24px; margin-bottom: 8px; }
-    .header p { color: #aaa; font-size: 14px; }
-    .container { max-width: 800px; margin: -30px auto 20px; padding: 0 15px; position: relative; z-index: 10; }
-    .welcome-card { background: #fff; border-radius: 12px; padding: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 2rem; }
-    .welcome-card h2 { color: #1a1a2e; margin-bottom: 5px; }
-    .welcome-card .role-badge { display: inline-block; background: #e0e7ff; color: #4f46e5; padding: 5px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; margin-top: 10px; }
-    
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
-    .action-card { background: #fff; border-radius: 12px; padding: 2rem; text-align: center; text-decoration: none; color: #333; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.3s ease; border: 1px solid #eee; display: none; /* مخفية بالبداية */ }
-    .action-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: #667eea; }
-    .action-card .icon { font-size: 40px; margin-bottom: 15px; display: block; }
-    .action-card h3 { font-size: 18px; margin-bottom: 8px; color: #1a1a2e; }
-    .action-card p { font-size: 13px; color: #666; }
-    
-    .logout-btn { display: block; width: 100%; max-width: 200px; margin: 2rem auto; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; text-align: center; font-weight: bold; }
-    .logout-btn:hover { background: #c82333; }
-</style>
-</head>
-<body>
-
-<div class="header">
-    <h1>متوسطة سالم الحسينان</h1>
-    <p>البوابة الإلكترونية الذكية</p>
-</div>
-
-<div class="container">
-    <div class="welcome-card">
-        <h2>مرحباً بك، <span id="user-name">...</span> 👋</h2>
-        <div class="role-badge" id="user-role">جاري التحميل...</div>
-    </div>
-
-    <div class="grid">
-        <a href="admin.html" class="action-card" id="card-admin">
-            <span class="icon">📊</span>
-            <h3>لوحة الإدارة والإحصائيات</h3>
-            <p>مراقبة الغياب، الزيارات الصفية، والتقارير الشاملة</p>
-        </a>
-
-        <a href="staff.html" class="action-card" id="card-teacher">
-            <span class="icon">📝</span>
-            <h3>رصد الغياب اليومي</h3>
-            <p>تسجيل الحضور والغياب لطلاب فصلك</p>
-        </a>
-
-        <a href="manual.html" class="action-card" id="card-manual" style="display: block;">
-            <span class="icon">📖</span>
-            <h3>دليل الاستخدام (PDF)</h3>
-            <p>تحميل شرح طريقة استخدام النظام</p>
-        </a>
-    </div>
-
-    <button class="logout-btn" onclick="logout()">خروج من النظام</button>
-</div>
-
 <script>
     // التأكد من تسجيل الدخول
     var saved = localStorage.getItem('hs_user');
     if (!saved) {
-        window.location.href = 'index.html'; // إذا مو مسجل دخول، اطرده
+        window.location.replace('index.html');
     } else {
         try {
             var user = JSON.parse(saved);
-            
-            // عرض الاسم
             document.getElementById('user-name').textContent = user.name || 'مستخدم';
             
-            // تحديد الصلاحية وعرض الأزرار المناسبة
-            if (user.role === 'admin') {
-                document.getElementById('user-role').textContent = 'مدير / رئيس قسم';
-                document.getElementById('card-admin').style.display = 'block';
+            // قاموس الرتب لعرض مسمى وظيفي احترافي
+            const roleTitles = {
+                "admin": "👑 إدارة عليا",
+                "assistant_manager": "👔 مدير مساعد",
+                "social_worker": "📝 أخصائي اجتماعي",
+                "wing_supervisor": "🔎 مشرف جناح",
+                "guard": "🚪 حارس أمن",
+                "teacher": "👨‍🏫 معلم"
+            };
+            
+            document.getElementById('user-role').textContent = roleTitles[user.role] || 'عضو المنظومة';
+
+            // منطق إظهار الكروت حسب الدور (Role-Based Access)
+            // نأخذ جميع الكروت أولاً
+            const allCards = document.querySelectorAll('.action-card');
+            
+            // إظهار الكروت بناءً على الصلاحية
+            if (user.role === 'admin' || user.role === 'assistant_manager') {
+                // المدير والمساعد يشوفون كل شيء
+                allCards.forEach(card => card.style.display = 'block');
+            } else if (user.role === 'social_worker') {
+                // الأخصائي يشوف كروت معينة
+                document.getElementById('card-admin').style.display = 'block'; // إذا عنده صلاحيات إدارة مصغرة
+                document.getElementById('card-teacher').style.display = 'block';
+            } else if (user.role === 'wing_supervisor') {
+                document.getElementById('card-teacher').style.display = 'block';
+            } else if (user.role === 'guard') {
+                document.getElementById('card-admin').style.display = 'block'; // حارس الأمن يدخل للبوابة
             } else {
-                document.getElementById('user-role').textContent = 'معلم فصل';
+                // المعلم يشوف كرت التدريس فقط
                 document.getElementById('card-teacher').style.display = 'block';
             }
+
         } catch(e) {
-            window.location.href = 'index.html';
+            window.location.replace('index.html');
         }
     }
 
     function logout() {
         localStorage.removeItem('hs_user');
-        window.location.href = 'index.html';
+        window.location.replace('index.html');
     }
 </script>
-
-</body>
-</html>
