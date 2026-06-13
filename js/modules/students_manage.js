@@ -1,5 +1,5 @@
-import { db } from '../firebase-config.js';
-import { collection, addDoc, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, SCHOOL_ID } from '../firebase-config.js';
+import { collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initStudentsManageModule() {
     const container = document.getElementById('tab-students-manage');
@@ -31,7 +31,14 @@ window.handleEnrollNewStudentLive = async function(e) {
     const id = document.getElementById('std-new-id').value.trim();
     const classId = document.getElementById('std-new-class').value;
     try {
-        await addDoc(collection(db, 'students'), { name: name, userId: id, classId: classId, createdAt: serverTimestamp() });
+        // 🏢 ربط قيد الطالب يدوياً بالـ SCHOOL_ID المعتمد بمشروعك
+        await addDoc(collection(db, 'students'), { 
+            schoolId: SCHOOL_ID,
+            name: name, 
+            userId: id, 
+            classId: classId, 
+            createdAt: serverTimestamp() 
+        });
         alert(`✓ تم بنجاح قيد وتثبيت الطالب: ${name}\nفي الصف: ${classId}`);
         document.getElementById('new-student-enroll-form').reset();
     } catch(err) { alert('خطأ في الاتصال: ' + err.message); }
