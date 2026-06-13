@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بوابة المطور العليا - إدارة اشتراكات المنصة السحابية</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
+    :root {
+        --bg-slate: #0f172a; --card-bg: #1e293b; --text-light: #f8fafc;
+        --cyan-color: #38bdf8; --success-color: #4ade80; --danger-color: #f87171; --warning-color: #fbbf24;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
+    body { background: var(--bg-slate); color: var(--text-light); padding: 25px; direction: rtl; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    
+    .super-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #334155; padding-bottom: 15px; }
+    .super-header h1 { font-size: 22px; font-weight: 900; color: var(--cyan-color); display: flex; align-items: center; gap: 10px; }
+    
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-box { background: var(--card-bg); border: 1px solid #334155; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .stat-box h2 { font-size: 32px; font-weight: 900; margin-bottom: 5px; }
+    .stat-box p { font-size: 12px; font-weight: bold; opacity: 0.8; color: #94a3b8; }
+
+    .main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+    @media (max-width: 850px) { .main-grid { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card-bg); padding: 22px; border-radius: 14px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: right; }
+    .card h3 { font-size: 15px; font-weight: 900; color: var(--cyan-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+
+    label { font-weight: 700; font-size: 12px; color: #cbd5e1; display: block; margin-bottom: 5px; }
+    input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 8px; margin-bottom: 15px; font-weight: bold; outline: none; }
+    input:focus, select:focus { border-color: var(--cyan-color); }
+    
+    button { background: var(--cyan-color); color: #0f172a; font-weight: 900; border: none; padding: 14px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 13px; transition: 0.2s; }
+    button:hover { background: #0ea5e9; }
+
+    .table-wrapper { overflow-x: auto; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; }
+    th, td { padding: 12px 10px; border: 1px solid #334155; }
+    th { background: #0f172a; color: var(--cyan-color); font-weight: 900; }
+    tr:hover { background: #243146; }
+
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; color: #0f172a; }
+    .badge.active { background: var(--success-color); }
+    .badge.suspended { background: var(--danger-color); }
+    .badge.warning { background: var(--warning-color); }
+    .badge.plan { background: #a855f7; color: #fff; }
+
+    .btn-action { padding: 5px 10px; font-size: 11px; width: auto; font-weight: bold; border-radius: 5px; cursor: pointer; border: none; }
+    .btn-suspend { background: var(--danger-color); color: #0f172a; }
+    .btn-activate { background: var(--success-color); color: #0f172a; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="super-header">
+        <h1><i class="bi bi-cpu-fill"></i> لوحة التحكم المركزية للمنصة السحابية SaaS</h1>
+        <div style="font-size:12px; font-weight:bold; color:#94a3b8;">المطور العام: أ. حسين كرم 👑</div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <h2 id="stat-total-schools" style="color:var(--cyan-color);">0</h2>
+            <p><i class="bi bi-building"></i> إجمالي المدارس المشتركة</p>
+        </div>
+        <div class="stat-box">
+            <h2 id="stat-active-schools" style="color:var(--success-color);">0</h2>
+            <p><i class="bi bi-cloud-check"></i> اشتراكات فعالة حالياً</p>
+        </div>
+        <div class="stat-box">
+            <h2 id="stat-suspended-schools" style="color:var(--danger-color);">0</h2>
+            <p><i class="bi bi-cloud-slash"></i> منشآت موقوفة مؤقتاً</p>
+        </div>
+        <div class="stat-box">
+            <h2 id="stat-revenue" style="color:var(--warning-color);">0 KWD</h2>
+            <p><i class="bi bi-cash-coin"></i> الإيراد السنوي المتوقع (50 د.ك/مدرسة)</p>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="card">
+            <h3><i class="bi bi-building-plus"></i> إطلاق وتفعيل مدرسة جديدة</h3>
+            <form id="super-school-form" onsubmit="window.createNewSchoolPlatformLive(event)">
+                <label>معرّف المدرسة الفريد (إنجليزي - سمول):</label>
+                <input type="text" id="sch-id" placeholder="مثال: salem_school أو alanwar" required pattern="^[a-z0-9_]+$">
+                
+                <label>الاسم الرسمي للمدرسة:</label>
+                <input type="text" id="sch-name" placeholder="مثال: مدرسة سالم الحسينان المتوسطة" required>
+
+                <label>تحديد باقة الاشتراك التجاري:</label>
+                <select id="sch-plan">
+                    <option value="basic">الباقة الأساسية (Basic Plan)</option>
+                    <option value="pro">الباقة الاحترافية (Pro Plan)</option>
+                    <option value="enterprise">باقة الشركات (Enterprise)</option>
+                </select>
+
+                <label>تاريخ انتهاء الاشتراك السنوي:</label>
+                <input type="date" id="sch-expire" required>
+                
+                <div style="background:#131d31; padding:12px; border-radius:8px; margin-bottom:15px; border:1px dashed #334155;">
+                    <h4 style="color:var(--warning-color); font-size:12px; margin-bottom:10px;"><i class="bi bi-person-badge-fill"></i> حساب مدير المدرسة (الأدمن الأعلى للمنشأة)</h4>
+                    
+                    <label>الرقم المدني / الملف للمدير (User ID):</label>
+                    <input type="text" id="sch-admin-id" placeholder="سيستخدمه المدير لتسجيل الدخول" required>
+                    
+                    <label>الاسم الكامل لمدير المدرسة:</label>
+                    <input type="text" id="sch-admin-name" placeholder="أدخل اسم المدير المسؤول" required>
+                    
+                    <label>كلمة المرور الابتدائية للمدير:</label>
+                    <input type="text" id="sch-admin-pass" placeholder="6 خانات على الأقل" required>
+                </div>
+                
+                <button type="submit"><i class="bi bi-rocket-takeoff-fill"></i> إطلاق وبث المنصة السحابية فوراً</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3><i class="bi bi-folder-check"></i> سجل وجرد تراخيص المدارس السحابية</h3>
+                <div>
+                    <select id="super-filter-status" onchange="window.filterSchoolsLive(this.value)" style="margin-bottom:0; padding:5px 10px; width:150px; font-size:12px;">
+                        <option value="all">كل المدارس</option>
+                        <option value="active">الفعالة فقط</option>
+                        <option value="suspended">الموقوفة فقط</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>كود المنصة</th>
+                            <th>اسم المدرسة الرسمي</th>
+                            <th>الباقة</th>
+                            <th>تاريخ الانتهاء</th>
+                            <th>حالة الترخيص</th>
+                            <th>التحكم بالإشتراك</th>
+                        </tr>
+                    </thead>
+                    <tbody id="super-schools-tbody">
+                        <tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:20px;">⏳ جاري جرد السيرفرات المركزية...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { db } from './js/firebase-config.js';
+import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+let allSchoolsCache = [];
+
+// 1. إعداد تاريخ الانتهاء التلقائي بعد سنة
+const nextYear = new Date();
+nextYear.setFullYear(nextYear.getFullYear() + 1);
+const expireInput = document.getElementById('sch-expire');
+if(expireInput) expireInput.value = nextYear.toISOString().slice(0, 10);
+
+// 2. تشغيل رادار مراقبة المدارس لايف فوراً
+listenToAllPlatformSchoolsLive();
+
+function listenToAllPlatformSchoolsLive() {
+    onSnapshot(collection(db, 'schools'), (snapshot) => {
+        allSchoolsCache = [];
+        let total = snapshot.size;
+        let active = 0;
+        let suspended = 0;
+
+        snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            data.id = docSnap.id;
+            allSchoolsCache.push(data);
+            if (data.status === 'active') active++;
+            if (data.status === 'suspended') suspended++;
+        });
+
+        document.getElementById('stat-total-schools').textContent = total;
+        document.getElementById('stat-active-schools').textContent = active;
+        document.getElementById('stat-suspended-schools').textContent = suspended;
+        document.getElementById('stat-revenue').textContent = `${active * 50} KWD`;
+
+        const currentFilter = document.getElementById('super-filter-status').value;
+        filterSchoolsLive(currentFilter);
+    });
+}
+
+function filterSchoolsLive(filterStatus) {
+    const tbody = document.getElementById('super-schools-tbody');
+    if(!tbody) return;
+    let html = '';
+    const today = new Date();
+
+    const filteredSchools = allSchoolsCache.filter(s => {
+        if (filterStatus === 'all') return true;
+        return s.status === filterStatus;
+    });
+
+    filteredSchools.forEach(s => {
+        const isAct = s.status === 'active';
+        let statusHtml = isAct ? '<span class="badge active">🟢 فعال</span>' : '<span class="badge suspended">🔴 موقوف</span>';
+        const btnText = isAct ? '🛑 إيقاف' : '✅ تفعيل';
+        const btnClass = isAct ? 'btn-action btn-suspend' : 'btn-action btn-activate';
+        const nextStatus = isAct ? 'suspended' : 'active';
+
+        if (s.subscriptionEnd) {
+            const expireDate = new Date(s.subscriptionEnd);
+            const daysLeft = Math.ceil((expireDate - today) / (1000 * 60 * 60 * 24));
+            if (daysLeft <= 0) {
+                statusHtml = '<span class="badge suspended">❌ منتهي</span>';
+            } else if (daysLeft <= 30) {
+                statusHtml = `<span class="badge warning">⚠️ ينتهي خلال ${daysLeft} ي</span>`;
+            }
+        }
+
+        html += `<tr>
+            <td><b>${s.id}</b></td>
+            <td>${s.name}</td>
+            <td><span class="badge plan">${s.plan || 'basic'}</span></td>
+            <td><span style="font-family:monospace; font-weight:bold;">${s.subscriptionEnd || '-'}</span></td>
+            <td>${statusHtml}</td>
+            <td>
+                <button class="${btnClass}" onclick="window.toggleSchoolSubscriptionLive('${s.id}', '${nextStatus}')">${btnText}</button>
+            </td>
+        </tr>`;
+    });
+
+    tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:15px;">💡 لا توجد مدارس تطابق هذا الفلتر حالياً.</td></tr>';
+}
+
+async function createNewSchoolPlatformLive(e) {
+    e.preventDefault();
+    const sId = document.getElementById('sch-id').value.trim().toLowerCase();
+    const sName = document.getElementById('sch-name').value.trim();
+    const sPlan = document.getElementById('sch-plan').value;
+    const sExpire = document.getElementById('sch-expire').value;
+    
+    const adminId = document.getElementById('sch-admin-id').value.trim();
+    const adminName = document.getElementById('sch-admin-name').value.trim();
+    const adminPass = document.getElementById('sch-admin-pass').value.trim();
+
+    try {
+        await setDoc(doc(db, 'schools', sId), {
+            name: sName,
+            status: 'active',
+            plan: sPlan,
+            subscriptionEnd: sExpire,
+            createdAt: serverTimestamp()
+        });
+
+        await addDoc(collection(db, 'users'), {
+            schoolId: sId,
+            userId: adminId,
+            name: adminName,
+            role: 'admin',
+            plainPass: adminPass,
+            createdAt: serverTimestamp()
+        });
+
+        alert(`🚀 مبروك بوعلي! تم إطلاق باقة المنصة السحابية بنجاح لـ [ ${sName} ]\nوتجهيز يوزر المدير الخارق لها بنجاح.`);
+        document.getElementById('super-school-form').reset();
+    } catch(err) { alert("❌ خطأ سحابي أثناء البث: " + err.message); }
+}
+
+async function toggleSchoolSubscriptionLive(schoolId, nextStatus) {
+    const actionWord = nextStatus === 'suspended' ? 'تجميد وإيقاف' : 'إعادة تفعيل';
+    if(!confirm(`هل أنت متأكد من ${actionWord} اشتراك منصة المدرسة [ ${schoolId} ] في السيرفر الحين؟`)) return;
+    try {
+        await updateDoc(doc(db, 'schools', schoolId), { status: nextStatus });
+        alert("✓ تم تحديث وتطبيق حالة الترخيص السحابي فوراً بالسيرفر.");
+    } catch(err) { alert("خطأ: " + err.message); }
+}
+
+// ربط الدوال بالويندوز بشكل آمن وصريح للـ onClick
+window.filterSchoolsLive = filterSchoolsLive;
+window.createNewSchoolPlatformLive = createNewSchoolPlatformLive;
+window.toggleSchoolSubscriptionLive = toggleSchoolSubscriptionLive;
+</script>
+</body>
+</html>
