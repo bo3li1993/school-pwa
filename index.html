@@ -83,8 +83,9 @@ input:focus { border-color: var(--hover-color); box-shadow: 0 0 0 3px rgba(230,1
 </div>
 
 <script type="module">
-import { db } from './js/firebase-config.js';
+import { db, auth } from './js/firebase-config.js'; // 🔒 استدعاء جدار الحماية وقاعدة البيانات معاً
 import { collection, query, where, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'; // 🔑 استدعاء محرك الدخول الآمن العالمي
 
 window.handleGlobalLoginLive = async function(e) {
     e.preventDefault();
@@ -97,91 +98,107 @@ window.handleGlobalLoginLive = async function(e) {
     submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص الترخيص والأمان...`;
 
     try {
-        // 1. الاستعلام بحقل userId النصي لضمان معمارية تعدد المدارس الآمنة
+        // 1. الاستعلام بـ userId لجلب بيانات الموظف ومعرفة مدرسته وإيميله الرسمي
         const qUser = query(collection(db, 'users'), where('userId', '==', inputUserId));
         const userSnap = await getDocs(qUser);
 
         if (userSnap.empty) {
-            alert("❌ اسم المستخدم غير مسجل بالنظام السحابي.");
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            alert("❌ معرف المستخدم غير مسجل بالنظام السحابي.");
+            resetButton(submitBtn);
             return;
         }
 
         const userDoc = userSnap.docs[0];
         const userData = userDoc.data();
-
-        // 2. التحقق من تطابق كلمة المرور السرية
-        if (userData.plainPass !== inputPassword) {
-            alert("❌ كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.");
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
-            return;
-        }
-
-        // 3. التحقق من وجود ربط أمني للمدرسة
         const schoolId = userData.schoolId;
+
         if (!schoolId) {
-            alert("❌ خطأ حرج: هذا الحساب غير مرتبط بأي منشأة تعليمية مسجلة.");
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            alert("❌ خطأ حرج: هذا الحساب غير مرتبط بأي منشأة تعليمية معتمدة.");
+            resetButton(submitBtn);
             return;
         }
 
-        // 4. 🚨 رادار فحص حالة اشتراك المدرسة وصلاحية ترخيص البث
+        // 2. 🚨 رادار فحص ترخيص وصلاحية المدرسة قبل السماح بالدخول
         const schoolDoc = await getDoc(doc(db, 'schools', schoolId));
         if (!schoolDoc.exists()) {
-            alert("❌ خطأ: المنشأة التعليمية التابع لها هذا الحساب غير مسجلة بالسيرفر.");
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            alert("❌ خطأ: المدرسة التابع لها هذا الحساب غير مقيدة في الخادم المركزي.");
+            resetButton(submitBtn);
             return;
         }
 
         const schoolData = schoolDoc.data();
 
-        // أ) التحقق من الإيقاف اليدوي المؤقت من قبلك بوعلي
+        // أ) التحقق من الإيقاف الإداري اليدوي بوعلي
         if (schoolData.status === 'suspended') {
-            alert("⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً لانتهاء فترة الترخيص.\nيرجى مراجعة مطور المنظومة (أ. حسين كرم) لإعادة التفعيل.");
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            alert("⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً لانتهاء فترة الترخيص.\nيرجى مراجعة مطور المنظومة لإعادة التفعيل.");
+            resetButton(submitBtn);
             return;
         }
 
-        // ب) التحقق التلقائي الذكي من تاريخ انتهاء الصلاحية السنوية
+        // ب) الفحص التلقائي الذكي لتاريخ انتهاء الاشتراك السنوي
         if (schoolData.subscriptionEnd) {
             const expireDate = new Date(schoolData.subscriptionEnd);
             const today = new Date();
             if (expireDate < today) {
-                alert(`⚠️ انتهى ترخيص بث هذه المنشأة تلقائياً بتاريخ: [ ${schoolData.subscriptionEnd} ]\nيرجى مراجعة مطور المنظومة (أ. حسين كرم) لتجديد الاشتراك السنوي.`);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+                alert(`⚠️ انتهى ترخيص بث هذه المنشأة تلقائياً بتاريخ: [ ${schoolData.subscriptionEnd} ]\nيرجى تجديد الاشتراك السنوي.`);
+                resetButton(submitBtn);
                 return;
             }
         }
 
-        // 5. ✅ الترخيص سليم! حفظ الجلسة محلياً بالبصمة المدرسية
-        localStorage.setItem('hs_user', JSON.stringify({
-            userId: userData.userId,
-            name: userData.name || "عضو المنظومة",
-            role: String(userData.role || '').trim().toLowerCase(),
-            schoolId: schoolId,
-            classId: userData.classId || ''
-        }));
+        // 3. 🔒 مرحلة التحقق الأمني الهجين (Firebase Auth / Legacy Fallback)
+        let loginSuccess = false;
 
-        // 6. التوجيه الآلي حسب رتبة الصلاحية المعتمدة
-        const role = String(userData.role || '').trim().toLowerCase();
-        if (role === 'teacher') {
-            window.location.replace('teacher.html');
+        if (userData.authMigrated === true) {
+            // الحساب محصن ومشفر بالكامل داخل Firebase Auth
+            try {
+                await signInWithEmailAndPassword(auth, userData.email, inputPassword);
+                loginSuccess = true;
+            } catch (authErr) {
+                alert("❌ كلمة المرور غير صحيحة، أو تم رفض وثيقة الأمان.");
+                resetButton(submitBtn);
+                return;
+            }
         } else {
-            window.location.replace('admin.html');
+            // الحساب لم يرحل بعد (Legacy Mode) - يتم التحقق تقليدياً لحين تشغيل درع الحماية
+            if (userData.plainPass === inputPassword) {
+                loginSuccess = true;
+            } else {
+                alert("❌ كلمة المرور التقليدية غير صحيحة.");
+                resetButton(submitBtn);
+                return;
+            }
+        }
+
+        // 4. ✅ تم التحقق بنجاح! حفظ الجلسة محلياً بالبصمة المدرسية والدور الوظيفي
+        if (loginSuccess) {
+            localStorage.setItem('hs_user', JSON.stringify({
+                userId: userData.userId,
+                name: userData.name || "عضو المنظومة",
+                role: String(userData.role || '').trim().toLowerCase(),
+                schoolId: schoolId,
+                classId: userData.classId || ''
+            }));
+
+            // 5. التوجيه التلقائي والذكي الفوري حسب رتبة الصلاحية
+            const role = String(userData.role || '').trim().toLowerCase();
+            if (role === 'teacher') {
+                window.location.replace('teacher.html');
+            } else {
+                window.location.replace('dashboard.html'); // التوجيه للمركز الرئيسي الموحد
+            }
         }
 
     } catch (err) {
         alert("❌ خطأ في الاتصال بالسيرفر السحابي: " + err.message);
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+        resetButton(submitBtn);
     }
 };
+
+function resetButton(btn) {
+    btn.disabled = false;
+    btn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+}
 </script>
 </body>
 </html>
