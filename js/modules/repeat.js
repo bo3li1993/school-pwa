@@ -1,66 +1,76 @@
-import { db, SCHOOL_ID } from '../firebase-config.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initRepeatModule() {
     const container = document.getElementById('tab-repeat');
     if (!container) return;
 
-    try {
-        container.innerHTML = `
-        <div class="card" style="border-top: 5px solid var(--danger-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
-            <h2><i class="bi bi-exclamation-octagon-fill" style="color:var(--danger-color);"></i> نظام الرصد والمتابعة التراكمية للغياب المتكرر (آخر 30 يوم)</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:20px; font-weight:bold;">
-                📊 يقوم المحرك بمسح كشوف الرصد المرفوعة وحصر الطلاب الذين تخطى غيابهم يومين أو أكثر خلال آخر 30 يوماً لإصدار الإنذارات المعتمدة.
-            </p>
-            
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr style="background:#fff0f0; color:var(--danger-color);">
-                            <th>اسم الطالب ثلاثي / رباعي</th>
-                            <th style="text-align:center;">الفصل الدراسي</th>
-                            <th style="text-align:center;">إجمالي أيام الغياب (خلال الشهر)</th>
-                            <th style="text-align:center;">الإجراء القانوني المستحق</th>
-                        </tr>
-                    </thead>
-                    <tbody id="repeat-absents-tbody">
-                        <tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">⏳ جاري فحص ومطابقة الملفات التراكمية...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <button onclick="window.exportAsManzoumaPDF('tab-repeat', 'كشف_الإنذارات_والغياب_المتكرر')" style="background:var(--danger-color); margin-top:15px; font-size:12px; font-weight:bold;"><i class="bi bi-printer-fill"></i> طباعة كشف الإنذارات الحالي PDF</button>
-        </div>`;
+    container.innerHTML = `
+    <div class="card" style="border-top: 5px solid var(--danger-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
+        <h2><i class="bi bi-exclamation-octagon-fill" style="color:var(--danger-color);"></i> نظام الرصد والمتابعة التراكمية للغياب المتكرر (آخر 30 يوم)</h2>
+        <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:20px;">
+            📊 يقوم المحرك بمسح كشوف الرصد المرفوعة وحصر الطلاب الذين تخطى غيابهم يومين أو أكثر خلال آخر 30 يوماً.
+        </p>
+        
+        <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#fff0f0; color:var(--danger-color);">
+                        <th style="padding:10px;">اسم الطالب</th>
+                        <th style="padding:10px; text-align:center;">الفصل</th>
+                        <th style="padding:10px; text-align:center;">إجمالي أيام الغياب</th>
+                        <th style="padding:10px; text-align:center;">الإجراء القانوني</th>
+                    </tr>
+                </thead>
+                <tbody id="repeat-absents-tbody">
+                    <tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">⏳ جاري فحص ومطابقة الملفات التراكمية...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <button onclick="window.exportAsManzoumaPDF('tab-repeat', 'كشف_الإنذارات_والغياب_المتكرر')" style="background:var(--danger-color); width:100%; color:#fff; border:none; padding:12px; margin-top:15px; font-weight:bold; cursor:pointer; border-radius:8px;"><i class="bi bi-printer-fill"></i> طباعة كشف الإنذارات الحالي PDF</button>
+    </div>`;
 
-        calculateRepeatAbsencesLive();
-    } catch(e) {
-        container.innerHTML = `<div class="card" style="color:red; text-align:center; padding:20px;">⚠️ خطأ في معالجة البيانات: ${e.message}</div>`;
-    }
+    calculateRepeatAbsencesLive();
 }
 
 async function calculateRepeatAbsencesLive() {
     const tbody = document.getElementById('repeat-absents-tbody');
     if (!tbody) return;
 
-    try {
-        const snap = await getDocs(collection(db, 'attendance'));
-        let stats = {};
+    const schoolId = getActiveSchoolId(); // 🏢 البصمة الأمنية للمدرسة
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - 30);
 
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - 30);
+    try {
+        // استعلام سحابي مباشر (فلترة حسب المدرسة والحالة)
+        const q = query(
+            collection(db, 'attendance'), 
+            where('schoolId', '==', schoolId),
+            where('status', '==', 'absent')
+        );
+        
+        let snap = await getDocs(q);
+
+        // التوافقية للمدرسة القديمة
+        if (snap.empty && schoolId === 'hosainan') {
+            snap = await getDocs(query(collection(db, 'attendance'), where('status', '==', 'absent')));
+        }
+
+        let stats = {};
 
         snap.forEach(doc => {
             const d = doc.data();
             
-            // 🏢 فلترة المدرسة الحالية: إذا كان السجل يتبع مدرسة ثانية يتم تخطيه فوراً
-            if (d.schoolId && d.schoolId !== SCHOOL_ID) return;
-            
+            // حماية إضافية للداتا القديمة
+            if (d.schoolId && d.schoolId !== schoolId) return;
+
             let isWithinRange = true;
             if (d.timestamp) {
                 const docDate = d.timestamp.toDate();
                 if (docDate < cutoffDate) isWithinRange = false;
             }
 
-            if (isWithinRange && d.status === 'absent' && d.studentName) {
+            if (isWithinRange && d.studentName) {
                 const name = d.studentName.trim();
                 if (!stats[name]) {
                     stats[name] = { name: name, classId: d.classId || '-', count: 0 };
@@ -73,16 +83,16 @@ async function calculateRepeatAbsencesLive() {
         let html = '';
 
         filtered.forEach(s => {
-            let lawBadge = `<span class="badge warning">تنبيه شفهي أول</span>`;
-            if (s.count >= 3) lawBadge = `<span class="badge danger" style="background:#c0392b; color:#fff; padding:3px 8px; border-radius:4px;">⚠️ إصدار إنذار أول خطي</span>`;
-            if (s.count >= 5) lawBadge = `<span class="badge danger" style="background:#e74c3c; color:#fff; padding:3px 8px; border-radius:4px; font-weight:900;">🚨 استدعاء ولي أمر فوري</span>`;
+            let lawBadge = `<span class="badge" style="background:#e67e22; color:#fff; padding:3px 8px; border-radius:4px;">تنبيه شفهي أول</span>`;
+            if (s.count >= 3) lawBadge = `<span class="badge" style="background:#c0392b; color:#fff; padding:3px 8px; border-radius:4px;">⚠️ إنذار أول خطي</span>`;
+            if (s.count >= 5) lawBadge = `<span class="badge" style="background:#8e44ad; color:#fff; padding:3px 8px; border-radius:4px; font-weight:900;">🚨 استدعاء ولي أمر</span>`;
 
             html += `
                 <tr style="border-bottom:1px solid #eee;">
-                    <td><b>👤 ${s.name}</b></td>
-                    <td style="text-align:center;"><span class="badge info">${s.classId}</span></td>
-                    <td style="text-align:center; font-weight:900; color:var(--danger-color); font-size:15px;">${s.count} أيام غياب</td>
-                    <td style="text-align:center;">${lawBadge}</td>
+                    <td style="padding:10px;"><b>👤 ${s.name}</b></td>
+                    <td style="padding:10px; text-align:center;"><span class="badge info">${s.classId}</span></td>
+                    <td style="padding:10px; text-align:center; font-weight:900; color:var(--danger-color);">${s.count} أيام</td>
+                    <td style="padding:10px; text-align:center;">${lawBadge}</td>
                 </tr>`;
         });
 
