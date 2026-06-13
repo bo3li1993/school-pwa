@@ -56,12 +56,14 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <div class="workspace-container">
 
+    <!-- منيو التنقل العلوي الثابت ملوكي -->
     <div class="tabs-nav">
         <div class="tab-btn active" id="tab-btn-attendance" onclick="window.switchTeacherView('view-attendance')"><i class="bi bi-calendar-check-fill"></i> رصد الغياب اليومي (الفصل كامل)</div>
         <div class="tab-btn" id="tab-btn-behavior" onclick="window.switchTeacherView('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
-        <div class="tab-btn" id="tab-btn-archive" onclick="window.switchTeacherView('view-archive')"><i class="bi bi-clock-history"></i> أرشيف حركة غياب المعلم</div>
+        <div class="tab-btn" id="tab-btn-archive" onclick="window.switchTeacherView('view-archive')"><i class="bi bi-clock-history"></i> أرشيف قفل وتعديل الغياب</div>
     </div>
 
+    <!-- 📝 التبويب الأول: كشف رصد الغياب (رجع صافي وكامل نفس القديم بوعلي!) -->
     <div id="view-attendance" class="tab-view active-view">
         <div class="card" style="border-top: 4px solid var(--success-color);">
             <h2><i class="bi bi-collection-fill"></i> كشف حضور وغياب الطلاب الجماعي للحصة الدراسية</h2>
@@ -84,19 +86,19 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                             <th>اسم الطالب رباعي (مرتب أبجدياً)</th>
                             <th style="width: 180px;">حالة الطالب الحين</th>
                             <th>الملاحظات / العذر</th>
-                            <th style="width: 140px; text-align:center;">صلاحية التعديل (3ساعات)</th>
                         </tr>
                     </thead>
                     <tbody id="table-attendance-sheet-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#666;">⏳ يرجى اختيار الفصل الدراسي لتحميل البيانات...</td></tr>
+                        <tr><td colspan="4" style="text-align:center; color:#666;">⏳ يرجى اختيار الفصل الدراسي لتحميل البيانات...</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <button type="button" class="btn-submit" onclick="window.saveWholeClassAttendanceLive()"><i class="bi bi-cloud-arrow-up-contained"></i> 🔒 اعتماد وحفظ كشف غياب الفصل بالكامل بالسيرفر المركزي</button>
+            <button type="button" class="btn-submit" onclick="window.saveWholeClassAttendanceLive()"><i class="bi bi-cloud-arrow-up-contained"></i> اعتماد وحفظ كشف غياب الفصل بالكامل بالسيرفر المركزي</button>
         </div>
     </div>
 
+    <!-- 🛡️ التبويب الثاني: زر رصد ومتابعة السلوك (مستقل وبكامل ميزاته) -->
     <div id="view-behavior" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--danger-color);">
             <h2><i class="bi bi-shield-fill-exclamation"></i> وثيقة رصد وإثبات حالة سلوكية داخل الصف فوراً</h2>
@@ -136,14 +138,16 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
+    <!-- 🕒 التبويب الثالث: أرشيف قفل وتعديل الغياب (زر التعديل الذكي هني شغال 100% ويقفل بعد 3 ساعات) -->
     <div id="view-archive" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--warning-color);">
-            <h2><i class="bi bi-clock-history"></i> السجل اليومي للحضور المرصود من قبلك سابقاً</h2>
+            <h2><i class="bi bi-clock-history"></i> سجل غيابات الحصص الموثقة (صلاحية تعديل القيد: 3 ساعات فقط)</h2>
+            <p style="font-size:11px; font-weight:bold; color:#ef4444; margin-bottom:15px;">🔒 النظام يفحص وقت كل قيد؛ إذا مرت 3 ساعات (180 دقيقة) على التسجيل، يُقفل السطر تلقائياً حمايةً للبيانات.</p>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr style="background: #f1f5f9;">
-                            <th>توقيت الرصد</th> <th>اسم الطالب</th> <th>الفصل</th> <th>نوع الحالة</th> <th>الملاحظات/العذر</th>
+                            <th>توقيت الرصد</th> <th>اسم الطالب</th> <th>الفصل</th> <th>نوع الحالة</th> <th>الملاحظات/العذر</th> <th>إجراء تعديل القيد الآمن</th>
                         </tr>
                     </thead>
                     <tbody id="teacher-archive-tbody"></tbody>
@@ -160,7 +164,7 @@ import { collection, addDoc, doc, updateDoc, onSnapshot, getDocs, query, where, 
 
 let currentTeacherId = "";
 let currentTeacherName = "المعلم";
-let currentSheetStudents = []; // خزان لحفظ بيانات أسطر الكشف الحالي وحالة قفلها
+let currentSheetStudents = [];
 
 function getUnifiedDateString() {
     const d = new Date();
@@ -187,7 +191,7 @@ window.switchTeacherView = function(viewId) {
     if(viewId === 'view-archive') document.getElementById('tab-btn-archive').classList.add('active');
 };
 
-// 🎯 سحب كشوف الطلاب حقيقياً وفرزهم أبجدياً مسطرة لتبويب السلوك
+// سحب كشوف الطلاب حقيقياً وفرزهم أبجدياً لتبويب السلوك
 window.populateDropdownAlphabetical = async function(classSelectId, studentSelectId) {
     const classId = document.getElementById(classSelectId).value;
     const nameSelect = document.getElementById(studentSelectId);
@@ -219,16 +223,15 @@ window.populateDropdownAlphabetical = async function(classSelectId, studentSelec
     }
 };
 
-// 📊 المحرك العملاق: يسحب طلاب الفصل بالكامل أبجدياً، ويشيك على غياب اليوم؛ ويقفل الأسطر اللي طافت 3 ساعات!
+// 📊 تحميل كشف طلاب الفصل كامل وصافي 100% للرصد المباشر والسريع
 window.loadClassAttendanceSheetLive = async function() {
     const classId = document.getElementById('att-class').value;
     const tbody = document.getElementById('table-attendance-sheet-tbody');
     if(!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">🔍 جاري تحميل كشف طلاب الفصل وترتيبه أبجدياً...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">🔍 جاري تحميل كشف طلاب الفصل وترتيبه أبجدياً...</td></tr>';
 
     try {
-        // 1. جلب كشف طلاب الفصل بالكامل من كولكشن الكشوف الرئيسي
         const qStud = query(collection(db, 'students'), where('classId', '==', classId));
         const snapStud = await getDocs(qStud);
         let studentsList = [];
@@ -237,143 +240,79 @@ window.loadClassAttendanceSheetLive = async function() {
         });
 
         if(studentsList.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger-color);">❌ لا يوجد طلاب مسجلين في هذا الفصل حالياً بقاعدة البيانات.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--danger-color);">❌ لا يوجد طلاب مسجلين في هذا الفصل حالياً.</td></tr>';
             return;
         }
 
-        // الفرز الأبجدي العربي الصارم مسطرة للكل
+        // فرز أبجدي ملوكي صارم
         studentsList.sort((a, b) => a.localeCompare(b, 'ar'));
-
-        // 2. جلب رصد اليوم الموثق مسبقاً بهذا الفصل من قبل هذا المعلم
-        const todayStr = getUnifiedDateString();
-        const qLogs = query(collection(db, 'attendance_logs'), 
-                            where('classId', '==', classId), 
-                            where('dateStr', '==', todayStr),
-                            where('teacherId', '==', currentTeacherId));
-        const snapLogs = await getDocs(qLogs);
-        
-        let logsMap = {};
-        snapLogs.forEach(docSnap => {
-            const data = docSnap.data();
-            logsMap[data.studentName.trim()] = {
-                logId: docSnap.id,
-                type: data.type,
-                reason: data.reason || '',
-                createdAt: data.createdAt
-            };
-        });
+        currentSheetStudents = studentsList;
 
         let html = '';
-        const now = new Date();
-        currentSheetStudents = []; // تصفير المصفوفة لإعادة التعبئة
-
         studentsList.forEach((name, index) => {
-            const existing = logsMap[name] || null;
-            let currentStatus = 'حاضر';
-            let currentReason = '';
-            let isLocked = false;
-            let logId = '';
-
-            if (existing) {
-                currentStatus = existing.type;
-                currentReason = existing.reason;
-                logId = existing.logId;
-
-                // فحص الحظر والمهلة الأمنية (3 ساعات = 180 دقيقة) فوراً للسطر
-                if (existing.createdAt) {
-                    const diffInHours = (now - existing.createdAt.toDate()) / (1000 * 60 * 60);
-                    if (diffInHours >= 3) {
-                        isLocked = true;
-                    }
-                }
-            }
-
-            // حفظ الحالة في المصفوفة لتشغيل محرك الحفظ الجماعي لاحقاً
-            currentSheetStudents.push({ name, logId, isLocked });
-
-            const disabledAttr = isLocked ? 'disabled' : '';
-            const lockIcon = isLocked ? '<span style="color:var(--danger-color); font-weight:bold;"><i class="bi bi-lock-fill"></i> 🔒 مقفل</span>' : '<span style="color:var(--success-color); font-weight:bold;"><i class="bi bi-unlock-fill"></i> مفتوح</span>';
-
-            html += '<tr style="border-bottom:1px solid #e2e8f0; background: ' + (isLocked ? '#f8fafc' : '#fff') + ';">' +
-                '<td>' + (index + 1) + '</td>' +
-                '<td style="font-size:14px; color:var(--primary-color);"><b>' + name + '</b></td>' +
-                '<td>' +
-                    '<select id="status-' + index + '" ' + disabledAttr + ' style="margin-bottom:0; padding:6px; font-weight:bold;">' +
-                        '<option value="حاضر" ' + (currentStatus === 'حاضر' || currentStatus === 'حضور رسمي' ? 'selected' : '') + '>💚 حاضر</option>' +
-                        '<option value="غياب" ' + (currentStatus === 'غياب' ? 'selected' : '') + '>🛑 غياب</option>' +
-                        '<option value="تأخير" ' + (currentStatus === 'تأخير' ? 'selected' : '') + '>⏳ تأخير</option>' +
-                    '</select>' +
-                '</td>' +
-                '<td>' +
-                    '<input type="text" id="reason-' + index + '" value="' + currentReason + '" ' + disabledAttr + ' placeholder="اكتب ملاحظة أو العذر..." style="margin-bottom:0; padding:6px; font-size:12px;">' +
-                '</td>' +
-                '<td style="text-align:center; font-size:12px;">' + lockIcon + '</td>' +
-            '</tr>';
+            html += `<tr style="border-bottom:1px solid #e2e8f0; background: #fff;">
+                <td>${index + 1}</td>
+                <td style="font-size:14px; color:var(--primary-color);"><b>${name}</b></td>
+                <td>
+                    <select id="status-${index}" style="margin-bottom:0; padding:6px; font-weight:bold;">
+                        <option value="حاضر">💚 حاضر</option>
+                        <option value="غياب">🛑 غياب عن الحصة</option>
+                        <option value="تأخير">⏳ تأخير</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" id="reason-${index}" placeholder="ملاحظة الزيادة / العذر..." style="margin-bottom:0; padding:6px; font-size:12px;">
+                </td>
+            </tr>`;
         });
 
         tbody.innerHTML = html;
 
     } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--danger-color);">❌ خطأ أثناء جلب الكشف: ' + err.message + '</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--danger-color);">❌ خطأ أثناء جلب الكشف: ' + err.message + '</td></tr>';
     }
 };
 
-// 💾 محرك الحفظ والاعتماد الجماعي للفصل بالكامل: يحفظ اليديد، ويحدث المفتوح، ويتخطى المقفل!
+// 💾 حفظ كشف الحصة بالكامل دفعة واحدة
 window.saveWholeClassAttendanceLive = async function() {
     if(currentSheetStudents.length === 0) { alert("⚠️ الكشف فارغ أو لم يتم تحميله بعد!"); return; }
-    
     const classId = document.getElementById('att-class').value;
     let savedCount = 0;
-    let updatedCount = 0;
 
-    if(!confirm("هل أنت متأكد من اعتماد وحفظ غياب وتأخير صف ( " + classId + " ) بالكامل للحصة الحالية؟")) return;
+    if(!confirm(`هل أنت متأكد من اعتماد وحفظ حضور وغياب صف ( ${classId} ) بالكامل للحصة الحالية؟`)) return;
 
     try {
         for(let i = 0; i < currentSheetStudents.length; i++) {
-            const student = currentSheetStudents[i];
-            if(student.isLocked) continue; // تخطي الأسطر المقفلة قانونياً (طافت 3 ساعات)
-
-            const statusSelect = document.getElementById('status-' + i);
-            const reasonInput = document.getElementById('reason-' + i);
+            const studentName = currentSheetStudents[i];
+            const statusSelect = document.getElementById(`status-${i}`);
+            const reasonInput = document.getElementById(`reason-${i}`);
+            
             if(!statusSelect) continue;
+            const currentStatus = statusSelect.value;
+            const currentReason = reasonInput ? reasonInput.value.trim() : '';
 
-            const newStatus = statusSelect.value;
-            const newReason = reasonInput ? reasonInput.value.trim() : '';
-
-            if(student.logId) {
-                // حالة 1: الطالب مسجل سابقاً والآن جاري تحديثه أو تصحيح حالته لحضور أو غيره
-                const docRef = doc(db, 'attendance_logs', student.logId);
-                await updateDoc(docRef, {
-                    type: newStatus === 'حاضر' ? 'حضور رسمي' : newStatus,
-                    reason: newReason || (newStatus === 'حاضر' ? 'تم تعديل القيد وإثبات حضور' : 'بدون عذر موثق')
+            // حفظ فقط حالات الغياب والتأخير (الحاضر لا يحتاج تخزين لتسريع السيرفر)
+            if(currentStatus === 'غياب' || currentStatus === 'تأخير') {
+                await addDoc(collection(db, 'attendance_logs'), {
+                    classId,
+                    studentName,
+                    type: currentStatus,
+                    reason: currentReason || 'بدون عذر موثق',
+                    dateStr: getUnifiedDateString(),
+                    timeStr: getUnifiedTimeString(),
+                    teacherName: currentTeacherName,
+                    teacherId: currentTeacherId,
+                    createdAt: serverTimestamp()
                 });
-                updatedCount++;
-            } else {
-                // حالة 2: الطالب جديد ولم يسجل له قيد اليوم، نسجل له غياب أو تأخير فقط (الحاضر لا يحتاج تخزين لتوفير مساحة السيرفر)
-                if(newStatus === 'غياب' || newStatus === 'تأخير') {
-                    await addDoc(collection(db, 'attendance_logs'), {
-                        classId,
-                        studentName: student.name,
-                        type: newStatus,
-                        reason: newReason || 'بدون عذر موثق',
-                        dateStr: getUnifiedDateString(),
-                        timeStr: getUnifiedTimeString(),
-                        teacherName: currentTeacherName,
-                        teacherId: currentTeacherId,
-                        createdAt: serverTimestamp()
-                    });
-                    savedCount++;
-                }
+                savedCount++;
             }
         }
 
-        alert("🚀 تم اعتماد وحفظ غياب صف " + classId + " بنجاح تام!\n✓ تم تسجيل ( " + savedCount + " ) حالة غياب/تأخير جديدة.\n✓ تم تحديث وتعديل ( " + updatedCount + " ) قيد سابق ضمن المهلة الرسمية.");
-        // إعادة تحميل الكشف لجلب الـ Log IDs اليديدة فوراً لمنع التكرار
-        await window.loadClassAttendanceSheetLive();
+        alert(`🚀 تم اعتماد الكشف السحابي لصف ${classId} بنجاح!\n✓ تم ترحيل ورصد ( ${savedCount} ) حالة غياب/تأخير للحصة الحالية.`);
+        document.getElementById('table-attendance-sheet-tbody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666;">⏳ يرجى اختيار الفصل الدراسي لتحميل البيانات...</td></tr>';
+        document.getElementById('att-class').value = '6/1';
 
-    } catch (err) {
-        alert("❌ خطأ أثناء حفظ قيد الفصل الجماعي: " + err.message);
-    }
+    } catch (err) { alert("❌ خطأ أثناء حفظ القيد الجماعي: " + err.message); }
 };
 
 // 🛡️ رصد المخالفة أو التميز السلوكي من حساب المعلم
@@ -384,8 +323,6 @@ async function saveBehaviorLogLive(e) {
     const type = document.getElementById('beh-type').value;
     const details = document.getElementById('beh-details').value.trim();
     const action = document.getElementById('beh-action').value.trim();
-
-    if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً لرصد سلوكه!"); return; }
 
     try {
         await addDoc(collection(db, 'behavior_logs'), {
@@ -398,28 +335,73 @@ async function saveBehaviorLogLive(e) {
     } catch(err) { alert("خطأ في الحفظ السلوكي: " + err.message); }
 }
 
+// 🕒 أرشيف قفل وتعديل الغياب: يفحص الـ 3 ساعات ويظهر زر التعديل الذكي
 function startTeacherArchiveListener() {
     onSnapshot(collection(db, 'attendance_logs'), (snapshot) => {
         const tbody = document.getElementById('teacher-archive-tbody');
         if(!tbody) return;
         let html = '';
+        const now = new Date();
 
         snapshot.forEach(docSnap => {
             const d = docSnap.data();
             if (d.teacherId === currentTeacherId) {
+                let isEditable = false;
+                
+                if (d.createdAt) {
+                    const diffInHours = (now - d.createdAt.toDate()) / (1000 * 60 * 60);
+                    if (diffInHours < 3) isEditable = true;
+                } else {
+                    isEditable = true;
+                }
+
+                let actionBox = '';
+                if (isEditable) {
+                    actionBox = `<button onclick="window.editPastAttendanceLive('${docSnap.id}', '${d.studentName}', '${d.type}', '${d.reason}')" style="background:var(--success-color); color:#fff; border:none; padding:5px 12px; font-weight:bold; border-radius:6px; cursor:pointer;"><i class="bi bi-pencil-square"></i> تعديل الحين</button>`;
+                } else {
+                    actionBox = `<span style="color:var(--danger-color); font-weight:900;"><i class="bi bi-lock-fill"></i> مقفل (طافت 3ساعات)</span>`;
+                }
+
                 html += `<tr style="border-bottom:1px solid #e2e8f0;">
                     <td>🕒 ${d.timeStr || '-'} (${d.dateStr || '-'})</td>
                     <td><b>👤 ${d.studentName}</b></td>
                     <td><span style="background:#475569; color:#fff; padding:2px 6px; border-radius:4px;">${d.classId}</span></td>
-                    <td><span style="background:${d.type==='غياب'||d.type==='غياب عن الحصة'?'var(--danger-color)':'var(--warning-color)'}; color:#fff; padding:2px 6px; border-radius:4px; font-size:11px;">${d.type}</span></td>
+                    <td><span style="background:${d.type==='غياب'?'var(--danger-color)':'var(--warning-color)'}; color:#fff; padding:2px 6px; border-radius:4px; font-size:11px;">${d.type}</span></td>
                     <td>${d.reason}</td>
+                    <td>${actionBox}</td>
                 </tr>`;
             }
         });
-        tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; color:#999;">💡 سجلاتك التاريخية السابقة فارغة.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:#999;">💡 لم تقم برصد أي غيابات للحصة اليوم بعد.</td></tr>';
     });
 }
 
+// التعديل الآمن للغيابات السابقة خلال الـ 3 ساعات ملوت المهلة
+window.editPastAttendanceLive = async function(docId, studentName, oldType, oldReason) {
+    const newType = prompt(`تعديل حالة الطالب [ ${studentName} ]:\nاكتب بدقة: (غياب) أو (تأخير) أو (حضور) لإلغاء القيد الفوري:`, oldType);
+    if (newType === null) return;
+
+    if (newType !== 'غياب' && newType !== 'تأخير' && newType !== 'حضور') {
+        alert("⚠️ خطأ! يجب كتابة الكلمة بدقة: (غياب) أو (تأخير) أو (حضور) لتصحيح السجل.");
+        return;
+    }
+
+    const newReason = prompt(`اكتب العذر أو الملاحظة الجديدة لقيد [ ${studentName} ] الحين:`, oldReason);
+    if (newReason === null) return;
+
+    try {
+        const docRef = doc(db, 'attendance_logs', docId);
+        if (newType === 'حضور') {
+            await updateDoc(docRef, { type: 'حضور رسمي', reason: 'تم تصحيح القيد وحذف الغياب: ' + newReason });
+            alert(`✓ تم إلغاء القيد وإثبات حضور الطالب [ ${studentName} ] بنجاح.`);
+        } else {
+            await updateDoc(docRef, { type: newType, reason: newReason });
+            alert(`✓ تم تعديل وتحديث السجل بنجاح للطالب [ ${studentName} ].`);
+        }
+    } catch(err) { alert("خطأ في تحديث السيرفر: " + err.message); }
+};
+
+window.saveWholeClassAttendanceLive = saveWholeClassAttendanceLive;
 window.saveBehaviorLogLive = saveBehaviorLogLive;
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -433,10 +415,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     document.getElementById('lbl-teacher-title').innerHTML = `<i class="bi bi-person-video3"></i> بوابة المعلم: أ. ${currentTeacherName}`;
     
-    // التعبئة الفورية لكشف الصف المفتوح تلقائياً
-    window.loadClassAttendanceSheetLive();
     window.populateDropdownAlphabetical('beh-class', 'beh-student-name');
-    
     startTeacherArchiveListener();
 });
 </script>
