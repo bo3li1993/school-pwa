@@ -1,11 +1,5 @@
-// 📑 موديل رصد ومتابعة البطاقات السلوكية والمخالفات المفرزة أبجدياً - معتمد رسمياً بوزارة التربية
-import { db } from '../firebase-config.js';
+import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, addDoc, query, where, serverTimestamp, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
-function getUnifiedDateString() {
-    const d = new Date();
-    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
-}
 
 export async function initBehaviorModule() {
     const container = document.getElementById('tab-behavior');
@@ -86,18 +80,38 @@ export async function initBehaviorModule() {
         </div>`;
 
         const classSelect = document.getElementById('beh-class-select');
-        onSnapshot(collection(db, 'students'), (snapshot) => {
+        const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية الحالية
+
+        // تصفية الفصول المتاحة بناءً على طلاب المدرسة الحالية فقط لمنع التداخل
+        const qClasses = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+        onSnapshot(qClasses, (snapshot) => {
             let classesSet = new Set();
             snapshot.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
             
-            let htmlClasses = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
-            // ✅ تم تصحيح علامات الاقتباس المزدوجة هني لتعود اللوحة للعمل فوراً
-            Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
-            if (classSelect) classSelect.innerHTML = htmlClasses;
+            // جلب احتياطي يدعم السجلات القديمة لمدرسة الحسينان الأساسية
+            if (classesSet.size === 0 && schoolId === 'hosainan') {
+                const qFallback = query(collection(db, 'students'));
+                getDocs(qFallback).then(fallbackSnap => {
+                    fallbackSnap.forEach(doc => {
+                        const d = doc.data();
+                        if(!d.schoolId && d.classId) classesSet.add(d.classId.trim());
+                    });
+                    renderClassesDropdown(classesSet, classSelect);
+                });
+            } else {
+                renderClassesDropdown(classesSet, classSelect);
+            }
         });
 
         loadBehaviorLogsLive(); 
     } catch(e) { console.error(e); }
+}
+
+function renderClassesDropdown(classesSet, element) {
+    if (!element) return;
+    let htmlClasses = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
+    Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
+    element.innerHTML = htmlClasses;
 }
 
 window.handleBehClassChange = async function(classId) {
@@ -113,21 +127,41 @@ window.handleBehClassChange = async function(classId) {
     studentSelect.innerHTML = '<option value="">⏳ جاري فرز أسماء الفصل أبجدياً لايف...</option>';
     studentSelect.disabled = true;
 
+    const schoolId = getActiveSchoolId();
+
     try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+        // فلترة مزدوجة: الفصل التابع للمدرسة الحالية فقط لضمان الخصوصية التامة
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
         onSnapshot(q, (snapshot) => {
             let arr = [];
             snapshot.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
-            arr.sort((a, b) => a.localeCompare(b, 'ar'));
-
-            let html = '<option value="">-- اختر اسم الطالب من الكشف المعتمد --</option>';
-            arr.forEach(name => { html += `<option value="${name}">${name}</option>`; });
-
-            studentSelect.innerHTML = arr.length === 0 ? '<option value="">⚠️ لا يوجد طلاب بالفصل</option>' : html;
-            studentSelect.disabled = arr.length === 0;
+            
+            // خط دفاع خلفي للداتا العامة القديمة
+            if (arr.length === 0 && schoolId === 'hosainan') {
+                const qFallback = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+                getDocs(qFallback).then(fallbackSnap => {
+                    let fArr = [];
+                    fallbackSnap.forEach(doc => {
+                        const d = doc.data();
+                        if(!d.schoolId && d.name) fArr.push(d.name.trim());
+                    });
+                    fArr.sort((a, b) => a.localeCompare(b, 'ar'));
+                    populateStudentsDropdown(fArr, studentSelect);
+                });
+            } else {
+                arr.sort((a, b) => a.localeCompare(b, 'ar'));
+                populateStudentsDropdown(arr, studentSelect);
+            }
         });
     } catch (e) { studentSelect.innerHTML = '<option value="">❌ خطأ في استدعاء البيانات</option>'; }
 };
+
+function populateStudentsDropdown(arr, element) {
+    let html = '<option value="">-- اختر اسم الطالب من الكشف المعتمد --</option>';
+    arr.forEach(name => { html += `<option value="${name}">${name}</option>`; });
+    element.innerHTML = arr.length === 0 ? '<option value="">⚠️ لا يوجد طلاب بالفصل</option>' : html;
+    element.disabled = arr.length === 0;
+}
 
 window.handleRegisterBehaviorLive = async function(e) {
     e.preventDefault();
@@ -137,13 +171,15 @@ window.handleRegisterBehaviorLive = async function(e) {
     const action = document.getElementById('beh-action-type').value;
     const followup = document.getElementById('beh-followup-status').value;
     const notes = document.getElementById('beh-notes').value.trim();
+    const schoolId = getActiveSchoolId(); // 🏢 ربط الـ SaaS المركزي
 
     if(!sName || !cId) { alert("⚠️ الرجاء تحديد الطالب والصف أولاً قبل الاعتماد!"); return; }
 
     try {
-        const unifiedDate = getUnifiedDateString(); 
+        const todayISO = getTodayISO(); // التاريخ الدولي الموحد والمصحح للمقارنات التلقائية
         
         await addDoc(collection(db, 'behavior'), {
+            schoolId: schoolId, // 🔑 البصمة الأمنية للمدرسة الراصدة
             studentName: sName.trim(),
             name: sName.trim(),
             classId: cId.trim(),
@@ -151,8 +187,8 @@ window.handleRegisterBehaviorLive = async function(e) {
             action: action,
             followUpStatus: followup,
             notes: notes,
-            dateStr: unifiedDate,
-            date: unifiedDate,
+            dateStr: todayISO,
+            date: todayISO,
             createdAt: serverTimestamp()
         });
         
@@ -167,25 +203,47 @@ function loadBehaviorLogsLive() {
     const tbody = document.getElementById('behavior-logs-tbody');
     if (!tbody) return;
 
-    onSnapshot(collection(db, 'behavior'), (snapshot) => {
-        let html = '';
-        snapshot.forEach(d => {
-            const data = d.data();
-            const statusBadge = data.followUpStatus && data.followUpStatus.includes('تمت') ? 
-                `<span class="badge success" style="background:#27ae60; padding:3px 8px; border-radius:4px; color:#fff;">تم الإقفال</span>` : 
-                `<span class="badge warning" style="background:#e67e22; padding:3px 8px; border-radius:4px; color:#fff;">قيد المتابعة</span>`;
+    const schoolId = getActiveSchoolId();
 
-            html += `
-                <tr style="border-bottom:1px solid #eee;">
-                    <td style="padding:10px; font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || data.date || '-'}</td>
-                    <td style="padding:10px;"><b>👤 ${data.studentName || data.name || '-'}</b></td>
-                    <td style="padding:10px; text-align:center;"><span class="badge info" style="background:var(--accent-color); padding:3px 8px; color:#fff; border-radius:4px;">${data.classId || '-'}</span></td>
-                    <td style="padding:10px; text-align:center;"><span class="badge danger" style="background:#c0392b; padding:4px 8px; color:#fff; border-radius:4px; font-weight:bold;">${data.action || 'إجراء معتمد'}</span></td>
-                    <td style="padding:10px; text-align:center;">${statusBadge}</td>
-                    <td style="padding:10px; font-weight:700; color:#2980b9;">أ. ${data.referredBy || 'غير محدد'}</td>
-                    <td style="padding:10px; color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
-                </tr>`;
+    // جلب وحصر أرشيف المتابعات السلوكية التابع للمدرسة الحالية فقط
+    const qLogs = query(collection(db, 'behavior'), where('schoolId', '==', schoolId));
+
+    onSnapshot(qLogs, (snapshot) => {
+        let html = '';
+        
+        // إذا كان فارغاً والمدرسة هي الحسينان، نسحب الأرشيف القديم الغير مقيد بـ schoolId
+        if (snapshot.empty && schoolId === 'hosainan') {
+            getDocs(collection(db, 'behavior')).then(oldSnap => {
+                let fHtml = '';
+                oldSnap.forEach(d => {
+                    const data = d.data();
+                    if (!data.schoolId) fHtml += buildBehaviorRowHtml(data);
+                });
+                tbody.innerHTML = fHtml || '<tr><td colspan="7" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">✅ السجل المركزي للمتابعة السلوكية سليم تماماً.</td></tr>';
+            });
+            return;
+        }
+
+        snapshot.forEach(d => {
+            html += buildBehaviorRowHtml(d.data());
         });
         tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">✅ السجل المركزي للمتابعة السلوكية سليم تماماً.</td></tr>';
     }, (err) => { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:15px;">💡 بانتظار تسجيل أولى الحالات السلوكية بالمنظومة.</td></tr>'; });
+}
+
+function buildBehaviorRowHtml(data) {
+    const statusBadge = data.followUpStatus && data.followUpStatus.includes('تمت') ? 
+        `<span class="badge success" style="background:#27ae60; padding:3px 8px; border-radius:4px; color:#fff;">تم الإقفال</span>` : 
+        `<span class="badge warning" style="background:#e67e22; padding:3px 8px; border-radius:4px; color:#fff;">قيد المتابعة</span>`;
+
+    return `
+        <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:10px; font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || data.date || '-'}</td>
+            <td style="padding:10px;"><b>👤 ${data.studentName || data.name || '-'}</b></td>
+            <td style="padding:10px; text-align:center;"><span class="badge info" style="background:var(--accent-color); padding:3px 8px; color:#fff; border-radius:4px;">${data.classId || '-'}</span></td>
+            <td style="padding:10px; text-align:center;"><span class="badge danger" style="background:#c0392b; padding:4px 8px; color:#fff; border-radius:4px; font-weight:bold;">${data.action || 'إجراء معتمد'}</span></td>
+            <td style="padding:10px; text-align:center;">${statusBadge}</td>
+            <td style="padding:10px; font-weight:700; color:#2980b9;">أ. ${data.referredBy || 'غير محدد'}</td>
+            <td style="padding:10px; color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
+        </tr>`;
 }
