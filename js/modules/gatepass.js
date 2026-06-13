@@ -1,5 +1,4 @@
-// 🎫 موديل حقيبة تصاريح الاستئذان والخروج المبكر للطلاب بربط مركزي آمن
-import { db } from '../firebase-config.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initGatepassModule() {
@@ -65,11 +64,26 @@ export async function initGatepassModule() {
             </div>
         </div>`;
 
-        // جلب الفصول لايف
         const classSelect = document.getElementById('gate-class-select');
-        const snap = await getDocs(collection(db, 'students'));
+        const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية الحالية
+        
+        // جلب طلاب المدرسة الحالية فقط لعزل الفصول داخل الاستئذان
+        const qClasses = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+        const snap = await getDocs(qClasses);
+        
         let classesSet = new Set();
-        snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
+        snap.forEach(doc => { 
+            if(doc.data().classId) classesSet.add(doc.data().classId.trim()); 
+        });
+        
+        // خط دفاع برمي واحتياطي للـ Backward Compatibility
+        if (classesSet.size === 0 && schoolId === 'hosainan') {
+            const fallbackSnap = await getDocs(collection(db, 'students'));
+            fallbackSnap.forEach(doc => {
+                const d = doc.data();
+                if(!d.schoolId && d.classId) classesSet.add(d.classId.trim());
+            });
+        }
         
         let htmlClasses = '<option value="">-- اختر الفصل --</option>';
         Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
@@ -94,16 +108,29 @@ window.handleGateClassChange = async function(classId) {
     studentSelect.innerHTML = '<option value="">⏳ جاري سحب الأسماء كويتيّاً...</option>';
     studentSelect.disabled = true;
 
+    const schoolId = getActiveSchoolId();
+
     try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
-        const snap = await getDocs(q);
+        // فلترة ثنائية لحماية كشف الأسماء من التداخل
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
+        let snap = await getDocs(q);
+        
+        if (snap.empty && schoolId === 'hosainan') {
+            const fallbackQ = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+            snap = await getDocs(fallbackQ);
+        }
         
         let arr = [];
-        snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
+        snap.forEach(doc => { 
+            const d = doc.data();
+            if(d.name && (!d.schoolId || d.schoolId === schoolId)) {
+                arr.push(d.name.trim()); 
+            }
+        });
         arr.sort((a, b) => a.localeCompare(b, 'ar'));
 
         let html = '<option value="">-- اختر اسم الطالب --</option>';
-        arr.forEach(name => { html += `<option value="${name}">${name}</option>`; });
+        arr.forEach(name => { html += `<option value="${name}">${name}</option>'; });
 
         studentSelect.innerHTML = arr.length === 0 ? '<option value="">⚠️ الفصل خالي</option>' : html;
         studentSelect.disabled = arr.length === 0;
@@ -118,9 +145,11 @@ window.handleRegisterGatepassLive = async function(e) {
     const cId = document.getElementById('gate-class-select').value;
     const relative = document.getElementById('gate-relative').value;
     const reason = document.getElementById('gate-reason').value.trim();
+    const schoolId = getActiveSchoolId(); // 🏢 ربط مركزي آمن للـ SaaS
 
     try {
         await addDoc(collection(db, 'gatepass'), {
+            schoolId: schoolId, // 🔑 بصمة المدرسة مالك السند
             studentName: sName,
             classId: cId,
             relative: relative,
@@ -141,10 +170,38 @@ async function loadGatepassLogsLive() {
     const tbody = document.getElementById('gatepass-logs-tbody');
     if (!tbody) return;
 
+    const schoolId = getActiveSchoolId();
+
     try {
-        const snap = await getDocs(collection(db, 'gatepass'));
-        let html = '';
+        // حماية أمنية: جلب سجلات الاستئذان الخاصة بهذه المدرسة فقط
+        const qLogs = query(collection(db, 'gatepass'), where('schoolId', '==', schoolId));
+        let snap = await getDocs(qLogs);
         
+        // توافقية السجلات القديمة لمدرسة مدرسة سالم الحسينان
+        if (snap.empty && schoolId === 'hosainan') {
+            const fallbackSnap = await getDocs(collection(db, 'gatepass'));
+            // تصفية محلية للسجلات التي لا تحتوي على مدرسة
+            let html = '';
+            fallbackSnap.forEach(d => {
+                const data = d.data();
+                if (!data.schoolId) {
+                    html += `
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td><b>👤 ${data.studentName || 'غير محدد'}</b></td>
+                            <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
+                            <td style="text-align:center;"><span class="badge warning">${data.relative || '-'}</span></td>
+                            <td style="color:#555; font-size:12px; font-weight:700;">${data.reason || '-'}</td>
+                        </tr>
+                    `;
+                }
+            });
+            if (html) {
+                tbody.innerHTML = html;
+                return;
+            }
+        }
+
+        let html = '';
         snap.forEach(d => {
             const data = d.data();
             html += `
