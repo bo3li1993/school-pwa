@@ -43,12 +43,11 @@ table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: rig
 th, td { padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 700; }
 th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
-/* 🌟 ستايل أزرار الضغط السريع المطور ملوكي */
-.status-group { display: flex; gap: 4px; width: 100%; max-width: 260px; }
-.btn-status { flex: 1; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; font-size: 11px; cursor: pointer; background: #fff; color: #64748b; transition: all 0.15s ease-in-out; text-align: center; }
-.btn-status.present.active { background: #10b981 !important; color: #fff !important; border-color: #10b981 !important; box-shadow: 0 2px 6px rgba(16,185,129,0.2); }
-.btn-status.absent.active { background: #ef4444 !important; color: #fff !important; border-color: #ef4444 !important; box-shadow: 0 2px 6px rgba(239,68,68,0.2); }
-.btn-status.late.active { background: #f59e0b !important; color: #fff !important; border-color: #f59e0b !important; box-shadow: 0 2px 6px rgba(245,158,11,0.2); }
+/* 🌟 ستايل زر التبديل الدائري السريع والذكي */
+.status-cycle-btn { padding: 6px 16px; border-radius: 20px; border: none; font-weight: 900; font-size: 12px; cursor: pointer; transition: all 0.2s ease; min-width: 110px; text-align: center; display: inline-block; }
+.status-cycle-btn.present { background: #e6f4ea; color: #137333; border: 1px solid #137333; }
+.status-cycle-btn.absent { background: #fce8e6; color: #c5221f; border: 1px solid #c5221f; box-shadow: 0 2px 5px rgba(197,34,31,0.15); }
+.status-cycle-btn.late { background: #fef7e0; color: #b06000; border: 1px solid #b06000; box-shadow: 0 2px 5px rgba(176,96,0,0.15); }
 </style>
 </head>
 <body>
@@ -63,14 +62,12 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <div class="workspace-container">
 
-    <!-- منيو التنقل العلوي -->
     <div class="tabs-nav">
         <div class="tab-btn active" id="tab-btn-attendance" onclick="window.switchTeacherView('view-attendance')"><i class="bi bi-calendar-check-fill"></i> رصد الغياب اليومي (الفصل كامل)</div>
         <div class="tab-btn" id="tab-btn-behavior" onclick="window.switchTeacherView('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
         <div class="tab-btn" id="tab-btn-archive" onclick="window.switchTeacherView('view-archive')"><i class="bi bi-clock-history"></i> أرشيف قفل وتعديل الغياب</div>
     </div>
 
-    <!-- 📝 التبويب الأول: كشف رصد الغياب بالأزرار السريعة التلـقائية هني بوعلي -->
     <div id="view-attendance" class="tab-view active-view">
         <div class="card" style="border-top: 4px solid var(--success-color);">
             <h2><i class="bi bi-collection-fill"></i> كشف حضور وغياب الطلاب الجماعي للحصة الدراسية</h2>
@@ -91,7 +88,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                         <tr style="background: #f1f5f9;">
                             <th style="width: 50px;">#</th>
                             <th>اسم الطالب رباعي (مرتب أبجدياً)</th>
-                            <th style="width: 250px;">حالة الطالب بالضغط المباشر</th>
+                            <th style="width: 180px; text-align:center;">حالة الطالب (اضغط للتبديل)</th>
                             <th>الملاحظات / العذر</th>
                         </tr>
                     </thead>
@@ -105,7 +102,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 🛡️ التبويب الثاني: رصد ومتابعة السلوك من المعلم -->
     <div id="view-behavior" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--danger-color);">
             <h2><i class="bi bi-shield-fill-exclamation"></i> وثيقة رصد وإثبات حالة سلوكية داخل الصف فوراً</h2>
@@ -145,7 +141,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 🕒 التبويب الثالث: أرشيف قفل وتعديل الغياب -->
     <div id="view-archive" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--warning-color);">
             <h2><i class="bi bi-clock-history"></i> سجل غيابات الحصص الموثقة (صلاحية تعديل القيد: 3 ساعات فقط)</h2>
@@ -171,7 +166,7 @@ import { collection, addDoc, doc, updateDoc, onSnapshot, getDocs, query, where, 
 
 let currentTeacherId = "";
 let currentTeacherName = "المعلم";
-let currentSheetStudents = []; // مصفوفة كائنات لحفظ الاسم والحالة الحية والملاحظة هني
+let currentSheetStudents = [];
 
 function getUnifiedDateString() {
     const d = new Date();
@@ -230,7 +225,7 @@ window.populateDropdownAlphabetical = async function(classSelectId, studentSelec
     }
 };
 
-// 📊 تحميل كشف طلاب الفصل كامل وصافي 100% مع تفعيل ميزة الأزرار السريعة المباشرة
+// 📊 تحميل كشف طلاب الفصل كامل ومترتب أبجدياً بآلية الكبس التبادلي الدائري الفوري
 window.loadClassAttendanceSheetLive = async function() {
     const classId = document.getElementById('att-class').value;
     const tbody = document.getElementById('table-attendance-sheet-tbody');
@@ -254,7 +249,7 @@ window.loadClassAttendanceSheetLive = async function() {
         // فرز أبجدي ملوكي صارم مسطرة
         studentsList.sort((a, b) => a.localeCompare(b, 'ar'));
         
-        // تعبئة بنية المصفوفة الذكية؛ الوضع الافتراضي لجميع الطلاب (حاضر) تلقائياً هني بوعلي
+        // بناء خزان البيانات الافتراضي (الكل حاضر) هني بوعلي
         currentSheetStudents = studentsList.map(name => ({
             name: name,
             status: 'حاضر',
@@ -263,21 +258,17 @@ window.loadClassAttendanceSheetLive = async function() {
 
         let html = '';
         currentSheetStudents.forEach((student, index) => {
-            html += `<tr style="border-bottom:1px solid #e2e8f0; background: #fff;">
-                <td>${index + 1}</td>
-                <td style="font-size:14px; color:var(--primary-color);"><b>${student.name}</b></td>
-                <td>
-                    <!-- 🚨 أزرار التبديل السريع المباشرة بدال الدروب داون القديم -->
-                    <div class="status-group">
-                        <button type="button" id="btn-p-${index}" class="btn-status present active" onclick="window.changeStudentStatusLive(${index}, 'حاضر')">💚 حاضر</button>
-                        <button type="button" id="btn-a-${index}" class="btn-status absent" onclick="window.changeStudentStatusLive(${index}, 'غياب')">🛑 غياب</button>
-                        <button type="button" id="btn-l-${index}" class="btn-status late" onclick="window.changeStudentStatusLive(${index}, 'تأخير')">⏳ تأخير</button>
-                    </div>
-                </td>
-                <td>
-                    <input type="text" id="reason-${index}" oninput="window.changeStudentReasonLive(${index}, this.value)" placeholder="ملاحظة الزيادة / العذر..." style="margin-bottom:0; padding:6px; font-size:12px;">
-                </td>
-            </tr>`;
+            html += '<tr style="border-bottom:1px solid #e2e8f0; background: #fff;">' +
+                '<td>' + (index + 1) + '</td>' +
+                '<td style="font-size:14px; color:var(--primary-color);"><b>' + student.name + '</b></td>' +
+                '<td style="text-align:center;">' +
+                    '' +
+                    '<button type="button" id="status-btn-' + index + '" class="status-cycle-btn present" onclick="window.cycleStudentStatusLive(' + index + ')">💚 حاضر</button>' +
+                '</td>' +
+                '<td>' +
+                    '<input type="text" id="reason-' + index + '" oninput="window.changeStudentReasonLive(' + index + ', this.value)" placeholder="ملاحظة الزيادة / العذر..." style="margin-bottom:0; padding:6px; font-size:12px;">' +
+                '</td>' +
+            '</tr>';
         });
 
         tbody.innerHTML = html;
@@ -287,20 +278,27 @@ window.loadClassAttendanceSheetLive = async function() {
     }
 };
 
-// 🎯 دالة التبديل السريع لتغيير كلاسات الأزرار الحية وتحديث مصفوفة الحفظ بضغطة زر
-window.changeStudentStatusLive = function(index, status) {
+// 🎯 محرك التبديل الدائري بلمسة واحدة المأخوذ من فكرة الكوميت مالتك بوعلي
+window.cycleStudentStatusLive = function(index) {
     if(!currentSheetStudents[index]) return;
-    currentSheetStudents[index].status = status;
+    const btn = document.getElementById('status-btn-' + index);
+    if(!btn) return;
 
-    // تصفير الكلاسات النشطة للثلاثة أزرار في السطر الحالي
-    document.getElementById(`btn-p-${index}`).classList.remove('active');
-    document.getElementById(`btn-a-${index}`).classList.remove('active');
-    document.getElementById(`btn-l-${index}`).classList.remove('active');
+    let current = currentSheetStudents[index].status;
 
-    // تشبيب الزر المضغوط فوراً لايف
-    if(status === 'حاضر') document.getElementById(`btn-p-${index}`).classList.add('active');
-    if(status === 'غياب') document.getElementById(`btn-a-${index}`).classList.add('active');
-    if(status === 'تأخير') document.getElementById(`btn-l-${index}`).classList.add('active');
+    if (current === 'حاضر') {
+        currentSheetStudents[index].status = 'غياب';
+        btn.className = 'status-cycle-btn absent';
+        btn.innerHTML = '🛑 غياب';
+    } else if (current === 'غياب') {
+        currentSheetStudents[index].status = 'تأخير';
+        btn.className = 'status-cycle-btn late';
+        btn.innerHTML = '⏳ تأخير';
+    } else {
+        currentSheetStudents[index].status = 'حاضر';
+        btn.className = 'status-cycle-btn present';
+        btn.innerHTML = '💚 حاضر';
+    }
 };
 
 // تحديث خانة الملاحظات لايف في المصفوفة
@@ -309,13 +307,13 @@ window.changeStudentReasonLive = function(index, value) {
     currentSheetStudents[index].reason = value.trim();
 };
 
-// 💾 حفظ كشف الحصة بالكامل دفعة واحدة بناءً على الأزرار النشطة
+// 💾 حفظ كشف الحصة بالكامل دفعة واحدة بناءً على ضغطات الزر الدائري
 window.saveWholeClassAttendanceLive = async function() {
     if(currentSheetStudents.length === 0) { alert("⚠️ الكشف فارغ أو لم يتم تحميله بعد!"); return; }
     const classId = document.getElementById('att-class').value;
     let savedCount = 0;
 
-    if(!confirm(`هل أنت متأكد من اعتماد وحفظ حضور وغياب صف ( ${classId} ) بالكامل للحصة الحالية؟`)) return;
+    if(!confirm('هل أنت متأكد من اعتماد وحفظ حضور وغياب صف ( ' + classId + ' ) بالكامل للحصة الحالية؟')) return;
 
     try {
         for(let i = 0; i < currentSheetStudents.length; i++) {
@@ -338,8 +336,8 @@ window.saveWholeClassAttendanceLive = async function() {
             }
         }
 
-        alert(`🚀 تم اعتماد الكشف السحابي بنجاح لصف ${classId}!\n✓ تم ترحيل ورصد ( ${savedCount} ) حالة غياب/تأخير بناءً على ضغطاتك.`);
-        await window.loadClassAttendanceSheetLive(); // إعادة تصفير الكشف للموثوقية
+        alert('🚀 تم اعتماد الكشف السحابي بنجاح لصف ' + classId + '!\n✓ تم ترحيل ورصد ( ' + savedCount + ' ) حالة غياب/تأخير بناءً على ضغطاتك السريعة.');
+        await window.loadClassAttendanceSheetLive(); 
 
     } catch (err) { alert("❌ خطأ أثناء حفظ القيد الجماعي: " + err.message); }
 };
@@ -445,7 +443,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('lbl-teacher-title').innerHTML = `<i class="bi bi-person-video3"></i> بوابة المعلم: أ. ${currentTeacherName}`;
     
     window.populateDropdownAlphabetical('beh-class', 'beh-student-name');
-    window.loadClassAttendanceSheetLive(); // تشغيل الكشف التلقائي فورا للأزرار السريعة
+    window.loadClassAttendanceSheetLive(); 
     startTeacherArchiveListener();
 });
 </script>
