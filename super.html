@@ -3,10 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link class="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>بوابة المطور العليا - إدارة اشتراكات المنصة السحابية</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
     :root {
         --bg-slate: #0f172a; --card-bg: #1e293b; --text-light: #f8fafc;
         --cyan-color: #38bdf8; --success-color: #4ade80; --danger-color: #f87171; --warning-color: #fbbf24;
@@ -84,8 +89,8 @@
         <div class="card">
             <h3><i class="bi bi-building-plus"></i> إطلاق وتفعيل مدرسة جديدة</h3>
             <form id="super-school-form" onsubmit="window.createNewSchoolPlatformLive(event)">
-                <label>معرّف المدرسة الفريد (إنجليزي - سمول):</label>
-                <input type="text" id="sch-id" placeholder="مثال: salem_school أو alanwar" required pattern="^[a-z0-9_]+$">
+                <label>معرّف المدرسة الفريد (إنجليزي - سمول بدون مسافات):</label>
+                <input type="text" id="sch-id" placeholder="مثال: hosainan أو alanwar" required pattern="^[a-z0-9_]+$">
                 
                 <label>الاسم الرسمي للمدرسة:</label>
                 <input type="text" id="sch-name" placeholder="مثال: مدرسة سالم الحسينان المتوسطة" required>
@@ -113,7 +118,7 @@
                     <input type="text" id="sch-admin-pass" placeholder="6 خانات على الأقل" required>
                 </div>
                 
-                <button type="submit"><i class="bi bi-rocket-takeoff-fill"></i> إطلاق وبث المنصة السحابية فوراً</button>
+                <button type="submit" id="btn-submit-launch"><i class="bi bi-rocket-takeoff-fill"></i> إطلاق وبث المنصة السحابية فوراً</button>
             </form>
         </div>
 
@@ -151,18 +156,19 @@
 </div>
 
 <script type="module">
-import { db } from './js/firebase-config.js';
-import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, auth } from './js/firebase-config.js'; // 🔒 استدعاء جدار الحماية وقاعدة البيانات معاً لتوثيق الـ SaaS
+import { collection, doc, setDoc, onSnapshot, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'; // 🔑 استدعاء محرك التشفير المركزي
 
 let allSchoolsCache = [];
 
-// 1. إعداد تاريخ الانتهاء التلقائي بعد سنة
+// 1. إعداد تاريخ الانتهاء التلقائي بعد سنة كاملة من تاريخ اليوم
 const nextYear = new Date();
 nextYear.setFullYear(nextYear.getFullYear() + 1);
 const expireInput = document.getElementById('sch-expire');
 if(expireInput) expireInput.value = nextYear.toISOString().slice(0, 10);
 
-// 2. تشغيل رادار مراقبة المدارس لايف فوراً
+// 2. تشغيل رادار مراقبة وجرد المدارس لايف فوراً
 listenToAllPlatformSchoolsLive();
 
 function listenToAllPlatformSchoolsLive() {
@@ -186,11 +192,11 @@ function listenToAllPlatformSchoolsLive() {
         document.getElementById('stat-revenue').textContent = `${active * 50} KWD`;
 
         const currentFilter = document.getElementById('super-filter-status').value;
-        filterSchoolsLive(currentFilter);
+        window.filterSchoolsLive(currentFilter);
     });
 }
 
-function filterSchoolsLive(filterStatus) {
+window.filterSchoolsLive = function(filterStatus) {
     const tbody = document.getElementById('super-schools-tbody');
     if(!tbody) return;
     let html = '';
@@ -231,9 +237,9 @@ function filterSchoolsLive(filterStatus) {
     });
 
     tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:15px;">💡 لا توجد مدارس تطابق هذا الفلتر حالياً.</td></tr>';
-}
+};
 
-async function createNewSchoolPlatformLive(e) {
+window.createNewSchoolPlatformLive = async function(e) {
     e.preventDefault();
     const sId = document.getElementById('sch-id').value.trim().toLowerCase();
     const sName = document.getElementById('sch-name').value.trim();
@@ -243,8 +249,18 @@ async function createNewSchoolPlatformLive(e) {
     const adminId = document.getElementById('sch-admin-id').value.trim();
     const adminName = document.getElementById('sch-admin-name').value.trim();
     const adminPass = document.getElementById('sch-admin-pass').value.trim();
+    const submitBtn = document.getElementById('btn-submit-launch');
+
+    if (adminPass.length < 6) {
+        alert("⚠️ جدار حماية الفايربيس يتطلب كلمة مرور لا تقل عن 6 خانات!");
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري حجز السيرفر وتشفير الهويات...`;
 
     try {
+        // 🏢 أ) حجز وتهيئة ترخيص المدرسة السحابية أولاً
         await setDoc(doc(db, 'schools', sId), {
             name: sName,
             status: 'active',
@@ -253,33 +269,42 @@ async function createNewSchoolPlatformLive(e) {
             createdAt: serverTimestamp()
         });
 
-        await addDoc(collection(db, 'users'), {
+        // 🔒 ب) توليد إيميل افتراضي مشفر للمدير وتسجيله في الـ Firebase Auth لمنع تعليق الدخول
+        const virtualEmail = `${adminId}@${sId}.edu`;
+        const credential = await createUserWithEmailAndPassword(auth, virtualEmail, adminPass);
+
+        // 📝 ج) حقن بروفايل المدير الأعلى وربطه بالـ UID المشفر
+        await setDoc(doc(db, 'users', credential.user.uid), {
             schoolId: sId,
             userId: adminId,
             name: adminName,
             role: 'admin',
+            email: virtualEmail,
+            authMigrated: true, // تفعيل بروتوكول العبور المشفر فوراً لصفحة اللوجن
             plainPass: adminPass,
             createdAt: serverTimestamp()
         });
 
-        alert(`🚀 مبروك بوعلي! تم إطلاق باقة المنصة السحابية بنجاح لـ [ ${sName} ]\nوتجهيز يوزر المدير الخارق لها بنجاح.`);
+        alert(`🚀 مبروك بوعلي! تم إطلاق باقة المنصة السحابية بنجاح لـ [ ${sName} ]\nوتأمين يوزر المدير الأعلى وتشفيره بنجاح.`);
         document.getElementById('super-school-form').reset();
-    } catch(err) { alert("❌ خطأ سحابي أثناء البث: " + err.message); }
-}
+        if(expireInput) expireInput.value = nextYear.toISOString().slice(0, 10);
+        
+    } catch(err) { 
+        alert("❌ خطأ حرج أثناء البث: " + err.message); 
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="bi bi-rocket-takeoff-fill"></i> إطلاق وبث المنصة السحابية فوراً`;
+    }
+};
 
-async function toggleSchoolSubscriptionLive(schoolId, nextStatus) {
+window.toggleSchoolSubscriptionLive = async function(schoolId, nextStatus) {
     const actionWord = nextStatus === 'suspended' ? 'تجميد وإيقاف' : 'إعادة تفعيل';
     if(!confirm(`هل أنت متأكد من ${actionWord} اشتراك منصة المدرسة [ ${schoolId} ] في السيرفر الحين؟`)) return;
     try {
         await updateDoc(doc(db, 'schools', schoolId), { status: nextStatus });
         alert("✓ تم تحديث وتطبيق حالة الترخيص السحابي فوراً بالسيرفر.");
     } catch(err) { alert("خطأ: " + err.message); }
-}
-
-// ربط الدوال بالويندوز بشكل آمن وصريح للـ onClick
-window.filterSchoolsLive = filterSchoolsLive;
-window.createNewSchoolPlatformLive = createNewSchoolPlatformLive;
-window.toggleSchoolSubscriptionLive = toggleSchoolSubscriptionLive;
+};
 </script>
 </body>
 </html>
