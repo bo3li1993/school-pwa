@@ -19,7 +19,7 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { 
     background: linear-gradient(135deg, #1a1a2e 0%, #161625 100%); 
-    min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; direction: rtl;
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; direction: rtl;
 }
 .login-container {
     max-width: 420px; width: 100%; background: #fff; border-radius: 16px; padding: 30px;
@@ -47,10 +47,29 @@ input:focus { border-color: var(--hover-color); box-shadow: 0 0 0 3px rgba(230,1
 .btn-login:hover { background: var(--hover-color); }
 .btn-login:disabled { background: #94a3b8; cursor: not-allowed; }
 
+/* تصميم كرت تثبيت التطبيق الموجه للـ PWA بوعلي */
+.install-pwa-card {
+    display: none; max-width: 420px; width: 100%; background: #2c3e50; color: #fff; padding: 15px; 
+    border-radius: 12px; margin-bottom: 15px; align-items: center; justify-content: space-between; gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-right: 5px solid var(--hover-color);
+}
+.install-text h4 { font-size: 13px; font-weight: 900; }
+.install-text p { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+.btn-install-trigger { background: var(--hover-color); color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; }
+
 .footer-credits { text-align: center; margin-top: 25px; font-size: 11px; color: #a0aec0; font-weight: bold; }
 </style>
 </head>
 <body>
+
+<!-- كرت حث المستخدم على تثبيت المنظومة PWA -->
+<div class="install-pwa-card" id="btn-install">
+    <div class="install-text">
+        <h4><i class="bi bi-download"></i> تثبيت تطبيق المنظومة الرقمية</h4>
+        <p>قم بتنزيل التطبيق على شاشتك الرئيسية للوصول السريع بدون متصفح.</p>
+    </div>
+    <button class="btn-install-trigger" id="btn-install-action">تثبيت الآن</button>
+</div>
 
 <div class="login-container">
     <div class="login-header">
@@ -83,9 +102,9 @@ input:focus { border-color: var(--hover-color); box-shadow: 0 0 0 3px rgba(230,1
 </div>
 
 <script type="module">
-import { db, auth } from './js/firebase-config.js'; // 🔒 استدعاء جدار الحماية وقاعدة البيانات معاً
+import { db, auth } from './js/firebase-config.js'; 
 import { collection, query, where, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'; // 🔑 استدعاء محرك الدخول الآمن العالمي
+import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'; 
 
 window.handleGlobalLoginLive = async function(e) {
     e.preventDefault();
@@ -150,7 +169,6 @@ window.handleGlobalLoginLive = async function(e) {
         let loginSuccess = false;
 
         if (userData.authMigrated === true) {
-            // الحساب محصن ومشفر بالكامل داخل Firebase Auth
             try {
                 await signInWithEmailAndPassword(auth, userData.email, inputPassword);
                 loginSuccess = true;
@@ -160,7 +178,6 @@ window.handleGlobalLoginLive = async function(e) {
                 return;
             }
         } else {
-            // الحساب لم يرحل بعد (Legacy Mode) - يتم التحقق تقليدياً لحين تشغيل درع الحماية
             if (userData.plainPass === inputPassword) {
                 loginSuccess = true;
             } else {
@@ -180,12 +197,12 @@ window.handleGlobalLoginLive = async function(e) {
                 classId: userData.classId || ''
             }));
 
-            // 5. التوجيه التلقائي والذكي الفوري حسب رتبة الصلاحية
+            // 5. 🚀 التوجيه التلقائي والذكي الفوري حسب رتبة الصلاحية إلى الملفات المعتمدة سحابياً
             const role = String(userData.role || '').trim().toLowerCase();
             if (role === 'teacher') {
                 window.location.replace('teacher.html');
             } else {
-                window.location.replace('dashboard.html'); // التوجيه للمركز الرئيسي الموحد
+                window.location.replace('admin.html'); // التوجيه الفوري لبرج التحكم لجميع الرتب الإدارية والأمنية
             }
         }
 
@@ -199,6 +216,35 @@ function resetButton(btn) {
     btn.disabled = false;
     btn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
 }
+</script>
+
+<!-- ⚡ محرك التقاط وتثبيت تطبيق الـ PWA الفوري على الهواتف الذكية -->
+<script>
+let deferredPrompt;
+const installCard = document.getElementById('btn-install');
+const installActionBtn = document.getElementById('btn-install-action');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if(installCard) installCard.style.display = 'flex';
+});
+
+if(installActionBtn) {
+    installActionBtn.addEventListener('click', async () => {
+        if(!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`قرار المستخدم بخصوص تثبيت المنظومة: ${outcome}`);
+        deferredPrompt = null;
+        if(installCard) installCard.style.display = 'none';
+    });
+}
+
+window.addEventListener('appinstalled', () => {
+    console.log('✓ تم تثبيت المنظومة التقدمية بنجاح.');
+    if(installCard) installCard.style.display = 'none';
+});
 </script>
 </body>
 </html>
