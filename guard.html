@@ -8,199 +8,259 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>بوابة الأمن والسلامة المدرسية - مدرسة سالم الحسينان</title>
+<title>بوابة الأمن والسلامة - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 :root {
-    --primary-color: #1e293b; --hover-color: #e67e22; --bg-light: #f8fafc;
+    --primary-color: #1e293b; --hover-color: #e67e22; --bg-light: #f4f6f9;
     --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; flex-direction: column; min-height: 100vh; direction: rtl; }
 
-.header-nav { background: var(--primary-color); color: #fff; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--hover-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-.header-nav h1 { font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
-.header-nav p { font-size: 11px; opacity: 0.8; font-weight: 600; margin-top: 2px; }
+.header-nav { background: var(--primary-color); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--hover-color); }
+.header-nav h1 { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+.header-nav p { font-size: 11px; opacity: 0.8; font-weight: 600; }
 
 .workspace-container { max-width: 1200px; width: 100%; margin: 15px auto; padding: 0 12px; flex: 1; }
-.card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #e2e8f0; text-align: right; }
-.card h2 { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
 
-input, select { width: 100%; padding: 16px; border: 2px solid #cbd5e1; border-radius: 12px; margin-bottom: 15px; outline: none; font-weight: 700; font-size: 15px; color: #1e293b; background: #fff; text-align: right; transition: 0.2s; }
-input:focus, select:focus { border-color: var(--hover-color); box-shadow: 0 0 0 4px rgba(230,126,34,0.05); }
+.card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+.card h2 { font-size: 15px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
 
-button { background: var(--primary-color); color: #fff; border: none; padding: 16px 20px; border-radius: 12px; font-weight: 900; cursor: pointer; font-size: 15px; transition: 0.2s; }
-button:hover { background: var(--hover-color); }
+input, select, textarea { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 12px; outline: none; font-weight: 700; font-size: 14px; color: var(--primary-color); text-align: right; background: #fff; }
+input:focus, select:focus, textarea:focus { border-color: var(--hover-color); }
 
-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: right; margin-top: 10px; }
-th, td { padding: 16px 12px; border: 1px solid #e2e8f0; font-weight: 700; }
+button.btn-submit { width: 100%; background: var(--hover-color); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 4px 10px rgba(230,126,34,0.2); }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
+th, td { padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 700; }
 th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
-@keyframes blinker { 50% { opacity: 0.3; background: #fff0f0; } }
-.blink-alert { animation: blinker 1.5s linear infinite; border: 2px dashed var(--danger-color) !important; }
+.btn-emergency { width: 100%; background: var(--danger-color); color: #fff; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 20px rgba(239,68,68,0.3); margin-bottom: 20px; }
 </style>
 </head>
 <body>
 
 <div class="header-nav">
     <div>
-        <h1 id="lbl-guard-header"><i class="bi bi-shield-lock-fill" style="color:var(--hover-color);"></i> بوابة الأمن والسلامة المدرسية</h1>
+        <h1 id="lbl-guard-title"><i class="bi bi-shield-lock-fill"></i> بوابة الأمن: أ. حارس</h1>
         <p>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</p>
     </div>
-    <div style="display:flex; align-items:center; gap:10px;">
-        <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:10px 18px; font-size:13px; font-weight:bold; border-radius:8px; display:flex; align-items:center; gap:5px;"><i class="bi bi-box-arrow-right"></i> خروج</button>
-    </div>
+    <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer;">خروج</button>
 </div>
 
 <div class="workspace-container">
 
-    <!-- كرت نداء الطوارئ العاجل -->
-    <div class="card" style="border: 2px solid var(--danger-color); background: #fff5f5; text-align:center; padding:15px;">
-        <button onclick="window.triggerEmergencyAlert()" style="background:var(--danger-color); width:100%; padding:15px; font-size:16px; font-weight:900; border-radius:10px; box-shadow:0 4px 10px rgba(239,68,68,0.3);"><i class="bi bi-exclamation-triangle-fill"></i> 🚨 إطلاق نداء طوارئ عاجل لمكتب المدير والإدارة</button>
-    </div>
+    <!-- 🚨 زر الطوارئ العاجل الصاعق -->
+    <button class="btn-emergency" onclick="window.triggerEmergencyAlertLive()"><i class="bi bi-exclamation-triangle-fill"></i> 🚨 إطلاق نداء طوارئ عاجل لمكتب المدير والإدارة</button>
 
-    <!-- كرت رادار الطلاب لايف -->
-    <div id="box-live-gatepass" class="card" style="border-top: 6px solid var(--danger-color);">
-        <h2><i class="bi bi-bell-fill" style="color: var(--danger-color);"></i> تصاريح خروج الطلاب المعتمدة الحين (لايف من الأخصائي)</h2>
-        <p style="font-size: 11px; color: #555; font-weight: bold; margin-bottom: 15px;">⚠️ إجراء أمني صارم: يرجى مطابقة هوية مستلم الطالب بالبطاقة المدنية الأصلية قبل فتح البوابة الخارجية.</p>
+    <!-- 🔔 لوحة تصاريح الخروج اللايف القادمة من الأخصائي -->
+    <div class="card" style="border-top: 4px solid var(--danger-color);">
+        <h2><i class="bi bi-bell-fill" style="color:var(--danger-color);"></i> تصاريح خروج الطلاب المعتمدة الحين (لايف من الأخصائي)</h2>
+        <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 12px; border-radius: 8px; color: #b45309; font-weight: bold; font-size: 12px; margin-bottom: 15px;">
+            ⚠️ إجراء أمني صارم: يرجى مطابقة هوية مستلم الطالب بالبطاقة المدنية الأصلية قبل فتح البوابة الخارجية.
+        </div>
         
-        <div style="overflow-x: auto;">
+        <div id="empty-gatepass-box" style="text-align: center; padding: 30px; color: var(--success-color); font-weight: 900; display: block;">
+            ✅ البوابة آمنة تماماً ومقفلة. لا توجد تصاريح خروج معلقة بانتظار أهالي الطلاب حالياً.
+        </div>
+
+        <div id="table-gatepass-container" style="overflow-x: auto; display: none;">
             <table>
                 <thead>
-                    <tr style="background: #f1f5f9; color: #1e293b;">
-                        <th style="width:70px; text-align:center;">الفصل</th>
-                        <th>اسم الطالب رباعي مأذون له</th>
-                        <th>اسم مستلم الطالب</th>
-                        <th style="width:80px; text-align:center;">الصلة</th>
-                        <th>الرقم المدني للمستلم</th>
-                        <th>رقم الهاتف</th>
-                        <th>السبب / العذر الموثق</th>
-                        <th style="text-align: center; width: 170px;">إجراء حارس الباب</th>
+                    <tr style="background: #f1f5f9;">
+                        <th>الفصل</th> <th>اسم الطالب رباعي مأذون له</th> <th>اسم مستلم الطالب</th> <th>الصلة</th> <th>الرقم المدني للمستلم</th> <th>رقم الهاتف</th> <th>السبب / العذر الموثق</th> <th>إجراء حارس الباب</th>
                     </tr>
                 </thead>
-                <tbody id="guard-live-gatepass-tbody">
-                    <tr><td colspan="8" style="text-align: center; color: #7f8c8d; padding: 30px; font-weight: bold;">⏳ جاري فحص رادار الأخصائي وبث الاستئذانات...</td></tr>
-                </tbody>
+                <tbody id="guard-live-gatepass-tbody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- كرت تسجيل الزوار -->
-    <div class="card" style="border-top: 6px solid #e67e22;">
-        <h2><i class="bi bi-pencil-square" style="color: #e67e22;"></i> دفتر تسجيل وتوثيق الزوار الموحد للمدرسة</h2>
-        <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تسجيل بيانات أي شخص يدخل حرم المدرسة لتوثيق التحركات الأمنية لحماية المنشأة.</p>
-        
+    <!-- 📝 دفتر تسجيل وثيق الزوار الموحد -->
+    <div class="card" style="border-top: 4px solid var(--hover-color);">
+        <h2><i class="bi bi-pencil-square"></i> دفتر تسجيل وتوثيق الزوار الموحد للمدرسة</h2>
+        <p style="font-size:12px; font-weight:bold; color:#666; margin-bottom:15px;">تسجيل بيانات أي شخص يدخل حرم المدرسة لتوثيق التحركات الأمنية لحماية المنشأة.</p>
         <form id="guard-visitor-form" onsubmit="window.saveNewVisitorLogLive(event)">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 5px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
                 <div>
-                    <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;"><i class="bi bi-person-fill"></i> اسم الزائر رباعي:</label>
+                    <label style="font-weight:700; font-size:12px; display:block; margin-bottom:4px;">اسم الزائر رباعي:</label>
                     <input type="text" id="vis-name" placeholder="اكتب اسم الزائر بالكامل" required>
                 </div>
                 <div>
-                    <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;"><i class="bi bi-card-list"></i> الرقم المدني للزائر (12 رقم):</label>
+                    <label style="font-weight:700; font-size:12px; display:block; margin-bottom:4px;">💳 الرقم المدني للزائر (12 رقم):</label>
                     <input type="number" id="vis-civil" placeholder="أدخل الرقم المدني للزائر" required>
                 </div>
                 <div>
-                    <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;"><i class="bi bi-telephone-fill"></i> رقم هاتف الزائر النقال:</label>
+                    <label style="font-weight:700; font-size:12px; display:block; margin-bottom:4px;">📞 رقم هاتف الزائر النقال:</label>
                     <input type="number" id="vis-phone" placeholder="رقم الهاتف للتواصل العاجل" required>
                 </div>
-                <div>
-                    <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;"><i class="bi bi-question-circle-fill"></i> غرض وسبب الزيارة للمدرسة:</label>
-                    <select id="vis-reason" required>
-                        <option value="مراجعة الإدارة / المدير">👥 مراجعة الإدارة أو المدير العام</option>
-                        <option value="مراجعة مكتب الأخصائي الاجتماعي">📋 مراجعة مكتب الخدمة الاجتماعية</option>
-                        <option value="شؤون طلبة / تسليم مستندات">📑 شؤون الطلبة والتسجيل</option>
-                        <option value="أمر آخر / صيانة / وزارات">⚙️ جهة خارجية / صيانة / وزارة التربية</option>
-                    </select>
-                </div>
             </div>
-            <button type="submit" style="width: 100%; background: #e67e22; color: #fff; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 16px;"><i class="bi bi-shield-check"></i> حفظ وأرشفة بيانات الزائر الحين وتصفير الخانات</button>
+            <div>
+                <label style="font-weight:700; font-size:12px; display:block; margin-bottom:4px;"> غرض وسبب الزيارة للمدرسة:</label>
+                <select id="vis-reason" required>
+                    <option value="مراجعة الإدارة أو المدير">👥 مراجعة الإدارة أو المدير</option>
+                    <option value="مكتب الأخصائي الاجتماعي">🏢 مكتب الأخصائي الاجتماعي</option>
+                    <option value="شؤون الطلبة / التسجيل">📂 شؤون الطلبة / التسجيل</option>
+                    <option value="أمر صيانة / جهة خارجية">🛠️ أمر صيانة / جهة خارجية</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-submit">🔒 حفظ وأرشفة بيانات الزائر الحين وتصفير الخانات</button>
         </form>
     </div>
 
-    <!-- كرت الإعدادات الشخصية للحارس وتغيير الباسورد -->
-    <div class="card" style="border-top: 6px solid #3b82f6; background:#f8fafc;">
-        <h2><i class="bi bi-gear-fill" style="color: #3b82f6;"></i> إعدادات الحساب وتغيير كلمة المرور للحارس</h2>
-        <p style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 15px;">تعديل اسمك المعتمد بالسجلات السحابية أو تحديث باسورك السري لمنع الاختراقات.</p>
-        
+    <!-- ⚙️ إعدادات حساب الحارس -->
+    <div class="card" style="border-top: 4px solid #3b82f6;">
+        <h2><i class="bi bi-gear-fill"></i> إعدادات الحساب وتغيير كلمة المرور للحارس</h2>
         <form id="guard-profile-form" onsubmit="window.updateGuardProfileLive(event)">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 5px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap:15px;">
                 <div>
-                    <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;">اسم مسؤول الأمن الحالي:</label>
-                    <input type="text" id="guard-profile-name" placeholder="اكتب اسمك الكامل" required>
+                    <label style="font-weight:700; font-size:12px;">اسم مسؤول الأمن الحالي:</label>
+                    <input type="text" id="guard-profile-name" required>
                 </div>
                 <div>
-                    <label style="font-weight: 700; font-size: 13px; color: #444; display:block; margin-bottom:6px;">كلمة المرور الجديدة (Password):</label>
+                    <label style="font-weight:700; font-size:12px;">كلمة المرور الجديدة (Password):</label>
                     <input type="text" id="guard-profile-pass" placeholder="اتركها فاضية إذا لا ترغب بالتغيير">
                 </div>
             </div>
-            <button type="submit" style="background:#3b82f6; color:#fff; width:100%; padding:14px; font-size:14px; border-radius:10px;"><i class="bi bi-cloud-arrow-up-fill"></i> تحديث بيانات الملف الشخصي وكلمة المرور فوراً</button>
+            <button type="submit" class="btn-submit" style="background:#3b82f6; box-shadow:none;"><i class="bi bi-person-check-fill"></i> تحديث بيانات الملف الشخصي وكلمة المرور فوراً</button>
         </form>
-    </div>
-
-    <!-- كرت جدول الأرشيف لايف للزوار -->
-    <div class="card" style="border-top: 6px solid var(--primary-color);">
-        <h2><i class="bi bi-journal-text"></i> السجل المركزي لحركة الزوار اليوم (تحديث حي مباشر)</h2>
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr style="background: #f1f5f9; color: #1e293b;">
-                        <th>توقيت الدخول</th>
-                        <th>اسم الزائر الكريم</th>
-                        <th>الرقم المدني للزائر</th>
-                        <th>رقم التلفون</th>
-                        <th>سبب وهدف الزيارة الموثق</th>
-                        <th>مسؤول الأمن الراصد</th>
-                    </tr>
-                </thead>
-                <tbody id="guard-visitors-archive-tbody">
-                    <tr><td colspan="6" style="text-align: center; color: #999; padding: 15px; font-weight: bold;">⏳ جاري جلب دفتر الزوار...</td></tr>
-                </tbody>
-            </table>
-        </div>
     </div>
 
 </div>
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, addDoc, doc, updateDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, addDoc, doc, updateDoc, onSnapshot, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentGuardId = "";
 let currentGuardName = "حارس الأمن";
-let lastCount = 0;
 
 function getUnifiedDateString() {
     const d = new Date();
-    return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+    return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function getUnifiedTimeString() {
-    const d = new Date();
-    let hours = d.getHours();
-    let minutes = d.getMinutes();
+    const d = new Date(); let hours = d.getHours(); let minutes = d.getMinutes();
     let ampm = hours >= 12 ? 'مساءً' : 'صباحاً';
-    hours = hours % 12;
-    hours = hours ? hours : 12; 
+    hours = hours % 12; hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;
     return `${hours}:${minutes} ${ampm}`;
 }
 
-function playSecurityBeep() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.3);
-    } catch (e) { }
+// 🔔 الفلترة الذكية والربط الفوري المباشر مع استئذانات الأخصائي المعتمدة الحين
+function startGuardLiveGatepassListener() {
+    const tbody = document.getElementById('guard-live-gatepass-tbody');
+    const emptyBox = document.getElementById('empty-gatepass-box');
+    const tableContainer = document.getElementById('table-gatepass-container');
+
+    onSnapshot(collection(db, 'gatepass'), (snapshot) => {
+        let html = '';
+        let hasActiveRecords = false;
+        const todayStr = getUnifiedDateString();
+
+        snapshot.forEach(docSnap => {
+            const d = docSnap.data();
+            // الفلترة الآمنة (Client-side) لمنع مشاكل الـ Composite Index وطباعة حالة approved الصادرة من الأخصائي
+            if (d.dateStr === todayStr && d.status === 'approved') {
+                hasActiveRecords = true;
+                html += `<tr style="border-bottom: 2px solid #f1f5f9; background:#fffdf5;">
+                    <td><span style="background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px;">${d.classId || '-'}</span></td>
+                    <td style="font-size:14px; font-weight:900; color:var(--primary-color);">👤 ${d.studentName}</td>
+                    <td style="font-weight:bold; color:#1e293b;">${d.relative}</td>
+                    <td><span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">${d.relation}</span></td>
+                    <td><code>${d.relativeCivilId}</code></td>
+                    <td><a href="tel:${d.relativePhone}" style="color:#2563eb; font-weight:bold;">${d.relativePhone}</a></td>
+                    <td style="color:var(--hover-color); font-weight:bold;">${d.reason || '-'}</td>
+                    <td>
+                        <button onclick="window.confirmStudentExitLive('${docSnap.id}', '${d.studentName}')" style="background:var(--success-color); color:#fff; border:none; padding:8px 12px; font-weight:bold; border-radius:6px; cursor:pointer; font-size:12px;">
+                             غادر المدرسة رسميًا ✅
+                        </button>
+                    </td>
+                </tr>`;
+            }
+        });
+
+        if (hasActiveRecords) {
+            tbody.innerHTML = html;
+            emptyBox.style.display = 'none';
+            tableContainer.style.display = 'block';
+        } else {
+            tbody.innerHTML = '';
+            emptyBox.style.display = 'block';
+            tableContainer.style.display = 'none';
+        }
+    });
 }
+
+// ✅ دالة إثبات خروج الطالب الفعلي وتغيير حالته على السيستم المركزي
+window.confirmStudentExitLive = async function(docId, studentName) {
+    if(!confirm(`هل تأكدت من هوية ولي الأمر وغادر الطالب [ ${studentName} ] المدرسة الآن؟`)) return;
+    try {
+        const docRef = doc(db, 'gatepass', docId);
+        await updateDoc(docRef, { 
+            status: 'exited',
+            exitTimeStr: getUnifiedTimeString()
+        });
+        alert(`✓ تم إثبات خروج الطالب [ ${studentName} ] بنجاح، وتأمين البوابة.`);
+    } catch(err) { alert("خطأ في تحديث البيانات: " + err.message); }
+};
+
+// 🔒 تسجيل زائر جديد في الكشف السحابي الموحد للمدرسة
+window.saveNewVisitorLogLive = async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('vis-name').value.trim();
+    const civil = document.getElementById('vis-civil').value.trim();
+    const phone = document.getElementById('vis-phone').value.trim();
+    const reason = document.getElementById('vis-reason').value;
+
+    if (civil.length !== 12) { alert("⚠️ الرقم المدني للزائر يجب أن يتكون من 12 رقم بالملي!"); return; }
+
+    try {
+        await addDoc(collection(db, 'visitors_logs'), {
+            visitorName: name, civilId: civil, phone, reason,
+            dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), guardName: currentGuardName, createdAt: serverTimestamp()
+        });
+        alert(`✓ تم حفظ وأرشفة بيانات الزائر [ ${name} ] بنجاح في السجل المركزي للمدرسة.`);
+        document.getElementById('guard-visitor-form').reset();
+    } catch(err) { alert("خطأ أثناء الأرشفة: " + err.message); }
+};
+
+// 🚨 إطلاق نداء الطوارئ لايف لمدير المدرسة والوكلاء
+window.triggerEmergencyAlertLive = async function() {
+    if(!confirm("⚠️ تحذير: هل أنت متأكد من رغبتك في إطلاق نداء طوارئ عاجل للإدارة الحين؟")) return;
+    try {
+        await addDoc(collection(db, 'emergency_alerts'), {
+            senderRole: 'guard', senderName: currentGuardName,
+            dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), status: 'active', createdAt: serverTimestamp()
+        });
+        alert("🚨 تم إرسال وبث بلاغ الطوارئ فوراً لشاشات المدير والوكلاء بالمدرسة وجاري الاستجابة.");
+    } catch(err) { alert("خطأ في الإرسال: " + err.message); }
+};
+
+// ⚙️ تحديث ملف الحارس الاجتماعي وباسورده بالفايربيس
+window.updateGuardProfileLive = async function(e) {
+    e.preventDefault();
+    const newName = document.getElementById('guard-profile-name').value.trim();
+    const newPass = document.getElementById('guard-profile-pass').value.trim();
+
+    try {
+        const userDocRef = doc(db, 'users', currentGuardId);
+        let updatedData = { name: newName };
+        if (newPass) updatedData.plainPass = newPass;
+
+        await updateDoc(userDocRef, updatedData);
+        
+        const localData = JSON.parse(localStorage.getItem('hs_user') || '{}');
+        localData.name = newName;
+        localStorage.setItem('hs_user', JSON.stringify(localData));
+
+        alert("✓ تم تحديث بياناتك وكلمة المرور بنجاح في السيرفر.");
+        window.location.reload();
+    } catch(err) { alert("خطأ في الحفظ: " + err.message); }
+};
 
 document.addEventListener("DOMContentLoaded", function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
@@ -211,145 +271,11 @@ document.addEventListener("DOMContentLoaded", function() {
     currentGuardId = user.userId;
     currentGuardName = user.name || "حارس الأمن";
     
-    document.getElementById('lbl-guard-header').innerHTML = `<i class="bi bi-shield-lock-fill" style="color:var(--hover-color);"></i> بوابة الأمن: أ. ${currentGuardName}`;
+    document.getElementById('lbl-guard-title').innerHTML = `<i class="bi bi-shield-lock-fill"></i> بوابة الأمن: أ. ${currentGuardName}`;
     document.getElementById('guard-profile-name').value = currentGuardName;
     
-    listenToTodayLiveGatepasses();
-    listenToTodayVisitorsLogs();
+    startGuardLiveGatepassListener();
 });
-
-window.updateGuardProfileLive = async function(e) {
-    e.preventDefault();
-    const newName = document.getElementById('guard-profile-name').value.trim();
-    const newPass = document.getElementById('guard-profile-pass').value.trim();
-
-    if (!newName) { alert("⚠️ خطأ: الاسم مطلوب ولا يمكن تركه فارغاً."); return; }
-
-    try {
-        const userDocRef = doc(db, 'users', currentGuardId);
-        let updatedFields = { name: newName };
-        
-        if (newPass) { updatedFields.plainPass = newPass; }
-
-        await updateDoc(userDocRef, updatedFields);
-        
-        const localData = JSON.parse(localStorage.getItem('hs_user') || '{}');
-        localData.name = newName;
-        localStorage.setItem('hs_user', JSON.stringify(localData));
-        
-        alert("✓ تم تحديث بياناتك وكلمة المرور بنجاح تام بقاعدة البيانات السحابية.");
-        document.getElementById('guard-profile-pass').value = '';
-        window.location.reload();
-    } catch (err) { alert("❌ خطأ سحابي أثناء الحفظ: " + err.message); }
-};
-
-window.triggerEmergencyAlert = async function() {
-    if(!confirm("🚨 هل أنت متأكد من رغبتك في إطلاق نداء استغاثة عاجل لمكتب المدير?")) return;
-    try {
-        await addDoc(collection(db, 'system_alerts'), {
-            title: "🚨 نداء طوارئ عاجل عند البوابة الخارجية",
-            sender: currentGuardName,
-            timeStr: getUnifiedTimeString(),
-            dateStr: getUnifiedDateString(),
-            status: 'active',
-            createdAt: serverTimestamp()
-        });
-        alert("✓ طار البلاغ! تم إرسال إشعار الطوارئ الوميضي للوحة التحكم المركزية للمدير والإدارة الحين.");
-    } catch(e) { alert("خطأ: " + e.message); }
-};
-
-window.markStudentExitedLive = async function(docId, studentName) {
-    if (!confirm(`هل تؤكد مغادرة الطالب (${studentName}) أسوار المدرسة الآن؟`)) return;
-    try {
-        await updateDoc(doc(db, 'gatepass', docId), { status: 'exited', exitedAtStr: getUnifiedTimeString(), guardName: currentGuardName });
-        alert(`✓ تم إثبات خروج الطالب (${studentName}) وتحديث لوحة المنظومة.`);
-    } catch (e) { alert("خطأ: " + e.message); }
-};
-
-window.saveNewVisitorLogLive = async function(e) {
-    e.preventDefault();
-    const name = document.getElementById('vis-name').value.trim();
-    const civil = document.getElementById('vis-civil').value.trim();
-    const phone = document.getElementById('vis-phone').value.trim();
-    const reason = document.getElementById('vis-reason').value;
-    
-    if (civil.length !== 12) { alert("⚠️ الرقم المدني الكويتي يجب أن يتكون من 12 رقم!"); return; }
-    try {
-        await addDoc(collection(db, 'visitors'), {
-            visitorName: name, civilId: civil, phone: phone, reason: reason,
-            dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), guardName: currentGuardName, createdAt: serverTimestamp()
-        });
-        alert(`✓ تم حفظ وأرشفة بيانات الزائر بنجاح.`);
-        document.getElementById('guard-visitor-form').reset();
-    } catch(err) { alert("خطأ: " + err.message); }
-};
-
-function listenToTodayLiveGatepasses() {
-    const tbody = document.getElementById('guard-live-gatepass-tbody');
-    if (!tbody) return;
-    onSnapshot(collection(db, 'gatepass'), (snapshot) => {
-        let html = ''; let currentActiveCount = 0; let hasActivePass = false;
-        snapshot.forEach(d => {
-            const data = d.data();
-            if (data.dateStr === getUnifiedDateString() && data.status === 'approved') {
-                hasActivePass = true; currentActiveCount++;
-                let rowStyle = 'border-bottom: 2px solid #fee2e2; background: #fffdfd;';
-                let nameStyle = 'color: #ef4444; font-size: 15px; font-weight:900;';
-                let warningBadge = '';
-                
-                const unsafeReason = String(data.reason || '');
-                if (unsafeReason.includes('منع') || unsafeReason.includes('تحذير') || unsafeReason.includes('خلاف') || unsafeReason.includes('مشكلة')) {
-                    rowStyle = 'border-bottom: 4px solid #ef4444; background: #fef2f2;';
-                    nameStyle = 'color: #b91c1c; font-size: 16px; font-weight:900;';
-                    warningBadge = `<br><span style="background:#b91c1c; color:#fff; font-size:11px; padding:3px 8px; border-radius:4px; font-weight:bold; display:inline-block; margin-top:4px;"><i class="bi bi-exclamation-octagon-fill"></i> حظر: مراجعة الإدارة</span>`;
-                }
-                html += `
-                <tr style="${rowStyle}">
-                    <td style="text-align: center; vertical-align:middle;"><span style="display: inline-block; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; color: #fff; background: #ef4444;">${data.classId || '-'}</span></td>
-                    <td style="vertical-align:middle;"><b style="${nameStyle}">👤 ${data.studentName || data.name || '-'}</b>${warningBadge}</td>
-                    <td style="font-weight: bold; color: #2c3e50; vertical-align:middle;">${data.relative || '-'}</td>
-                    <td style="text-align: center; vertical-align:middle;"><span style="display: inline-block; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; background: #10b981;">${data.relation || '-'}</span></td>
-                    <td style="vertical-align:middle;"><code>${data.relativeCivilId || '-'}</code></td>
-                    <td style="vertical-align:middle;"><a href="tel:${data.relativePhone}" style="text-decoration: none; color: #3b82f6; font-weight: 700; font-size:14px;"><i class="bi bi-telephone-outbound-fill"></i> ${data.relativePhone || '-'}</a></td>
-                    <td style="color: #475569; font-size: 13px; font-weight:bold; vertical-align:middle;">${data.reason || '-'}</td>
-                    <td style="text-align: center; vertical-align:middle;">
-                        <button style="background: #10b981; color: #fff; border: none; width: 100%; padding: 15px 10px; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer;" onclick="window.markStudentExitedLive('${d.id}', '${data.studentName || data.name}')"><i class="bi bi-check-circle-fill"></i> تم المغادرة بنجاح ✅</button>
-                    </td>
-                </tr>`;
-            }
-        });
-        const liveBox = document.getElementById('box-live-gatepass');
-        if (liveBox) {
-            if (hasActivePass) { liveBox.classList.add('blink-alert'); if (currentActiveCount > lastCount) { playSecurityBeep(); } }
-            else { liveBox.classList.remove('blink-alert'); }
-        }
-        lastCount = currentActiveCount;
-        tbody.innerHTML = html || '<tr><td colspan="8" style="text-align: center; color: #10b981; padding: 30px; font-weight: bold; font-size:14px;">✅ البوابة آمنة تماماً ومقفلة. لا توجد تصاريح خروج معلقة بانتظار أهالي الطلاب حالياً.</td></tr>';
-    });
-}
-
-function listenToTodayVisitorsLogs() {
-    const tbody = document.getElementById('guard-visitors-archive-tbody');
-    if (!tbody) return;
-    onSnapshot(collection(db, 'visitors'), (snapshot) => {
-        let html = '';
-        snapshot.forEach(doc => {
-            const d = doc.data();
-            if (d.dateStr === getUnifiedDateString()) {
-                html += `
-                <tr style="border-bottom: 1px solid #e2e8f0; background:#fff;">
-                    <td style="color: #7f8c8d; font-weight: bold;">🕒 ${d.timeStr || '-'}</td>
-                    <td style="color: #1e293b;"><b>👤 ${d.visitorName || '-'}</b></td>
-                    <td><code>${d.civilId || '-'}</code></td>
-                    <td><a href="tel:${d.phone}" style="text-decoration: none; color: #2c3e50; font-weight: 700;"><i class="bi bi-telephone"></i> ${d.phone || '-'}</a></td>
-                    <td><span style="display: inline-block; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; background: #475569;">${d.reason || '-'}</span></td>
-                    <td style="color: #e67e22; font-weight: bold;">أ. ${d.guardName || 'الأمن'}</td>
-                </tr>`;
-            }
-        });
-        tbody.innerHTML = html || '<tr><td colspan="6" style="text-align: center; color: #999; padding: 20px; font-weight: bold;">💡 لم يتم تسجيل أو رصد دخول أي زوار للمدرسة لغاية الآن اليوم.</td></tr>';
-    });
-}
 </script>
 </body>
 </html>
