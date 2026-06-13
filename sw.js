@@ -1,9 +1,9 @@
-// التعديل الجوهري: إضافة التاريخ لاسم الكاش ليتم تجديد الأصول يومياً
 const CACHE_NAME = `hosainan-school-${new Date().toISOString().slice(0, 10)}`;
 
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './login.html',
   './manifest.json',
   './style.css',
   './logo.png',
@@ -11,7 +11,9 @@ const ASSETS_TO_CACHE = [
   './parent.html',
   './admin.html',
   './teacher.html',
-  './js/modules/firebase-config.js'
+  './social.html',
+  './super.html',
+  './js/firebase-config.js' // ✓ تم تصحيح المسار ليتوافق مع باقي صفحات المنظومة
 ];
 
 // ⏳ 1. حدث التثبيت الذكي
@@ -50,21 +52,21 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// 🌐 3. استراتيجية جلب البيانات (الإنترنت أولاً)
+// 🌐 3. استراتيجية جلب البيانات (الإنترنت أولاً لضمان حية البيانات)
 self.addEventListener('fetch', (e) => {
-  // تجاهل روابط الفايربيس (API) الخارجية
+  // تجاهل روابط الفايربيس (API) الخارجية لكي لا تتعطل عمليات المزامنة الحية
   if (!e.request.url.startsWith(self.location.origin)) return;
 
   e.respondWith(
     fetch(e.request)
       .then((response) => {
-        // إذا الإنترنت شغال، نحدث نسخة الكاش الخاصة بيومنا هذا
+        // إذا الإنترنت شغال، نحدث نسخة الكاش الخاصة بيومنا هذا فوراً
         if (response.status === 200) {
           const resClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(e.request, resClone));
         }
         return response;
       })
-      .catch(() => caches.match(e.request)) // في حال فصل الإنترنت، يعرض آخر نسخة محفوظة
+      .catch(() => caches.match(e.request)) // 💡 إغلاق الدالة المقطوعة: في حال فصل الإنترنت، يعرض آخر نسخة محفوظة
   );
 });
