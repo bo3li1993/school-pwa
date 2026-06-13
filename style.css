@@ -1,125 +1,187 @@
+/* 🎨 المتغيرات البصرية الموحدة للمنظومة السحابية M-SaaS */
+:root {
+  --primary-color: #1a1a2e;
+  --accent-color: #e67e22;      /* برتقالي المنظومة المعتمد */
+  --gold-hover: #f4d35e;        /* الذهبي الفاخر عند الحركية */
+  --bg-base: #f5f5f5;
+  --surface-color: #ffffff;
+  --border-color: #cbd5e1;
+}
+
 /* Global Styles */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'Tajawal', 'Cairo', sans-serif;
 }
 
 body {
-  font-family: 'Tajawal', sans-serif;
-  background-color: #f5f5f5;
-  color: #1a1a2e;
+  background-color: var(--bg-base);
+  color: var(--primary-color);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  direction: rtl; /* ثبات التوجيه من اليمين لليسار */
 }
 
 .container {
+  width: 100%;
   max-width: 450px;
   margin: 0 auto;
-  padding: 40px;
 }
 
 /* Header */
 .header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 25px;
 }
 
 .logo {
-  width: 80px;
+  width: 85px;
+  height: auto;
+  margin-bottom: 10px;
 }
 
 h1 {
-  margin: 20px 0;
-  color: #1a1a2e;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--primary-color);
+  margin-top: 10px;
 }
 
-/* Login Form */
+/* Login Form Card */
 .login-form {
-  background-color: #fff;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+  background-color: var(--surface-color);
+  padding: 35px 30px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  border-top: 6px solid var(--accent-color); /* شريط الهوية البرتقالي الموحد */
 }
 
 h2 {
   text-align: center;
-  margin-bottom: 30px;
-  color: #1a1a2e;
+  margin-bottom: 25px;
+  color: var(--primary-color);
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .input-group {
   position: relative;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
+  text-align: right;
 }
 
-.icon {
+.input-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a5568;
+  margin-bottom: 6px;
+}
+
+/* ضبط هندسة الأيقونة الداخلية بالحقل للـ RTL */
+.input-group i, .icon {
   position: absolute;
-  top: 12px;
-  right: 10px;
-  width: 20px;
-  color: #1a1a2e;
+  bottom: 13px;
+  right: 14px;
+  font-size: 18px;
+  color: #a0aec0;
+  transition: color 0.2s;
 }
 
 input {
   width: 100%;
-  padding: 12px 40px 12px 20px;
-  font-size: 16px;
-  border: 2px solid #eee;
-  border-radius: 5px;
+  padding: 12px 42px 12px 14px; /* مسافة أوسع من اليمين لحماية النص من التداخل مع الأيقونة */
+  font-size: 14px;
+  font-weight: 700;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
   outline: none;
-  transition: border-color 0.3s;
+  background-color: #fdfdfd;
+  color: var(--primary-color);
+  transition: all 0.2s;
 }
 
 input:focus {
-  border-color: #1a1a2e;
+  border-color: var(--accent-color);
+  background-color: var(--surface-color);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
+
+input:focus + i, input:focus + .icon {
+  color: var(--accent-color); /* تحول لون الأيقونة لايف عند الكتابة */
 }
 
 .checkbox {
   display: flex;
   align-items: center;
-  margin: 20px 0;
+  margin: 15px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a5568;
 }
 
 input[type="checkbox"] {
-  margin-left: 10px;
+  width: auto;
+  margin-left: 8px;
+  cursor: pointer;
 }
 
-button {
+/* الأزرار التفاعلية المروّسة */
+button, .btn-action {
   width: 100%;
   padding: 14px;
-  font-size: 18px;
-  color: #fff;
-  background-color: #1a1a2e;
+  font-size: 15px;
+  font-weight: 900;
+  color: #ffffff;
+  background-color: var(--primary-color);
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.2s;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(26, 26, 46, 0.15);
 }
 
-button:hover {
-  background-color: #f4d35e;
-  color: #1a1a2e;
+button:hover, .btn-action:hover {
+  background-color: var(--gold-hover);
+  color: var(--primary-color);
+  transform: translateY(-1px);
 }
 
-button img {
-  width: 20px;
-  margin-right: 10px;
+button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
 }
 
+button img, button i {
+  font-size: 16px;
+}
+
+/* روابط التنقل السفلي */
 .links {
-  margin-top: 30px;
+  margin-top: 25px;
   text-align: center;
 }
 
 .links a {
-  color: #1a1a2e;
+  color: var(--accent-color);
   text-decoration: none;
   margin: 0 10px;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: color 0.2s;
 }
 
 .links a:hover {
+  color: var(--primary-color);
   text-decoration: underline;
 }
