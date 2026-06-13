@@ -1,28 +1,24 @@
-// 🏫 موديل تسجيل وعرض الزيارات الفنية مع تفعيل الفحص الذكي لتاريخ الزيارة
-import { db } from '../firebase-config.js';
-import { collection, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initVisitsModule() {
     const container = document.getElementById('tab-visits');
     if (!container) return;
 
-    try {
-        container.innerHTML = `
+    container.innerHTML = `
         <div class="card" style="border-top: 5px solid var(--accent-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-journal-check" style="color:var(--accent-color);"></i> توثيق ورصد الزيارات الفنية للهيئة التعليمية</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">
-                🔒 تم حل مشكلة جلب التاريخ بالكامل؛ النظام يعرض الآن تواريخ زيارات الموجهين الفنيين بدقة تامة.
-            </p>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">نظام التوثيق السحابي لزيارات الموجهين الفنيين.</p>
             
             <form id="tech-visit-form" onsubmit="window.handleRegisterTechVisitLive(event)">
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px;">
                     <div>
                         <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">اسم المعلم المزار</label>
-                        <input type="text" id="visit-teacher-name" placeholder="أدخل اسم المعلم الثلاثي" required>
+                        <input type="text" id="visit-teacher-name" placeholder="أدخل اسم المعلم الثلاثي" required style="width:100%; padding:8px;">
                     </div>
                     <div>
                         <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">المادة الدراسيّة / القسم الفني</label>
-                        <select id="visit-subject" required>
+                        <select id="visit-subject" required style="width:100%; padding:8px;">
                             <option value="التربية الإسلامية">التربية الإسلامية</option>
                             <option value="اللغة العربية">اللغة العربية</option>
                             <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
@@ -34,101 +30,59 @@ export async function initVisitsModule() {
                     </div>
                     <div>
                         <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">اسم الموجه الفني / الزائر</label>
-                        <input type="text" id="visit-visitor-name" placeholder="رئيس القسم أو الموجه الفني" required>
+                        <input type="text" id="visit-visitor-name" placeholder="رئيس القسم أو الموجه" required style="width:100%; padding:8px;">
                     </div>
                 </div>
-                
                 <div style="margin-top:12px;">
                     <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">توصيات الزيارة الفنية وأبرز الملاحظات</label>
-                    <input type="text" id="visit-notes" placeholder="اكتب التوجيه الفني المرصود للمعلم..." required>
+                    <input type="text" id="visit-notes" placeholder="اكتب التوجيه الفني..." required style="width:100%; padding:8px;">
                 </div>
-                
-                <button type="submit" style="width:100%; background:var(--accent-color); font-weight:700; margin-top:5px;"><i class="bi bi-cloud-plus-fill"></i> قيد وتوثيق الزيارة الفنية سحابياً</button>
+                <button type="submit" style="width:100%; background:var(--accent-color); color:#fff; font-weight:700; margin-top:10px; border:none; padding:10px; border-radius:5px;"><i class="bi bi-cloud-plus-fill"></i> توثيق الزيارة سحابياً</button>
             </form>
         </div>
 
-        <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
-            <h2><i class="bi bi-archive-fill"></i> أرشيف الزيارات الفنية المرصودة بالمدرسة</h2>
+        <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px; margin-top:20px;">
+            <h2><i class="bi bi-archive-fill"></i> أرشيف الزيارات الفنية</h2>
             <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr style="background:#f8f9fa;">
-                            <th>المعلم المزار</th>
-                            <th style="text-align:center;">القسم / المادة</th>
-                            <th>الموجه / رئيس القسم</th>
-                            <th style="text-align:center; width:130px;">تاريخ الزيارة</th>
-                            <th>التوصيات المرصودة</th>
-                        </tr>
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead style="background:#f8f9fa;">
+                        <tr><th style="padding:10px;">المعلم المزار</th><th style="padding:10px;">المادة</th><th style="padding:10px;">الموجه</th><th style="padding:10px;">التاريخ</th></tr>
                     </thead>
-                    <tbody id="tech-visits-tbody">
-                        <tr><td colspan="5" style="text-align:center; color:#999; padding:15px;">جاري جلب الأرشيف الفني...</td></tr>
-                    </tbody>
+                    <tbody id="tech-visits-tbody"></tbody>
                 </table>
             </div>
         </div>`;
 
-        loadTechVisitsLive();
-    } catch(e) {
-        container.innerHTML = `<div class="card" style="color:red; text-align:center; padding:20px;">⚠️ خطأ في موديل الزيارات: ${e.message}</div>`;
-    }
+    loadTechVisitsLive();
 }
 
 window.handleRegisterTechVisitLive = async function(e) {
     e.preventDefault();
-    const tName = document.getElementById('visit-teacher-name').value.trim();
-    const subject = document.getElementById('visit-subject').value;
-    const vName = document.getElementById('visit-visitor-name').value.trim();
-    const notes = document.getElementById('visit-notes').value.trim();
-    const kwDate = new Date().toLocaleDateString('ar-KW');
-
-    try {
-        await addDoc(collection(db, 'technical_visits'), {
-            teacherName: tName,
-            subject: subject,
-            visitorName: vName,
-            notes: notes,
-            date: kwDate,
-            createdAt: serverTimestamp()
-        });
-        alert('✓ تم توثيق الزيارة الفنية بنجاح في السجل السحابي الموحد.');
-        document.getElementById('tech-visit-form').reset();
-        loadTechVisitsLive();
-    } catch(err) {
-        alert('خطأ سحابي: ' + err.message);
-    }
+    const schoolId = getActiveSchoolId();
+    await addDoc(collection(db, 'technical_visits'), {
+        schoolId: schoolId,
+        teacherName: document.getElementById('visit-teacher-name').value.trim(),
+        subject: document.getElementById('visit-subject').value,
+        visitorName: document.getElementById('visit-visitor-name').value.trim(),
+        notes: document.getElementById('visit-notes').value.trim(),
+        date: new Date().toLocaleDateString('ar-KW'),
+        createdAt: serverTimestamp()
+    });
+    alert('✓ تم التوثيق بنجاح.');
+    document.getElementById('tech-visit-form').reset();
 };
 
 async function loadTechVisitsLive() {
     const tbody = document.getElementById('tech-visits-tbody');
-    if (!tbody) return;
-
-    try {
-        const snap = await getDocs(collection(db, 'technical_visits'));
+    const schoolId = getActiveSchoolId();
+    const q = query(collection(db, 'technical_visits'), where('schoolId', '==', schoolId));
+    
+    onSnapshot(q, (snap) => {
         let html = '';
-        
         snap.forEach(d => {
             const data = d.data();
-            
-            // 🔥 الحل المقترح الذكي: جلب التاريخ النصي أو التحويل الفوري من التايم ستامب السحابي
-            let renderedDate = data.date;
-            if(!renderedDate && data.createdAt) {
-                renderedDate = new Date(data.createdAt.toDate()).toLocaleDateString('ar-KW');
-            }
-            if(!renderedDate) { renderedDate = '-'; }
-
-            html += `
-                <tr style="border-bottom:1px solid #eee;">
-                    <td><b>👤 أ. ${data.teacherName || '-'}</b></td>
-                    <td style="text-align:center;"><span class="badge info">${data.subject || '-'}</span></td>
-                    <td><i class="bi bi-person-badge"></i> ${data.visitorName || '-'}</td>
-                    <td style="text-align:center; font-weight:bold; color:var(--accent-color);">${renderedDate}</td>
-                    <td style="color:#555; font-size:12px; font-weight:700;">${data.notes || '-'}</td>
-                </tr>
-            `;
+            html += `<tr><td style="padding:10px;">${data.teacherName}</td><td style="padding:10px;">${data.subject}</td><td style="padding:10px;">${data.visitorName}</td><td style="padding:10px;">${data.date || '-'}</td></tr>`;
         });
-
-        tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 الأرشيف الفني خالي حالياً.</td></tr>';
-    } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#666; padding:15px;">💡 بانتظار قيد حركات الزيارات الفنية لتنشيط الأرشيف.</td></tr>';
-    }
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;">لا توجد زيارات.</td></tr>';
+    });
 }
