@@ -3,12 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link class="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>شاشة القيادة الرقمية الحية - مكتب المدير</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
 :root {
-    --bg-dark: #0f172a; --card-dark: #1e293b; --accent-orange: #f59e0b;
+    --bg-dark: #0f172a; --card-dark: #1e293b; --accent-orange: #e67e22;
     --text-light: #f8fafc; --success-green: #10b981; --danger-red: #ef4444;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
@@ -47,7 +52,7 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
         const u = localStorage.getItem('hs_user');
         if(!u) { window.location.replace('index.html'); return; }
         const user = JSON.parse(u);
-        if(!user || !user.role) { window.location.replace('index.html'); }
+        if(!user || !user.role || (user.role !== 'admin' && user.role !== 'principal')) { window.location.replace('index.html'); }
     } catch(e) { window.location.replace('index.html'); }
 })();
 </script>
@@ -65,43 +70,56 @@ body { background: var(--bg-dark); color: var(--text-light); padding: 25px; over
 <div class="tv-grid">
     <div class="tv-stat-card total">
         <div class="tv-icon"><i class="bi bi-people-fill"></i></div>
-        <p>إجمالي طلاب المنشأة</p>
-        <h2 id="tv-stat-students">380</h2>
+        <p>إجمالي طلاب المنشأة المقيدين</p>
+        <h2 id="tv-stat-students">0</h2>
     </div>
     <div class="tv-stat-card present">
         <div class="tv-icon"><i class="bi bi-check-circle-fill"></i></div>
-        <p>الطلاب الحاضرون اليوم</p>
+        <p>الطلاب الحاضرون اليوم فعلياً</p>
         <h2 id="tv-stat-present" style="color:var(--success-green);">0</h2>
     </div>
     <div class="tv-stat-card absent">
         <div class="tv-icon"><i class="bi bi-x-circle-fill"></i></div>
-        <p>الطلاب الغائبون اليوم</p>
+        <p>الطلاب الغائبون اليوم إجمالاً</p>
         <h2 id="tv-stat-absent" style="color:var(--danger-red);">0</h2>
     </div>
 </div>
 
 <div class="tv-panels">
     <div class="tv-panel">
-        <h3><i class="bi bi-exclamation-triangle-fill" style="color:var(--danger-red);"></i> فصول لم تسجّل غياب الحصص اليوم حتّى الآن</h3>
-        <p style="font-size:12px; color:#94a3b8; font-weight:bold; margin-bottom:15px;">يتم الفحص التلقائي والمطابقة الفورية مع خادم السيرفر المركزي:</p>
+        <h3><i class="bi bi-exclamation-triangle-fill" style="color:var(--danger-red);"></i> فصول متأخرة في رصد الحصص الحالية</h3>
+        <p style="font-size:12px; color:#94a3b8; font-weight:bold; margin-bottom:15px;">الفحص والتطابق الآمن يتم لايف مع خوادم السيرفر المركزي للمدرسة:</p>
         <div class="missing-classes-box" id="tv-missing-classes">
             <span style="color:#64748b; font-weight:bold;">⏳ جاري مضاهاة الجداول الدراسية لايف...</span>
         </div>
     </div>
 
     <div class="tv-panel">
-        <h3><i class="bi bi-eye-fill"></i> آخر 5 زيارات وتفقدات إدارية اليوم</h3>
+        <h3><i class="bi bi-eye-fill"></i> آخر الزيارات وتفقدات أجنحة المدرسة اليوم</h3>
         <div id="tv-latest-visits-area" style="display:flex; flex-direction:column; gap:8px;">
-            <p style="color:#64748b; font-weight:bold; text-align:center; padding-top:40px;">بانتظار رصد زيارات صفية جديدة...</p>
+            <p style="color:#64748b; font-weight:bold; text-align:center; padding-top:40px;">بانتظار بث تقارير تفقدية جديدة من الوكلاء والمشرفين...</p>
         </div>
     </div>
 </div>
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, onSnapshot, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const ALL_CLASSES = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'];
+// لائحة جرد الفصول الافتراضية الشاملة
+const ALL_CLASSES = ['6/1','6/2','6/3','6/4','6/5','7/1','7/2','7/3','7/4','7/5','8/1','8/2','8/3','8/4','8/5','9/1','9/2','9/3','9/4','9/5'];
+
+// جلب بصمة المنشأة التعليمية لضمان عزل البيانات المتبادلة بالـ SaaS
+const getActiveSchoolId = () => {
+    const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    return user.schoolId || 'default';
+};
+
+// توليد ديباجة التاريخ بصيغة ISO الدولية المتوافقة مع رصد المعلمين الحين بالبوابة
+function getTodayISO() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
 document.addEventListener("DOMContentLoaded", function() {
     setInterval(() => {
@@ -113,59 +131,95 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function startLiveTvEngine() {
-    const todayStr = new Date().toLocaleDateString('ar-KW');
+    const schoolId = getActiveSchoolId();
+    const todayISO = getTodayISO();
+    let totalCachedStudents = 0;
 
-    onSnapshot(collection(db, 'students'), (snap) => {
-        document.getElementById('tv-stat-students').textContent = snap.size || 380;
+    // 1. رادار حساب وجرد إجمالي طلاب المنشأة الحالية المقيدين بالسيرفر
+    const qStudents = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+    onSnapshot(qStudents, (snap) => {
+        totalCachedStudents = snap.size;
+        document.getElementById('tv-stat-students').textContent = totalCachedStudents || 0;
     });
 
-    onSnapshot(collection(db, 'attendance'), (snap) => {
-        let presentCount = 0;
+    // 2. رادار البث اللحظي لحساب نسب الحضور والغياب دون تضخم (Deduplication Engine)
+    const qAttendance = query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('date', '==', todayISO));
+    onSnapshot(qAttendance, (snap) => {
         let absentCount = 0;
         const recordedClasses = new Set();
+        const studentDailyStatusMap = new Map(); // خارطة دمج السجلات السبع لمنع ضرب الأرقام
 
         snap.forEach(doc => {
             const d = doc.data();
-            if (d.date === todayStr) {
-                if (d.status === 'absent') absentCount++;
-                if (d.status === 'present') presentCount++;
-                if (d.classId) recordedClasses.add(d.classId.trim());
+            const sName = d.studentName || d.name;
+            
+            if (sName) {
+                // إذا تم رصد غياب الطالب في أي حصة اليوم، يسجل غائباً إجمالياً لحين مراجعته
+                if (d.status === 'absent') {
+                    studentDailyStatusMap.set(sName, 'absent');
+                } else if (!studentDailyStatusMap.has(sName)) {
+                    studentDailyStatusMap.set(sName, d.status);
+                }
             }
+            if (d.classId) recordedClasses.add(d.classId.trim());
         });
 
-        if(presentCount === 0 && absentCount === 0) { presentCount = 380; }
+        // فرز واحتساب الحالات الصافية بعد عزل التكرار الحصصي
+        studentDailyStatusMap.forEach((status) => {
+            if (status === 'absent') absentCount++;
+        });
 
+        let presentCount = totalCachedStudents - absentCount;
+        if(presentCount < 0) presentCount = 0;
+
+        // تحديث شاشة العرض بأرقام حقيقية ودقيقة بالملي
         document.getElementById('tv-stat-present').textContent = presentCount;
         document.getElementById('tv-stat-absent').textContent = absentCount;
 
+        // جرد الفصول المتأخرة عن الرصد لليوم الحالي
         const missingClasses = ALL_CLASSES.filter(c => !recordedClasses.has(c));
         const missingContainer = document.getElementById('tv-missing-classes');
         
         if (missingClasses.length === 0) {
-            missingContainer.innerHTML = `<span style="color:var(--success-green); font-weight:900; font-size:16px;"><i class="bi bi-check-circle-fill"></i> ممتاز! جميع الفصول المقيدة بالمنظومة سجّلت الحضور والغياب لليوم.</span>`;
+            missingContainer.innerHTML = `<span style="color:var(--success-green); font-weight:900; font-size:16px;"><i class="bi bi-check-circle-fill"></i> ممتاز! جميع فصول وأجنحة المدرسة أكملت رصد الغياب والحضور اليوم بنجاح.</span>`;
         } else {
             missingContainer.innerHTML = missingClasses.map(c => `<span class="missing-badge">صف ${c}</span>`).join('');
         }
     });
 
-    onSnapshot(collection(db, 'manager_visits'), (snap) => {
+    // 3. رادار رصد آخر 5 جولات تفقديّة لوكلاء وأجنحة المدرسة (مع تصفية الفهرس المركب محلياً)
+    const qVisits = query(collection(db, 'behavior_logs'), where('schoolId', '==', schoolId));
+    onSnapshot(qVisits, (snap) => {
         const area = document.getElementById('tv-latest-visits-area');
-        let html = '';
-        let count = 0;
+        
+        // فرز وتصفية السجلات اللحظية داخل المتصفح لتجنب أخطاء تجميد الفايرستور (Index Errors)
+        const sortedLogs = snap.docs
+            .map(doc => doc.data())
+            .sort((a, b) => {
+                const timeA = a.createdAt?.seconds || 0;
+                const timeB = b.createdAt?.seconds || 0;
+                return timeB - timeA;
+            })
+            .slice(0, 5); // جلب أحدث 5 تحركات بالمنشأة فقط
 
-        snap.forEach(doc => {
-            const data = doc.data();
-            if(count < 5) {
-                html += `
-                <div class="visit-item">
-                    <span style="color:var(--accent-orange); float:left;">📍 الفصل: ${data.classId || '-'}</span>
-                    <i class="bi bi-bookmark-star-fill" style="color:#3b82f6; margin-left:5px;"></i>
-                    تفقد الإدارة: أ. <b>${data.teacherName || 'عضو التدريس'}</b> - الملاحظة: ${data.notes || 'مستقر'}
-                </div>`;
-                count++;
-            }
+        let html = '';
+        sortedLogs.forEach(data => {
+            const badgeColor = data.type === 'سلبي' ? 'color:var(--danger-red);' : 'color:var(--success-green);';
+            const iconType = data.type === 'سلبي' ? 'bi-shield-fill-x' : 'bi-shield-fill-check';
+            
+            html += `
+            <div class="visit-item" style="border-right-color: ${data.type === 'سلبي' ? 'var(--danger-red)' : 'var(--success-green)'};">
+                <span style="color:var(--accent-orange); float:left;">📍 الفصل: ${data.classId || '-'}</span>
+                <i class="bi ${iconType}" style="${badgeColor} margin-left:5px;"></i>
+                إجراء من: <b>${data.officerName || 'مشرف الجناح'}</b> - السلوك: <span style="${badgeColor}">${data.type}</span> - البيان: ${data.details || 'مستقر'}
+            </div>`;
         });
-        if(count > 0) area.innerHTML = html;
+
+        if(sortedLogs.length > 0) {
+            area.innerHTML = html;
+        } else {
+            area.innerHTML = `<p style="color:#64748b; font-weight:bold; text-align:center; padding-top:40px;">💡 لا توجد تحركات أو حالات سلوكية مرصودة في الأجنحة اليوم لغاية الآن.</p>`;
+        }
     });
 }
 </script>
