@@ -1,5 +1,4 @@
-// 🔴 موديل جرد وحصر الطلاب الغائبين اليوم مفرزاً ومجمعاً بالفصول الدراسية
-import { db } from '../firebase-config.js';
+import { db, SCHOOL_ID } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initAttendanceModule() {
@@ -31,10 +30,21 @@ async function loadTodayAbsentsGroupedByClass() {
     const wrapper = document.getElementById('live-absents-classes-container');
     if (!wrapper) return;
 
-    const todayStr = new Date().toLocaleDateString('ar-KW');
+    // 📅 تجهيز كافة صيغ التاريخ المحتملة لضمان القراءة الفورية
+    const now = new Date();
+    const todayISO = now.toISOString().slice(0, 10); // 2026-06-13
+    const todaySlash = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`; // 2026/6/13
+    const todayAr = now.toLocaleDateString('ar-KW'); // أرقام عربية
+
+    const dateFormats = [todayISO, todaySlash, todayAr];
 
     try {
-        const q = query(collection(db, 'attendance'), where('date', '==', todayStr), where('status', '==', 'absent'));
+        // الاستعلام باستخدام مصفوفة الصيغ لدعم الانتقال الجذري
+        const q = query(
+            collection(db, 'attendance'), 
+            where('date', 'in', dateFormats), 
+            where('status', '==', 'absent')
+        );
         const snap = await getDocs(q);
         
         let byClass = {};
@@ -42,6 +52,10 @@ async function loadTodayAbsentsGroupedByClass() {
 
         snap.forEach(doc => {
             const data = doc.data();
+
+            // 🏢 فلترة أمنية مرنة: إذا كان المستند يحتوي على مدرسة أخرى تخطاه
+            if (data.schoolId && data.schoolId !== SCHOOL_ID) return;
+
             const classId = data.classId ? data.classId.trim() : 'غير محدد';
             const sName = data.studentName || data.name || 'طالب غير معرف';
             const teacher = data.recordedBy || 'هيئة التعليم';
