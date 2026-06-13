@@ -1,4 +1,4 @@
-import { db, SCHOOL_ID } from '../firebase-config.js';
+import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initAttendanceModule() {
@@ -10,14 +10,14 @@ export async function initAttendanceModule() {
         <div class="card" style="border-top: 5px solid var(--danger-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-person-x-fill" style="color:var(--danger-color);"></i> كشف الحصر المجمع للطلاب الغائبين اليوم بالفصول</h2>
             <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">
-                📈 يتم قراءة البيانات وتجميع الطلاب تلقائياً تحت فصولهم المعتمدة لتسهيل عمل وكلاء المراحل والأخصائيين.
+                📈 يتم قراءة البيانات وتجميع الطلاب تلقائياً تحت فصولهم المعتمدة للمدرسة الحالية.
             </p>
             
             <div id="live-absents-classes-container" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px; margin-top:10px;">
-                <p style="color:#999; font-weight:bold; text-align:center; grid-column:1/-1; padding:20px;">⏳ جاري سحب وفرز كشوف الحصص لايف...</p>
+                <p style="color:#999; font-weight:bold; text-align:center; grid-column:1/-1; padding:20px;">⏳ جاري سحب وفرز كشوف الغياب لايف...</p>
             </div>
             
-            <button onclick="window.exportAsManzoumaPDF('tab-absent', 'كشف_توزيع_الغياب_الفصلي')" style="width:100%; background:var(--primary-color); margin-top:20px; font-size:12px; font-weight:bold;"><i class="bi bi-printer-fill"></i> طباعة كشف الغياب الحالي PDF</button>
+            <button onclick="window.exportAsManzoumaPDF('tab-absent', 'كشف_توزيع_الغياب_الفصلي')" style="width:100%; background:var(--primary-color); margin-top:20px; font-size:12px; font-weight:bold; border:none; color:#fff; padding:10px; cursor:pointer;"><i class="bi bi-printer-fill"></i> طباعة كشف الغياب الحالي PDF</button>
         </div>`;
 
         loadTodayAbsentsGroupedByClass();
@@ -30,35 +30,38 @@ async function loadTodayAbsentsGroupedByClass() {
     const wrapper = document.getElementById('live-absents-classes-container');
     if (!wrapper) return;
 
-    // 📅 تجهيز كافة صيغ التاريخ المحتملة لضمان القراءة الفورية
-    const now = new Date();
-    const todayISO = now.toISOString().slice(0, 10); // 2026-06-13
-    const todaySlash = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`; // 2026/6/13
-    const todayAr = now.toLocaleDateString('ar-KW'); // أرقام عربية
-
-    const dateFormats = [todayISO, todaySlash, todayAr];
+    const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
+    const todayISO = getTodayISO();       // 📅 التاريخ الموحد
 
     try {
-        // الاستعلام باستخدام مصفوفة الصيغ لدعم الانتقال الجذري
+        // الاستعلام المفلتر: غياب + مدرسة + تاريخ
+        // ملاحظة: بما أننا نستخدم ISO، فنحن نقارن بحقل الـ date الموحد
         const q = query(
             collection(db, 'attendance'), 
-            where('date', 'in', dateFormats), 
+            where('schoolId', '==', schoolId),
+            where('date', '==', todayISO), 
             where('status', '==', 'absent')
         );
-        const snap = await getDocs(q);
+        
+        let snap = await getDocs(q);
+
+        // دعم التوافقية للداتا القديمة (مدرسة الحسينان)
+        if (snap.empty && schoolId === 'hosainan') {
+            const fallbackQ = query(collection(db, 'attendance'), where('date', '==', todayISO), where('status', '==', 'absent'));
+            snap = await getDocs(fallbackQ);
+        }
         
         let byClass = {};
         let count = 0;
 
         snap.forEach(doc => {
-            const data = doc.data();
+            const d = doc.data();
+            // تصفية أمنية للداتا القديمة
+            if (d.schoolId && d.schoolId !== schoolId) return;
 
-            // 🏢 فلترة أمنية مرنة: إذا كان المستند يحتوي على مدرسة أخرى تخطاه
-            if (data.schoolId && data.schoolId !== SCHOOL_ID) return;
-
-            const classId = data.classId ? data.classId.trim() : 'غير محدد';
-            const sName = data.studentName || data.name || 'طالب غير معرف';
-            const teacher = data.recordedBy || 'هيئة التعليم';
+            const classId = d.classId ? d.classId.trim() : 'غير محدد';
+            const sName = d.studentName || d.name || 'طالب غير معرف';
+            const teacher = d.recordedBy || 'هيئة التعليم';
 
             if (!byClass[classId]) {
                 byClass[classId] = { classId: classId, students: [], teacherName: teacher };
@@ -68,7 +71,7 @@ async function loadTodayAbsentsGroupedByClass() {
         });
 
         if (count === 0) {
-            wrapper.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--success-color); padding:30px; font-weight:bold; background:#e8f8f5; border-radius:8px;"><i class="bi bi-emoji-sunglasses"></i>🥇 مبروك! لا توجد حالات غياب مرصودة لليوم حتى الآن بكافة فصول المدرسة.</div>`;
+            wrapper.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--success-color); padding:30px; font-weight:bold; background:#e8f8f5; border-radius:8px;"><i class="bi bi-emoji-sunglasses"></i> 🥇 مبروك! لا توجد حالات غياب مرصودة لليوم حتى الآن بكافة فصول المدرسة.</div>`;
             return;
         }
 
