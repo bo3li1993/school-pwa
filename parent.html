@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link lang="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link class="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>بوابة ولي الأمر الإلكترونية - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
@@ -31,7 +35,7 @@ button:hover { background:var(--accent-color); }
 </head>
 <body>
 
-<!-- 🔒 شاشة تسجيل الدخول الموحدة -->
+<!-- 🔒 شاشة تسجيل الدخول الموحدة برقم الطالب الفريد -->
 <div id="parent-login-screen" class="container" style="max-width:400px; margin:50px auto 0 auto;">
     <div class="card" style="border-top-color:var(--primary-color); text-align:center;">
         <div style="font-size:45px; color:var(--accent-color); margin-bottom:10px;"><i class="bi bi-person-hearts"></i></div>
@@ -66,7 +70,7 @@ button:hover { background:var(--accent-color); }
         </div>
     </div>
 
-    <!-- ✉️ نظام المراسلة والدردشة الحية مع الأخصائي -->
+    <!-- ✉️ نظام المراسلة والدردشة الحية واللحظية مع الأخصائي (onSnapshot) -->
     <div class="card" style="border-top-color:var(--success-color);">
         <h2><i class="bi bi-chat-left-text-fill" style="color:var(--success-color);"></i> صندوق المراسلة والردود مع إدارة المدرسة</h2>
         <div class="chat-box" id="parent-chat-bubbles"></div>
@@ -79,11 +83,12 @@ button:hover { background:var(--accent-color); }
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 // 🔔 استدعاء مكتبة قوقل الرسمية لإدارة بث واستقبال الإشعارات السحابية للـ PWA
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
 
 let activeStudent = null;
+let chatUnsubscribe = null; // دالة إلغاء الاستماع عند الخروج
 
 document.addEventListener("DOMContentLoaded", function() {
     const saved = localStorage.getItem('hs_parent');
@@ -102,7 +107,10 @@ window.handleParentLoginLive = async function(e) {
         const q = query(collection(db, 'students'), where('studentNumber', '==', studentId));
         const snap = await getDocs(q);
         let found = null;
-        snap.forEach(doc => { found = doc.data(); });
+        snap.forEach(doc => { 
+            const d = doc.data();
+            found = d;
+        });
 
         if(found) {
             activeStudent = found;
@@ -121,7 +129,7 @@ function showParentDashboard() {
     document.getElementById('lbl-student-class').textContent = activeStudent.classId;
 
     loadStudentAttendanceLive();
-    loadParentChatThreadLive();
+    startParentChatListenerLive(); // ⚡ تحويل الشات لبث حي حقيقي لايف
     
     // 🚀 تفعيل وتشغيل محرك طلب إذن الإشعارات وربط الـ Token الخاص بولي الأمر
     initParentPushNotificationsEngine();
@@ -132,28 +140,29 @@ async function initParentPushNotificationsEngine() {
     if(!statusBadge) return;
 
     try {
-        // فحص دعم المتصفح للإشعارات قبل الشروع في الطلب
         if (!('Notification' in window)) {
             statusBadge.innerHTML = `<span style="color:#ffcc00;">⚠️ متصفحك الحالي لا يدعم ميزة الإشعارات التلقائية.</span>`;
             return;
         }
 
-        // طلب الإذن الرسمي من تليفون ولي الأمر بالخلفية
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
             const messaging = getMessaging();
-            
-            // توليد الـ FCM Token الفريد الخاص بجهاز ولي الأمر الحين
-            // 💡 ملاحظة ملوكية: استبدل 'YOUR_VAPID_KEY' بمفتاح كيباد الفايربيس الخاص بك لاحقاً لتفعيل الربط الكامل
             const currentToken = await getToken(messaging, { vapidKey: 'YOUR_VAPID_KEY' });
             
             if (currentToken) {
-                // حفظ وتحديث توكن الجهاز في الفايرستور لربطه بالطالب لايف
-                const tokenQ = query(collection(db, 'fcm_tokens'), where('token', '==', currentToken), where('studentName', '==', activeStudent.name.trim()));
+                // 🏢 فحص وحفظ التوكن مع ربطه بـ schoolId لضمان عزل داتا المنشآت
+                const tokenQ = query(
+                    collection(db, 'fcm_tokens'), 
+                    where('token', '==', currentToken), 
+                    where('schoolId', '==', activeStudent.schoolId),
+                    where('studentName', '==', activeStudent.name.trim())
+                );
                 const tokenSnap = await getDocs(tokenQ);
                 
                 if(tokenSnap.empty) {
                     await addDoc(collection(db, 'fcm_tokens'), {
+                        schoolId: activeStudent.schoolId, // 🔑 الحماية الأمنية للـ SaaS
                         studentName: activeStudent.name.trim(),
                         classId: activeStudent.classId,
                         token: currentToken,
@@ -163,9 +172,7 @@ async function initParentPushNotificationsEngine() {
                 }
                 statusBadge.innerHTML = `<span style="color:#27ae60;"><i class="bi bi-bell-fill"></i> 🔔 نظام الإشعارات السحابية نشط ومربوط بتليفونك بنجاح.</span>`;
                 
-                // الاستماع للإشعارات الواردة في حال كان ولي الأمر فاتح التطبيق چدامه (Foreground)
                 onMessage(messaging, (payload) => {
-                    console.log('✉️ تم استقبال إشعار غياب فوري لايف:', payload);
                     alert(`🚨 تنبيه رسمي من المدرسة:\n${payload.notification.title}\n${payload.notification.body}`);
                     loadStudentAttendanceLive(); // إنعاش كشف الغياب فوراً
                 });
@@ -177,7 +184,6 @@ async function initParentPushNotificationsEngine() {
             statusBadge.innerHTML = `<span style="color:#95a5a6;"><i class="bi bi-bell-slash"></i> تم حظر الإشعارات. يرجى تفعيلها من إعدادات المتصفح لتلقي الغياب.</span>`;
         }
     } catch (err) {
-        console.log("FCM Notification Setup Info:", err.message);
         statusBadge.innerHTML = `<span style="color:#95a5a6;"><i class="bi bi-info-circle"></i> بانتظار ربط مفتاح الـ VAPID لتنشيط البث السحابي المباشر.</span>`;
     }
 }
@@ -185,7 +191,12 @@ async function initParentPushNotificationsEngine() {
 async function loadStudentAttendanceLive() {
     const area = document.getElementById('parent-attendance-area');
     try {
-        const q = query(collection(db, 'attendance'), where('studentName', '==', activeStudent.name.trim()));
+        // 🏢 عزل كشوف الغياب بواسطة الـ schoolId والاسم معاً منعاً لتداخل تشابه الأسماء
+        const q = query(
+            collection(db, 'attendance'), 
+            where('schoolId', '==', activeStudent.schoolId),
+            where('studentName', '==', activeStudent.name.trim())
+        );
         const snap = await getDocs(q);
         
         let html = '';
@@ -213,13 +224,29 @@ async function loadStudentAttendanceLive() {
     } catch(e) { area.innerHTML = "❌ تعذر سحب كشف رصد الغياب حالياً."; }
 }
 
-async function loadParentChatThreadLive() {
+// ⚡ دالة الاستماع اللحظي والحي للمحادثة (onSnapshot) لضمان البث الفوري بدون إنعاش
+function startParentChatListenerLive() {
     const box = document.getElementById('parent-chat-bubbles');
-    try {
-        const q = query(collection(db, 'school_threads'), where('studentName', '==', activeStudent.name.trim()));
-        const snap = await getDocs(q);
+    if (chatUnsubscribe) chatUnsubscribe(); // تصفية أي مستمع قديم
+
+    // 🏢 استعلام محمي يعزل غرف المحادثات بحسب المدرسة منعاً لأي تسريب داتا
+    const q = query(
+        collection(db, 'school_threads'), 
+        where('schoolId', '==', activeStudent.schoolId),
+        where('studentName', '==', activeStudent.name.trim())
+    );
+
+    chatUnsubscribe = onSnapshot(q, (snapshot) => {
         let html = '';
-        snap.forEach(doc => {
+        
+        // فرز الرسائل يدوياً حسب وقت الإنشاء إذا لم يكن هناك فهرس مركب جاهز بالسيرفر
+        const sortedDocs = snapshot.docs.sort((a, b) => {
+            const timeA = a.data().createdAt?.seconds || 0;
+            const timeB = b.data().createdAt?.seconds || 0;
+            return timeA - timeB;
+        });
+
+        sortedDocs.forEach(doc => {
             const d = doc.data();
             const isParent = d.senderRole === 'parent';
             html += `
@@ -230,9 +257,12 @@ async function loadParentChatThreadLive() {
                 ${d.message}
             </div>`;
         });
+
         box.innerHTML = html || `<p style="text-align:center; color:#aaa; font-size:12px; padding:15px;">💬 لا توجد مراسلات سابقة بينك وبين الأخصائي حالياً.</p>`;
-        box.scrollTop = box.scrollHeight;
-    } catch(e) { box.innerHTML = "<p style='color:red;'>خطأ في استدعاء صندوق المحادثة</p>"; }
+        box.scrollTop = box.scrollHeight; // التمرير التلقائي لآخر رسالة واردة
+    }, (err) => {
+        box.innerHTML = "<p style='color:red;'>خطأ في المزامنة الحية لصندوق المحادثة</p>";
+    });
 }
 
 window.sendParentMessageLive = async function(e) {
@@ -243,6 +273,7 @@ window.sendParentMessageLive = async function(e) {
 
     try {
         await addDoc(collection(db, 'school_threads'), {
+            schoolId: activeStudent.schoolId, // 🔑 عزل وبصمة المنشأة للـ SaaS
             studentName: activeStudent.name,
             classId: activeStudent.classId,
             message: msg,
@@ -250,7 +281,6 @@ window.sendParentMessageLive = async function(e) {
             createdAt: serverTimestamp()
         });
         input.value = '';
-        loadParentChatThreadLive();
     } catch(err) { alert('تعذر إرسال الرسالة: ' + err.message); }
 };
 </script>
