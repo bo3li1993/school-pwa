@@ -1,29 +1,115 @@
-// استبدل جزء التحقق في index.html بهذا المنطق المزدوج:
-let loginSuccess = false;
-let userData = null;
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link class="apple-touch-icon" href="./logo.png">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <title>بوابة الدخول المركزية - المنظومة الرقمية</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        :root { --primary-color: #1a1a2e; --hover-color: #e67e22; }
+        body { background: linear-gradient(135deg, #1a1a2e 0%, #161625 100%); min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 15px; }
+        
+        /* 📱 PWA Install Card */
+        #btn-install { display: none; max-width: 420px; width: 100%; background: #2c3e50; color: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; align-items: center; justify-content: space-between; border-right: 5px solid var(--hover-color); }
+        
+        .login-container { max-width: 420px; width: 100%; background: #fff; border-radius: 16px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border-top: 6px solid var(--hover-color); }
+        .login-header { text-align: center; margin-bottom: 25px; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i { position: absolute; top: 14px; right: 12px; color: #a0aec0; }
+        input { width: 100%; padding: 12px 38px 12px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700; }
+        .btn-login { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 14px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+    </style>
+</head>
+<body>
 
-// أولاً: البحث عن المستخدم في السيرفر
-const qUser = query(collection(db, 'users'), where('userId', '==', inputUserId));
-const userSnap = await getDocs(qUser);
+<!-- 1. شاشة تثبيت التطبيق -->
+<div id="btn-install">
+    <div>
+        <h4 style="font-size:13px;">تثبيت المنظومة الرقمية</h4>
+        <p style="font-size:11px; opacity:0.8;">للوصول السريع بدون متصفح</p>
+    </div>
+    <button id="btn-install-action" style="background:var(--hover-color); color:#fff; border:none; padding:8px 12px; border-radius:6px; font-size:12px;">تثبيت</button>
+</div>
 
-if (!userSnap.empty) {
-    userData = userSnap.docs[0].data();
-    
-    // محاولة الدخول عبر Firebase Auth أولاً
-    if (userData.authMigrated) {
+<!-- 2. كرت الدخول -->
+<div class="login-container">
+    <div class="login-header">
+        <i class="bi bi-shield-lock-fill" style="font-size:50px;"></i>
+        <h2>المنظومة الرقمية المركزية</h2>
+    </div>
+    <form id="global-login-form" onsubmit="window.handleGlobalLoginLive(event)">
+        <div class="input-group">
+            <i class="bi bi-person-fill"></i>
+            <input type="text" id="txt-login-id" placeholder="رقم المستخدم" required>
+        </div>
+        <div class="input-group">
+            <i class="bi bi-key-fill"></i>
+            <input type="password" id="txt-login-pass" placeholder="كلمة المرور" required>
+        </div>
+        <button type="submit" id="btn-submit-action" class="btn-login">تسجيل الدخول</button>
+    </form>
+</div>
+
+<script type="module">
+    import { db, auth } from './js/firebase-config.js';
+    import { collection, query, where, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+    // 3. دالة تسجيل الدخول الهجينة (Auth + Legacy)
+    window.handleGlobalLoginLive = async function(e) {
+        e.preventDefault();
+        const userId = document.getElementById('txt-login-id').value.trim();
+        const userPass = document.getElementById('txt-login-pass').value.trim();
+        const submitBtn = document.getElementById('btn-submit-action');
+        submitBtn.disabled = true;
+
         try {
-            await signInWithEmailAndPassword(auth, userData.email, inputPassword);
-            loginSuccess = true;
-        } catch (e) {
-            alert("❌ كلمة المرور غير صحيحة (Authentication Error)");
-            return;
-        }
-    } 
-    // محاولة الدخول عبر Plain Password للأنظمة القديمة
-    else if (userData.plainPass === inputPassword) {
-        loginSuccess = true;
-    } else {
-        alert("❌ كلمة المرور التقليدية غير صحيحة.");
-        return;
-    }
-}
+            const q = query(collection(db, 'users'), where('userId', '==', userId));
+            const snap = await getDocs(q);
+            if(snap.empty) { alert("❌ معرف غير صحيح"); submitBtn.disabled = false; return; }
+
+            const userData = snap.docs[0].data();
+            const schoolDoc = await getDoc(doc(db, 'schools', userData.schoolId));
+            
+            // فحص حالة المدرسة (اشتراك + تفعيل)
+            if(!schoolDoc.exists() || schoolDoc.data().status === 'suspended') { alert("⚠️ المنشأة غير مفعلة"); return; }
+
+            let loginSuccess = false;
+
+            // الحالة أ: المستخدم الجديد (AuthMigrated)
+            if(userData.authMigrated) {
+                try {
+                    await signInWithEmailAndPassword(auth, userData.email, userPass);
+                    loginSuccess = true;
+                } catch(e) { alert("❌ كلمة المرور غير صحيحة"); }
+            } 
+            // الحالة ب: المستخدم القديم (PlainPass)
+            else if(userData.plainPass === userPass) {
+                loginSuccess = true;
+            } else { alert("❌ كلمة المرور غير صحيحة"); }
+
+            if(loginSuccess) {
+                localStorage.setItem('hs_user', JSON.stringify({ ...userData, role: userData.role.toLowerCase() }));
+                window.location.replace(userData.role.toLowerCase() === 'teacher' ? 'teacher.html' : 'admin.html');
+            }
+        } catch(err) { alert("❌ خطأ سيرفر: " + err.message); }
+        submitBtn.disabled = false;
+    };
+
+    // 4. تفعيل زر التثبيت PWA
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; document.getElementById('btn-install').style.display = 'flex'; });
+    document.getElementById('btn-install-action').addEventListener('click', async () => {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+        document.getElementById('btn-install').style.display = 'none';
+    });
+</script>
+</body>
+</html>
