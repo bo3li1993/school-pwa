@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link class="apple-touch-icon" href="./logo.png">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
   <title>تسجيل الدخول - المنظومة الرقمية الشاملة</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
@@ -24,6 +29,7 @@
     
     .btn-login { width: 100%; background: #1a1a2e; color: #fff; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.2s; margin-top: 1rem; }
     .btn-login:hover { background: #2a2a3e; }
+    .btn-login:disabled { background: #94a3b8; cursor: not-allowed; }
     
     .back-home { display: inline-block; margin-top: 1.5rem; color: #e67e22; text-decoration: none; font-size: 13px; font-weight: bold; }
     .back-home:hover { text-decoration: underline; }
@@ -36,12 +42,11 @@
   <div class="login-container">
     <div class="logo-box"><i class="bi bi-person-badge-fill"></i></div>
     <h2>بوابة تسجيل الدخول</h2>
-    <p>المنظومة الرقمية الشاملة - مدرسة سالم الحسينان</p>
+    <p>المنظومة الرقمية الشاملة - منصة الـ M-SaaS الموحدة</p>
     
     <div id="login-error" class="error-msg">❌ رقم المستخدم أو كلمة المرور غير صحيحة!</div>
     
-    <!-- نموذج الدخول -->
-    <form id="login-form" onsubmit="handleLogin(event)">
+    <form id="login-form" onsubmit="window.handleLogin(event)">
       <div class="input-group">
         <label>رقم المستخدم</label>
         <input type="text" id="user-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
@@ -62,9 +67,9 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-  import { getFirestore, collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+  import { getFirestore, collection, getDocs, query, where, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+  import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'; // 🔑 استدعاء محرك التشفير المعتمد
 
-  // الإعدادات الرسمية لقواعد البيانات الخاصة بمشروعك
   const firebaseConfig = {
     apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
     authDomain: "hosainan-school.firebaseapp.com",
@@ -77,6 +82,7 @@
   
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app); // تشغيل جدار حماية الهويات
 
   window.handleLogin = async function(event) {
     event.preventDefault();
@@ -87,25 +93,105 @@
     
     errorEl.style.display = 'none';
     btn.disabled = true;
-    btn.textContent = 'جاري التحقق والمزامنة...';
+    btn.textContent = 'جاري فحص الترخيص والأمان...';
     
     try {
-      // الاستعلام للتأكد من رقم السجل والباسورد حياً من قواعد الفيربيز
-      const q = query(collection(db, 'users'), where('userId', '==', userId), where('plainPass', '==', userPass));
+      // 1. جلب بيانات الحساب الأساسية للتحقق من انتماء المدرسة وإيميل التشفير
+      const q = query(collection(db, 'users'), where('userId', '==', userId));
       const snap = await getDocs(q);
       
-      if (!snap.empty) {
-        const userData = snap.docs[0].data();
-        // حفظ جلسة المستخدم محلياً في المتصفح والدخول الفوري لـ admin.html
-        localStorage.setItem('hs_user', JSON.stringify(userData));
-        window.location.href = 'admin.html';
-      } else {
-        errorEl.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'دخول للمنظومة';
+      if (snap.empty) {
+        showError("❌ رقم المستخدم غير مقيد بالمنظومة المركزية.");
+        return;
       }
+
+      const userData = snap.docs[0].data();
+      const schoolId = userData.schoolId;
+
+      if (!schoolId) {
+        showError("❌ خطأ حرج: الحساب غير مربوط بأي منشأة تعليمية.");
+        return;
+      }
+
+      // 2. 🚨 جدار فحص اشتراك المنشأة التعليمية (SaaS Subscription Check)
+      const schoolDoc = await getDoc(doc(db, 'schools', schoolId));
+      if (schoolDoc.exists()) {
+        const schoolData = schoolDoc.data();
+
+        // أ) التحقق من الإيقاف اليدوي بوعلي
+        if (schoolData.status === 'suspended') {
+          showError("⚠️ تم إيقاف اشتراك المدرسة مؤقتاً.\nيرجى مراجعة إدارة الدعم الفني لإعادة التفعيل.");
+          return;
+        }
+
+        // ب) التحقق التلقائي من الصلاحية السنوية للترخيص
+        if (schoolData.subscriptionEnd) {
+          const expireDate = new Date(schoolData.subscriptionEnd);
+          if (expireDate < new Date()) {
+            showError(`⚠️ انتهى ترخيص بث المنشأة تلقائياً بتاريخ: [ ${schoolData.subscriptionEnd} ]`);
+            return;
+          }
+        }
+      }
+
+      // 3. 🔒 فحص الأمان الهجين (تحقق مشفر بالكامل أو تقليدي لحين النقل التام)
+      let isPasswordCorrect = false;
+
+      if (userData.authMigrated === true) {
+        try {
+          // الحساب تم ترحيله وتأمينه داخل الـ Auth بنجاح
+          await signInWithEmailAndPassword(auth, userData.email, userPass);
+          isPasswordCorrect = true;
+        } catch (authErr) {
+          showError("❌ كلمة المرور المشفرة غير صحيحة.");
+          return;
+        }
+      } else {
+        // الحساب في وضع الترحيل المعلق (Legacy Mode) - فحص تقليدي مؤقت
+        if (userData.plainPass === userPass) {
+          isPasswordCorrect = true;
+        } else {
+          showError("❌ كلمة المرور المؤقتة غير صحيحة.");
+          return;
+        }
+      }
+
+      // 4. ✅ الترخيص وكلمة المرور تطابقوا! تخزين الجلسة محلياً والتحويل حسب التخصص
+      if (isPasswordCorrect) {
+        localStorage.setItem('hs_user', JSON.stringify({
+          userId: userData.userId,
+          name: userData.name || "عضو المنظومة",
+          role: String(userData.role || '').trim().toLowerCase(),
+          schoolId: schoolId,
+          classId: userData.classId || ''
+        }));
+
+        // 5. التوجيه الذكي للموظف حسب الصفحة المتواجدة بالسيستم عندك
+        const role = String(userData.role || '').trim().toLowerCase();
+        
+        if (role === 'teacher') {
+          window.location.replace('teacher.html'); // بوابة المعلمين لرصد الحصص
+        } else if (role === 'guard') {
+          window.location.replace('guard.html'); // بوابة حارس الأمن والزوار لايف
+        } else if (role === 'social_worker') {
+          window.location.replace('social.html'); // بوابة الأخصائي للبطاقات والاستئذان
+        } else {
+          window.location.replace('dashboard.html'); // لوحة التحكم والمركز الرئيسي الموحد
+        }
+      }
+
     } catch (err) {
       alert('خطأ في الاتصال بالخادم السحابي: ' + err.message);
+      resetBtn();
+    }
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+      resetBtn();
+    }
+
+    function resetBtn() {
       btn.disabled = false;
       btn.textContent = 'دخول للمنظومة';
     }
