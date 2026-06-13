@@ -1,15 +1,12 @@
-// 📊 محرك التقارير الأسبوعية وتوليد الـ PDF وتصدير الـ Excel القياسي الموحد
-import { db } from '../firebase-config.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initReportsModule() {
-    console.log("📊 تم تنشيط محرك التقارير الأسبوعية وتوليد الجداول الإلكترونية بالخلفية.");
+    console.log("📊 تم تنشيط محرك التقارير الأسبوعية الموحد (SaaS Mode).");
     
-    // حقن وتثبيت أزرار التحكم الفورية بداخل كارت الإجراءات السريعة لشاشة المدير الرئيسية
     setTimeout(() => {
         const classStatusDiv = document.getElementById('class-status');
         if (classStatusDiv && !document.getElementById('btn-trigger-weekly-pdf')) {
-            
             if (!document.getElementById('weekly-report-container')) {
                 const reportArea = document.createElement('div');
                 reportArea.id = 'weekly-report-container';
@@ -18,29 +15,40 @@ export async function initReportsModule() {
 
             const btn = document.createElement('button');
             btn.id = 'btn-trigger-weekly-pdf';
-            btn.innerHTML = `<i class="bi bi-file-earmark-pdf-fill"></i> 📊 إصدار التقرير الأسبوعي الشامل لحصر غياب (3 أيام+)`;
-            btn.style.cssText = "background:var(--success-color); width:100%; margin-top:10px; font-weight:bold; font-size:13px; padding:12px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; gap:8px;";
+            btn.innerHTML = `<i class="bi bi-file-earmark-pdf-fill"></i> 📊 إصدار التقرير الأسبوعي الشامل`;
+            btn.style.cssText = "background:var(--success-color); width:100%; margin-top:10px; font-weight:bold; font-size:13px; padding:12px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; color:#fff; cursor:pointer;";
             btn.onclick = () => window.generateWeeklyPDFReportLive();
             classStatusDiv.appendChild(btn);
         }
     }, 1500);
 }
 
-// 🖨️ الخوارزمية الفخمة لحصر غياب الـ 3 أيام فأكثر وتوليد ملف PDF جاهز للمنطقة والوزارة
 window.generateWeeklyPDFReportLive = async function() {
+    const schoolId = getActiveSchoolId(); // 🏢 البصمة الأمنية
     const today = new Date();
     const weekAgo = new Date(today - 7 * 24 * 60 * 60 * 1000);
     const todayStr = today.toLocaleDateString('ar-KW');
     const weekAgoStr = weekAgo.toLocaleDateString('ar-KW');
 
-    alert("⏳ جاري جرد الملفات السحابية وحصر الطلاب ذوي الغياب المتكرر لـ 3 أيام أو أكثر...");
+    alert("⏳ جاري جرد البيانات السحابية لمدرستك وحصر الغياب...");
     
     try {
-        const attSnap = await getDocs(collection(db, 'attendance'));
+        // استعلام فلترة حسب المدرسة فقط
+        const q = query(collection(db, 'attendance'), where('schoolId', '==', schoolId));
+        let attSnap = await getDocs(q);
+
+        // توافقية البيانات القديمة (سالم الحسينان)
+        if (attSnap.empty && schoolId === 'hosainan') {
+            attSnap = await getDocs(collection(db, 'attendance'));
+        }
+        
         let absences = {};
         
         attSnap.forEach(doc => {
             const d = doc.data();
+            // حماية إضافية للبيانات المختلطة
+            if (d.schoolId && d.schoolId !== schoolId) return;
+
             if (d.status === 'absent' && d.studentName) {
                 const key = d.studentName.trim();
                 if (!absences[key]) {
@@ -59,24 +67,23 @@ window.generateWeeklyPDFReportLive = async function() {
             <div id="weekly-report-print" style="padding:35px; font-family:'Cairo', sans-serif; direction:rtl; text-align:right; background:#fff; color:#000; width:800px; position:absolute; left:-9999px; top:-9999px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #1a1a2e; padding-bottom:15px; margin-bottom:25px;">
                     <div>
-                        <h2 style="font-size:16px; font-weight:900; color:#1a1a2e;">وزارة التربية - الإدارة العامة لمنطقة الفروانية التعليمية</h2>
-                        <h3 style="font-size:13px; font-weight:bold; color:#444; margin-top:3px;">مدرسة سالم الحسينان المتوسطة للبنين</h3>
+                        <h2 style="font-size:16px; font-weight:900; color:#1a1a2e;">وزارة التربية - الإدارة التعليمية</h2>
+                        <h3 style="font-size:13px; font-weight:bold; color:#444; margin-top:3px;">المنظومة السحابية الموحدة</h3>
                     </div>
                     <div style="text-align:left;">
-                        <p style="font-size:11px; font-weight:bold; color:#666;">الفترة الأسبوعية: ${weekAgoStr} - ${todayStr}</p>
-                        <span style="background:#1a1a2e; color:#fff; padding:4px 12px; font-size:11px; font-weight:bold; border-radius:4px; display:inline-block; margin-top:5px;">سجل رسمي مؤتمت</span>
+                        <p style="font-size:11px; font-weight:bold; color:#666;">الفترة: ${weekAgoStr} - ${todayStr}</p>
                     </div>
                 </div>
 
-                <h2 style="text-align:center; font-size:16px; font-weight:900; color:#1a1a2e; margin-bottom:25px; background:#f4f6f9; padding:10px; border-radius:6px;">📊 التقرير الأسبوعي التنفيذي لحالات الغياب المتكرر بالمدرسة</h2>
+                <h2 style="text-align:center; font-size:16px; font-weight:900; color:#1a1a2e; margin-bottom:25px; background:#f4f6f9; padding:10px; border-radius:6px;">📊 التقرير الأسبوعي لحالات الغياب التراكمي (3 أيام+)</h2>
 
                 <table style="width:100%; border-collapse:collapse; margin-bottom:30px; font-size:12px;">
                     <thead>
                         <tr style="background:#fff0f0; color:#e74c3c; border-bottom:2px solid #ffcccc;">
                             <th style="padding:10px; text-align:center; width:50px;">#</th>
-                            <th style="padding:10px; text-align:right;">اسم الطالب رباعي كما هو مقيد بالسيرفر</th>
+                            <th style="padding:10px; text-align:right;">اسم الطالب</th>
                             <th style="padding:10px; text-align:center; width:100px;">الفصل</th>
-                            <th style="padding:10px; text-align:center; width:150px;">إجمالي أيام الغياب المرصودة</th>
+                            <th style="padding:10px; text-align:center; width:150px;">أيام الغياب</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,18 +92,14 @@ window.generateWeeklyPDFReportLive = async function() {
                                 <td style="text-align:center; padding:10px; font-weight:bold;">${i+1}</td>
                                 <td style="padding:10px;"><b>👤 ${s.name}</b></td>
                                 <td style="text-align:center; padding:10px; font-weight:bold; color:#2980b9;">${s.classId}</td>
-                                <td style="text-align:center; padding:10px; color:#e74c3c; font-weight:900; font-size:13px;">${s.count} أيام غياب تراكمي</td>
+                                <td style="text-align:center; padding:10px; color:#e74c3c; font-weight:900;">${s.count} أيام</td>
                             </tr>
-                        `).join('') || '<tr><td colspan="4" style="text-align:center; padding:15px; color:#27ae60; font-weight:bold;">🥇 كشوف الغياب نظيفة؛ لم يتخطى أي طالب 3 أيام غياب هذا الأسبوع.</td></tr>'}
+                        `).join('') || '<tr><td colspan="4" style="text-align:center; padding:15px; color:#27ae60; font-weight:bold;">🥇 كشوف الغياب نظيفة هذا الأسبوع.</td></tr>'}
                     </tbody>
                 </table>
-
-                <div style="display:flex; justify-content:space-between; margin-top:50px; padding:0 30px; font-size:12px; font-weight:bold;">
-                    <p style="text-align:center;">يعتمد،، الهيئة الإدارية والمسؤول<br><br>____________________</p>
-                    <p style="text-align:center;">مدير مدرسة سالم الحسينان<br><br>____________________</p>
-                </div>
             </div>`;
 
+        // دالة الطباعة (نفس كودك السابق)
         setTimeout(() => {
             const printElement = document.getElementById('weekly-report-print');
             html2canvas(printElement, { scale: 2, useCORS: true }).then(canvas => {
@@ -105,40 +108,30 @@ window.generateWeeklyPDFReportLive = async function() {
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const imgWidth = 210;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
                 pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-                pdf.save(`التقرير_الاسبوعي_الرسمي_مدرسة_سالم_الحسينان_${todayStr}.pdf`);
+                pdf.save(`تقرير_الغياب_${todayStr}.pdf`);
                 container.innerHTML = ""; 
-                alert("✓ تم توليد وتنزيل تقرير غياب الـ 3 أيام بنجاح كملف PDF رسمي!");
+                alert("✓ تم توليد التقرير بنجاح!");
             });
         }, 800);
 
     } catch(err) {
-        alert("❌ تعذر إصدار التقرير الأسبوعي: " + err.message);
+        alert("❌ تعذر إصدار التقرير: " + err.message);
     }
 };
 
-// 🔥 حل مشكلة التقرير: دالة تصدير جداول الـ Excel النظيفة والمعرّفة بالإنجليزية بالكامل
 window.exportAsManzoumaExcel = function(tableId, fileName = 'سجلات_المنظومة') {
     const table = document.getElementById(tableId);
-    if(!table) { 
-        alert('⚠️ خطأ: تعذر العثور على الجدول المذكور في هذه الصفحة لطبع ملف الـ Excel.'); 
-        return; 
-    }
-    
+    if(!table) { alert('⚠️ تعذر العثور على الجدول.'); return; }
     try {
-        const wb = XLSX.utils.table_to_book(table, { sheet: "سجلات المدرسة" });
+        const wb = XLSX.utils.table_to_book(table, { sheet: "البيانات" });
         XLSX.writeFile(wb, `${fileName}_${new Date().toLocaleDateString('ar-KW')}.xlsx`);
-    } catch(e) {
-        alert("⚠️ فشل تصدير Excel: تأكد من اكتمال تحميل مكتبة ورق العمل بالموقع الرئيسي.");
-    }
+    } catch(e) { alert("⚠️ فشل تصدير Excel."); }
 };
 
-// دالة تصدير لقطات الـ PDF للكروت الفردية
 window.exportAsManzoumaPDF = function(elementId, fileName) {
     const el = document.getElementById(elementId);
     if(!el) return;
-    alert("⏳ جاري تصدير لقطة الشاشة الحالية كـ PDF...");
     html2canvas(el, { scale: 2, useCORS: true }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
         const { jsPDF } = window.jspdf;
