@@ -1,130 +1,48 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>المنظومة الرقمية الموحدة - لوحة التحكم الإدارية</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-:root { --primary-color: #1a1a2e; --sidebar-bg: #161625; --hover-color: #e67e22; --text-color: #ecf0f1; --bg-light: #f4f6f9; --success-color: #27ae60; --danger-color: #e74c3c; --accent-color: #2980b9; }
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
-body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; }
-.sidebar { width: 280px; background: var(--sidebar-bg); color: var(--text-color); position: fixed; top: 0; right: -280px; height: 100vh; transition: right 0.3s; z-index: 2000; box-shadow: -5px 0 25px rgba(0,0,0,0.3); }
-.sidebar.active { right: 0; }
-.sidebar-header { padding: 20px; text-align: center; background: var(--primary-color); }
-.menu-list { list-style: none; padding: 15px 0; }
-.menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #b2bec3; cursor: pointer; font-weight: 700; font-size: 13px; }
-.menu-item:hover, .menu-item.active { background: #2c2c3e; color: #fff; border-right: 4px solid var(--hover-color); }
-.main-content { flex: 1; display: flex; flex-direction: column; width: 100%; }
-.top-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-.card { background: #fff; border-radius: 14px; padding: 25px; margin: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-button { background: var(--primary-color); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-button:hover { background: var(--hover-color); }
-</style>
+    <meta charset="UTF-8">
+    <title>لوحة التحكم الإدارية</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { --primary-color: #1a1a2e; --hover-color: #e67e22; }
+        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; display: flex; min-height: 100vh; }
+        .sidebar { width: 280px; background: #161625; color: #fff; height: 100vh; position: fixed; right: 0; }
+        .main-content { margin-right: 280px; width: 100%; padding: 20px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .menu-item { padding: 15px; cursor: pointer; color: #b2bec3; }
+        .menu-item:hover { color: #fff; border-right: 4px solid var(--hover-color); }
+    </style>
 </head>
 <body>
-
-<div class="sidebar">
-    <div class="sidebar-header">
-        <h3 id="lbl-school-name">مدرسة سالم الحسينان</h3>
-        <p>لوحة التحكم الإدارية</p>
+    <div class="sidebar">
+        <div style="padding:20px; font-weight:900;">مدرسة سالم الحسينان</div>
+        <ul style="list-style:none;">
+            <li class="menu-item active" onclick="window.switchTab('tab-index')">📊 المؤشرات اليومية</li>
+            <li class="menu-item" onclick="window.switchTab('tab-student')">👤 ملف الطالب</li>
+        </ul>
     </div>
-    <ul class="menu-list">
-        <li class="menu-item active" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i> 📊 المؤشرات</li>
-        <li class="menu-item" onclick="window.switchTab('tab-users')"><i class="bi bi-lock"></i> 🔐 المستخدمين</li>
-        <li class="menu-item" onclick="window.switchTab('tab-profile')"><i class="bi bi-sliders"></i> 👤 حسابي</li>
-    </ul>
-</div>
-
-<div class="main-content">
-    <div class="top-navbar">
-        <button id="hamburger-trigger" onclick="document.querySelector('.sidebar').classList.toggle('active')"><i class="bi bi-list"></i></button>
-        <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color);">خروج</button>
+    <div class="main-content">
+        <div id="tab-index" class="tab-content active"><div id="stats-cards"></div></div>
+        <div id="tab-student" class="tab-content"></div>
     </div>
 
-    <div class="content-body">
-        <div id="tab-index" class="tab-content active">
-            <div class="card">
-                <h2>إجراءات سريعة</h2>
-                <select id="quick-whatsapp-class">
-                    <option value="6/1">6/1</option><option value="7/1">7/1</option>
-                </select>
-                <button onclick="window.fireWhatsAppAbsenceLive()" style="background:#25D366;">بث غياب واتساب</button>
-            </div>
-            <div id="stats-cards" class="stats-grid"></div>
-        </div>
-        
-        <div id="tab-users" class="tab-content">
-            <div class="card">
-                <h2>إدارة المستخدمين</h2>
-                <form id="new-user-form" onsubmit="window.handleRegisterUserLive(event)">
-                    <input type="text" id="reg-user-id" placeholder="User ID" required>
-                    <input type="text" id="reg-user-name" placeholder="الاسم" required>
-                    <input type="text" id="reg-user-pass" placeholder="كلمة المرور" required>
-                    <button type="submit" id="btn-submit-register-user">اعتماد الحساب</button>
-                </form>
-            </div>
-        </div>
-        <div id="tab-profile" class="tab-content"><div class="card"><h2>إعدادات حسابي</h2></div></div>
-    </div>
-</div>
-
-<script type="module">
-    import { db, auth } from './js/firebase-config.js';
-    import { collection, doc, setDoc, serverTimestamp, query, where, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-    import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-
-    const getActiveSchoolId = () => JSON.parse(localStorage.getItem('hs_user') || '{}').schoolId;
-
-    window.switchTab = function(tabId) {
-        if(!localStorage.getItem('hs_user')) window.location.replace('index.html');
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        document.querySelector('.sidebar').classList.remove('active');
-    };
-
-    window.handleRegisterUserLive = async function(e) {
-        e.preventDefault();
-        const uId = document.getElementById('reg-user-id').value;
-        const uName = document.getElementById('reg-user-name').value;
-        const uPass = document.getElementById('reg-user-pass').value;
-        const schoolId = getActiveSchoolId();
-
-        try {
-            const email = `${uId}@${schoolId}.edu`;
-            const cred = await createUserWithEmailAndPassword(auth, email, uPass);
-            await setDoc(doc(db, 'users', cred.user.uid), {
-                userId: uId, name: uName, schoolId: schoolId, role: 'teacher',
-                authMigrated: true, createdAt: serverTimestamp()
-            });
-            alert("تم إنشاء الحساب بنجاح!");
-        } catch(err) { alert(err.message); }
-    };
-
-    window.fireWhatsAppAbsenceLive = async function() {
-        const classId = document.getElementById('quick-whatsapp-class').value;
-        const schoolId = getActiveSchoolId();
-        const q = query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('classId', '==', classId), where('status', '==', 'absent'));
-        const snap = await getDocs(q);
-        let absentList = [];
-        snap.forEach(d => absentList.push(d.data().studentName));
-        
-        const msg = `غياب اليوم لفصل ${classId}: ${absentList.join(', ')}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-    };
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const user = JSON.parse(localStorage.getItem('hs_user'));
-        if(!user) window.location.replace('index.html');
-        document.getElementById('lbl-admin-name').textContent = user.name;
-    });
-</script>
+    <script type="module">
+        window.switchTab = async function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            const moduleMap = {
+                'tab-index': { file: './js/modules/today.js', init: 'initTodayModule' },
+                'tab-student': { file: './js/modules/student.js', init: 'initStudentModule' }
+            };
+            
+            if(moduleMap[tabId]) {
+                const mod = await import(moduleMap[tabId].file);
+                if(mod[moduleMap[tabId].init]) mod[moduleMap[tabId].init]();
+            }
+        };
+    </script>
 </body>
 </html>
