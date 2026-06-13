@@ -8,141 +8,176 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>بوابة الدخول الموحدة - مدرسة سالم الحسينان</title>
+<title>تسجيل الدخول - المنظومة الرقمية السحابية</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
 :root {
     --primary-color: #1a1a2e; --hover-color: #e67e22; --bg-light: #f4f6f9;
+    --success-color: #27ae60; --danger-color: #e74c3c;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
-body { background: var(--bg-light); display: flex; align-items: center; justify-content: center; min-height: 100vh; direction: rtl; padding: 15px; }
+body { 
+    background: linear-gradient(135deg, #1a1a2e 0%, #161625 100%); 
+    min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; direction: rtl;
+}
+.login-container {
+    max-width: 420px; width: 100%; background: #fff; border-radius: 16px; padding: 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3); border-top: 6px solid var(--hover-color); text-align: right;
+}
+.login-header { text-align: center; margin-bottom: 25px; }
+.login-header i { font-size: 50px; color: var(--primary-color); }
+.login-header h2 { font-size: 18px; font-weight: 900; color: var(--primary-color); margin-top: 10px; }
+.login-header p { font-size: 12px; color: #666; font-weight: bold; margin-top: 4px; }
 
-.login-container { max-width: 420px; width: 100%; background: #fff; padding: 35px 25px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: 1px solid #eef2f5; text-align: center; }
-.school-logo { width: 85px; height: 85px; margin-bottom: 15px; }
-.login-container h1 { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 5px; }
-.login-container p { font-size: 12px; color: #666; font-weight: bold; margin-bottom: 25px; }
+label { font-weight: 700; font-size: 12px; color: #4a5568; display: block; margin-bottom: 6px; }
+.input-group { position: relative; margin-bottom: 20px; }
+.input-group i { position: absolute; top: 14px; right: 12px; color: #a0aec0; font-size: 16px; }
+input { 
+    width: 100%; padding: 12px 38px 12px 12px; border: 1px solid #cbd5e1; border-radius: 8px; 
+    outline: none; font-weight: 700; font-size: 14px; color: var(--primary-color); transition: 0.2s;
+}
+input:focus { border-color: var(--hover-color); box-shadow: 0 0 0 3px rgba(230,126,34,0.1); }
 
-.form-group { text-align: right; margin-bottom: 18px; }
-.form-group label { display: block; font-size: 12px; font-weight: 700; color: #444; margin-bottom: 6px; }
-.form-group input { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-weight: 600; font-size: 13px; transition: 0.2s; text-align: right; }
-.form-group input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(26,26,46,0.05); }
-
-.btn-login { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 14px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+.btn-login { 
+    width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 14px; 
+    border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 14px; transition: 0.2s; 
+    display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(26,26,46,0.15);
+}
 .btn-login:hover { background: var(--hover-color); }
+.btn-login:disabled { background: #94a3b8; cursor: not-allowed; }
 
-.footer-text { font-size: 10px; color: #999; margin-top: 25px; font-weight: bold; }
+.footer-credits { text-align: center; margin-top: 25px; font-size: 11px; color: #a0aec0; font-weight: bold; }
 </style>
 </head>
 <body>
 
 <div class="login-container">
-    <img src="./logo.png" alt="شعّار المدرسة" class="school-logo" onerror="this.src='https://placehold.co/100'">
-    <h1>المنظومة الرقمية الشاملة للمنشأة</h1>
-    <p>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</p>
-    
-    <form id="main-login-form" onsubmit="window.handleSystemLoginLive(event)">
-        <div class="form-group">
-            <label><i class="bi bi-person-badge"></i> الرقم الوظيفي / معرف المستخدم (User ID):</label>
-            <input type="text" id="txt-login-id" placeholder="أدخل رقم المستخدم الخاص بك" required>
+    <div class="login-header">
+        <i class="bi bi-shield-lock-fill"></i>
+        <h2>المنظومة الرقمية المركزية M-SaaS</h2>
+        <p>بوابة تسجيل الدخول الموحدة للهيئة التعليمية والإدارية</p>
+    </div>
+
+    <form id="global-login-form" onsubmit="window.handleGlobalLoginLive(event)">
+        <label>رقم المستخدم / المعرف وظيفياً (User ID):</label>
+        <div class="input-group">
+            <i class="bi bi-person-fill"></i>
+            <input type="text" id="txt-login-id" placeholder="أدخل رقمك الموحد بالمنظومة" required>
         </div>
-        
-        <div class="form-group">
-            <label><i class="bi bi-lock-fill"></i> كلمة المرور السرية (Password):</label>
-            <input type="password" id="txt-login-pass" placeholder="أدخل كلمة المرور" required>
+
+        <label>كلمة المرور السرية:</label>
+        <div class="input-group">
+            <i class="bi bi-key-fill"></i>
+            <input type="password" id="txt-login-pass" placeholder="أدخل كلمة المرور الخاصة بك" required>
         </div>
-        
-        <button type="submit" id="btn-submit" class="btn-login"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة</button>
+
+        <button type="submit" id="btn-submit-action" class="btn-login">
+            <i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة
+        </button>
     </form>
-    
-    <div class="footer-text">نظام حماية البيانات السحابي الموحد للمدرسة © 2026</div>
+
+    <div class="footer-credits">
+        حقوق التطوير محفوظة للمنصة السحابية الموحدة © 2026
+    </div>
 </div>
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { doc, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, query, where, getDocs, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-window.handleSystemLoginLive = async function(e) {
+window.handleGlobalLoginLive = async function(e) {
     e.preventDefault();
-    const userId = document.getElementById('txt-login-id').value.trim();
-    const userPass = document.getElementById('txt-login-pass').value.trim();
-    const submitBtn = document.getElementById('btn-submit');
+    
+    const inputUserId = document.getElementById('txt-login-id').value.trim();
+    const inputPassword = document.getElementById('txt-login-pass').value.trim();
+    const submitBtn = document.getElementById('btn-submit-action');
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص سجلات الأمان المسرّعة...`;
+    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري فحص الترخيص والأمان...`;
 
     try {
-        let userData = null;
+        // 1. الاستعلام بحقل userId النصي لضمان معمارية تعدد المدارس الآمنة
+        const qUser = query(collection(db, 'users'), where('userId', '==', inputUserId));
+        const userSnap = await getDocs(qUser);
 
-        // 1. فحص المستند المباشر
-        const userDocRef = doc(db, 'users', userId);
-        const docSnap = await getDoc(userDocRef);
+        if (userSnap.empty) {
+            alert("❌ اسم المستخدم غير مسجل بالنظام السحابي.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            return;
+        }
 
-        if (docSnap.exists()) {
-            userData = docSnap.data();
-        } else {
-            // 2. البحث بالحقول الداخلية (نص)
-            const qString = query(collection(db, 'users'), where('userId', '==', userId));
-            const snapString = await getDocs(qString);
-            if (!snapString.empty) {
-                userData = snapString.docs[0].data();
-            } else {
-                // 3. البحث بالحقول الداخلية (رقم)
-                if (!isNaN(userId)) {
-                    const qNumber = query(collection(db, 'users'), where('userId', '==', Number(userId)));
-                    const snapNumber = await getDocs(qNumber);
-                    if (!snapNumber.empty) {
-                        userData = snapNumber.docs[0].data();
-                    }
-                }
+        const userDoc = userSnap.docs[0];
+        const userData = userDoc.data();
+
+        // 2. التحقق من تطابق كلمة المرور السرية
+        if (userData.plainPass !== inputPassword) {
+            alert("❌ كلمة المرور غير صحيحة، يرجى المحاولة مرة أخرى.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            return;
+        }
+
+        // 3. التحقق من وجود ربط أمني للمدرسة
+        const schoolId = userData.schoolId;
+        if (!schoolId) {
+            alert("❌ خطأ حرج: هذا الحساب غير مرتبط بأي منشأة تعليمية مسجلة.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            return;
+        }
+
+        // 4. 🚨 رادار فحص حالة اشتراك المدرسة وصلاحية ترخيص البث
+        const schoolDoc = await getDoc(doc(db, 'schools', schoolId));
+        if (!schoolDoc.exists()) {
+            alert("❌ خطأ: المنشأة التعليمية التابع لها هذا الحساب غير مسجلة بالسيرفر.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            return;
+        }
+
+        const schoolData = schoolDoc.data();
+
+        // أ) التحقق من الإيقاف اليدوي المؤقت من قبلك بوعلي
+        if (schoolData.status === 'suspended') {
+            alert("⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً لانتهاء فترة الترخيص.\nيرجى مراجعة مطور المنظومة (أ. حسين كرم) لإعادة التفعيل.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            return;
+        }
+
+        // ب) التحقق التلقائي الذكي من تاريخ انتهاء الصلاحية السنوية
+        if (schoolData.subscriptionEnd) {
+            const expireDate = new Date(schoolData.subscriptionEnd);
+            const today = new Date();
+            if (expireDate < today) {
+                alert(`⚠️ انتهى ترخيص بث هذه المنشأة تلقائياً بتاريخ: [ ${schoolData.subscriptionEnd} ]\nيرجى مراجعة مطور المنظومة (أ. حسين كرم) لتجديد الاشتراك السنوي.`);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+                return;
             }
         }
 
-        // قفل الأمان العادي
-        if (!userData) {
-            alert("🔒 خطأ: معرف المستخدم غير مسجل بالنظام السحابي للمدرسة.");
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
-            return;
-        }
-
-        // مطابقة كلمة المرور بسرية تامة وبدون كشف
-        const dbPass = String(userData.plainPass !== undefined ? userData.plainPass : '').trim();
-        if (dbPass !== userPass) {
-            alert("🔒 خطأ: كلمة المرور المدخلة غير صحيحة، يرجى إعادة المحاولة.");
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
-            return;
-        }
-
-        // حفظ الجلسة
+        // 5. ✅ الترخيص سليم! حفظ الجلسة محلياً بالبصمة المدرسية
         localStorage.setItem('hs_user', JSON.stringify({
-            userId: userData.userId || userId,
+            userId: userData.userId,
             name: userData.name || "عضو المنظومة",
-            role: String(userData.role || '').trim().toLowerCase()
+            role: String(userData.role || '').trim().toLowerCase(),
+            schoolId: schoolId,
+            classId: userData.classId || ''
         }));
 
-        // عزل رتبة الحارس عن توجيه الإدارة المركزي
-        const administrativeRoles = ['admin', 'assistant_manager', 'wing_supervisor'];
-        const cleanRole = String(userData.role || '').trim().toLowerCase();
-
-        if (cleanRole === 'teacher') {
+        // 6. التوجيه الآلي حسب رتبة الصلاحية المعتمدة
+        const role = String(userData.role || '').trim().toLowerCase();
+        if (role === 'teacher') {
             window.location.replace('teacher.html');
-        } else if (cleanRole === 'social_worker') {
-            window.location.replace('social.html');
-        } else if (cleanRole === 'guard') {
-            window.location.replace('guard.html'); // 🚀 طيران مباشر لصفحة الحارس المستقلة الجديدة
-        } else if (administrativeRoles.includes(cleanRole)) {
-            window.location.replace('admin.html');
         } else {
-            alert("🔒 خطأ وظيفي: هذا الحساب لا يمتلك صلاحيات معتمدة بالتوجيه.");
-            localStorage.removeItem('hs_user');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
+            window.location.replace('admin.html');
         }
 
     } catch (err) {
-        alert("❌ فشل الاتصال بالسيرفر: " + err.message);
+        alert("❌ خطأ في الاتصال بالسيرفر السحابي: " + err.message);
         submitBtn.disabled = false;
         submitBtn.innerHTML = `<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول للمنظومة`;
     }
