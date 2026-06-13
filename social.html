@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>بوابة الأخصائي الاجتماعي - مدرسة سالم الحسينان</title>
+<title>بوابة الأخصائي الاجتماعي - المنظومة السحابية</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
@@ -58,14 +58,13 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 <div class="header-nav">
     <div>
         <h1 id="lbl-worker-title"><i class="bi bi-person-workspace"></i> بوابة الأخصائي الاجتماعي</h1>
-        <p>وزارة التربية - مدرسة سالم الحسينان المتوسطة للبنين</p>
+        <p>وزارة التربية - المنظومة الرقمية السحابية الموحدة</p>
     </div>
     <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer;">تسجيل الخروج</button>
 </div>
 
 <div class="workspace-container">
 
-    <!-- صف الكروت الإحصائية الحية مالت السيرفر -->
     <div class="stats-grid">
         <div class="stat-card red">
             <div><h3>إجمالي المخالفات السلوكية المرصودة</h3><div class="num" id="lbl-stat-negative">0</div></div>
@@ -81,7 +80,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- منيو التبويبات الخمسة المكتملة -->
     <div class="tabs-nav">
         <div class="tab-btn active" id="tab-btn-gatepass" onclick="window.switchTabView('view-gatepass')"><i class="bi bi-ticket-perforated-fill"></i> حقيبة الاستئذان</div>
         <div class="tab-btn" id="tab-btn-behavior" onclick="window.switchTabView('view-behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك</div>
@@ -90,7 +88,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         <div class="tab-btn" id="tab-btn-settings" onclick="window.switchTabView('view-settings')"><i class="bi bi-sliders"></i> إعدادات حسابي</div>
     </div>
 
-    <!-- 🎫 التبويب الأول: حقيبة الاستئذان -->
     <div id="view-gatepass" class="tab-view active-view">
         <div class="card" style="border-top: 4px solid var(--success-color);">
             <h2><i class="bi bi-card-list"></i> إصدار بطاقة تصريح خروج مبكر (استئذان سحابي لايف للباب)</h2>
@@ -108,7 +105,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     <div>
                         <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">2. اختر اسم الطالب من الكشف فورا:</label>
                         <select id="pass-student-name" required>
-                            <option value="">⏳ جاري تحميل اللائحة...</option>
+                            <option value="">👇 اختر الفصل لجرد الأسماء...</option>
                         </select>
                     </div>
                 </div>
@@ -162,7 +159,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 🛡️ التبويب الثاني: رصد ومتابعة السلوك -->
     <div id="view-behavior" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--danger-color);">
             <h2><i class="bi bi-shield-exclamation"></i> وثيقة رصد وإثبات حالة سلوكية ومدرسية للطلاب</h2>
@@ -180,7 +176,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     <div>
                         <label style="font-weight:700; font-size:12px;">2. اختر اسم الطالب من اللائحة فورا:</label>
                         <select id="beh-student-name" required>
-                            <option value="">⏳ جاري جلب الأسماء...</option>
+                            <option value="">👇 اختر الفصل لجرد الأسماء...</option>
                         </select>
                     </div>
                 </div>
@@ -199,7 +195,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     <label style="font-weight:700; font-size:12px;">الإجراء التربوي أو التوجيهي المتخذ فوراً:</label>
                     <input type="text" id="beh-action" placeholder="مثال: استدعاء ولي أمر / تعهد خطي / تكريم بالإذاعة" required>
                 </div>
-                <button type="submit" class="btn-submit" style="background:var(--danger-color);"><i class="bi bi-file-earmark-check"></i> حفظ وإثبات الحالة السلوكية بالسجل المركزي</button>
+                <button type="submit" class="btn-submit" style="background:var(--danger-color); box-shadow: 0 4px 10px rgba(239,68,68,0.2);"><i class="bi bi-file-earmark-check"></i> حفظ وإثبات الحالة السلوكية بالسجل المركزي</button>
             </form>
         </div>
 
@@ -218,7 +214,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 👤 التبويب الثالث: ملف الطالب الشامل المطور -->
     <div id="view-profile" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--warning-color);">
             <h2><i class="bi bi-person-bounding-box"></i> البحث الذكي وفحص ملف الطالب الشامل (رادار ٣٦٠ درجة)</h2>
@@ -237,11 +232,11 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                 <div>
                     <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">2. اختر اسم الطالب من السجلات السحابية:</label>
                     <select id="txt-profile-search-name">
-                        <option value="">👇 اختر اسم الطالب من القائمة</option>
+                        <option value="">👇 اختر الفصل لجرد الأسماء...</option>
                     </select>
                 </div>
             </div>
-            <button onclick="window.searchStudentFullProfileLive()" style="width:100%; background:var(--warning-color); color:#fff; font-weight:bold; padding:15px; border-radius:10px; border:none; font-size:14px; box-shadow: 0 4px 10px rgba(245,158,11,0.2);"><i class="bi bi-search"></i> فحص واستخراج ملف الطالب الموحد الحين</button>
+            <button onclick="window.searchStudentFullProfileLive()" style="width:100%; background:var(--warning-color); color:#fff; font-weight:bold; padding:15px; border-radius:10px; border:none; font-size:14px; box-shadow: 0 4px 10px rgba(245,158,11,0.2); cursor:pointer;"><i class="bi bi-search"></i> فحص واستخراج ملف الطالب الموحد الحين</button>
         </div>
 
         <div id="box-profile-results" style="display:none;">
@@ -250,7 +245,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                 <p style="font-size:13px; font-weight:700; color:#475569;" id="lbl-profile-student-class">الفصل المعتمد: </p>
             </div>
 
-            <!-- سجل الانتظام والغياب والتأخير الصباحي -->
             <div class="card" style="border-right: 5px solid #64748b;">
                 <h4 style="font-size:14px; font-weight:900; color:#475569; margin-bottom:10px;"><i class="bi bi-calendar-x-fill"></i> سجل الانتظام، الغياب والتأخير الصباحي المباشر</h4>
                 <div style="overflow-x: auto;">
@@ -294,7 +288,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 📋 التبويب الرابع: المراسلات والتعاميم الفورية -->
     <div id="view-messages" class="tab-view">
         <div class="card" style="border-top: 4px solid #a855f7;">
             <h2><i class="bi bi-chat-right-quote"></i> إصدار وبث تعميم / تنبيه إداري فوري بالمنظومة</h2>
@@ -334,7 +327,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- ⚙️ التبويب الخامس: إعدادات حساب الأخصائي وتغيير باسورده -->
     <div id="view-settings" class="tab-view">
         <div class="card" style="border-top: 4px solid var(--primary-color); background:#f8fafc;">
             <h2><i class="bi bi-sliders2"></i> إعدادات ملف الأخصائي وتعديل كلمة المرور</h2>
@@ -363,6 +355,12 @@ import { collection, addDoc, doc, updateDoc, onSnapshot, getDocs, query, where, 
 
 let currentWorkerId = "";
 let currentWorkerName = "الأخصائي الاجتماعي";
+
+// دالة مساعدة لجلب معرف المدرسة لضمان فصل الحسابات
+const getActiveSchoolId = () => {
+    const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    return user.schoolId || 'default';
+};
 
 function getUnifiedDateString() {
     const d = new Date();
@@ -394,18 +392,24 @@ window.switchTabView = function(viewId) {
     if(viewId === 'view-settings') document.getElementById('tab-btn-settings').classList.add('active');
 };
 
-// 🎯 محرك السحب المركزي المفرز أبجدياً بشكل صحيح وثابت
+// 🎯 محرك السحب المركزي المفرز أبجدياً بشكل صحيح ومقيد بالمدرسة الحالية
 window.populateStudentsDropdownUnified = async function(classSelectId, studentSelectId) {
     const classId = document.getElementById(classSelectId).value;
     const nameSelect = document.getElementById(studentSelectId);
     if (!nameSelect) return;
     
     nameSelect.innerHTML = '<option value="">⏳ جاري جرد الأسماء وترتيبها أبجدياً...</option>';
+    const schoolId = getActiveSchoolId();
     
     try {
         const uniqueNames = new Set();
         
-        const qStudents = query(collection(db, 'students'), where('classId', '==', classId));
+        // 🏢 استعلام آمن ومقيد بمعرف المدرسة لمنع خلط الفصول
+        const qStudents = query(
+            collection(db, 'students'), 
+            where('schoolId', '==', schoolId), 
+            where('classId', '==', classId)
+        );
         const snapStud = await getDocs(qStudents);
         snapStud.forEach(doc => {
             if (doc.data().name) uniqueNames.add(doc.data().name.trim());
@@ -416,7 +420,6 @@ window.populateStudentsDropdownUnified = async function(classSelectId, studentSe
             return;
         }
         
-        // 🌟 عملية الفرز العربي الفولاذية والمصححة تماماً
         const sortedNames = Array.from(uniqueNames).sort((a, b) => a.localeCompare(b, 'ar'));
         
         let optionsHtml = '<option value="">👇 اختر اسم الطالب الحين</option>';
@@ -429,7 +432,8 @@ window.populateStudentsDropdownUnified = async function(classSelectId, studentSe
     }
 };
 
-async function broadcastGatepassLive(e) {
+// 🎫 بث استئذان مع توثيق كود الترخيص السحابي للمدرسة الحالية
+window.broadcastGatepassLive = async function(e) {
     e.preventDefault();
     const classId = document.getElementById('pass-class').value;
     const studentName = document.getElementById('pass-student-name').value;
@@ -438,12 +442,14 @@ async function broadcastGatepassLive(e) {
     const civil = document.getElementById('pass-civil').value.trim();
     const phone = document.getElementById('pass-phone').value.trim();
     const reason = document.getElementById('pass-reason').value.trim();
+    const schoolId = getActiveSchoolId();
 
     if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً من القائمة!"); return; }
     if (civil.length !== 12) { alert("⚠️ الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
 
     try {
         await addDoc(collection(db, 'gatepass'), {
+            schoolId: schoolId, // 🔑 البصمة الأمنية للـ SaaS
             classId, studentName, relative, relation, relativeCivilId: civil, relativePhone: phone, reason,
             status: 'approved', dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), officerName: currentWorkerName
         });
@@ -451,20 +457,23 @@ async function broadcastGatepassLive(e) {
         document.getElementById('social-gatepass-form').reset();
         window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
     } catch (err) { alert("خطأ: " + err.message); }
-}
+};
 
-async function saveBehaviorLogLive(e) {
+// 🛡️ رصد وإثبات المخالفات والتميز السلوكي
+window.saveBehaviorLogLive = async function(e) {
     e.preventDefault();
     const classId = document.getElementById('beh-class').value;
     const studentName = document.getElementById('beh-student-name').value;
     const type = document.getElementById('beh-type').value;
     const details = document.getElementById('beh-details').value.trim();
     const action = document.getElementById('beh-action').value.trim();
+    const schoolId = getActiveSchoolId();
 
     if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً لرصد حالته!"); return; }
 
     try {
         await addDoc(collection(db, 'behavior_logs'), {
+            schoolId: schoolId, // 🔑 فصل البيانات للسيرفر
             classId, studentName, type, details, action,
             dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), officerName: currentWorkerName, createdAt: serverTimestamp()
         });
@@ -472,8 +481,9 @@ async function saveBehaviorLogLive(e) {
         document.getElementById('social-behavior-form').reset();
         window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
     } catch(err) { alert("خطأ بالحفظ: " + err.message); }
-}
+};
 
+// 👤 فحص رادار الـ 360 درجة لملف الطالب الموحد محلياً داخل نطاق المنشأة
 window.searchStudentFullProfileLive = async function() {
     const sClass = document.getElementById('txt-profile-search-class').value;
     const sName = document.getElementById('txt-profile-search-name').value;
@@ -483,6 +493,7 @@ window.searchStudentFullProfileLive = async function() {
     const tableBeh = document.getElementById('table-profile-behavior');
     const tableGate = document.getElementById('table-profile-gatepass');
     const tableAtt = document.getElementById('table-profile-attendance');
+    const schoolId = getActiveSchoolId();
     
     tableAtt.innerHTML = '<tr><td colspan="4" style="text-align:center;">🔍 جاري فحص ملف الانتظام الدراسي والغيابات...</td></tr>';
     tableBeh.innerHTML = '<tr><td colspan="4" style="text-align:center;">🔍 جاري فحص ملف المتابعة السلوكية...</td></tr>';
@@ -492,79 +503,93 @@ window.searchStudentFullProfileLive = async function() {
     document.getElementById('lbl-profile-student-name').innerText = `👤 ملف الطالب الشامل: ${sName}`;
     document.getElementById('lbl-profile-student-class').innerText = `الفصل الدراسي المعتمد بالفحص: صف ( ${sClass} )`;
 
+    // أ) جلب الغياب المسجل من موديول المعلمين للمدرسة الحالية
     try {
-        const qAtt = query(collection(db, 'attendance_logs'), where('studentName', '==', sName));
+        const qAtt = query(
+            collection(db, 'attendance'), // مواءمة مع جدول غياب المعلم
+            where('schoolId', '==', schoolId),
+            where('studentName', '==', sName.trim())
+        );
         const snapAtt = await getDocs(qAtt);
         let hAtt = '';
         snapAtt.forEach(doc => {
             const d = doc.data();
-            if (d.classId === sClass) {
-                const badgeColor = d.type === 'غياب' ? 'background:var(--danger-color);' : 'background:var(--warning-color);';
-                hAtt += `<tr>
-                    <td>🕒 ${d.dateStr || '-'}</td>
-                    <td><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type || '-'}</span></td>
-                    <td style="font-weight:bold;">${d.reason || d.details || 'بدون عذر موثق'}</td>
-                    <td>${d.teacherName || d.officerName || 'سستم الحضور الآلي'}</td>
-                </tr>`;
-            }
+            const badgeColor = d.status === 'absent' ? 'background:var(--danger-color);' : 'background:var(--success-color);';
+            const statusText = d.status === 'absent' ? 'غياب' : 'حضور';
+            hAtt += `<tr>
+                <td>🕒 ${d.date || '-'}</td>
+                <td><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${statusText}</span></td>
+                <td style="font-weight:bold;">الحصة: ${d.period || 'غير محددة'}</td>
+                <td>${d.teacherName || 'سستم الحضور الآلي'}</td>
+            </tr>`;
         });
-        tableAtt.innerHTML = hAtt || `<tr><td colspan="4" style="text-align:center; color:#999;">✨ سجل الطالب ممتاز تماماً، لا توجد أي حالات غياب أو تأخير صباحي مرصودة بالصف ${sClass}.</td></tr>`;
+        tableAtt.innerHTML = hAtt || `<tr><td colspan="4" style="text-align:center; color:#999;">✨ سجل الطالب ممتاز تماماً، لا توجد أي حالات غياب مرصودة.</td></tr>`;
     } catch(e) { tableAtt.innerHTML = `<tr><td colspan="4">خطأ في الحضور: ${e.message}</td></tr>`; }
 
+    // ب) جلب السجل السلوكي للمدرسة الحالية
     try {
-        const qBeh = query(collection(db, 'behavior_logs'), where('studentName', '==', sName));
+        const qBeh = query(
+            collection(db, 'behavior_logs'),
+            where('schoolId', '==', schoolId),
+            where('studentName', '==', sName.trim())
+        );
         const snapBeh = await getDocs(qBeh);
         let hBeh = '';
         snapBeh.forEach(doc => {
             const d = doc.data();
-            if (d.classId === sClass) {
-                const badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : 'background:var(--success-color);';
-                hBeh += `<tr>
-                    <td>🕒 ${d.dateStr}</td>
-                    <td><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type}</span></td>
-                    <td>${d.details}</td>
-                    <td style="color:var(--hover-color);">${d.action}</td>
-                </tr>`;
-            }
+            const badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : 'background:var(--success-color);';
+            hBeh += `<tr>
+                <td>🕒 ${d.dateStr || '-'}</td>
+                <td><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type}</span></td>
+                <td>${d.details || '-'}</td>
+                <td style="color:var(--hover-color);">${d.action || '-'}</td>
+            </tr>`;
         });
-        tableBeh.innerHTML = hBeh || `<tr><td colspan="4" style="text-align:center; color:#999;">✅ السجل السلوكي للطالب نظيف تماماً في الصف ${sClass}.</td></tr>`;
+        tableBeh.innerHTML = hBeh || `<tr><td colspan="4" style="text-align:center; color:#999;">✅ السجل السلوكي للطالب نظيف تماماً في هذه المنشأة.</td></tr>`;
     } catch(e) { tableBeh.innerHTML = `<tr><td colspan="4">خطأ في السلوك: ${e.message}</td></tr>`; }
 
+    // ج) جلب سجل الاستئذان المعتمد وبوابة الأمن للمدرسة الحالية
     try {
-        const qGate = query(collection(db, 'gatepass'), where('studentName', '==', sName));
+        const qGate = query(
+            collection(db, 'gatepass'),
+            where('schoolId', '==', schoolId),
+            where('studentName', '==', sName.trim())
+        );
         const snapGate = await getDocs(qGate);
         let hGate = '';
         snapGate.forEach(doc => {
             const d = doc.data();
-            if (d.classId === sClass) {
-                let statusBadge = d.status === 'exited' ? 'background:var(--success-color); color:#fff;' : 'background:var(--warning-color); color:#fff;';
-                let statusText = d.status === 'exited' ? 'غادر المدرسة رسميًا ✅' : 'مأذون له / معلق عند الباب ⏳';
-                hGate += `<tr>
-                    <td>🕒 ${d.dateStr}</td> <td>${d.relative}</td> <td>${d.relation}</td> <td>${d.reason}</td>
-                    <td><span style="padding:2px 6px; border-radius:4px; font-size:11px; ${statusBadge}">${statusText}</span></td>
-                </tr>`;
-            }
+            let statusBadge = d.status === 'exited' ? 'background:var(--success-color); color:#fff;' : 'background:var(--warning-color); color:#fff;';
+            let statusText = d.status === 'exited' ? 'غادر المدرسة رسميًا ✅' : 'مأذون له / معلق عند الباب ⏳';
+            hGate += `<tr>
+                <td>🕒 ${d.dateStr || '-'}</td> <td>${d.relative || '-'}</td> <td>${d.relation || '-'}</td> <td>${d.reason || '-'}</td>
+                <td><span style="padding:2px 6px; border-radius:4px; font-size:11px; ${statusBadge}">${statusText}</span></td>
+            </tr>`;
         });
-        tableGate.innerHTML = hGate || `<tr><td colspan="5" style="text-align:center; color:#999;">💡 لم يتم رصد أي استئذانات سابقة للطالب بالصف ${sClass} خلال العام الدراسي.</td></tr>`;
+        tableGate.innerHTML = hGate || `<tr><td colspan="5" style="text-align:center; color:#999;">💡 لم يتم رصد أي استئذانات سابقة للطالب خلال العام الدراسي الحالي.</td></tr>`;
     } catch(e) { tableGate.innerHTML = `<tr><td colspan="5">خطأ في الأذونات: ${e.message}</td></tr>`; }
 };
 
-async function saveNewCircularLive(e) {
+// 📋 بث نشر وتوزيع التعاميم داخل المدرسة الحالية
+window.saveNewCircularLive = async function(e) {
     e.preventDefault();
     const title = document.getElementById('msg-title').value.trim();
     const target = document.getElementById('msg-target').value;
     const content = document.getElementById('msg-content').value.trim();
+    const schoolId = getActiveSchoolId();
 
     try {
         await addDoc(collection(db, 'circulars'), {
+            schoolId: schoolId, // 🔑 الحظر الآمن للـ SaaS
             title, target, content, dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), senderName: currentWorkerName, createdAt: serverTimestamp()
         });
         alert("✓ تم نشر وتعميم التوجيه بنجاح، وظهر في لوحات التحكم المستهدفة الحين.");
         document.getElementById('social-message-form').reset();
     } catch(err) { alert("خطأ بالبث: " + err.message); }
-}
+};
 
-async function updateSocialProfileLive(e) {
+// ⚙️ تحديث البروفايل الشخصي للأخصائي
+window.updateSocialProfileLive = async function(e) {
     e.preventDefault();
     const newName = document.getElementById('social-profile-name').value.trim();
     const newPass = document.getElementById('social-profile-pass').value.trim();
@@ -583,32 +608,40 @@ async function updateSocialProfileLive(e) {
         alert("✓ تم تحديث ملفك الشخصي وكلمة المرور بنجاح تام بقاعدة البيانات.");
         window.location.replace('social.html');
     } catch(err) { alert("خطأ في الحفظ: " + err.message); }
-}
+};
 
+// ⚡ الاستماع المركزي اللحظي المقيد بـ schoolId لمنع تداخل المدارس
 function startSocialCentralListeners() {
-    onSnapshot(collection(db, 'gatepass'), (snapshot) => {
+    const schoolId = getActiveSchoolId();
+
+    // 1. مراقبة وجرد أرشيف البوابة الخارجة
+    const qGate = query(collection(db, 'gatepass'), where('schoolId', '==', schoolId));
+    onSnapshot(qGate, (snapshot) => {
         const searchDate = document.getElementById('txt-search-date').value.trim();
         const tbody = document.getElementById('social-archive-tbody');
         if(!tbody) return;
         let html = ''; let todayCount = 0;
+        const todayStr = getUnifiedDateString();
         
         snapshot.forEach(doc => {
             const d = doc.data();
-            if (d.dateStr === getUnifiedDateString()) todayCount++;
+            if (d.dateStr === todayStr || d.date === todayStr) todayCount++;
             if (d.dateStr === searchDate) {
                 html += `<tr>
-                    <td>🕒 ${d.dateStr}</td> <td><b>👤 ${d.studentName || '-'}</b></td>
+                    <td>🕒 ${d.dateStr || '-'}</td> <td><b>👤 ${d.studentName || '-'}</b></td>
                     <td><span style="background:#475569; color:#fff; padding:2px 6px; border-radius:4px;">${d.classId || '-'}</span></td>
-                    <td>${d.relative || '-'}</td> <td>${d.relation || '-'}</td> <td><code>${d.relativeCivilId}</code></td>
-                    <td><a href="tel:${d.relativePhone}">${d.relativePhone}</a></td> <td>${d.reason}</td>
+                    <td>${d.relative || '-'}</td> <td>${d.relation || '-'}</td> <td><code>${d.relativeCivilId || '-'}</code></td>
+                    <td><a href="tel:${d.relativePhone}">${d.relativePhone || '-'}</a></td> <td>${d.reason || '-'}</td>
                 </tr>`;
             }
         });
         document.getElementById('lbl-count-today').innerText = todayCount;
-        tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center; color:#999;">💡 لا توجد تصاريح استئذان مسجلة للتاريخ المحدد.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center; color:#999;">💡 لا توجد تصاريح استئذان مسجلة بالتاريخ المحدد.</td></tr>';
     });
 
-    onSnapshot(collection(db, 'behavior_logs'), (snapshot) => {
+    // 2. مراقبة وإحصاء السجل السلوكي المركزي
+    const qBeh = query(collection(db, 'behavior_logs'), where('schoolId', '==', schoolId));
+    onSnapshot(qBeh, (snapshot) => {
         const tbody = document.getElementById('social-behavior-tbody');
         let html = ''; let posCount = 0; let negCount = 0;
         
@@ -625,28 +658,31 @@ function startSocialCentralListeners() {
         });
         document.getElementById('lbl-stat-negative').innerText = negCount;
         document.getElementById('lbl-stat-positive').innerText = posCount;
-        if(tbody) tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center; color:#999;">💡 السجل السلوكي المركزي فارغ، لم يتم رصد أي حالات اليوم بعد.</td></tr>';
+        if(tbody) tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center; color:#999;">💡 السجل السلوكي المركزي فارغ، لم يتم رصد أي حالات بعد.</td></tr>';
     });
 
-    onSnapshot(collection(db, 'circulars'), (snapshot) => {
+    // 3. مراقبة التعاميم النشطة بالمدرسة
+    const qCirc = query(collection(db, 'circulars'), where('schoolId', '==', schoolId));
+    onSnapshot(qCirc, (snapshot) => {
         const tbody = document.getElementById('social-circulars-tbody');
         if(!tbody) return;
         let html = '';
         snapshot.forEach(doc => {
             const d = doc.data();
             html += `<tr style="border-bottom: 1px solid #e2e8f0;">
-                <td>🕒 ${d.dateStr} - ${d.timeStr}</td> <td><b>📢 ${d.title}</b></td>
-                <td><span style="background:#e67e22; color:#fff; padding:3px 8px; border-radius:4px; font-size:11px;">${d.target}</span></td>
-                <td style="color:#475569;">${d.content}</td> <td>أ. ${d.senderName}</td>
+                <td>🕒 ${d.dateStr || '-'} - ${d.timeStr || '-'}</td> <td><b>📢 ${d.title || '-'}</b></td>
+                <td><span style="background:#e67e22; color:#fff; padding:3px 8px; border-radius:4px; font-size:11px;">${d.target || '-'}</span></td>
+                <td style="color:#475569;">${d.content || '-'}</td> <td>أ. ${d.senderName || '-'}</td>
             </tr>`;
         });
         tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center; color:#999;">💡 لا توجد تعاميم أو مراسلات صادرة لغاية الآن.</td></tr>';
     });
 }
 
-window.broadcastGatepassLive = broadcastGatepassLive;
-window.saveBehaviorLogLive = saveBehaviorLogLive;
-window.saveNewCircularLive = saveNewCircularLive;
+// تشغيل جرد الأرشيف يدوياً عند ضغط الزر
+window.loadHistoricalArchiveLive = function() {
+    startSocialCentralListeners(); 
+};
 
 document.addEventListener("DOMContentLoaded", function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
@@ -663,6 +699,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     startSocialCentralListeners();
     
+    // التغذية التلقائية للمساقط عند أول تشغيل
     window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
     window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
     window.populateStudentsDropdownUnified('txt-profile-search-class', 'txt-profile-search-name');
