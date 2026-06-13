@@ -1,9 +1,8 @@
-// 🛡️ منظومة الأمن والسلامة المدرسية ودفتر الزوار الرقمي - مدرسة سالم الحسينان ٢٠٢٦
-import { db } from '../firebase-config.js';
-import { collection, addDoc, doc, updateDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, addDoc, doc, updateDoc, onSnapshot, serverTimestamp, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initGuardModule() {
-    console.log("🚀 تم تشغيل منظومة الأمن والسلامة الذكية");
+    console.log("🚀 تم تشغيل منظومة الأمن والسلامة الذكية والمؤمنة سحابياً");
     
     let currentGuardName = "مسؤول الأمن والسلامة";
     const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
@@ -62,7 +61,7 @@ export async function initGuardModule() {
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900;">الرقم المدني للمستلم</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900;">رقم الهاتف</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900;">السبب / العذر</th>
-                            <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900; text-align: center; width: 160px;">إجراء حارس الباب</th>
+                            <th style="padding: 12px 10px; border: 1px solid #e2e8f0; text-align: center; width: 160px;">إجراء حارس الباب</th>
                         </tr>
                     </thead>
                     <tbody id="guard-live-gatepass-tbody">
@@ -119,7 +118,7 @@ export async function initGuardModule() {
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900;">الرقم المدني للزائر</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900;">رقم التلفون</th>
                             <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900;">سبب وهدف الزيارة الموثق</th>
-                            <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900;">مسؤول الأمن الراصد</th>
+                            <th style="padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 900;">موقع هذه المدرسة</th>
                         </tr>
                     </thead>
                     <tbody id="guard-visitors-archive-tbody">
@@ -144,17 +143,19 @@ export async function initGuardModule() {
         } catch (e) { alert("خطأ سحابي: " + e.message); }
     };
 
-    // 💾 حفظ وأرشفة الزائر بالدفتر فورياً
+    // 💾 حفظ وأرشفة الزائر بالدفتر فورياً (مع حقن معرف المدرسة لحظر الاختراقات السحابية)
     window.saveNewVisitorLogLive = async function(e) {
         e.preventDefault();
         const name = document.getElementById('vis-name').value.trim();
         const civil = document.getElementById('vis-civil').value.trim();
         const phone = document.getElementById('vis-phone').value.trim();
         const reason = document.getElementById('vis-reason').value;
+        const schoolId = getActiveSchoolId(); // ← عزل مجمع سحابي
         
         if (civil.length !== 12) { alert("⚠️ الرقم المدني الكويتي يجب أن يتكون من 12 رقم بالملي!"); return; }
         try {
             await addDoc(collection(db, 'visitors'), {
+                schoolId: schoolId, // ← الحاق الكرت بالملف الموحد للمدرسة النشطة
                 visitorName: name, civilId: civil, phone: phone, reason: reason,
                 dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), guardName: currentGuardName, createdAt: serverTimestamp()
             });
@@ -169,7 +170,12 @@ export async function initGuardModule() {
     function listenToTodayLiveGatepasses() {
         const tbody = document.getElementById('guard-live-gatepass-tbody');
         if (!tbody) return;
-        onSnapshot(collection(db, 'gatepass'), (snapshot) => {
+        const schoolId = getActiveSchoolId();
+
+        // ربط الفلترة بالـ schoolId لمنع تسريب استئذانات المدارس الأخرى
+        const qPass = query(collection(db, 'gatepass'), where('schoolId', '==', schoolId));
+
+        onSnapshot(qPass, (snapshot) => {
             let html = '';
             let hasActivePass = false;
             snapshot.forEach(d => {
@@ -183,7 +189,7 @@ export async function initGuardModule() {
                     let warningBadge = '';
                     
                     if (data.reason && (data.reason.includes('منع') || data.reason.includes('تحذير') || data.reason.includes('خلاف'))) {
-                        rowStyle = 'border-bottom: 3px solid #ef4444; background: #fef2f2; animate: blinker 1s linear infinite;';
+                        rowStyle = 'border-bottom: 3px solid #ef4444; background: #fef2f2;';
                         nameStyle = 'color: #b91c1c; font-size: 15px; font-weight:900;';
                         warningBadge = `<br><span style="background:#b91c1c; color:#fff; font-size:10px; padding:2px 6px; border-radius:4px;"><i class="bi bi-exclamation-octagon-fill"></i> مراجعة الإدارة فوراً</span>`;
                     }
@@ -217,7 +223,12 @@ export async function initGuardModule() {
     function listenToTodayVisitorsLogs() {
         const tbody = document.getElementById('guard-visitors-archive-tbody');
         if (!tbody) return;
-        onSnapshot(collection(db, 'visitors'), (snapshot) => {
+        const schoolId = getActiveSchoolId();
+
+        // عزل كشوف دفتر الزوار المباشر بناءً على معرف المدرسة
+        const qVis = query(collection(db, 'visitors'), where('schoolId', '==', schoolId));
+
+        onSnapshot(qVis, (snapshot) => {
             let html = '';
             snapshot.forEach(doc => {
                 const d = doc.data();
