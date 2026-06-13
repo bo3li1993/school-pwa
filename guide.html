@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link class="apple-touch-icon" href="./logo.png">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
   <title>بروشور المنظومة الرقمية الشاملة - مدرسة سالم الحسينان</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   
-  <!-- مكتبات تحويل الصفحة إلى PDF حياً -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -28,6 +32,7 @@
     
     /* شبكة المميزات */
     .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    @media (max-width: 650px) { .features-grid { grid-template-columns: 1fr; } }
     .feature-item { background: #f8f9fa; border-right: 4px solid #1a1a2e; padding: 1rem; border-radius: 4px; }
     .feature-item h4 { color: #1a1a2e; font-size: 15px; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
     .feature-item p { font-size: 13px; color: #666; line-height: 1.5; }
@@ -35,7 +40,7 @@
     /* خطوات الاستخدام */
     .steps-list { display: flex; flex-direction: column; gap: 12px; }
     .step-card { display: flex; align-items: center; gap: 15px; background: #fff8f0; padding: 1rem; border-radius: 6px; border: 1px solid #ffe8cc; }
-    .step-number { background: #e67e22; color: #fff; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 14px; shrink: 0; }
+    .step-number { background: #e67e22; color: #fff; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 14px; flex-shrink: 0; }
     .step-text h5 { color: #1a1a2e; font-size: 14px; }
     .step-text p { font-size: 12px; color: #666; }
     
@@ -47,10 +52,11 @@
     
     .savings-box { background: linear-gradient(135deg, #1a1a2e 0%, #2e2e54 100%); color: #fff; padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem; }
     .savings-box h4 { color: #f1c40f; margin-bottom: 10px; font-size: 16px; }
-    .savings-box ul { margin-right: 20px; font-size: 13px; line-height: 1.7; }
+    .savings-box ul { margin-right: 20px; font-size: 13px; line-height: 1.7; list-style-type: square; }
     
     /* محاكي الصور اللقطات داخل البروشور */
     .image-placeholder-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 1rem; }
+    @media (max-width: 650px) { .image-placeholder-row { grid-template-columns: 1fr; } }
     .img-box { background: #eef0f4; border: 2px dashed #ccd1d9; height: 180px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #777; font-size: 12px; text-align: center; padding: 10px; }
     .img-box i { font-size: 32px; color: #1a1a2e; margin-bottom: 8px; }
 
@@ -62,7 +68,6 @@
 </head>
 <body>
 
-  <!-- لوحة العرض الورقية الجاهزة للتحويل -->
   <div class="pdf-container" id="brochure-page">
     
     <div class="brochure-header">
@@ -70,7 +75,6 @@
       <p>مدرسة سالم الحسينان المتوسطة بنين - الإدارة المطورة</p>
     </div>
 
-    <!-- 1. أهم المميزات -->
     <div class="section-title">
       <i class="bi bi-star-fill"></i> أهم مميزات وخدمات المنظومة الرقمية
     </div>
@@ -93,7 +97,6 @@
       </div>
     </div>
 
-    <!-- لقطات شاشة للنظام تظهر داخل الـ PDF -->
     <div class="section-title">
       <i class="bi bi-images"></i> واجهات ونوافذ المنظومة الرقمية حياً
     </div>
@@ -110,7 +113,6 @@
       </div>
     </div>
 
-    <!-- 2. طريقة الاستخدام -->
     <div class="section-title">
       <i class="bi bi-sliders"></i> دليل الاستخدام المبسط للهيئة الإدارية والتعليمية
     </div>
@@ -138,7 +140,6 @@
       </div>
     </div>
 
-    <!-- 3. ما يميز المنظومة -->
     <div class="section-title">
       <i class="bi bi-trophy-fill"></i> ما يميز المنظومة عن الأنظمة التقليدية الأخرى
     </div>
@@ -159,22 +160,21 @@
         <tr>
           <td><strong>التحكم في الأقسام</strong></td>
           <td>تحتاج إعادة برمجة وتعديل الأكواد يدوياً.</td>
-          <td style="color: #27ae60; font-weight: bold;">لوحة "No-Code" للمدير يضيف ويعدل الأقسام حياً.</td>
+          <td style="color: #27ae60; font-weight: bold;">لوحة "No-Code" للمدير يضيف ويعدل الأقسام والوظائف لايف.</td>
         </tr>
         <tr>
           <td><strong>التوافق مع الأجهزة</strong></td>
           <td>تعليق وتجميد مستمر على متصفحات الهواتف.</td>
-          <td style="color: #27ae60; font-weight: bold;">دعم كامل للمس والموبايل (دوال الاستهداف closest).</td>
+          <td style="color: #27ae60; font-weight: bold;">دعم كامل وانسيابي للمس والموبايل بكفاءة عالية وسرعة استجابة.</td>
         </tr>
       </tbody>
     </table>
 
-    <!-- 4. القيمة المضافة والتوفير -->
     <div class="section-title">
       <i class="bi bi-cash-coin"></i> العوائد والقيمة المضافة للمدارس المشتركة
     </div>
     <div class="savings-box">
-      <h4>ماذا ستوفر المنظومة الشاملة على المدارس؟</h4>
+      <h4>ماذا ستوفر المنظومة الشاملة على المدارس?</h4>
       <ul>
         <li><strong>بيئة عمل خضراء (صفر أوراق):</strong> إلغاء دفاتر غياب الحصص، دفاتر السلوك والجزاءات، وكشوف الزوار الورقية تماماً.</li>
         <li><strong>إحكام المنظومة الأمنية للمبنى:</strong> حماية الطلاب من الخروج الخاطئ وتوثيق هوية الزوار بدقة متناهية وسجل مركزي.</li>
@@ -185,7 +185,6 @@
 
   </div>
 
-  <!-- زر التحميل الخارجي المعزول لمنعه من الظهور داخل الـ PDF -->
   <div class="action-bar">
     <button class="btn-download" onclick="generateBrochurePDF()">
       <i class="bi bi-file-earmark-pdf-fill"></i> 📥 تحميل الدليل كملف PDF رسمي
@@ -207,29 +206,31 @@
           scale: 2, // رفع دقة ووضوح النصوص والصور
           useCORS: true,
           scrollX: 0,
-          scrollY: 0
+          scrollY: 0,
+          logging: false
         });
         
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210; // قياسات ورقة A4 بالمليمتر
-        const pageHeight = 295;
+        const imgWidth = 210; // قياسات ورقة A4 الدولية بالمليمتر
+        const pageHeight = 297; // المقاس العمودي الفعلي الدقيق لورق A4
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         let heightLeft = imgHeight;
         let position = 0;
         
-        // توليد الصفحات تلقائياً بناءً على حجم المحتوى
+        // توليد الصفحة الأولى
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
         
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
+        // حساب وتوليد الصفحات الإضافية تلقائياً بدقة هندسية من خلال إزاحة ثابتة ومحسوبة
+        while (heightLeft > 0) {
+          position = position - pageHeight; // إزاحة سالبة دقيقة للأعلى بمقدار طول الصفحة
           pdf.addPage();
           pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
         
-        // حفظ الملف باسم رسمي
+        // حفظ الملف باسم رسمي معتمد للمدرسة
         pdf.save('دليل_المنظومة_الرقمية_الشاملة_الحسينان.pdf');
         
         // إعادة الزر لوضعه الطبيعي
