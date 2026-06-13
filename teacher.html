@@ -51,7 +51,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--hover-color); }
 .btn-main-submit { width: 100%; background: var(--primary-color); color: #fff; border: none; padding: 16px; border-radius: 10px; font-weight: 900; cursor: pointer; font-size: 14px; transition: 0.2s; box-shadow: 0 4px 12px rgba(26,26,46,0.15); }
 .btn-main-submit:hover { background: var(--hover-color); }
 
-/* رصد خيارات الحضور والغياب المكشوف نفس الكوميت */
+/* رصد خيارات الحضور والغياب المكشوف نفس الكوميت مالتك بوعلي */
 .student-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
 .student-name { font-size: 14px; font-weight: 700; color: #334155; flex: 1; text-align: right; }
 
@@ -197,16 +197,22 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, getDocs, doc, setDoc, query, where, serverTimestamp, writeBatch, onSnapshot, orderBy, limit, addDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, doc, query, where, serverTimestamp, writeBatch, onSnapshot, orderBy, limit, addDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentTeacherId = "";
 let currentTeacherName = "المعلم";
 let fetchedStudents = [];
 
-// التاريخ الشرعي المتطابق مع المدير بدون أصفار حشو
-function getUnifiedDateString() {
+// التاريخ الشرعي (بدون أصفار حشو) عشان يطابق المدير 100%
+function getUnifiedDateStringSlash() {
     const d = new Date();
     return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+// صيغة الـ AppSheet والـ ISO المعتمدة للمدير لضمان المزامنة
+function getUnifiedDateStringHyphen() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function getUnifiedTimeString() {
@@ -296,7 +302,6 @@ window.populateDropdownAlphabetical = async function(classSelectId, studentSelec
     } catch (err) { nameSelect.innerHTML = '<option value="">❌ خطأ في سحب الأسماء</option>'; }
 };
 
-// دالة مخصصة لطباعة كشف الطلاب ليكون قابل لإعادة الاستدعاء عند فتح القفل الحصص
 window.renderStudentListSheet = async function(classId) {
     const listBox = document.getElementById('teacher-students-list-box');
     listBox.innerHTML = `<p style="text-align:center; padding:15px; font-weight:bold;">⏳ جاري جلب وفرز الأسماء...</p>`;
@@ -359,15 +364,17 @@ window.togglePillActive = function(index, status) {
     if(status === 'late' && lLbl) { lLbl.classList.add('l-active'); lLbl.querySelector('input').checked = true; }
 };
 
-// 🚨 محرك الفحص والقفل الذكي: يمنع رصد الحصة فوق بعضها ويحمي السيرفر
+// 🚨 رادار الفحص والقفل الكلي الذكي للحصة (تم التعديل ليعمل client-side لمنع أخطاء الأندكس)
 window.checkPeriodStatusLive = async function() {
     const classId = document.getElementById('t-class-select').value;
     if(!classId) return;
     resetPeriodBadges();
-    const todayStr = getUnifiedDateString();
+    const todayStrSlash = getUnifiedDateStringSlash();
     try {
-        const q = query(collection(db, 'attendance'), where('classId', '==', classId.trim()), where('dateStr', '==', todayStr));
+        // فلترة أحادية تمنع الـ Index Error وتسحب فوراً بيانات اليوم
+        const q = query(collection(db, 'attendance'), where('dateStr', '==', todayStrSlash));
         const snap = await getDocs(q);
+        
         const periodsMap = {
             "الحصة الأولى": "p-box-1", "الحصة الثانية": "p-box-2", "الحصة الثالثة": "p-box-3",
             "الحصة الرابعة": "p-box-4", "الحصة الخامسة": "p-box-5", "الحصة السادسة": "p-box-6",
@@ -375,15 +382,20 @@ window.checkPeriodStatusLive = async function() {
         };
         
         let donePeriods = new Set();
-        snap.forEach(doc => {
-            const periodName = doc.data().period;
-            donePeriods.add(periodName);
-            const elementId = periodsMap[periodName];
-            if(elementId) {
-                const badge = document.getElementById(elementId);
-                if(badge) {
-                    badge.className = "period-badge done";
-                    badge.innerHTML = `${elementId.replace('p-box-', 'ح')}<br>✅`;
+        snap.forEach(docSnap => {
+            const d = docSnap.data();
+            if (d.classId && d.classId.trim() === classId.trim()) {
+                const periodName = d.period;
+                if(periodName) {
+                    donePeriods.add(periodName);
+                    const elementId = periodsMap[periodName];
+                    if(elementId) {
+                        const badge = document.getElementById(elementId);
+                        if(badge) {
+                            badge.className = "period-badge done";
+                            badge.innerHTML = `${elementId.replace('p-box-', 'ح')}<br>✅`;
+                        }
+                    }
                 }
             }
         });
@@ -392,7 +404,7 @@ window.checkPeriodStatusLive = async function() {
         const submitBtn = document.getElementById('btn-submit-attendance');
         const listBox = document.getElementById('teacher-students-list-box');
 
-        // قفل التعديل النهائي للحصة فوراً إذا كانت مسجلة مسبقاً اليوم
+        // قفل الكشف وإخفاؤه تماماً فور اكتشاف تسجيل مسبق
         if(donePeriods.has(currentPeriod)) {
             submitBtn.disabled = true;
             submitBtn.style.background = "#94a3b8";
@@ -400,14 +412,14 @@ window.checkPeriodStatusLive = async function() {
             submitBtn.innerHTML = `<i class="bi bi-lock-fill"></i> هذه الحصة رُصدت وقُفلت مسبقاً`;
             listBox.innerHTML = `<div style="text-align:center; padding:35px; color:var(--danger-color); font-weight:bold;">
                 <i class="bi bi-lock-fill" style="font-size: 45px; display:block; margin-bottom:12px;"></i>
-                🔒 الحصة مقفلة بالكامل: تم رصد حضور وغياب هذه الحصة مسبقاً لليوم الدراسي الحالي بنجاح، ولا يمكن إعادة الرصد فوقها لمنع التداخل (توجّه لعلامة الأرشيف للتعديل).
+                🔒 الحصة مقفلة بالكامل: تم رصد حضور وغياب هذه الحصة مسبقاً لليوم الدراسي الحالي بنجاح، ولا يمكن إعادة الرصد فوقها (توجّه لعلامة الأرشيف للتعديل).
             </div>`;
         } else {
             submitBtn.disabled = false;
             submitBtn.style.background = "var(--primary-color)";
             submitBtn.style.boxShadow = "0 4px 12px rgba(26,26,46,0.15)";
             submitBtn.innerHTML = `<i class="bi bi-check-all"></i> 🔘 اعتماد وإرسال كشف حضور وغياب الحصة الموحد`;
-            if (listBox.innerHTML.includes("الحصة مقفلة") && classId) {
+            if (listBox.innerHTML.includes("الحصة مقفلة")) {
                 await window.renderStudentListSheet(classId);
             }
         }
@@ -421,7 +433,7 @@ function resetPeriodBadges() {
     }
 }
 
-// 💾 🔘 حفظ الكشف الجماعي بالمعرّف العشوائي المتوافق 100% مع حساب المدير
+// 💾 اعتماد وإرسال الكشف - متوافق كلياً مع معايير المدير والـ AppSheet السحابية
 window.saveAttendanceFromTeacherLive = async function() {
     const classId = document.getElementById('t-class-select').value;
     const period = document.getElementById('t-period-select').value;
@@ -431,10 +443,11 @@ window.saveAttendanceFromTeacherLive = async function() {
     if(!confirm(`تأكيد اعتماد سجل حضور وغياب الصف (${classId}) للحصة (${period})؟`)) return;
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري ترحيل الكشف وتأمين الاتصال لايف...`;
+    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري حفظ السجلات وتأمين الاتصال...`;
 
     try {
-        const todayStr = getUnifiedDateString();
+        const todayStrSlash = getUnifiedDateStringSlash();   // 2026/6/13
+        const todayStrHyphen = getUnifiedDateStringHyphen(); // 2026-06-13
         const timeStr = getUnifiedTimeString();
         const batch = writeBatch(db);
         
@@ -442,9 +455,10 @@ window.saveAttendanceFromTeacherLive = async function() {
             const sName = fetchedStudents[i];
             const radioOptions = document.getElementsByName(`status_${i}`);
             let selectedStatus = "present";
+            
             for(let radio of radioOptions) { if(radio.checked) selectedStatus = radio.value; }
 
-            // 🔥 العودة للمعرّف العشوائي الشرعي ليتطابق 100% مع حساب المدير والـ AppSheet ويظهر فوراً
+            // استخدام معرّفات عشوائية شرعية لضمان قراءة الـ AppSheet والمدير لها لايف
             const attRef = doc(collection(db, 'attendance')); 
 
             batch.set(attRef, {
@@ -452,9 +466,9 @@ window.saveAttendanceFromTeacherLive = async function() {
                 studentName: sName,
                 name: sName,
                 period: period,
-                status: selectedStatus, // present, absent, late
-                dateStr: todayStr,
-                date: todayStr,
+                status: selectedStatus, 
+                dateStr: todayStrSlash,   // صيغة كودك القديم
+                date: todayStrHyphen,     // صيغة تقويم المدير والـ AppSheet
                 timeStr: timeStr,
                 recordedBy: currentTeacherId,
                 timestamp: serverTimestamp()
@@ -463,11 +477,13 @@ window.saveAttendanceFromTeacherLive = async function() {
 
         await batch.commit();
 
-        alert(`🚀 تم اعتماد الكشف بنجاح كامل الحين، وظهر بلوحة المدير فوراً!`);
-        await window.checkPeriodStatusLive(); // التحديث الفوري لقفل المدخلات ومنع الكتابة فوقها
-    } catch(e) { alert("خطأ في عملية الحفظ: " + e.message); }
-    
-    submitBtn.disabled = false;
+        alert(`🚀 تم اعتماد كشف الحصة (${period}) بنجاح، وظهر في لوحة المدير فوراً وقُفل التسجيل!`);
+        await window.checkPeriodStatusLive(); // القفل الفوري للشاشة لمنع ضغط الزر مجدداً
+    } catch(e) { 
+        alert("خطأ في عملية الحفظ: " + e.message); 
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="bi bi-check-all"></i> 🔘 اعتماد وإرسال كشف حضور وغياب الحصة الموحد`;
+    }
 };
 
 // 🛡️ رصد السلوك المباشر
@@ -481,7 +497,7 @@ window.saveBehaviorLogLive = async function(e) {
     try {
         await addDoc(collection(db, 'behavior_logs'), {
             classId, studentName, type, details, action,
-            dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), officerName: currentTeacherName + " (معلم الصف)", createdAt: serverTimestamp()
+            dateStr: getUnifiedDateStringSlash(), timeStr: getUnifiedTimeString(), officerName: currentTeacherName + " (معلم الصف)", createdAt: serverTimestamp()
         });
         alert(`✓ تم رصد وإرسال السجل السلوكي بنجاح للطالب [ ${studentName} ].`);
         document.getElementById('teacher-behavior-form').reset();
@@ -489,7 +505,7 @@ window.saveBehaviorLogLive = async function(e) {
     } catch(err) { alert("خطأ في الحفظ: " + err.message); }
 };
 
-// 🕒 كاشف الحظر القانوني للـ 3 ساعات بتبويب الأرشيف الخاص
+// 🕒 كاشف أرشيف التعديل الذكي
 function startTeacherArchiveListener() {
     onSnapshot(collection(db, 'attendance'), (snapshot) => {
         const tbody = document.getElementById('teacher-archive-tbody');
@@ -533,7 +549,7 @@ window.editPastAttendanceLive = async function(docId, studentName, oldStatus, ol
     if (userInput === "غياب") newStatus = "absent";
     else if (userInput === "تأخير") newStatus = "late";
     else if (userInput === "حضور") newStatus = "present";
-    else { alert("⚠️ خطأ! يجب كتابة الكلمة بدقة: (غياب) أو (تأخير) أو (حضور) لتصحيح السجل الموحد."); return; }
+    else { alert("⚠️ خطأ! يجب كتابة الكلمة بدقة."); return; }
     try {
         const docRef = doc(db, 'attendance', docId);
         await updateDoc(docRef, { status: newStatus });
