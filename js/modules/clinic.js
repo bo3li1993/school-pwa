@@ -1,6 +1,5 @@
-// 🩺 موديل العيادة المدرسية والصحة الطلابية المربوط بالمركزي والفرز الأبجدي
-import { db } from '../firebase-config.js';
-import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initClinicModule() {
     const container = document.getElementById('tab-clinic');
@@ -66,11 +65,21 @@ export async function initClinicModule() {
             </div>
         </div>`;
 
-        // جلب الفصول لايف
         const classSelect = document.getElementById('clinic-class-select');
-        const snap = await getDocs(collection(db, 'students'));
+        const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
+        
+        // جلب الفصول التابعة للمدرسة الحالية
+        const qStudents = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+        const snap = await getDocs(qStudents);
+        
         let classesSet = new Set();
         snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
+        
+        // دعم التوافقية للمدرسة القديمة
+        if (classesSet.size === 0 && schoolId === 'hosainan') {
+            const fSnap = await getDocs(collection(db, 'students'));
+            fSnap.forEach(doc => { if(!doc.data().schoolId && doc.data().classId) classesSet.add(doc.data().classId.trim()); });
+        }
         
         let htmlClasses = '<option value="">-- اختر الفصل --</option>';
         Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
@@ -85,6 +94,7 @@ export async function initClinicModule() {
 window.handleClinicClassChange = async function(classId) {
     const studentSelect = document.getElementById('clinic-student-select');
     if (!studentSelect) return;
+    const schoolId = getActiveSchoolId();
 
     if (!classId) {
         studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
@@ -96,11 +106,18 @@ window.handleClinicClassChange = async function(classId) {
     studentSelect.disabled = true;
 
     try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
-        const snap = await getDocs(q);
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
+        let snap = await getDocs(q);
+        
+        if (snap.empty && schoolId === 'hosainan') {
+             snap = await getDocs(query(collection(db, 'students'), where('classId', '==', classId.trim())));
+        }
         
         let arr = [];
-        snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
+        snap.forEach(doc => { 
+            const d = doc.data();
+            if(d.name && (!d.schoolId || d.schoolId === schoolId)) arr.push(d.name.trim()); 
+        });
         arr.sort((a, b) => a.localeCompare(b, 'ar'));
 
         let html = '<option value="">-- اختر اسم الطالب المريض --</option>';
@@ -119,33 +136,35 @@ window.handleRegisterClinicLive = async function(e) {
     const cId = document.getElementById('clinic-class-select').value;
     const complaint = document.getElementById('clinic-complaint').value;
     const treatment = document.getElementById('clinic-treatment').value.trim();
+    const schoolId = getActiveSchoolId(); // 🏢 الربط المركزي السحابي
 
     try {
         await addDoc(collection(db, 'clinic'), {
+            schoolId: schoolId, // 🔑 البصمة الأمنية
             studentName: sName,
             classId: cId,
             complaint: complaint,
             treatment: treatment,
             createdAt: serverTimestamp()
         });
-        alert('✓ تم تسجيل البيانات الصحية للطالب بنجاح السيرفر.');
+        alert('✓ تم تسجيل البيانات الصحية للطالب بنجاح.');
         document.getElementById('clinic-reg-form').reset();
         document.getElementById('clinic-student-select').innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
         document.getElementById('clinic-student-select').disabled = true;
-        loadClinicLogsLive();
     } catch(err) {
         alert('خطأ في الاتصال: ' + err.message);
     }
 };
 
-async function loadClinicLogsLive() {
+function loadClinicLogsLive() {
     const tbody = document.getElementById('clinic-logs-tbody');
     if (!tbody) return;
+    const schoolId = getActiveSchoolId();
 
-    try {
-        const snap = await getDocs(collection(db, 'clinic'));
+    // جلب وحصر زيارات العيادة التابعة للمدرسة الحالية فقط
+    const qLogs = query(collection(db, 'clinic'), where('schoolId', '==', schoolId));
+    onSnapshot(qLogs, (snap) => {
         let html = '';
-        
         snap.forEach(d => {
             const data = d.data();
             html += `
@@ -154,12 +173,8 @@ async function loadClinicLogsLive() {
                     <td style="text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
                     <td style="text-align:center;"><span class="badge success" style="background:#3498db;">${data.complaint || '-'}</span></td>
                     <td style="color:#555; font-size:12px; font-weight:700;">${data.treatment || '-'}</td>
-                </tr>
-            `;
+                </tr>`;
         });
-
         tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 لا توجد زيارات مقيدة للعيادة اليوم.</td></tr>';
-    } catch(e) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px;">💡 بانتظار قيد أول حالة صحية لتهيئة الجدول.</td></tr>';
-    }
+    });
 }
