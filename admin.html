@@ -6,631 +6,125 @@
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link class="apple-touch-icon" href="./logo.png">
-<link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>المنظومة الرقمية الموحدة - لوحة التحكم الإدارية</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
-:root {
-    --primary-color: #1a1a2e; --sidebar-bg: #161625; --hover-color: #e67e22;
-    --text-color: #ecf0f1; --bg-light: #f4f6f9; --success-color: #27ae60; --danger-color: #e74c3c;
-    --accent-color: #2980b9;
-}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+:root { --primary-color: #1a1a2e; --sidebar-bg: #161625; --hover-color: #e67e22; --text-color: #ecf0f1; --bg-light: #f4f6f9; --success-color: #27ae60; --danger-color: #e74c3c; --accent-color: #2980b9; }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
-body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; overflow-x: hidden; }
-
-/* هندسة القائمة الجانبية لتصبح Drawer مخفي من اليمين انسيابي وثابت */
-.sidebar { 
-    width: 280px; background: var(--sidebar-bg); color: var(--text-color); display: flex; flex-direction: column; 
-    position: fixed; top: 0; right: -280px; height: 100vh; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; box-shadow: -5px 0 25px rgba(0,0,0,0.3);
-}
+body { background: var(--bg-light); display: flex; min-height: 100vh; direction: rtl; }
+.sidebar { width: 280px; background: var(--sidebar-bg); color: var(--text-color); position: fixed; top: 0; right: -280px; height: 100vh; transition: right 0.3s; z-index: 2000; box-shadow: -5px 0 25px rgba(0,0,0,0.3); }
 .sidebar.active { right: 0; }
-.sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #2c2c3e; background: var(--primary-color); }
-.sidebar-header h3 { font-size: 14px; font-weight: 900; color: #fff; }
-.sidebar-header p { font-size: 11px; color: var(--hover-color); font-weight: bold; margin-top: 3px; }
-.menu-list { list-style: none; padding: 15px 0; overflow-y: auto; flex: 1; }
-.menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #b2bec3; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.2s; }
+.sidebar-header { padding: 20px; text-align: center; background: var(--primary-color); }
+.menu-list { list-style: none; padding: 15px 0; }
+.menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #b2bec3; cursor: pointer; font-weight: 700; font-size: 13px; }
 .menu-item:hover, .menu-item.active { background: #2c2c3e; color: #fff; border-right: 4px solid var(--hover-color); }
-
-.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; margin-right: 0; }
-.top-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 90; }
-.user-badge { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; color: var(--primary-color); }
-.content-body { padding: 20px; overflow-y: auto; flex: 1; }
-
-#hamburger-trigger { background: none; border: none; color: var(--primary-color); font-size: 26px; cursor: pointer; margin-left: 12px; display: inline-flex; align-items: center; }
-.sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(3px); z-index: 1990; }
-.sidebar-overlay.active { display: block; }
-
-.card { background: #fff; border-radius: 14px; padding: 25px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; text-align: right; }
-.card h2, .card h3 { font-size: 15px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-
-input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 15px; outline: none; font-weight: 600; font-size: 13px; color: #333; }
-button { background: var(--primary-color); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; }
-button:hover { background: var(--hover-color); }
-
-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-th, td { padding: 12px 10px; border: 1px solid #eef2f5; text-align: right; }
-th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
-
-.badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; color: #fff; }
-.badge.danger { background: var(--danger-color); }
-.badge.success { background: var(--success-color); }
-.badge.info { background: var(--accent-color); }
-.badge.warning { background: var(--hover-color); }
-
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.main-content { flex: 1; display: flex; flex-direction: column; width: 100%; }
+.top-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.card { background: #fff; border-radius: 14px; padding: 25px; margin: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eef2f5; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
+button { background: var(--primary-color); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+button:hover { background: var(--hover-color); }
 </style>
 </head>
 <body>
 
-<div class="sidebar-overlay" onclick="window.toggleSidebarLive()"></div>
-
 <div class="sidebar">
     <div class="sidebar-header">
-        <h3 id="lbl-school-sidebar-title">المنظومة التعليمية السحابية</h3>
-        <p id="lbl-sidebar-role"><i class="bi bi-shield-check"></i> لوحة الإدارة العليا</p>
+        <h3 id="lbl-school-name">مدرسة سالم الحسينان</h3>
+        <p>لوحة التحكم الإدارية</p>
     </div>
-    <ul class="menu-list" id="sidebar-menu-list">
-        <li class="menu-item active" id="m-index" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up-arrow"></i> 📊 اليوم والمؤشرات</li>
-        <li class="menu-item" id="m-absent" onclick="window.switchTab('tab-absent')"><i class="bi bi-person-x"></i> 🔴 الغائبون اليوم</li>
-        <li class="menu-item" id="m-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-octagon"></i> ⚠️ الغياب المتكرر</li>
-        <li class="menu-item" id="m-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> 📑 سلوك الطلاب</li>
-        <li class="menu-item" id="m-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> 🩺 العيادة المدرسية</li>
-        <li class="menu-item" id="m-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-ticket-perforated"></i> 🎫 حقيبة الاستئذان</li>
-        <li class="menu-item" id="m-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> 🏫 الزيارات الفنية</li>
-        <li class="menu-item" id="m-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-person-workspace"></i> 📋 زيارات مدير المدرسة</li>
-        <li class="menu-item" id="m-teacher-perf" onclick="window.switchTab('tab-teacher-perf')"><i class="bi bi-speedometer2"></i> 📈 كفاءة الأداء</li>
-        <li class="menu-item" id="m-announcements" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone"></i> ✉️ المراسلات والتعاميم</li>
-        <li class="menu-item" id="m-classes" onclick="window.switchTab('tab-classes')"><i class="bi bi-door-open"></i> 🏫 جرد فصول المدرسة</li>
-        <li class="menu-item" id="m-users" onclick="window.switchTab('tab-users')"><i class="bi bi-lock"></i> 🔐 إدارة المستخدمين</li>
-        <li class="menu-item" id="m-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person-bounding-box"></i> 👤 ملف الطالب الشامل</li>
-        <li class="menu-item" id="m-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-person-plus"></i> 📁 قيد وإدارة الطلاب</li>
-        <li class="menu-item" id="m-honors" onclick="window.switchTab('tab-honors_board')"><i class="bi bi-trophy"></i> 🏆 لوحة الشرف</li>
-        <li class="menu-item" id="m-date" onclick="window.switchTab('tab-date')"><i class="bi bi-calendar-search"></i> 📅 بحث بتاريخ سابق</li>
-        <li class="menu-item" id="m-guard" onclick="window.switchTab('tab-guard')"><i class="bi bi-shield-shaded"></i> 🚪 بوابة الحارس والأمن</li>
-        <li class="menu-item" id="m-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-clipboard-check"></i> 📋 جولة الجناح اليومية</li>
-        <li class="menu-item" id="m-classes-dist" onclick="window.switchTab('tab-classes-dist')"><i class="bi bi-shuffle"></i> 🏫 توزيع فصول الاحتياط</li>
-        <li class="menu-item" id="m-landing" onclick="window.switchTab('tab-landing-manage')"><i class="bi bi-layout-text-window-reverse"></i> 🌐 إدارة الواجهة العامة</li>
-        <li class="menu-item" id="m-profile" onclick="window.switchTab('tab-profile')" style="border-top: 1px solid #2c2c3e; margin-top: 5px;"><i class="bi bi-sliders"></i> 👤 إعدادات حسابي</li>
+    <ul class="menu-list">
+        <li class="menu-item active" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i> 📊 المؤشرات</li>
+        <li class="menu-item" onclick="window.switchTab('tab-users')"><i class="bi bi-lock"></i> 🔐 المستخدمين</li>
+        <li class="menu-item" onclick="window.switchTab('tab-profile')"><i class="bi bi-sliders"></i> 👤 حسابي</li>
     </ul>
 </div>
 
 <div class="main-content">
     <div class="top-navbar">
-        <div style="display:flex; align-items:center;">
-            <button id="hamburger-trigger" onclick="window.toggleSidebarLive()"><i class="bi bi-list"></i></button>
-            <div class="user-badge">
-                <i class="bi bi-person-circle" style="font-size:20px; color:var(--hover-color);"></i>
-                <span>مرحباً: <b id="lbl-admin-name">جاري التحقق...</b></span>
-                <span id="lbl-badge-role-title" class="badge info" style="margin-right:5px;">رتبة معتمدة</span>
-            </div>
-        </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-            <button onclick="window.generateWeeklyReport()" style="background:var(--accent-color); padding:6px 14px; font-size:12px; border-radius:4px;"><i class="bi bi-printer"></i> تقرير أسبوعي</button>
-            <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); padding:6px 15px; font-size:12px;">خروج</button>
-        </div>
+        <button id="hamburger-trigger" onclick="document.querySelector('.sidebar').classList.toggle('active')"><i class="bi bi-list"></i></button>
+        <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color);">خروج</button>
     </div>
 
-    <div id="weekly-report-area" style="display:none; background:#fff;"></div>
-
     <div class="content-body">
-        
         <div id="tab-index" class="tab-content active">
-            <div class="stats-grid" id="stats-cards"></div>
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
-                <div class="card" id="class-status" style="border-top:5px solid var(--primary-color);">
-                    <h2><i class="bi bi-lightning-charge-fill" style="color:var(--hover-color);"></i> إجراءات سريعة اليوم بالمنشأة</h2>
-                    <p style="font-size:12px; color:#666; font-weight:bold;">بإمكانك إدارة وطباعة التقارير الموحدة من هنا بضغطة واحدة.</p>
-                    
-                    <div style="margin-top:20px; padding:15px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;">
-                        <label style="font-weight:900; font-size:13px; color:var(--primary-color); display:block; margin-bottom:6px;"><i class="bi bi-whatsapp" style="color:#25D366;"></i> منظومة بث إشعارات الغياب الفورية (مجاني):</label>
-                        <p style="font-size:11px; color:#666; margin-bottom:12px; font-weight:bold;">اختر الفصل لطبع وحصر الطلاب الغائبين في الحصص لليوم وتصديرها للواتساب بـ ثانية واحدة:</p>
-                        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; align-items:end;">
-                            <div>
-                                <select id="quick-whatsapp-class" style="margin-bottom:0; padding:10px; font-weight:bold;">
-                                    <option value="6/1">الفصل الدراسي 6/1</option><option value="6/2">الفصل الدراسي 6/2</option><option value="6/3">الفصل الدراسي 6/3</option><option value="6/4">الفصل الدراسي 6/4</option><option value="6/5">الفصل الدراسي 6/5</option>
-                                    <option value="7/1">الفصل الدراسي 7/1</option><option value="7/2">الفصل الدراسي 7/2</option><option value="7/3">الفصل الدراسي 7/3</option><option value="7/4">الفصل الدراسي 7/4</option><option value="7/5">الفصل الدراسي 7/5</option>
-                                    <option value="8/1">الفصل الدراسي 8/1</option><option value="8/2">الفصل الدراسي 8/2</option><option value="8/3">الفصل الدراسي 8/3</option><option value="8/4">الفصل الدراسي 8/4</option><option value="8/5">الفصل الدراسي 8/5</option>
-                                    <option value="9/1">الفصل الدراسي 9/1</option><option value="9/2">الفصل الدراسي 9/2</option><option value="9/3">الفصل الدراسي 9/3</option><option value="9/4">الفصل الدراسي 9/4</option><option value="9/5">الفصل الدراسي 9/5</option>
-                                </select>
-                            </div>
-                            <button onclick="window.fireWhatsAppAbsenceLive()" style="background:#25D366; color:#fff; padding:11px; font-weight:900; font-size:13px; width:100%; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:5px;"><i class="bi bi-send-fill"></i> بث للواتساب</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card" style="border-top:5px solid var(--hover-color); text-align:center;">
-                    <h2><i class="bi bi-pie-chart-fill"></i> مؤشر الغياب والحضور</h2>
-                    <div style="position: relative; height: 180px; width: 100%; margin-top: 15px;">
-                        <canvas id="attendanceChart"></canvas>
-                    </div>
-                </div>
+            <div class="card">
+                <h2>إجراءات سريعة</h2>
+                <select id="quick-whatsapp-class">
+                    <option value="6/1">6/1</option><option value="7/1">7/1</option>
+                </select>
+                <button onclick="window.fireWhatsAppAbsenceLive()" style="background:#25D366;">بث غياب واتساب</button>
             </div>
+            <div id="stats-cards" class="stats-grid"></div>
         </div>
-
+        
         <div id="tab-users" class="tab-content">
-            <div class="card" style="border-top: 5px solid var(--primary-color);">
-                <h2><i class="bi bi-person-plus-fill"></i> قيد وإنشاء حساب مستخدم جديد بالمنظومة</h2>
+            <div class="card">
+                <h2>إدارة المستخدمين</h2>
                 <form id="new-user-form" onsubmit="window.handleRegisterUserLive(event)">
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-                        <div>
-                            <label style="font-weight:700; font-size:12px;">رقم المستخدم / المعرف لوجن (User ID):</label>
-                            <input type="text" id="reg-user-id" placeholder="مثال: 1005" required>
-                        </div>
-                        <div>
-                            <label style="font-weight:700; font-size:12px;">الاسم الكامل للموظف:</label>
-                            <input type="text" id="reg-user-name" placeholder="أدخل الاسم الثلاثي أو الرباعي" required>
-                        </div>
-                        <div>
-                            <label style="font-weight:700; font-size:12px;">تحديد صلاحية ورتبة الدخول الرسمية:</label>
-                            <select id="reg-user-role" required>
-                                <option value="teacher">👨‍🏫 معلم / عضو هيئة التدريس</option>
-                                <option value="social_worker">📝 أخصائي اجتماعي / نفسي</option>
-                                <option value="guard">🚪 حارس المنشأة والأمن المدرسي</option>
-                                <option value="wing_supervisor">🔎 مشرف جناح اليوم</option>
-                                <option value="assistant_manager">👔 مدير مساعد للشؤون الإدارية أو الطلابية</option>
-                                <option value="admin">👑 مدير مدرسة / أدمين النظام الأعلى</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-weight:700; font-size:12px;">كلمة المرور الابتدائية الحية:</label>
-                            <input type="text" id="reg-user-pass" placeholder="6 خانات كحد أدنى بالملي" required>
-                        </div>
-                    </div>
-                    <button type="submit" id="btn-submit-register-user" style="width:100%; font-weight:900;"><i class="bi bi-person-check-fill"></i> اعتماد وتشفير الحساب الجديد سحابياً فوراً</button>
+                    <input type="text" id="reg-user-id" placeholder="User ID" required>
+                    <input type="text" id="reg-user-name" placeholder="الاسم" required>
+                    <input type="text" id="reg-user-pass" placeholder="كلمة المرور" required>
+                    <button type="submit" id="btn-submit-register-user">اعتماد الحساب</button>
                 </form>
             </div>
-
-            <div class="card" style="border-top: 5px solid var(--hover-color);">
-                <h2><i class="bi bi-shield-shared"></i> كشف وجرد الحسابات وصلاحيات الأمان الحالية للمنشأة</h2>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>معرف المستخدم</th>
-                                <th>اسم الموظف الرسمي</th>
-                                <th style="text-align:center;">الصلاحية والرتبة</th>
-                                <th style="text-align:center;">حالة التوثيق السحابي</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-users-tbody">
-                            <tr><td colspan="4" style="text-align:center; padding:15px; color:#999; font-weight:bold;">⏳ جاري جرد سجلات الحماية...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
-
-        <div id="tab-profile" class="tab-content">
-            <div class="card" style="border-top: 5px solid #2980b9;">
-                <h2><i class="bi bi-sliders"></i> البيانات الشخصية والملف الرقمي للموظف بالمنشأة</h2>
-                <p style="font-size:11px; color:#666; font-weight:bold; margin-bottom:15px;">يرجى استكمال وتحديث الخانات الرسمية لمطابقتها مع السجلات الإدارية المعتمدة للمدرسة.</p>
-                
-                <label style="font-weight:700; font-size:12px; color:#444;">🏢 القسم الإداري / المسمى الوظيفي المعتمد:</label>
-                <input type="text" id="admin-prof-dept" placeholder="مثال: الخدمة الاجتماعية والنفسية / شؤون الطلاب">
-
-                <label style="font-weight:700; font-size:12px; color:#444;">الرقم المدني الكويتي (12 رقم):</label>
-                <input type="number" id="admin-prof-civil" placeholder="أدخل الرقم المدني الرسمي">
-
-                <label style="font-weight:700; font-size:12px; color:#444;">رقم الهاتف الجوال للتواصل والمتابعة:</label>
-                <input type="number" id="admin-prof-phone" placeholder="أدخل رقم الهاتف النقال">
-
-                <label style="font-weight:700; font-size:12px; color:#444;">رقم الملف الشخصي بوزارة التربية:</label>
-                <input type="text" id="admin-prof-file-num" placeholder="أدخل رقم ملفك الإداري">
-
-                <h2 style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;"><i class="bi bi-lock-fill"></i> تعديل كلمة المرور السرية للحساب الشخصي</h2>
-                <label style="font-weight:700; font-size:12px; color:#444;">كلمة المرور الجديدة:</label>
-                <input type="text" id="admin-prof-new-pass" placeholder="اترك الحقل فارغاً في حال عدم الرغبة في تغيير كلمة المرور الحالية">
-
-                <button onclick="window.updateAdminProfileLive()" style="background:#2980b9; font-weight:bold; width:100%; padding:14px;"><i class="bi bi-check-all"></i> حفظ وتحديث ملفي الشخصي وكلمة المرور الحين</button>
-            </div>
-        </div>
-
-        <div id="tab-absent" class="tab-content"></div>
-        <div id="tab-repeat" class="tab-content"></div>
-        <div id="tab-behavior" class="tab-content"></div>
-        <div id="tab-clinic" class="tab-content"></div>
-        <div id="tab-gatepass" class="tab-content"></div>
-        <div id="tab-visits" class="tab-content"></div>
-        <div id="tab-manager-visits" class="tab-content"></div>
-        <div id="tab-teacher-perf" class="tab-content"></div>
-        <div id="tab-announcements" class="tab-content"></div>
-        <div id="tab-classes" class="tab-content"></div>
-        <div id="tab-teacher-directory" class="tab-content"></div>
-        <div id="tab-student" class="tab-content"></div>
-        <div id="tab-students-manage" class="tab-content"></div>
-        <div id="tab-honors_board" class="tab-content"></div>
-        <div id="tab-date" class="tab-content"></div>
-        <div id="tab-guard" class="tab-content"></div>
-        <div id="tab-rounds" class="tab-content"></div>
-        <div id="tab-classes-dist" class="tab-content"></div>
-        
-        <div id="tab-landing-manage" class="tab-content">
-            <div class="card" style="border-top: 5px solid var(--accent-color);">
-                <h2><i class="bi bi-globe" style="color:var(--accent-color);"></i> إدارة الواجهة العامة للموقع (`home.html`)</h2>
-                <label>📢 نص الإعلان الهام والمثبت بالصفحة:</label>
-                <textarea id="ctrl-landing-notice" rows="3" placeholder="اكتب نص الإعلان الرسمي هنا"></textarea>
-                <label>🖼️ رابط صورة الفعاليات المدرسية (URL):</label>
-                <input type="text" id="ctrl-landing-img" placeholder="الصق رابط الصورة هنا">
-                <label>📊 كود جدول المواعيد أو تعاميم الإدارة (HTML):</label>
-                <textarea id="ctrl-landing-table" rows="5" placeholder="أدخل كود جدول المواعيد المعتمد"></textarea>
-                <button onclick="window.saveLandingConfigLive()"><i class="bi bi-cloud-arrow-up-fill"></i> حفظ وبث تحديث الواجهة فوراً</button>
-            </div>
-        </div>
+        <div id="tab-profile" class="tab-content"><div class="card"><h2>إعدادات حسابي</h2></div></div>
     </div>
 </div>
 
 <script type="module">
-import { db, auth } from './js/firebase-config.js'; // 🔒 استيراد محرك الهويات وقاعدة البيانات الموحدة
-import { collection, getDocs, doc, getDoc, setDoc, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'; // 🔑 محرك حماية الهويات الرقمي
+    import { db, auth } from './js/firebase-config.js';
+    import { collection, doc, setDoc, serverTimestamp, query, where, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
-const moduleMap = {
-    'tab-index': { file: './js/modules/today.js', init: 'initTodayModule' },
-    'tab-absent': { file: './js/modules/attendance.js', init: 'initAttendanceModule' },
-    'tab-repeat': { file: './js/modules/repeat.js', init: 'initRepeatModule' },
-    'tab-behavior': { file: './js/modules/behavior.js', init: 'initBehaviorModule' },
-    'tab-clinic': { file: './js/modules/clinic.js', init: 'initClinicModule' },
-    'tab-gatepass': { file: './js/modules/gatepass.js', init: 'initGatepassModule' },
-    'tab-visits': { file: './js/modules/visits.js', init: 'initVisitsModule' },
-    'tab-manager-visits': { file: './js/modules/manager_visits.js', init: 'initManagerVisitsModule' },
-    'tab-teacher-perf': { file: './js/modules/teacher_perf.js', init: 'initTeacherPerfModule' },
-    'tab-announcements': { file: './js/modules/mailbox.js', init: 'initMailboxModule' },
-    'tab-classes': { file: './js/modules/classes.js', init: 'initClassesModule' },
-    'tab-teacher-directory': { file: './js/modules/teachers.js', init: 'initTeachersModule' },
-    'tab-student': { file: './js/modules/student.js', init: 'initStudentModule' },
-    'tab-students-manage': { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
-    'tab-honors_board': { file: './js/modules/honors.js', init: 'initHonorsModule' },
-    'tab-date': { file: './js/modules/date_search.js', init: 'initDateSearchModule' },
-    'tab-guard': { file: './js/modules/guard.js', init: 'initGuardModule' },
-    'tab-rounds': { file: './js/modules/rounds.js', init: 'initRoundsModule' },
-    'tab-classes-dist': { file: './js/modules/distribution.js', init: 'initDistributionModule' }
-};
+    const getActiveSchoolId = () => JSON.parse(localStorage.getItem('hs_user') || '{}').schoolId;
 
-let loadedModules = new Set();
-let currentAdminUserId = "";
-const allowedRoles = ['admin', 'assistant_manager', 'social_worker', 'wing_supervisor', 'guard'];
-
-// دالة جلب كود المنشأة الديناميكي لضمان فك وعزل البيانات تماماً بالـ SaaS
-const getActiveSchoolId = () => {
-    const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    return user.schoolId || 'default';
-};
-
-document.addEventListener("DOMContentLoaded", async function() {
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    if (!user || !allowedRoles.includes(user.role)) {
-        alert("🔒 الوصول مرفوض، هذا الحساب غير مصرح له بدخول لوحة التحكم.");
-        window.location.replace('index.html');
-        return;
-    }
-    currentAdminUserId = user.userId;
-    document.getElementById('lbl-admin-name').textContent = user.name || "عضو المنظومة";
-    
-    const schoolId = getActiveSchoolId();
-    // عرض اسم مدرسة المستخدم ديناميكياً لتأكيد الهوية البصرية للـ Multi-tenant
-    document.getElementById('lbl-school-sidebar-title').textContent = `مدرسة سالم الحسينان المتوسطة`;
-    
-    const roleTitles = {
-        "admin": "👑 مدير المدرسة", "assistant_manager": "👔 المدير المساعد",
-        "social_worker": "📝 الأخصائي الاجتماعي", "wing_supervisor": "🔎 مشرف الجناح", "guard": "🚪 حارس الأمن"
-    };
-    
-    const roleStr = roleTitles[user.role] || "مسؤول النظام";
-    document.getElementById('lbl-badge-role-title').textContent = roleStr;
-    document.getElementById('lbl-sidebar-role').innerHTML = `<i class="bi bi-shield-check"></i> ${roleStr}`;
-
-    applyRolePermissionsLive(user.role);
-    loadModuleLive('tab-index');
-    import('./js/modules/reports.js').then(m => m.initReportsModule());
-    listenToUsersListLive(); 
-    await loadAdminProfileDataLive(); 
-});
-
-function applyRolePermissionsLive(role) {
-    if(role === 'admin' || role === 'assistant_manager') return; 
-
-    const items = document.querySelectorAll('.menu-list .menu-item');
-    items.forEach(el => { if(el.id !== 'm-profile') el.style.display = 'none'; });
-
-    document.getElementById('m-index').style.display = 'flex';
-    document.getElementById('m-profile').style.display = 'flex'; 
-
-    if(role === 'social_worker') { 
-        document.getElementById('m-absent').style.display = 'flex';
-        document.getElementById('m-repeat').style.display = 'flex';
-        document.getElementById('m-behavior').style.display = 'flex';
-        document.getElementById('m-clinic').style.display = 'flex';
-        document.getElementById('m-gatepass').style.display = 'flex';
-        document.getElementById('m-student').style.display = 'flex';
-        document.getElementById('m-honors').style.display = 'flex';
-        document.getElementById('m-date').style.display = 'flex';
-    } 
-    else if(role === 'wing_supervisor') { 
-        document.getElementById('m-rounds').style.display = 'flex';
-        document.getElementById('m-classes').style.display = 'flex';
-        document.getElementById('m-classes-dist').style.display = 'flex';
-    } 
-    else if(role === 'guard') { 
-        document.getElementById('m-guard').style.display = 'flex';
-    }
-}
-
-window.toggleSidebarLive = function() {
-    document.querySelector('.sidebar').classList.toggle('active');
-    document.querySelector('.sidebar-overlay').classList.toggle('active');
-};
-
-window.switchTab = function(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-
-    const targetTab = document.getElementById(tabId);
-    if(targetTab) targetTab.classList.add('active');
-
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(item => {
-        if(item.getAttribute('onclick') && item.getAttribute('onclick').includes(tabId)) { item.classList.add('active'); }
-    });
-
-    document.querySelector('.sidebar').classList.remove('active');
-    document.querySelector('.sidebar-overlay').classList.remove('active');
-
-    if(tabId === 'tab-landing-manage') { loadLandingFieldsLive(); } 
-    else if (tabId === 'tab-users' || tabId === 'tab-profile') { } 
-    else { loadModuleLive(tabId); }
-};
-
-async function loadModuleLive(tabId) {
-    const config = moduleMap[tabId];
-    if (!config || loadedModules.has(tabId)) {
-        if (tabId === 'tab-index' && typeof window.initTodayModule === 'function') { window.initTodayModule(); }
-        return;
-    }
-    try {
-        const module = await import(config.file);
-        if (typeof module[config.init] === 'function') { await module[config.init](); loadedModules.add(tabId); }
-    } catch (err) { console.error(err); }
-}
-
-function listenToUsersListLive() {
-    const tbody = document.getElementById('admin-users-tbody');
-    if(!tbody) return;
-    const schoolId = getActiveSchoolId();
-
-    const roleMapAr = {
-        "admin": "👑 إدارة عليا / أدمين", "teacher": "👨‍🏫 هيئة تدريس",
-        "assistant_manager": "👔 مدير مساعد", "social_worker": "📝 أخصائي اجتماعي",
-        "wing_supervisor": "🔎 مشرف جناح", "guard": "🚪 حارس أمن"
+    window.switchTab = function(tabId) {
+        if(!localStorage.getItem('hs_user')) window.location.replace('index.html');
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelector('.sidebar').classList.remove('active');
     };
 
-    const q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
-    onSnapshot(q, (snapshot) => {
-        let html = '';
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            const roleAr = roleMapAr[data.role] || data.role || 'عضو المنظومة';
-            html += `
-                <tr style="border-bottom:1px solid #f1f5f9;">
-                    <td style="padding:10px; font-weight:bold; color:#2c3e50;">🔑 ${data.userId || doc.id}</td>
-                    <td style="padding:10px; font-weight:700;">${data.name || 'غير مدرج'}</td>
-                    <td style="padding:10px; text-align:center;"><span class="badge info">${roleAr}</span></td>
-                    <td style="padding:10px; text-align:center;"><span class="badge success">🔒 مشفر آمن</span></td>
-                </tr>`;
-        });
-        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold;">🥇 لا توجد حسابات مقيدة حالياً.</td></tr>';
-    }, (err) => { });
-}
+    window.handleRegisterUserLive = async function(e) {
+        e.preventDefault();
+        const uId = document.getElementById('reg-user-id').value;
+        const uName = document.getElementById('reg-user-name').value;
+        const uPass = document.getElementById('reg-user-pass').value;
+        const schoolId = getActiveSchoolId();
 
-// 🔐 محرك الاعتماد والتوثيق المزدوج لإنشاء حسابات الموظفين (Firebase Auth + Firestore)
-window.handleRegisterUserLive = async function(e) {
-    e.preventDefault();
-    const uId = document.getElementById('reg-user-id').value.trim();
-    const uName = document.getElementById('reg-user-name').value.trim();
-    const uRole = document.getElementById('reg-user-role').value;
-    const uPass = document.getElementById('reg-user-pass').value.trim();
-    const submitBtn = document.getElementById('btn-submit-register-user');
-    const schoolId = getActiveSchoolId();
+        try {
+            const email = `${uId}@${schoolId}.edu`;
+            const cred = await createUserWithEmailAndPassword(auth, email, uPass);
+            await setDoc(doc(db, 'users', cred.user.uid), {
+                userId: uId, name: uName, schoolId: schoolId, role: 'teacher',
+                authMigrated: true, createdAt: serverTimestamp()
+            });
+            alert("تم إنشاء الحساب بنجاح!");
+        } catch(err) { alert(err.message); }
+    };
 
-    if(uPass.length < 6) {
-        alert("⚠️ أمان الفايربيس يتطلب كلمة مرور لا تقل عن 6 خانات!");
-        return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري بث وتشفير الحساب بالخادم...`;
-
-    try {
-        // أ) توليد بروتوكول الإيميل المشفر الفريد للموظف بناءً على كود المنشأة لمنع التشابه بالسيرفر العالمي
-        const virtualEmail = `${uId}@${schoolId}.edu`;
-        
-        // ب) حقن الحساب في خادم نظام المصادقة العالمي لمنحه صلاحية العبور الفوري لصفحة الدخول
-        const credential = await createUserWithEmailAndPassword(auth, virtualEmail, uPass);
-
-        // ج) تثبيت مستند الحقوق والربط السحابي في الفايرستور مقيداً بـ الـ UID المشفر
-        await setDoc(doc(db, 'users', credential.user.uid), { 
-            schoolId: schoolId,
-            userId: uId, 
-            name: uName, 
-            role: uRole, 
-            email: virtualEmail,
-            authMigrated: true, // راية تفعيل العبور المشفر فوراً
-            plainPass: uPass, 
-            createdAt: serverTimestamp() 
-        });
-
-        alert(`✓ تم بنجاح إنشاء حساب الموظف: [ ${uName} ]\nوتم تشفيره وربطه بالمنشأة بنجاح تّام.`);
-        document.getElementById('new-user-form').reset();
-    } catch(err) { 
-        if(err.code === 'auth/email-already-in-use') {
-            alert("❌ هذا المعرف مستخدم مسجل مسبقاً في هذا النطاق السحابي!");
-        } else {
-            alert("❌ خطأ بالإنشاء السحابي: " + err.message); 
-        }
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="bi bi-person-check-fill"></i> اعتماد وقيد الحساب الجديد سحابياً فوراً`;
-    }
-};
-
-async function loadAdminProfileDataLive() {
-    try {
-        const docSnap = await getDoc(doc(db, 'users', currentAdminUserId));
-        if(docSnap.exists()) {
-            const d = docSnap.data();
-            if(d.department) document.getElementById('admin-prof-dept').value = d.department;
-            if(d.civilId) document.getElementById('admin-prof-civil').value = d.civilId;
-            if(d.phone) document.getElementById('admin-prof-phone').value = d.phone;
-            if(d.fileNumber) document.getElementById('admin-prof-file-num').value = d.fileNumber;
-        }
-    } catch(e) { console.log(e); }
-}
-
-window.updateAdminProfileLive = async function() {
-    const dept = document.getElementById('admin-prof-dept').value.trim();
-    const civil = document.getElementById('admin-prof-civil').value.trim();
-    const phone = document.getElementById('admin-prof-phone').value.trim();
-    const fileNum = document.getElementById('admin-prof-file-num').value.trim();
-    const newPass = document.getElementById('admin-prof-new-pass').value.trim();
-
-    if(!civil || !phone || !fileNum) { alert("⚠️ يرجى ملء البيانات المدنية والوظيفية المطلوبة!"); return; }
-
-    try {
-        let updateData = { department: dept, civilId: civil, phone: phone, fileNumber: fileNum, updatedAt: serverTimestamp() };
-        if(newPass !== "") { updateData.plainPass = newPass; }
-
-        await setDoc(doc(db, 'users', currentAdminUserId), updateData, { merge: true });
-        alert("✅ تم تحديث بيانات ملفك الإداري وسيرفر الأمان بنجاح.");
-        document.getElementById('admin-prof-new-pass').value = ""; 
-    } catch(e) { alert("خطأ أثناء تحديث الملف: " + e.message); }
-};
-
-async function loadLandingFieldsLive() {
-    const schoolId = getActiveSchoolId();
-    try {
-        const docSnap = await getDoc(doc(db, 'system_config', `public_landing_${schoolId}`));
-        if(docSnap.exists()){
-            const d = docSnap.data();
-            document.getElementById('ctrl-landing-notice').value = d.notice || '';
-            document.getElementById('ctrl-landing-img').value = d.imageUrl || '';
-            document.getElementById('ctrl-landing-table').value = d.tableHtml || '';
-        }
-    }catch(e){}
-}
-
-window.saveLandingConfigLive = async function() {
-    const schoolId = getActiveSchoolId();
-    try {
-        await setDoc(doc(db, 'system_config', `public_landing_${schoolId}`), { 
-            schoolId: schoolId,
-            notice: document.getElementById('ctrl-landing-notice').value, 
-            imageUrl: document.getElementById('ctrl-landing-img').value, 
-            tableHtml: document.getElementById('ctrl-landing-table').value 
-        }, { merge: true });
-        alert("✅ تم تحديث الواجهة العامة تلقائياً.");
-    } catch(e) { alert("❌ تعذر الحفظ: " + e.message); }
-};
-
-window.generateWeeklyReport = async function() {
-    alert("⏳ جاري جرد الملفات السحابية وتجميع التقرير الأسبوعي الموحد...");
-    const schoolId = getActiveSchoolId();
-    try {
-        const todayStr = new Date().toLocaleDateString('ar-KW');
-        const qAtt = query(collection(db, 'attendance'), where('schoolId', '==', schoolId));
-        const attSnap = await getDocs(qAtt);
-        const absMap = {};
-        
-        attSnap.forEach(doc => {
-            const d = doc.data();
-            if(d.status === 'absent' && d.studentName) {
-                const key = d.studentName.trim();
-                if(!absMap[key]) absMap[key] = { name: key, classId: d.classId || '-', count: 0 };
-                absMap[key].count++;
-            }
-        });
-        
-        const repeated = Object.values(absMap).filter(s => s.count >= 3).sort((a,b) => b.count - a.count);
-        const area = document.getElementById('weekly-report-area');
-        area.style.display = 'block';
-        area.innerHTML = `
-        <div id="report-print-area" style="padding:30px; direction:rtl; font-family:'Cairo',sans-serif; background:#fff; color:#000; width:750px; margin:0 auto; border:1px solid #eee;">
-            <div style="text-align:center; border-bottom:3px solid #1a1a2e; padding-bottom:15px; margin-bottom:20px;">
-                <h2 style="color:#1a1a2e; font-size:18px; font-weight:900;">وزارة التربية - الإدارة العامة لمنطقة الفروانية التعليمية</h2>
-                <h3 style="font-size:15px; font-weight:bold; margin-top:4px;">مدرسة سالم الحسينان المتوسطة للبنين</h3>
-                <p style="font-size:12px; color:#666; font-weight:bold; margin-top:3px;">التقرير الأسبوعي الشامل للمنشأة | تاريخ الإصدار: ${todayStr}</p>
-            </div>
-            <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
-                <thead><tr style="background:#1a1a2e; color:#fff;"><th>#</th><th>اسم الطالب رباعي</th><th>الفصل الدراسي</th><th>أيام الغياب التراكمي</th></tr></thead>
-                <tbody>${repeated.length ? repeated.map((s,i) => `<tr><td><b>${i+1}</b></td><td>👤 ${s.name}</td><td>${s.classId}</td><td style="color:red; font-weight:bold;">${s.count} غياب</td></tr>`).join('') : '<tr><td colspan="4" style="text-align:center; font-weight:bold;">✅ كشوف الغياب سليمة بالكامل.</td></tr>'}</tbody>
-            </table>
-        </div>`;
-        setTimeout(() => { import('./js/modules/reports.js').then(m => { if(typeof m.exportAsManzoumaPDF === 'function') { m.exportAsManzoumaPDF('report-print-area', 'التقرير_الأسبوعي_الرسمي'); setTimeout(() => { area.style.display = 'none'; }, 1000); } }); }, 600);
-    } catch(err) { alert("❌ تعذر إصدار التقرير: " + err.message); }
-};
-
-window.fireWhatsAppAbsenceLive = async function() {
-    const classId = document.getElementById('quick-whatsapp-class').value;
-    if(!classId) return;
-    const schoolId = getActiveSchoolId();
-
-    alert(`⏳ جاري جرد وحصر غيابات صف [ ${classId} ] لليوم وبناء الرسالة التلقائية...`);
-
-    const now = new Date();
-    const todayISO = now.toISOString().slice(0, 10);
-    const todaySlash = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
-    const todayAr = now.toLocaleDateString('ar-KW');
-    const dateFormats = [todayISO, todaySlash, todayAr];
-
-    try {
-        const q = query(
-            collection(db, 'attendance'), 
-            where('schoolId', '==', schoolId),
-            where('classId', '==', classId), 
-            where('status', '==', 'absent')
-        );
+    window.fireWhatsAppAbsenceLive = async function() {
+        const classId = document.getElementById('quick-whatsapp-class').value;
+        const schoolId = getActiveSchoolId();
+        const q = query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('classId', '==', classId), where('status', '==', 'absent'));
         const snap = await getDocs(q);
         let absentList = [];
-
-        snap.forEach(docSnap => {
-            const d = docSnap.data();
-            if (dateFormats.includes(d.date) || dateFormats.includes(d.dateStr)) {
-                absentList.push(d.studentName || d.name);
-            }
-        });
-
-        absentList = [...new Set(absentList)].sort((a, b) => a.localeCompare(b, 'ar'));
-
-        if (absentList.length === 0) {
-            alert(`🥇 مبروك! لا توجد أي حالات غياب مرصودة لليوم في صف ${classId}.`);
-            return;
-        }
-
-        const printDate = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
-        let msg = `*🏫 تقرير غياب الطلاب اليومي - مدرسة سالم الحسينان*\n`;
-        msg += `*🗓️ تاريخ اليوم:* ${printDate}\n`;
-        msg += `*📚 الفصل الدراسي:* صف ${classId}\n`;
-        msg += `*📊 عدد الغائبين الإجمالي:* (${absentList.length}) طلاب\n\n`;
-        msg += `يرجى العلم بأن الطلاب المدرجة أسماؤهم أدناه تم تسجيل غيابهم للحصص الدراسية اليوم:\n`;
+        snap.forEach(d => absentList.push(d.data().studentName));
         
-        absentList.forEach((name, i) => {
-            msg += `🚫 ${i + 1}. ${name}\n`;
-        });
-
-        msg += `\n_💡 يرجى مراجعة إدارة المدرسة وإرسال طبيات أو أعذار الغياب الرسمية للقسم الاجتماعي تجنباً للمساءلة القانونية._\n`;
-        msg += `*المنظومة الرقمية الذكية لبوابة الإدارة المدرسية*`;
-
+        const msg = `غياب اليوم لفصل ${classId}: ${absentList.join(', ')}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    };
 
-    } catch(e) {
-        alert("❌ تعذر تجميع كشف البث: " + e.message);
-    }
-};
+    document.addEventListener("DOMContentLoaded", () => {
+        const user = JSON.parse(localStorage.getItem('hs_user'));
+        if(!user) window.location.replace('index.html');
+        document.getElementById('lbl-admin-name').textContent = user.name;
+    });
 </script>
 </body>
 </html>
