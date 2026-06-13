@@ -1,5 +1,4 @@
-// 📊 محرك المؤشرات المطور: دمج الشارت الدائري اليومي مع منحنى المقارنة الأسبوعي العمودي
-import { db } from '../firebase-config.js';
+import { db, SCHOOL_ID } from '../firebase-config.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initTodayModule() {
@@ -7,8 +6,13 @@ export async function initTodayModule() {
     if (!cardsContainer) return;
 
     try {
-        const todayStr = new Date().toLocaleDateString('ar-KW');
-        
+        // 📅 إعداد مصفوفة فحص التواريخ الموحدة لحساب المدير والشارتات
+        const now = new Date();
+        const todayISO = now.toISOString().slice(0, 10);
+        const todaySlash = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+        const todayAr = now.toLocaleDateString('ar-KW');
+        const dateFormats = [todayISO, todaySlash, todayAr];
+
         // جلب المؤشرات الحية من السيرفر بالتاريخ الموحد
         const [studentsSnap, attSnap, gateSnap] = await Promise.all([
             getDocs(collection(db, 'students')),
@@ -16,21 +20,31 @@ export async function initTodayModule() {
             getDocs(collection(db, 'gatepass'))
         ]);
 
-        let totalStudents = studentsSnap.size || 380; 
+        // جرد الطلاب التابعين للمدرسة المحددة فقط
+        let totalStudents = 0;
+        studentsSnap.forEach(doc => {
+            const d = doc.data();
+            if (!d.schoolId || d.schoolId === SCHOOL_ID) {
+                totalStudents++;
+            }
+        });
+        if (totalStudents === 0) totalStudents = 380; 
+
         let absentToday = 0;
         let gatepassToday = 0;
         let hasRecordsToday = false;
         
-        // وعاء تجميع البيانات الإحصائية لآخر 7 أيام
         const weeklyAbsents = {};
         const weeklyPresents = {};
 
-        // 1. جرد كشوف الرصد وتجميع المنحنى اليومي والأسبوعي التراكمي
+        // 1. جرد كشوف الرصد وتجميع المنحنى اليومي والأسبوعي التراكمي للمدرسة المحددة
         attSnap.forEach(doc => {
             const d = doc.data();
+            if (d.schoolId && d.schoolId !== SCHOOL_ID) return;
             
-            // أ) جرد داتا اليوم الحالي
-            if (d.date === todayStr) {
+            // أ) جرد داتا اليوم الحالي بناءً على مصفوفة الدعم الشاملة
+            const isToday = dateFormats.includes(d.date) || dateFormats.includes(d.dateStr);
+            if (isToday) {
                 hasRecordsToday = true;
                 if (d.status === 'absent') absentToday++;
             }
@@ -45,10 +59,15 @@ export async function initTodayModule() {
             }
         });
 
-        // 2. جرد عداد حالات استئذان اليوم
+        // 2. جرد عداد حالات استئذان اليوم للمدرسة المحددة
         gateSnap.forEach(doc => {
             const d = doc.data();
-            if (d.date === todayStr || (d.createdAt && d.createdAt.toDate().toLocaleDateString('ar-KW') === todayStr)) {
+            if (d.schoolId && d.schoolId !== SCHOOL_ID) return;
+
+            const createdAtStr = d.createdAt ? d.createdAt.toDate().toLocaleDateString('ar-KW') : '';
+            const isTodayGate = dateFormats.includes(d.date) || dateFormats.includes(d.dateStr) || dateFormats.includes(createdAtStr);
+
+            if (isTodayGate) {
                 gatepassToday++;
             }
         });
@@ -104,14 +123,12 @@ export async function initTodayModule() {
     }
 }
 
-// 🎛️ دالة الهندسة الديناميكية لحقن مساحة الشارت الأسبوعي المفقود بدون لمس ملف الـ HTML
 function setupChartsDomLayout() {
     const todayCanvas = document.getElementById('attendanceChart');
     if (!todayCanvas) return;
 
     const parentCard = todayCanvas.parentElement;
     
-    // إذا لم يكن شارت الأسبوع موجوداً، نقوم بخلطه وحقنه فوراً بالأسفل
     if (!document.getElementById('weeklyAttendanceChart')) {
         const divider = document.createElement('div');
         divider.style.cssText = "border-top:1px dashed #ddd; margin:20px 0; padding-top:15px;";
@@ -126,12 +143,10 @@ function setupChartsDomLayout() {
     }
 }
 
-// 📈 محرك ضخ الرسوم البيانية المتطورة المشتركة
 function renderAdvancedGraphics(present, absent, labels, absentsData, presentsData) {
     const ctxToday = document.getElementById('attendanceChart');
     const ctxWeekly = document.getElementById('weeklyAttendanceChart');
 
-    // أ) بناء وتحديث الشارت الدائري لليوم
     if (ctxToday) {
         if (window.myLiveAttendanceChart) window.myLiveAttendanceChart.destroy();
         window.myLiveAttendanceChart = new Chart(ctxToday, {
@@ -147,7 +162,6 @@ function renderAdvancedGraphics(present, absent, labels, absentsData, presentsDa
         });
     }
 
-    // ب) بناء وتحديث الشارت العمودي المقارن لآخر 7 أيام (Bar Chart) المعتمد بالتقرير
     if (ctxWeekly) {
         if (window.myWeeklyAttendanceChart) window.myWeeklyAttendanceChart.destroy();
         window.myWeeklyAttendanceChart = new Chart(ctxWeekly, {
@@ -173,12 +187,12 @@ function renderAdvancedGraphics(present, absent, labels, absentsData, presentsDa
     }
 }
 
+// 🛠️ دالة تصفير وتنظيف الشارتات المكتملة والمحمية من الأخطاء
 function destroyExistingCharts() {
     if (window.myLiveAttendanceChart) { window.myLiveAttendanceChart.destroy(); window.myLiveAttendanceChart = null; }
     if (window.myWeeklyAttendanceChart) { window.myWeeklyAttendanceChart.destroy(); window.myWeeklyAttendanceChart = null; }
     const extraCanvas = document.getElementById('weeklyAttendanceChart');
     if (extraCanvas) {
-        const parent = extraCanvas.parentElement;
-        if(parent) parent.innerHTML = `<h2><i class="bi bi-pie-chart-fill"></i> مؤشر الغياب والحضور</h2><canvas id="attendanceChart" style="max-height:180px; margin-top:15px;"></canvas>`;
+        extraCanvas.remove();
     }
 }
