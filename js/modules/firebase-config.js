@@ -1,4 +1,3 @@
-// 🔐 المحرك المركزي الموحد والشامل لقاعدة البيانات ونظام الحماية العالمي لقوقل
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
@@ -16,3 +15,19 @@ export const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const db = getFirestore(app);
 export const auth = getAuth(app); // تصدير محرك الأمان الرسمي للمنظومة
+
+// 🏢 دالة جلب معرّف المدرسة ديناميكياً من جلسة المستخدم الحالي (تخدم تعدد المدارس)
+export function getActiveSchoolId() {
+    try {
+        const user = JSON.parse(localStorage.getItem('hs_user'));
+        // إذا كان اليوزر مسجل، نسحب مدرسة، وإلا نرجع مدرسة الحسينان كخلفية أمنية دائمية
+        return user?.schoolId || 'hosainan'; 
+    } catch (e) {
+        return 'hosainan';
+    }
+}
+
+// 📅 دالة توحيد صيغة التاريخ العالمية بصيغة ISO (YYYY-MM-DD) منعاً لأي تعارض بين المنصات
+export function getTodayISO() {
+    return new Date().toISOString().slice(0, 10);
+}
