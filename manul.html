@@ -1,96 +1,143 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link class="apple-touch-icon" href="./logo.png">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <title>دليل الاستخدام - متوسطة سالم الحسينان</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: #f4f7f6; color: #333; margin: 0; padding: 20px; }
-        .action-bar { text-align: center; margin-bottom: 20px; }
-        .btn-download { background: #1a1a2e; color: #fff; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn-download:hover { background: #2a2a4e; transform: translateY(-2px); }
-        .btn-back { background: #6c757d; color: #fff; text-decoration: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; margin-right: 10px; }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        
+        body { font-family: 'Cairo', sans-serif; background: #f4f7f6; color: #333; margin: 0; padding: 20px; direction: rtl; }
+        .action-bar { text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; }
+        .btn-download { background: #1a1a2e; color: #fff; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; }
+        .btn-download:hover { background: #e67e22; transform: translateY(-2px); }
+        .btn-back { background: #6c757d; color: #fff; text-decoration: none; padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; transition: 0.3s; display: flex; align-items: center; }
+        .btn-back:hover { background: #5a6268; }
         
         /* تنسيق الورقة الرسمية (A4) */
         #pdf-content { background: #fff; max-width: 800px; margin: 0 auto; padding: 40px; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         .pdf-header { text-align: center; border-bottom: 3px solid #1a1a2e; padding-bottom: 20px; margin-bottom: 30px; }
-        .pdf-header h1 { color: #1a1a2e; font-size: 26px; margin-bottom: 5px; }
-        .pdf-header p { color: #666; font-size: 14px; }
+        .pdf-header h1 { color: #1a1a2e; font-size: 26px; font-weight: 900; margin-bottom: 5px; }
+        .pdf-header p { color: #666; font-size: 14px; font-weight: bold; line-height: 1.6; }
         
-        .section { margin-bottom: 30px; }
-        .section h2 { color: #4f46e5; border-right: 4px solid #4f46e5; padding-right: 10px; font-size: 20px; margin-bottom: 15px; background: #f8f9fa; padding: 10px 10px 10px 0; border-radius: 4px 0 0 4px; }
-        .section ul, .section ol { padding-right: 20px; line-height: 1.8; color: #444; }
-        .section li { margin-bottom: 8px; }
+        .section { margin-bottom: 30px; text-align: right; }
+        .section h2 { color: #1a1a2e; border-right: 5px solid #e67e22; padding-right: 10px; font-size: 18px; font-weight: 700; margin-bottom: 15px; background: #f8f9fa; padding: 10px; border-radius: 0 4px 4px 0; }
+        .section ul, .section ol { padding-right: 25px; line-height: 1.8; color: #444; font-size: 14px; }
+        .section li { margin-bottom: 8px; font-weight: 600; }
         
-        .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
+        .footer { text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; font-weight: bold; line-height: 1.6; }
     </style>
 </head>
 <body>
 
     <div class="action-bar">
-        <a href="dashboard.html" class="btn-back">🔙 الرجوع للوحة</a>
-        <button class="btn-download" onclick="generatePDF()">📥 تحميل الدليل (PDF)</button>
+        <a href="dashboard.html" class="btn-back">🔙 الرجوع للوحة الرئيسية</a>
+        <button class="btn-download" onclick="generatePDF()">📥 تحميل الدليل كملف (PDF)</button>
     </div>
 
     <div id="pdf-content">
         <div class="pdf-header">
-            <h1>نظام إدارة الغياب والحضور الذكي</h1>
-            <p>وزارة التربية - الإدارة العامة لمنطقة الأحمدي التعليمية<br><b>متوسطة سالم الحسينان - بنين</b></p>
+            <h1>نظام إدارة الغياب والحضور الذكي الموحد</h1>
+            <p>وزارة التربية - الإدارة العامة لمنطقة الفروانية التعليمية<br><b>مدرسة سالم الحسينان المتوسطة للبنين</b></p>
         </div>
 
         <div class="section">
             <h2>🎯 أهداف النظام</h2>
             <ul>
-                <li>تحويل عملية رصد الغياب الورقية إلى نظام إلكتروني سريع وموثوق.</li>
-                <li>توفير قاعدة بيانات فورية ومباشرة (Live) لإدارة المدرسة.</li>
-                <li>حفظ سجلات الزيارات الصفية للمعلمين بشكل آلي ومنظم.</li>
-                <li>تقليل الجهد الإداري ومتابعة حالات الغياب المتكرر بدقة عالية.</li>
+                <li>تحويل عملية رصد غياب الحصص اليومية الورقية إلى نظام إلكتروني سحابي سريع وموثوق.</li>
+                <li>توفير قاعدة بيانات فورية ومباشرة (Live Sync) لربط أجنحة المدرسة بالإدارة العليا وبوابة الأمن.</li>
+                <li>حفظ وأرشفة سجلات الزيارات الصفية والتقارير الفنية للمعلمين بشكل آلي ومنظم.</li>
+                <li>تقليل الهدر في الوقت الإداري ومتابعة حالات الغياب المتكرر بدقة أمنية عالية لحماية الطلاب.</li>
             </ul>
         </div>
 
         <div class="section">
-            <h2>🌟 المميزات التقنية</h2>
+            <h2>🌟 المميزات التقنية للمنظومة</h2>
             <ul>
-                <li><b>منظومة سحابية:</b> النظام يعمل بكفاءة على جميع الأجهزة (كمبيوتر، آيباد، هواتف ذكية).</li>
-                <li><b>مستويات الصلاحية:</b> واجهة مخصصة للإدارة، وواجهة مبسطة للمعلمين.</li>
-                <li><b>إحصائيات فورية:</b> لوحة مراقبة حية توضح نسبة الحضور والفصول المتأخرة بالرصد.</li>
+                <li><b>منظومة سحابية متكاملة (SaaS):</b> يعمل النظام بكفاءة وانسيابية تامة على الهواتف الذكية، أجهزة الآيباد، والحواسب الآلية.</li>
+                <li><b>مستويات أمان وصلاحيات متعددة:</b> واجهات مخصصة لكل رتبة وظيفية (مدير، معلم، أخصائي، حارس أمن، مشرف جناح).</li>
+                <li><b>إحصائيات ومؤشرات فورية:</b> لوحة مراقبة ذكية توضح نسب الحضور، الحالات الطبية بالعيادة، وبث إنذارات الغياب الفورية عبر الواتساب.</li>
             </ul>
         </div>
 
         <div class="section">
-            <h2>🔧 خطوات الاستخدام (للمعلمين)</h2>
+            <h2>🔧 خطوات الاستخدام (للهيئة التعليمية والإدارية)</h2>
             <ol>
-                <li>الدخول عبر الرابط المخصص للمنصة وتسجيل الدخول بالرقم المدني وكلمة المرور.</li>
-                <li>اختيار أيقونة <b>"رصد الغياب اليومي"</b> من اللوحة الرئيسية.</li>
-                <li>تحديد الفصل والحصة، وسيظهر كشف بأسماء الطلاب.</li>
-                <li>تحديد الطلاب الغائبين أو المتأخرين، ثم الضغط على <b>"حفظ الغياب"</b>.</li>
-                <li>يمكن للمعلم مراجعة سجلاته السابقة من تبويب <b>"سجلاتي"</b>.</li>
+                <li>الدخول عبر البوابة الرسمية للمنصة وتسجيل الدخول بـ <b>رقم المستخدم / المعرف الوظيفي (User ID)</b> وكلمة المرور السرية.</li>
+                <li>استكمال تحديث البيانات الشخصية (القسم، الرقم المدني، الهاتف، رقم الملف بوزارة التربية) في أول تسجيل دخول لتوثيق الملف.</li>
+                <li>الانتقال عبر المهام العلوية أو الجانبية للقسم المخصص لك (مثل: رصد الغياب اليومي، العيادة، حقيبة الاستئذان).</li>
+                <li>تحديد الفصل والحصة المطلوبة، ورصد الطلاب الغائبين أو اتخاذ الإجراء السلوكي/الطبي بلمسة واحدة من المتصفح.</li>
+                <li>الضغط على زر <b>"حفظ واعتماد البيانات"</b> ليتم ترحيل وبث السجلات فوراً لخوادم الفايربيس المركزية حياً.</li>
             </ol>
         </div>
 
+        <div class="section">
+            <h2>🔒 التعليمات الأمنية للبوابة الخارجية (الأمن والسلامة)</h2>
+            <ul>
+                <li>تظهر تصاريح خروج الطلاب المعتمدة (لايف) من مكتب الأخصائي على شاشة الحارس فور اعتمادها.</li>
+                <li>يجب على حارس الأمن مطابقة البطاقة المدنية الأصلية لمستلم الطالب مع البيانات المدرجة في اللوحة قبل فتح البوابة الخارجية.</li>
+                <li>يلتزم مسؤول الأمن بتوثيق بيانات كافة زوار المنشأة في "دفتر تسجيل الزوار الرقمي الموحد" لضمان أرشفة التحركات حمايةً للمبنى.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🚨 نظام نداء الطوارئ الصاعق</h2>
+            <ul>
+                <li>بإمكان حارس بوابة الأمن أو مشرفي الأجنحة إطلاق نداء طوارئ عاجل بضغطة واحدة في حالات الضرورة القصوى، حيث يتم بث التنبيه فورا لشاشات مكتب مدير المدرسة والوكلاء لاتخاذ الإجراء الفوري.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📊 بث الإشعارات الذكية والتقارير</h2>
+            <ul>
+                <li>تتيح المنظومة لقسم الخدمة الاجتماعية حصر غياب أي فصل وتصدير ديباجة تقرير رسمي أنيق، وبثه فوراً إلى أولياء الأمور عبر الواتساب بـ ثانية واحدة مجاناً.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🏆 لوحة الشرف الآلية</h2>
+            <ul>
+                <li>يقوم النظام بفرز السجلات آلياً وعرض الطلاب المتميزين سلوكياً وحضورياً في لوحة الشرف العامة المخصصة للعرض في ممرات المدرسة لتعزيز الانضباط الذاتي.</li>
+            </ul>
+        </div>
+
         <div class="footer">
-            تم تطوير هذا النظام لخدمة العملية التعليمية في متوسطة سالم الحسينان © 2026<br>
-            إعداد وتصميم: أ. حسين محمد
+            تم تطوير وتأمين هذه المنظومة الرقمية لخدمة وتنظيم العملية الإدارية والتعليمية بمدرسة سالم الحسينان © 2026<br>
+            إعداد وتصميم مهندس النظام: أ. حسين كرم
         </div>
     </div>
 
     <script>
         function generatePDF() {
-            // إخفاء الأزرار وقت التصوير عشان ما تطلع بالطباعة
             const element = document.getElementById('pdf-content');
+            const btn = document.querySelector('.btn-download');
             
-            // إعدادات جودة وخصائص الـ PDF
+            btn.innerHTML = '⏳ جاري تنسيق وتصدير الـ PDF...';
+            btn.style.background = '#777';
+            
             const opt = {
-                margin:       10,
-                filename:     'دليل_استخدام_منصة_الحسينان.pdf',
+                margin:       12,
+                filename:     'دليل_استخدام_المنظومة_الرقمية_الحسينان.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // تشغيل مكتبة التحويل
-            html2pdf().set(opt).from(element).save();
+            // تشغيل محرك الطباعة وحفظ الملف باسمه الرسمي
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = '📥 تحميل الدليل كملف (PDF)';
+                btn.style.background = '#1a1a2e';
+            }).catch(err => {
+                alert('حدث خطأ أثناء التصدير: ' + err.message);
+                btn.innerHTML = '📥 تحميل الدليل كملف (PDF)';
+                btn.style.background = '#1a1a2e';
+            });
         }
     </script>
 </body>
