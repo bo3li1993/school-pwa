@@ -2,66 +2,95 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>اللوحة المركزية - السوبر أدمين</title>
+    <title>اللوحة المركزية - التحكم السحابي (SaaS Engine)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #f8fafc; padding: 20px; }
-        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input, button { padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; width: 100%; }
-        button { background: #1a1a2e; color: #fff; font-weight: bold; cursor: pointer; }
+        body { font-family: 'Cairo', sans-serif; background: #0f172a; color: #f1f5f9; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
+        .status-active { color: #22c55e; }
+        .status-suspended { color: #ef4444; }
+        button { padding: 10px; cursor: pointer; border-radius: 6px; border: none; font-weight: bold; }
+        .btn-suspend { background: #ef4444; color: white; }
+        .btn-activate { background: #22c55e; color: white; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2><i class="bi bi-plus-circle"></i> إنشاء مدرسة جديدة (نظام الدقيقة الواحدة)</h2>
-    <input type="text" id="new-school-name" placeholder="اسم المدرسة">
-    <input type="email" id="new-admin-email" placeholder="البريد الإلكتروني للمدير">
-    <input type="password" id="new-admin-pass" placeholder="كلمة المرور الابتدائية">
-    <button onclick="window.runQuickSetup()">تفعيل المدرسة فوراً</button>
+<h1>مركز تحكم المنظومة الرقمية (SaaS)</h1>
+
+<div class="grid">
+    <!-- كرت إضافة مدرسة -->
+    <div class="card">
+        <h3><i class="bi bi-plus-lg"></i> إضافة مدرسة جديدة</h3>
+        <input type="text" id="school-name" placeholder="اسم المدرسة" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px;">
+        <input type="email" id="admin-email" placeholder="إيميل المدير" style="width:100%; padding:10px; margin-bottom:10px; border-radius:5px;">
+        <button onclick="window.createSchool()" style="width:100%; background:#3b82f6; color:white;">إنشاء وتشغيل المدرسة</button>
+    </div>
+
+    <!-- كرت إحصائيات النظام -->
+    <div class="card">
+        <h3><i class="bi bi-graph-up"></i> إحصائيات النظام</h3>
+        <p>إجمالي المدارس: <span id="total-schools">0</span></p>
+        <p>إجمالي الموظفين المسجلين: <span id="total-users">0</span></p>
+    </div>
 </div>
 
-<div class="card">
-    <h2>إدارة المدارس النشطة</h2>
-    <div id="schools-list"></div>
+<div class="card" style="margin-top:20px;">
+    <h3>قائمة المدارس المتعاقدة</h3>
+    <table style="width:100%; color:#fff; text-align:right;">
+        <thead><tr><th>اسم المدرسة</th><th>الحالة</th><th>تاريخ الانتهاء</th><th>إجراءات</th></tr></thead>
+        <tbody id="schools-table"></tbody>
+    </table>
 </div>
 
 <script type="module">
     import { db } from './js/firebase-config.js';
-    import { collection, doc, writeBatch, serverTimestamp, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { collection, getDocs, doc, setDoc, updateDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-    window.runQuickSetup = async () => {
-        const name = document.getElementById('new-school-name').value;
-        const email = document.getElementById('new-admin-email').value;
-        const pass = document.getElementById('new-admin-pass').value;
-
-        if(!name || !email || !pass) return alert("يرجى تعبئة كافة البيانات");
-
-        const batch = writeBatch(db);
-        const schoolRef = doc(collection(db, 'schools'));
-        const adminRef = doc(collection(db, 'users'));
-
-        // 1. إنشاء سجل المدرسة
-        batch.set(schoolRef, {
-            name: name,
-            status: 'active',
-            subscriptionEnd: '2027-06-01',
-            createdAt: serverTimestamp()
+    // 1. عرض المدارس لايف
+    onSnapshot(collection(db, 'schools'), (snap) => {
+        const tbody = document.getElementById('schools-table');
+        tbody.innerHTML = '';
+        snap.forEach(d => {
+            const data = d.data();
+            tbody.innerHTML += `<tr>
+                <td>${data.name}</td>
+                <td class="${data.status === 'active' ? 'status-active' : 'status-suspended'}">${data.status}</td>
+                <td>${data.subscriptionEnd || 'غير محدد'}</td>
+                <td>
+                    <button class="${data.status === 'active' ? 'btn-suspend' : 'btn-activate'}" 
+                            onclick="window.toggleSchool('${d.id}', '${data.status}')">
+                        ${data.status === 'active' ? 'إيقاف' : 'تفعيل'}
+                    </button>
+                </td>
+            </tr>`;
         });
+        document.getElementById('total-schools').textContent = snap.size;
+    });
 
-        // 2. إنشاء حساب المدير (المرتبط بالـ schoolId)
-        batch.set(adminRef, {
-            userId: "1001",
-            name: "مدير مدرسة " + name,
-            role: "admin",
-            schoolId: schoolRef.id,
-            email: email,
-            plainPass: pass,
-            authMigrated: false
+    // 2. تفعيل/إيقاف المدرسة
+    window.toggleSchool = async (id, currentStatus) => {
+        await updateDoc(doc(db, 'schools', id), {
+            status: currentStatus === 'active' ? 'suspended' : 'active'
         });
+    };
 
-        await batch.commit();
-        alert("✅ تم إطلاق المدرسة والمدير بنجاح!");
+    // 3. إنشاء مدرسة
+    window.createSchool = async () => {
+        const name = document.getElementById('school-name').value;
+        const email = document.getElementById('admin-email').value;
+        const id = doc(collection(db, 'schools')).id;
+        
+        await setDoc(doc(db, 'schools', id), {
+            name: name, status: 'active', subscriptionEnd: '2027-06-01'
+        });
+        
+        await setDoc(doc(db, 'users', id), {
+            userId: "ADMIN1", name: "مدير " + name, role: "admin", schoolId: id, email: email
+        });
+        
+        alert("تم إنشاء المدرسة بنجاح!");
     };
 </script>
 </body>
