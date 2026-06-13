@@ -1,5 +1,4 @@
-// ⚠️ موديل رصد وتحليل حالات الغياب المتكرر والتراكمي لآخر 30 يوماً فقط
-import { db } from '../firebase-config.js';
+import { db, SCHOOL_ID } from '../firebase-config.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initRepeatModule() {
@@ -46,14 +45,15 @@ async function calculateRepeatAbsencesLive() {
         const snap = await getDocs(collection(db, 'attendance'));
         let stats = {};
 
-        // 📅 فلترة النطاق الزمني الذكي (آخر 30 يوماً فقط من تاريخ اليوم)
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - 30);
 
         snap.forEach(doc => {
             const d = doc.data();
             
-            // التحقق من صحة وجود التايم ستامب ووقوعه في نطاق الـ 30 يوماً
+            // 🏢 فلترة المدرسة الحالية: إذا كان السجل يتبع مدرسة ثانية يتم تخطيه فوراً
+            if (d.schoolId && d.schoolId !== SCHOOL_ID) return;
+            
             let isWithinRange = true;
             if (d.timestamp) {
                 const docDate = d.timestamp.toDate();
@@ -74,8 +74,8 @@ async function calculateRepeatAbsencesLive() {
 
         filtered.forEach(s => {
             let lawBadge = `<span class="badge warning">تنبيه شفهي أول</span>`;
-            if (s.count >= 3) lawBadge = `<span class="badge danger" style="background:#c0392b;">⚠️ إصدار إنذار أول خطي</span>`;
-            if (s.count >= 5) lawBadge = `<span class="badge danger" style="background:#e74c3c; font-weight:900;">🚨 استدعاء ولي أمر فوري</span>`;
+            if (s.count >= 3) lawBadge = `<span class="badge danger" style="background:#c0392b; color:#fff; padding:3px 8px; border-radius:4px;">⚠️ إصدار إنذار أول خطي</span>`;
+            if (s.count >= 5) lawBadge = `<span class="badge danger" style="background:#e74c3c; color:#fff; padding:3px 8px; border-radius:4px; font-weight:900;">🚨 استدعاء ولي أمر فوري</span>`;
 
             html += `
                 <tr style="border-bottom:1px solid #eee;">
@@ -86,6 +86,8 @@ async function calculateRepeatAbsencesLive() {
                 </tr>`;
         });
 
-        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:var(--success-color); padding:15px; font-weight:bold;">🥇 السجلات نظيفة بالكامل، لا توجد حالات غياب متكرر في الـ 30 يوماً الأخيرة.</td></tr>';
-    } catch(err) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px;">💡 السجلات نظيفة وقاعدة البيانات فريش تماماً.</td></tr>'; }
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">🥇 ممتاز! لا يوجد طلاب متجاوزين لنسبة الغياب هذا الشهر.</td></tr>';
+    } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">خطأ أثناء سحب البيانات: ${err.message}</td></tr>`;
+    }
 }
