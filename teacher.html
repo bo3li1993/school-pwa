@@ -40,7 +40,7 @@ body { background: var(--bg-light); display: flex; flex-direction: column; min-h
 .card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eef2f5; }
 .card h2 { font-size: 14px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
 
-/* شريط الحصص السبع اليومي */
+/* شريط الحصص السبع الدراسي اليومي */
 .periods-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin: 12px 0 5px 0; }
 .period-badge { background: #e2e8f0; color: #475569; text-align: center; padding: 8px 4px; border-radius: 8px; font-size: 11px; font-weight: bold; border: 1px solid #cbd5e1; transition: 0.3s; }
 .period-badge.done { background: #e8f8f5; color: var(--success-color); border-color: #a3e635; }
@@ -80,7 +80,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <div class="workspace-container">
     
-    <!-- بوكس التعاميم الإدارية لايف -->
     <div class="manager-alert-box" id="global-manager-alert">
         <i class="bi bi-megaphone-fill" style="font-size:20px; color:#975a16;"></i>
         <div>
@@ -89,14 +88,12 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- منيو الأقسام الثلاثة المدمجة -->
     <div class="tabs-switcher">
         <div class="tab-btn active" id="btn-tab-roll" onclick="window.switchTeacherTab('roll')"><i class="bi bi-calendar-check"></i> منظومة الرصد المباشر (الكشف)</div>
         <div class="tab-btn" id="btn-tab-beh" onclick="window.switchTeacherTab('behavior')"><i class="bi bi-shield-exclamation"></i> رصد ومتابعة السلوك صفياً</div>
         <div class="tab-btn" id="btn-tab-arch" onclick="window.switchTeacherTab('archive')"><i class="bi bi-clock-history"></i> أرشيف وتعديل غيابات الحصص</div>
     </div>
 
-    <!-- 📝 القسم الأول: كشف الرصد المباشر المفتوح (نفس كود الكوميت بالملي وبدون قفل) -->
     <div id="view-roll" class="tab-content active">
         <div class="card" style="border-top: 5px solid var(--hover-color);">
             <h2><i class="bi bi-clipboard-plus"></i> بيانات الحصة الدراسية والصف الفورية</h2>
@@ -140,7 +137,6 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 🛡️ القسم الثاني: رصد ومتابعة السلوك -->
     <div id="view-behavior" class="tab-content">
         <div class="card" style="border-top: 4px solid var(--danger-color);">
             <h2><i class="bi bi-shield-fill-exclamation"></i> وثيقة رصد وإثبات حالة سلوكية داخل الصف فوراً</h2>
@@ -180,11 +176,10 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </div>
     </div>
 
-    <!-- 🕒 القسم الثالث: أرشيف قفل وتعديل غيابات الحصص (مهلة الـ 3 ساعات الذكية) -->
     <div id="view-archive" class="tab-content">
         <div class="card" style="border-top: 4px solid var(--warning-color);">
             <h2><i class="bi bi-clock-history"></i> سجل غيابات الحصص الموثقة من قبلك (صلاحية تعديل القيد: 3 ساعات فقط)</h2>
-            <p style="font-size:11px; font-weight:bold; color:var(--danger-color); margin-bottom:15px;">🔒 الحماية الذكية: يمكنك تصحيح غياب أي طالب قمت برصده خلال 3 ساعات من وقت الحصة، وبعد مرور الـ 180 دقيقة يُقفل السطر رسمياً.</p>
+            <p style="font-size:11px; font-weight:bold; color:var(--danger-color); margin-bottom:15px;">🔒 الحماية الذكية: يمكنك تصحيح غياب أي طالب قمت برصده خلال 3 ساعات من وقت الحصة، وبعد مرور الـ 180 دقيقة يُقفل السطر رسميماً.</p>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -202,13 +197,13 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, getDocs, doc, setDoc, query, where, serverTimestamp, writeBatch, onSnapshot, orderBy, limit, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, doc, setDoc, query, where, serverTimestamp, writeBatch, onSnapshot, orderBy, limit, addDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentTeacherId = "";
 let currentTeacherName = "المعلم";
 let fetchedStudents = [];
 
-// 🔥 إرجاع التاريخ بدون أصفار نهائياً (طريقة السيرفر الأصلي والمدير)
+// التاريخ الشرعي المتطابق مع المدير بدون أصفار حشو
 function getUnifiedDateString() {
     const d = new Date();
     return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
@@ -301,18 +296,11 @@ window.populateDropdownAlphabetical = async function(classSelectId, studentSelec
     } catch (err) { nameSelect.innerHTML = '<option value="">❌ خطأ في سحب الأسماء</option>'; }
 };
 
-window.handleTeacherClassChange = async function(classId) {
+// دالة مخصصة لطباعة كشف الطلاب ليكون قابل لإعادة الاستدعاء عند فتح القفل الحصص
+window.renderStudentListSheet = async function(classId) {
     const listBox = document.getElementById('teacher-students-list-box');
-    const submitBtn = document.getElementById('btn-submit-attendance');
-    if(!classId) {
-        listBox.innerHTML = `<p style="text-align:center; padding:15px; color:#999; font-weight:bold;">الرجاء اختيار الصف الدراسي لعرض كشف أسماء الطلاب...</p>`;
-        submitBtn.style.display = "none";
-        resetPeriodBadges();
-        return;
-    }
     listBox.innerHTML = `<p style="text-align:center; padding:15px; font-weight:bold;">⏳ جاري جلب وفرز الأسماء...</p>`;
     try {
-        await window.checkPeriodStatusLive();
         const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
         const snap = await getDocs(q);
         fetchedStudents = [];
@@ -320,8 +308,8 @@ window.handleTeacherClassChange = async function(classId) {
         fetchedStudents.sort((a,b) => a.localeCompare(b, 'ar'));
 
         if(fetchedStudents.length === 0) {
-            listBox.innerHTML = `<p style="text-align:center; padding:15px; color:red; font-weight:bold;">⚠️ لا يوجد طلاب مقيدين.</p>`;
-            submitBtn.style.display = "none";
+            listBox.innerHTML = `<p style="text-align:center; padding:15px; color:red; font-weight:bold;">⚠️ لا يوجد طلاب مقيدين في هذا الصف الدراسي.</p>`;
+            document.getElementById('btn-submit-attendance').style.display = "none";
             return;
         }
 
@@ -344,8 +332,19 @@ window.handleTeacherClassChange = async function(classId) {
             </div>`;
         });
         listBox.innerHTML = html;
-        submitBtn.style.display = "block";
+        document.getElementById('btn-submit-attendance').style.display = "block";
     } catch(e) { listBox.innerHTML = `<p style="color:red;">خطأ: ${e.message}</p>`; }
+};
+
+window.handleTeacherClassChange = async function(classId) {
+    if(!classId) {
+        document.getElementById('teacher-students-list-box').innerHTML = `<p style="text-align:center; padding:15px; color:#999; font-weight:bold;">الرجاء اختيار الصف الدراسي لعرض كشف أسماء الطلاب...</p>`;
+        document.getElementById('btn-submit-attendance').style.display = "none";
+        resetPeriodBadges();
+        return;
+    }
+    await window.renderStudentListSheet(classId);
+    await window.checkPeriodStatusLive();
 };
 
 window.togglePillActive = function(index, status) {
@@ -360,6 +359,7 @@ window.togglePillActive = function(index, status) {
     if(status === 'late' && lLbl) { lLbl.classList.add('l-active'); lLbl.querySelector('input').checked = true; }
 };
 
+// 🚨 محرك الفحص والقفل الذكي: يمنع رصد الحصة فوق بعضها ويحمي السيرفر
 window.checkPeriodStatusLive = async function() {
     const classId = document.getElementById('t-class-select').value;
     if(!classId) return;
@@ -373,8 +373,11 @@ window.checkPeriodStatusLive = async function() {
             "الحصة الرابعة": "p-box-4", "الحصة الخامسة": "p-box-5", "الحصة السادسة": "p-box-6",
             "الحصة السابعة": "p-box-7"
         };
+        
+        let donePeriods = new Set();
         snap.forEach(doc => {
             const periodName = doc.data().period;
+            donePeriods.add(periodName);
             const elementId = periodsMap[periodName];
             if(elementId) {
                 const badge = document.getElementById(elementId);
@@ -384,6 +387,30 @@ window.checkPeriodStatusLive = async function() {
                 }
             }
         });
+
+        const currentPeriod = document.getElementById('t-period-select').value;
+        const submitBtn = document.getElementById('btn-submit-attendance');
+        const listBox = document.getElementById('teacher-students-list-box');
+
+        // قفل التعديل النهائي للحصة فوراً إذا كانت مسجلة مسبقاً اليوم
+        if(donePeriods.has(currentPeriod)) {
+            submitBtn.disabled = true;
+            submitBtn.style.background = "#94a3b8";
+            submitBtn.style.boxShadow = "none";
+            submitBtn.innerHTML = `<i class="bi bi-lock-fill"></i> هذه الحصة رُصدت وقُفلت مسبقاً`;
+            listBox.innerHTML = `<div style="text-align:center; padding:35px; color:var(--danger-color); font-weight:bold;">
+                <i class="bi bi-lock-fill" style="font-size: 45px; display:block; margin-bottom:12px;"></i>
+                🔒 الحصة مقفلة بالكامل: تم رصد حضور وغياب هذه الحصة مسبقاً لليوم الدراسي الحالي بنجاح، ولا يمكن إعادة الرصد فوقها لمنع التداخل (توجّه لعلامة الأرشيف للتعديل).
+            </div>`;
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.style.background = "var(--primary-color)";
+            submitBtn.style.boxShadow = "0 4px 12px rgba(26,26,46,0.15)";
+            submitBtn.innerHTML = `<i class="bi bi-check-all"></i> 🔘 اعتماد وإرسال كشف حضور وغياب الحصة الموحد`;
+            if (listBox.innerHTML.includes("الحصة مقفلة") && classId) {
+                await window.renderStudentListSheet(classId);
+            }
+        }
     } catch(e) { console.log(e); }
 };
 
@@ -394,7 +421,7 @@ function resetPeriodBadges() {
     }
 }
 
-// 💾 🔘 اعتماد وإرسال كشف الحصة الموحد - مصحح بالكامل ومربوط مع حساب المدير
+// 💾 🔘 حفظ الكشف الجماعي بالمعرّف العشوائي المتوافق 100% مع حساب المدير
 window.saveAttendanceFromTeacherLive = async function() {
     const classId = document.getElementById('t-class-select').value;
     const period = document.getElementById('t-period-select').value;
@@ -404,10 +431,10 @@ window.saveAttendanceFromTeacherLive = async function() {
     if(!confirm(`تأكيد اعتماد سجل حضور وغياب الصف (${classId}) للحصة (${period})؟`)) return;
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري حفظ السجلات الموحدة وتأمين الاتصال...`;
+    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري ترحيل الكشف وتأمين الاتصال لايف...`;
 
     try {
-        const todayStr = getUnifiedDateString(); // التاريخ الصحيح المتطابق مع المدير (بدون أصفار حشو)
+        const todayStr = getUnifiedDateString();
         const timeStr = getUnifiedTimeString();
         const batch = writeBatch(db);
         
@@ -417,16 +444,15 @@ window.saveAttendanceFromTeacherLive = async function() {
             let selectedStatus = "present";
             for(let radio of radioOptions) { if(radio.checked) selectedStatus = radio.value; }
 
-            // 🔥 قفل التكرار للأبد: توليد معرّف فريد يدمج (الصف + الحصة + الطالب + التاريخ) لمنع فتح أسطر مكررة
-            const deterministicDocId = `${classId.trim()}_${period}_${sName}_${todayStr}`.replace(/\//g, '-');
-            const attRef = doc(db, 'attendance', deterministicDocId); // الكولكشن الشرعي الأصلي للمدير
+            // 🔥 العودة للمعرّف العشوائي الشرعي ليتطابق 100% مع حساب المدير والـ AppSheet ويظهر فوراً
+            const attRef = doc(collection(db, 'attendance')); 
 
             batch.set(attRef, {
                 classId: classId.trim(),
                 studentName: sName,
                 name: sName,
                 period: period,
-                status: selectedStatus, // الحالات باللغة الإنجليزية كما يتوقعها كود المدير (present, absent, late)
+                status: selectedStatus, // present, absent, late
                 dateStr: todayStr,
                 date: todayStr,
                 timeStr: timeStr,
@@ -435,20 +461,13 @@ window.saveAttendanceFromTeacherLive = async function() {
             });
         }
 
-        await batch.commit(); // بث وحفظ الكل في ثانية واحدة
+        await batch.commit();
 
-        alert(`🚀 تم اعتماد وحفظ كشف الحصة (${period}) بنجاح كامل وظهر عند المدير فورا!`);
-        await window.checkPeriodStatusLive(); 
-        
-        // تفريغ الشاشة والعودة للوضع الابتدائي المريح
-        document.getElementById('teacher-students-list-box').innerHTML = `<p style="text-align:center; padding:15px; color:#999; font-weight:bold;">الرجاء اختيار الصف الدراسي لعرض كشف أسماء الطلاب...</p>`;
-        submitBtn.style.display = "none";
-        document.getElementById('t-class-select').value = "";
-        resetPeriodBadges();
+        alert(`🚀 تم اعتماد الكشف بنجاح كامل الحين، وظهر بلوحة المدير فوراً!`);
+        await window.checkPeriodStatusLive(); // التحديث الفوري لقفل المدخلات ومنع الكتابة فوقها
     } catch(e) { alert("خطأ في عملية الحفظ: " + e.message); }
     
     submitBtn.disabled = false;
-    submitBtn.innerHTML = `<i class="bi bi-check-all"></i> 🔘 اعتماد وإرسال كشف حضور وغياب الحصة الموحد`;
 };
 
 // 🛡️ رصد السلوك المباشر
@@ -470,7 +489,7 @@ window.saveBehaviorLogLive = async function(e) {
     } catch(err) { alert("خطأ في الحفظ: " + err.message); }
 };
 
-// 🕒 كاشف ومراقب الحظر القانوني للـ 3 ساعات بتبويب الأرشيف الخاص
+// 🕒 كاشف الحظر القانوني للـ 3 ساعات بتبويب الأرشيف الخاص
 function startTeacherArchiveListener() {
     onSnapshot(collection(db, 'attendance'), (snapshot) => {
         const tbody = document.getElementById('teacher-archive-tbody');
@@ -479,7 +498,6 @@ function startTeacherArchiveListener() {
         const now = new Date();
         snapshot.forEach(docSnap => {
             const d = docSnap.data();
-            // عرض الغيابات والتأخيرات فقط داخل أرشيف التعديل
             if (d.recordedBy === currentTeacherId && d.status !== "present") {
                 let isEditable = false;
                 if (d.timestamp) {
@@ -504,7 +522,7 @@ function startTeacherArchiveListener() {
                 </tr>`;
             }
         });
-        tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:#999;">💡 لم تقم برصد أي غيابات للحصة اليوم بعد.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center; color:#999;">💡 سجل غيابات الحصص فارغ لغاية الآن.</td></tr>';
     });
 }
 
