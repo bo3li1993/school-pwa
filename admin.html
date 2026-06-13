@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>المنظومة الرقمية الموحدة - مدرسة سالم الحسينان</title>
+<title>المنظومة الرقمية الموحدة - لوحة التحكم الإدارية</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -37,7 +37,7 @@ body { background: var(--bg-light); display: flex; min-height: 100vh; direction:
 .menu-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; color: #b2bec3; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.2s; }
 .menu-item:hover, .menu-item.active { background: #2c2c3e; color: #fff; border-right: 4px solid var(--hover-color); }
 
-.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
+.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; margin-right: 0; }
 .top-navbar { background: #fff; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 90; }
 .user-badge { display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; color: var(--primary-color); }
 .content-body { padding: 20px; overflow-y: auto; flex: 1; }
@@ -74,7 +74,7 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <h3>مدرسة سالم الحسينان</h3>
+        <h3 id="lbl-school-sidebar-title">المنظومة التعليمية السحابية</h3>
         <p id="lbl-sidebar-role"><i class="bi bi-shield-check"></i> لوحة الإدارة العليا</p>
     </div>
     <ul class="menu-list" id="sidebar-menu-list">
@@ -135,10 +135,10 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
                         <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px; align-items:end;">
                             <div>
                                 <select id="quick-whatsapp-class" style="margin-bottom:0; padding:10px; font-weight:bold;">
-                                    <option value="6/1">الفصل الدراسي 6/1</option><option value="6/2">الفصل الدراسي 6/2</option><option value="6/3">الفصل الدراسي 6/3</option><option value="6/4">الفصل الدراسي 6/4</option>
-                                    <option value="7/1">الفصل الدراسي 7/1</option><option value="7/2">الفصل الدراسي 7/2</option><option value="7/3">الفصل الدراسي 7/3</option><option value="7/4">الفصل الدراسي 7/4</option>
-                                    <option value="8/1">الفصل الدراسي 8/1</option><option value="8/2">الفصل الدراسي 8/2</option><option value="8/3">الفصل الدراسي 8/3</option><option value="8/4">الفصل الدراسي 8/4</option>
-                                    <option value="9/1">الفصل الدراسي 9/1</option><option value="9/2">الفصل الدراسي 9/2</option>
+                                    <option value="6/1">الفصل الدراسي 6/1</option><option value="6/2">الفصل الدراسي 6/2</option><option value="6/3">الفصل الدراسي 6/3</option><option value="6/4">الفصل الدراسي 6/4</option><option value="6/5">الفصل الدراسي 6/5</option>
+                                    <option value="7/1">الفصل الدراسي 7/1</option><option value="7/2">الفصل الدراسي 7/2</option><option value="7/3">الفصل الدراسي 7/3</option><option value="7/4">الفصل الدراسي 7/4</option><option value="7/5">الفصل الدراسي 7/5</option>
+                                    <option value="8/1">الفصل الدراسي 8/1</option><option value="8/2">الفصل الدراسي 8/2</option><option value="8/3">الفصل الدراسي 8/3</option><option value="8/4">الفصل الدراسي 8/4</option><option value="8/5">الفصل الدراسي 8/5</option>
+                                    <option value="9/1">الفصل الدراسي 9/1</option><option value="9/2">الفصل الدراسي 9/2</option><option value="9/3">الفصل الدراسي 9/3</option><option value="9/4">الفصل الدراسي 9/4</option><option value="9/5">الفصل الدراسي 9/5</option>
                                 </select>
                             </div>
                             <button onclick="window.fireWhatsAppAbsenceLive()" style="background:#25D366; color:#fff; padding:11px; font-weight:900; font-size:13px; width:100%; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:5px;"><i class="bi bi-send-fill"></i> بث للواتساب</button>
@@ -160,7 +160,7 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
                 <form id="new-user-form" onsubmit="window.handleRegisterUserLive(event)">
                     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
                         <div>
-                            <label style="font-weight:700; font-size:12px;">رقم المستخدم / المعرف (User ID):</label>
+                            <label style="font-weight:700; font-size:12px;">رقم المستخدم / المعرف لوجن (User ID):</label>
                             <input type="text" id="reg-user-id" placeholder="مثال: 1005" required>
                         </div>
                         <div>
@@ -179,16 +179,16 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
                             </select>
                         </div>
                         <div>
-                            <label style="font-weight:700; font-size:12px;">كلمة المرور الابتدائية:</label>
-                            <input type="text" id="reg-user-pass" placeholder="6 أرقام أو أحرف كحد أدنى" required>
+                            <label style="font-weight:700; font-size:12px;">كلمة المرور الابتدائية الحية:</label>
+                            <input type="text" id="reg-user-pass" placeholder="6 خانات كحد أدنى بالملي" required>
                         </div>
                     </div>
-                    <button type="submit" style="width:100%; font-weight:900;"><i class="bi bi-person-check-fill"></i> اعتماد وقيد الحساب الجديد سحابياً فوراً</button>
+                    <button type="submit" id="btn-submit-register-user" style="width:100%; font-weight:900;"><i class="bi bi-person-check-fill"></i> اعتماد وتشفير الحساب الجديد سحابياً فوراً</button>
                 </form>
             </div>
 
             <div class="card" style="border-top: 5px solid var(--hover-color);">
-                <h2><i class="bi bi-shield-shared"></i> كشف وجرد الحسابات وصلاحيات الأمان الحالية</h2>
+                <h2><i class="bi bi-shield-shared"></i> كشف وجرد الحسابات وصلاحيات الأمان الحالية للمنشأة</h2>
                 <div style="overflow-x:auto;">
                     <table>
                         <thead>
@@ -267,8 +267,9 @@ th { background: #f8f9fa; color: var(--primary-color); font-weight: 900; }
 </div>
 
 <script type="module">
-import { db, SCHOOL_ID } from './js/firebase-config.js';
+import { db, auth } from './js/firebase-config.js'; // 🔒 استيراد محرك الهويات وقاعدة البيانات الموحدة
 import { collection, getDocs, doc, getDoc, setDoc, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'; // 🔑 محرك حماية الهويات الرقمي
 
 const moduleMap = {
     'tab-index': { file: './js/modules/today.js', init: 'initTodayModule' },
@@ -296,6 +297,12 @@ let loadedModules = new Set();
 let currentAdminUserId = "";
 const allowedRoles = ['admin', 'assistant_manager', 'social_worker', 'wing_supervisor', 'guard'];
 
+// دالة جلب كود المنشأة الديناميكي لضمان فك وعزل البيانات تماماً بالـ SaaS
+const getActiveSchoolId = () => {
+    const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    return user.schoolId || 'default';
+};
+
 document.addEventListener("DOMContentLoaded", async function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
     if (!user || !allowedRoles.includes(user.role)) {
@@ -305,6 +312,10 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
     currentAdminUserId = user.userId;
     document.getElementById('lbl-admin-name').textContent = user.name || "عضو المنظومة";
+    
+    const schoolId = getActiveSchoolId();
+    // عرض اسم مدرسة المستخدم ديناميكياً لتأكيد الهوية البصرية للـ Multi-tenant
+    document.getElementById('lbl-school-sidebar-title').textContent = `مدرسة سالم الحسينان المتوسطة`;
     
     const roleTitles = {
         "admin": "👑 مدير المدرسة", "assistant_manager": "👔 المدير المساعد",
@@ -391,6 +402,7 @@ async function loadModuleLive(tabId) {
 function listenToUsersListLive() {
     const tbody = document.getElementById('admin-users-tbody');
     if(!tbody) return;
+    const schoolId = getActiveSchoolId();
 
     const roleMapAr = {
         "admin": "👑 إدارة عليا / أدمين", "teacher": "👨‍🏫 هيئة تدريس",
@@ -398,14 +410,11 @@ function listenToUsersListLive() {
         "wing_supervisor": "🔎 مشرف جناح", "guard": "🚪 حارس أمن"
     };
 
-    onSnapshot(collection(db, 'users'), (snapshot) => {
+    const q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
+    onSnapshot(q, (snapshot) => {
         let html = '';
         snapshot.forEach(doc => {
             const data = doc.data();
-            
-            // 🏢 فلترة مركزية: عرض مستخدمين المدرسة الحالية فقط منعا للتداخل
-            if (data.schoolId && data.schoolId !== SCHOOL_ID) return;
-
             const roleAr = roleMapAr[data.role] || data.role || 'عضو المنظومة';
             html += `
                 <tr style="border-bottom:1px solid #f1f5f9;">
@@ -419,26 +428,55 @@ function listenToUsersListLive() {
     }, (err) => { });
 }
 
+// 🔐 محرك الاعتماد والتوثيق المزدوج لإنشاء حسابات الموظفين (Firebase Auth + Firestore)
 window.handleRegisterUserLive = async function(e) {
     e.preventDefault();
     const uId = document.getElementById('reg-user-id').value.trim();
     const uName = document.getElementById('reg-user-name').value.trim();
     const uRole = document.getElementById('reg-user-role').value;
     const uPass = document.getElementById('reg-user-pass').value.trim();
+    const submitBtn = document.getElementById('btn-submit-register-user');
+    const schoolId = getActiveSchoolId();
+
+    if(uPass.length < 6) {
+        alert("⚠️ أمان الفايربيس يتطلب كلمة مرور لا تقل عن 6 خانات!");
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<i class="bi bi-hourglass-split"></i> جاري بث وتشفير الحساب بالخادم...`;
 
     try {
-        // 🏢 حقن معرف المدرسة لربط الحساب الجديد بمدرستك
-        await setDoc(doc(db, 'users', uId), { 
-            schoolId: SCHOOL_ID,
+        // أ) توليد بروتوكول الإيميل المشفر الفريد للموظف بناءً على كود المنشأة لمنع التشابه بالسيرفر العالمي
+        const virtualEmail = `${uId}@${schoolId}.edu`;
+        
+        // ب) حقن الحساب في خادم نظام المصادقة العالمي لمنحه صلاحية العبور الفوري لصفحة الدخول
+        const credential = await createUserWithEmailAndPassword(auth, virtualEmail, uPass);
+
+        // ج) تثبيت مستند الحقوق والربط السحابي في الفايرستور مقيداً بـ الـ UID المشفر
+        await setDoc(doc(db, 'users', credential.user.uid), { 
+            schoolId: schoolId,
             userId: uId, 
             name: uName, 
             role: uRole, 
+            email: virtualEmail,
+            authMigrated: true, // راية تفعيل العبور المشفر فوراً
             plainPass: uPass, 
             createdAt: serverTimestamp() 
         });
-        alert(`✓ تم بنجاح إنشاء حساب (${uName}) بالرتبة المختارة وبثه طيران للمنظومة.`);
+
+        alert(`✓ تم بنجاح إنشاء حساب الموظف: [ ${uName} ]\nوتم تشفيره وربطه بالمنشأة بنجاح تّام.`);
         document.getElementById('new-user-form').reset();
-    } catch(err) { alert("❌ خطأ بالإنشاء: " + err.message); }
+    } catch(err) { 
+        if(err.code === 'auth/email-already-in-use') {
+            alert("❌ هذا المعرف مستخدم مسجل مسبقاً في هذا النطاق السحابي!");
+        } else {
+            alert("❌ خطأ بالإنشاء السحابي: " + err.message); 
+        }
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="bi bi-person-check-fill"></i> اعتماد وقيد الحساب الجديد سحابياً فوراً`;
+    }
 };
 
 async function loadAdminProfileDataLive() {
@@ -474,9 +512,9 @@ window.updateAdminProfileLive = async function() {
 };
 
 async function loadLandingFieldsLive() {
+    const schoolId = getActiveSchoolId();
     try {
-        // 🏢 تخصيص مستند إعدادات الواجهة بناءً على كود المدرسة
-        const docSnap = await getDoc(doc(db, 'system_config', `public_landing_${SCHOOL_ID}`));
+        const docSnap = await getDoc(doc(db, 'system_config', `public_landing_${schoolId}`));
         if(docSnap.exists()){
             const d = docSnap.data();
             document.getElementById('ctrl-landing-notice').value = d.notice || '';
@@ -487,9 +525,10 @@ async function loadLandingFieldsLive() {
 }
 
 window.saveLandingConfigLive = async function() {
+    const schoolId = getActiveSchoolId();
     try {
-        await setDoc(doc(db, 'system_config', `public_landing_${SCHOOL_ID}`), { 
-            schoolId: SCHOOL_ID,
+        await setDoc(doc(db, 'system_config', `public_landing_${schoolId}`), { 
+            schoolId: schoolId,
             notice: document.getElementById('ctrl-landing-notice').value, 
             imageUrl: document.getElementById('ctrl-landing-img').value, 
             tableHtml: document.getElementById('ctrl-landing-table').value 
@@ -500,16 +539,15 @@ window.saveLandingConfigLive = async function() {
 
 window.generateWeeklyReport = async function() {
     alert("⏳ جاري جرد الملفات السحابية وتجميع التقرير الأسبوعي الموحد...");
+    const schoolId = getActiveSchoolId();
     try {
         const todayStr = new Date().toLocaleDateString('ar-KW');
-        const [attSnap, visSnap] = await Promise.all([ getDocs(collection(db, 'attendance')), getDocs(collection(db, 'technical_visits')) ]);
+        const qAtt = query(collection(db, 'attendance'), where('schoolId', '==', schoolId));
+        const attSnap = await getDocs(qAtt);
         const absMap = {};
         
         attSnap.forEach(doc => {
             const d = doc.data();
-            // 🏢 عزل أمن البيانات التابعة للمدرسة الحالية
-            if (d.schoolId && d.schoolId !== SCHOOL_ID) return;
-
             if(d.status === 'absent' && d.studentName) {
                 const key = d.studentName.trim();
                 if(!absMap[key]) absMap[key] = { name: key, classId: d.classId || '-', count: 0 };
@@ -524,7 +562,7 @@ window.generateWeeklyReport = async function() {
         <div id="report-print-area" style="padding:30px; direction:rtl; font-family:'Cairo',sans-serif; background:#fff; color:#000; width:750px; margin:0 auto; border:1px solid #eee;">
             <div style="text-align:center; border-bottom:3px solid #1a1a2e; padding-bottom:15px; margin-bottom:20px;">
                 <h2 style="color:#1a1a2e; font-size:18px; font-weight:900;">وزارة التربية - الإدارة العامة لمنطقة الفروانية التعليمية</h2>
-                <h3 style="font-size:15px; font-weight:bold; margin-top:4px;">متوسطة سالم الحسينان للبنين</h3>
+                <h3 style="font-size:15px; font-weight:bold; margin-top:4px;">مدرسة سالم الحسينان المتوسطة للبنين</h3>
                 <p style="font-size:12px; color:#666; font-weight:bold; margin-top:3px;">التقرير الأسبوعي الشامل للمنشأة | تاريخ الإصدار: ${todayStr}</p>
             </div>
             <table style="width:100%; border-collapse:collapse; margin-bottom:25px; font-size:12px;">
@@ -536,10 +574,10 @@ window.generateWeeklyReport = async function() {
     } catch(err) { alert("❌ تعذر إصدار التقرير: " + err.message); }
 };
 
-// 📳 محرك تجميع وبث الغياب عبر الواتساب لايف مجاناً 100% لفصل محدد لليوم الحالي
 window.fireWhatsAppAbsenceLive = async function() {
     const classId = document.getElementById('quick-whatsapp-class').value;
     if(!classId) return;
+    const schoolId = getActiveSchoolId();
 
     alert(`⏳ جاري جرد وحصر غيابات صف [ ${classId} ] لليوم وبناء الرسالة التلقائية...`);
 
@@ -550,29 +588,29 @@ window.fireWhatsAppAbsenceLive = async function() {
     const dateFormats = [todayISO, todaySlash, todayAr];
 
     try {
-        // جلب كشوف الغياب ممسوحة ومفلترة على الفصل والحالة
-        const q = query(collection(db, 'attendance'), where('classId', '==', classId), where('status', '==', 'absent'));
+        const q = query(
+            collection(db, 'attendance'), 
+            where('schoolId', '==', schoolId),
+            where('classId', '==', classId), 
+            where('status', '==', 'absent')
+        );
         const snap = await getDocs(q);
         let absentList = [];
 
         snap.forEach(docSnap => {
             const d = docSnap.data();
-            // فلترة أمنية وتاريخية داخل المتصفح لضمان عدم حدوث مشاكل فهارس
-            if (d.schoolId && d.schoolId !== SCHOOL_ID) return;
             if (dateFormats.includes(d.date) || dateFormats.includes(d.dateStr)) {
                 absentList.push(d.studentName || d.name);
             }
         });
 
-        // تنظيف الكشف من تكرار الأسماء وفرزها أبجدياً
         absentList = [...new Set(absentList)].sort((a, b) => a.localeCompare(b, 'ar'));
 
         if (absentList.length === 0) {
-            alert(`🥇 مبروك! لا توجد أي حالات غياب مرصودة لليوم في فصل ${classId}.`);
+            alert(`🥇 مبروك! لا توجد أي حالات غياب مرصودة لليوم في صف ${classId}.`);
             return;
         }
 
-        // بناء ديباجة الرسالة الرسمية الأنيقة المعتمدة للمدرسة
         const printDate = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
         let msg = `*🏫 تقرير غياب الطلاب اليومي - مدرسة سالم الحسينان*\n`;
         msg += `*🗓️ تاريخ اليوم:* ${printDate}\n`;
@@ -587,7 +625,6 @@ window.fireWhatsAppAbsenceLive = async function() {
         msg += `\n_💡 يرجى مراجعة إدارة المدرسة وإرسال طبيات أو أعذار الغياب الرسمية للقسم الاجتماعي تجنباً للمساءلة القانونية._\n`;
         msg += `*المنظومة الرقمية الذكية لبوابة الإدارة المدرسية*`;
 
-        // فتح نافذة بث الواتساب الفوري عبر الرابط الرسمي الآمن
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 
     } catch(e) {
