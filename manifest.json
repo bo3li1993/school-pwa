@@ -1,8 +1,8 @@
 {
-  "name": "منظومة مدرسة سالم الحسينان",
+  "name": "منظومة مدرسة سالم الحسينان الرقمية",
   "short_name": "المنظومة",
-  "description": "المنظومة الرقمية الشاملة - مدرسة سالم الحسينان",
-  "start_url": "./home.html",
+  "description": "المنظومة الرقمية الشاملة والإدارة الذكية - مدرسة سالم الحسينان",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
