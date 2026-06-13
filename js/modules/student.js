@@ -1,5 +1,4 @@
-// 👤 موديل ملف الطالب الشامل المطور - يدمج كافة سجلات المتابعة والقرارات والتعزيز الإيجابي
-import { db } from '../firebase-config.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, doc, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let localStudentsMap = {};
@@ -39,9 +38,25 @@ export async function initStudentModule() {
 
     try {
         const classSelect = document.getElementById('prof-class-select');
-        const snap = await getDocs(collection(db, 'students'));
+        const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية الحالية
+        
+        // جلب طلاب المدرسة الحالية فقط لعزل الفصول
+        const qClasses = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+        const snap = await getDocs(qClasses);
+        
         let classesSet = new Set();
-        snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
+        snap.forEach(doc => { 
+            if(doc.data().classId) classesSet.add(doc.data().classId.trim()); 
+        });
+        
+        // حماية دائرية: إذا كانت المدرسة جديدة ولم ترفع طلاب بعد، نسحب الفصول العامة احتياطياً
+        if (classesSet.size === 0 && schoolId === 'hosainan') {
+            const fallbackSnap = await getDocs(collection(db, 'students'));
+            fallbackSnap.forEach(doc => {
+                const d = doc.data();
+                if(!d.schoolId && d.classId) classesSet.add(d.classId.trim());
+            });
+        }
         
         let htmlClasses = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
         Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
@@ -69,13 +84,24 @@ window.handleStudentClassChange = async function(classId) {
     studentSelect.disabled = true;
     localStudentsMap = {};
 
+    const schoolId = getActiveSchoolId();
+
     try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()));
-        const snap = await getDocs(q);
+        // الفلترة الثنائية: الفصل + كود المدرسة لمنع تداخل الأسماء
+        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
+        let snap = await getDocs(q);
+        
+        // خط دفاع ثانٍ للداتا القديمة
+        if (snap.empty && schoolId === 'hosainan') {
+            const fallbackQ = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+            snap = await getDocs(fallbackQ);
+        }
+        
         let studentsList = [];
         snap.forEach(doc => {
             const data = doc.data();
-            if(data.name) {
+            // التأكد من تبعية الداتا للمدرسة في حال استرجاع الفولباك العام
+            if(data.name && (!data.schoolId || data.schoolId === schoolId)) {
                 const cleanName = data.name.trim();
                 studentsList.push(cleanName);
                 localStudentsMap[cleanName] = { id: doc.id, ...data };
@@ -84,7 +110,7 @@ window.handleStudentClassChange = async function(classId) {
         studentsList.sort((a, b) => a.localeCompare(b, 'ar'));
 
         let html = '<option value="">-- اختر اسم الطالب من الكشف المعتمد --</option>';
-        studentsList.forEach(name => { html += `<option value="${name}">${name}</option>`; });
+        studentsList.forEach(name => { html += `<option value="${name}">${name}</option>'; });
 
         studentSelect.innerHTML = studentsList.length === 0 ? '<option value="">⚠️ لا يوجد طلاب</option>' : html;
         studentSelect.disabled = studentsList.length === 0;
@@ -104,16 +130,18 @@ window.loadStudentFullProfile = async function(student) {
 
     displayArea.innerHTML = `<p style="text-align:center; padding:20px; font-weight:bold; color:var(--hover-color);">⏳ جاري جرد السيرفر وتجميع الملفات والقرارات الصادرة بحق الطالب...</p>`;
 
+    const schoolId = getActiveSchoolId();
+
     try {
         const studentNameClean = student.name.trim();
 
-        // 🚀 معالجة تجميع متوازي لكافة الكولكشنات بما فيها المكافآت والتعامل مع كولكشن السلوك الموحد behavior
+        // 🚀 حقن الـ schoolId بشكل كامل ومتوازي في الكولكشنات الخمسة الموحدة لضمان أمان الـ SaaS مئة بالمئة
         const [attSnap, behSnap, rewSnap, gateSnap, clinicSnap] = await Promise.all([
-            getDocs(query(collection(db, 'attendance'), where('studentName', '==', studentNameClean))),
-            getDocs(query(collection(db, 'behavior'), where('studentName', '==', studentNameClean))),
-            getDocs(query(collection(db, 'rewards'), where('studentName', '==', studentNameClean))),
-            getDocs(query(collection(db, 'gatepass'), where('studentName', '==', studentNameClean))),
-            getDocs(query(collection(db, 'clinic'), where('studentName', '==', studentNameClean)))
+            getDocs(query(collection(db, 'attendance'), where('studentName', '==', studentNameClean), where('schoolId', '==', schoolId))),
+            getDocs(query(collection(db, 'behavior'), where('studentName', '==', studentNameClean), where('schoolId', '==', schoolId))),
+            getDocs(query(collection(db, 'rewards'), where('studentName', '==', studentNameClean), where('schoolId', '==', schoolId))),
+            getDocs(query(collection(db, 'gatepass'), where('studentName', '==', studentNameClean), where('schoolId', '==', schoolId))),
+            getDocs(query(collection(db, 'clinic'), where('studentName', '==', studentNameClean), where('schoolId', '==', schoolId)))
         ]);
 
         // 1. حضور وغياب الحصص
@@ -224,3 +252,5 @@ window.loadStudentFullProfile = async function(student) {
         </div>`;
     } catch(err) { displayArea.innerHTML = `<p style="color:red; font-weight:bold; padding:20px;">❌ خطأ في فرز البيانات السحابية: ${err.message}</p>`; }
 };
+
+window.switchStudentTab = function() {}; // تم الابقاء للسلامة البرمجية
