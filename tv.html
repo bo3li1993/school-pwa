@@ -194,6 +194,38 @@
             console.error("❌ خطأ في جلب البيانات الحية:", error);
             alert("حدث خطأ في جلب البيانات من السيرفر. تأكد من إعدادات الـ Indexes في فايربيس.");
         });
-    </script>
+    
+// ===== رادار الفصول =====
+const ALL_CLASSES = [
+    '6/1','6/2','6/3','6/4',
+    '7/1','7/2','7/3','7/4',
+    '8/1','8/2','8/3','8/4',
+    '9/1','9/2','9/3','9/4'
+];
+
+async function updateMissingClasses() {
+    try {
+        const schoolId = getActiveSchoolId();
+        const todayISO = getTodayISO();
+        const { getDocs: gd, query: q, collection: col, where: wh } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const snap = await gd(q(col(db,'attendance'), wh('schoolId','==',schoolId), wh('date','==',todayISO)));
+        const recorded = new Set();
+        snap.forEach(d => recorded.add(d.data().classId));
+        const missing = ALL_CLASSES.filter(c => !recorded.has(c));
+        const el = document.getElementById('tv-missing');
+        if(!el) return;
+        if(missing.length === 0) {
+            el.innerHTML = '<span style="color:#10b981;font-weight:900;font-size:18px;">✅ جميع الفصول سجّلت</span>';
+        } else {
+            el.innerHTML = missing.map(c =>
+                `<span style="background:#ef4444;color:#fff;padding:6px 14px;border-radius:8px;font-weight:900;font-size:16px;margin:3px;">${c}</span>`
+            ).join('');
+        }
+    } catch(e) { console.warn('Missing classes error:', e); }
+}
+
+// تحديث رادار الفصول كل دقيقة
+setInterval(updateMissingClasses, 60000);
+</script>
 </body>
 </html>
