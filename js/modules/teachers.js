@@ -35,7 +35,7 @@ export async function initTeachersModule() {
 
         // التوافقية للمدرسة الأم (سالم الحسينان) إذا كانت البيانات بدون حقل schoolId
         if (snap.empty && schoolId === 'hosainan') {
-            snap = await getDocs(collection(db, 'users'));
+            snap = await getDocs(getActiveSchoolId() ? query(collection(db, 'users'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'users'));
         }
 
         let html = '';
