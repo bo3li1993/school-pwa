@@ -50,7 +50,7 @@ async function calculateTeacherPerformanceLive() {
 
         // توافقية الداتا القديمة
         if (snap.empty && schoolId === 'hosainan') {
-            snap = await getDocs(collection(db, 'technical_visits'));
+            snap = await getDocs(getActiveSchoolId() ? query(collection(db, 'technical_visits'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'technical_visits'));
         }
 
         let perfMap = {};
