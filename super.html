@@ -1,40 +1,29 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>السوبر أدمين - إنشاء المدارس</title>
-</head>
+<head><meta charset="UTF-8"><title>التحكم المركزي - السوبر أدمين</title></head>
 <body>
-    <div style="padding:50px;">
-        <input type="text" id="school-name" placeholder="اسم المدرسة الجديد">
-        <input type="email" id="admin-email" placeholder="إيميل المدير">
-        <input type="password" id="admin-pass" placeholder="كلمة المرور">
-        <button onclick="window.runQuickSetup()">إطلاق المدرسة الآن</button>
-    </div>
+    <div id="revenue-stats" style="margin-bottom:20px;"></div>
+    <div id="schools-list"></div>
 
     <script type="module">
-        import { db, auth } from './js/firebase-config.js';
-        import { collection, doc, writeBatch, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-        import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { db } from './js/firebase-config.js';
+        import { collection, onSnapshot, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-        window.runQuickSetup = async () => {
-            const name = document.getElementById('school-name').value;
-            const email = document.getElementById('admin-email').value;
-            const pass = document.getElementById('admin-pass').value;
-
-            const cred = await createUserWithEmailAndPassword(auth, email, pass);
-            const batch = writeBatch(db);
-            const schoolRef = doc(collection(db, 'schools'));
-
-            batch.set(schoolRef, { name, status: 'active', subscriptionEnd: '2027-06-01' });
-            batch.set(doc(db, 'users', cred.user.uid), {
-                userId: "ADMIN", schoolId: schoolRef.id, role: 'admin', 
-                email: email, authMigrated: true, createdAt: serverTimestamp()
+        onSnapshot(collection(db, 'schools'), snapshot => {
+            let activeCount = 0, totalRevenue = 0;
+            snapshot.forEach(d => {
+                if(d.data().status === 'active') {
+                    activeCount++;
+                    totalRevenue += {basic:150, pro:250, enterprise:400}[d.data().plan||'basic'] || 250;
+                }
             });
-
-            await batch.commit();
-            alert("✅ مبروك! المدرسة جاهزة.");
-        };
+            document.getElementById('revenue-stats').innerHTML = `
+                <div style="display:flex; gap:10px;">
+                    <div>المدارس: ${snapshot.size}</div>
+                    <div>الفعالة: ${activeCount}</div>
+                    <div>الإيراد: ${totalRevenue} KWD</div>
+                </div>`;
+        });
     </script>
 </body>
 </html>
