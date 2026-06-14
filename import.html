@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>رفع بيانات الطلاب جماعياً</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        
+        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; color: #334155; padding: 30px; margin: 0; }
+        .import-card { background: #fff; max-width: 850px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        
+        h2 { color: #1e293b; font-weight: 900; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        /* صندوق الإرشادات */
+        .guide-box { background: #f8fafc; border-right: 4px solid #3b82f6; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        .guide-box h4 { color: #1e3a8a; font-weight: 700; margin-bottom: 12px; }
+        .guide-box ol { padding-right: 20px; line-height: 1.8; font-size: 14px; }
+        .guide-box li { margin-bottom: 8px; }
+        
+        /* تنسيق جدول العينة */
+        .sample-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; text-align: center; }
+        .sample-table th { background: #e2e8f0; color: #334155; padding: 8px; font-weight: 700; }
+        .sample-table td { border: 1px solid #e2e8f0; padding: 8px; background: #fff; }
+        
+        .alert-warning { background: #fffbeb; border: 1px solid #fef3c7; color: #b45309; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 10px; }
+        
+        /* منطقة رفع الملف */
+        .upload-zone { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 30px; text-align: center; background: #fdfdfd; cursor: pointer; transition: 0.3s; margin-top: 25px; }
+        .upload-zone:hover { border-color: #3b82f6; background: #f0f7ff; }
+        .upload-zone i { font-size: 40px; color: #94a3b8; display: block; margin-bottom: 10px; }
+        
+        .btn-import { background: #3b82f6; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 15px; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-import:disabled { background: #cbd5e1; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="import-card">
+    <h2><i class="bi bi-file-earmark-excel"></i> تهيئة ورفع كشف طلاب المدرسة دفعة واحدة</h2>
+    <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">يرجى اتباع الدليل أدناه بدقة لضمان توزيع الفصول والطلاب في النظام بشكل سليم وفوري.</p>
+
+    <!-- 📋 دليل إعداد الملف للمدرسة -->
+    <div class="guide-box">
+        <h4><i class="bi bi-info-circle-fill"></i> خطوات تجهيز ملف الكشف (Excel / CSV):</h4>
+        <ol>
+            <li>قم بتصدير كشف الطلاب العام من نظام <b>(سجل الطالب)</b> التابع لوزارة التربية بصيغة Excel.</li>
+            <li>افتح الملف وقم بترتيب الأعمدة من اليمين إلى اليسار بحيث تحتوي على <b>3 أعمدة أساسية فقط</b> ويفضل مسح سطر العناوين العلوي:
+                <table class="sample-table">
+                    <thead>
+                        <tr>
+                            <th>العمود الأول (A)</th>
+                            <th>العمود الثاني (B)</th>
+                            <th>العمود الثالث (C)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="color: #2563eb; font-weight: bold;">اسم الطالب بالكامل</td>
+                            <td style="color: #059669; font-weight: bold;">الفصل (مثال: 9/1)</td>
+                            <td style="color: #d97706; font-weight: bold;">رقم هاتف ولي الأمر (بدون مفتاح)</td>
+                        </tr>
+                        <tr>
+                            <td>أحمد محمد عبد الله</td>
+                            <td>9/1</td>
+                            <td>99008877</td>
+                        </tr>
+                        <tr>
+                            <td>خالد وليد ناصر</td>
+                            <td>9/2</td>
+                            <td>66554433</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </li>
+            <li>تأكد من عدم وجود رموز خاصة في خانة الفصل (استخدم الشرطة المائلة <b>/</b> فقط لتحديد الصف مثل 6/1، 7/3).</li>
+            <li>اضغط على <b>File -> Save As</b> في برنامج Excel واختبر صيغة الحفظ لتكون: <b style="color: #1e3a8a;">CSV (Comma delimited) (*.csv)</b>.</li>
+        </ol>
+        
+        <div class="alert-warning">
+            <i class="bi bi-exclamation-triangle-fill"></i> تنبيه هام: تأكد أن ترميز الملف أثناء الحفظ هو <b>UTF-8</b> لضمان ظهور الأسماء باللغة العربية بشكل صحيح داخل المنظومة الرقمية بعد الرفع.
+        </div>
+    </div>
+
+    <!-- 📁 منطقة إسقاط واختيار الملف -->
+    <div class="upload-zone" onclick="document.getElementById('csv-file-input').click()">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <span style="font-weight: 600; display: block; margin-bottom: 5px;">اضغط هنا لاختيار ملف الكشف الجاهز</span>
+        <span style="font-size: 12px; color: #94a3b8;">الصيغة المدعومة فقط: .CSV (بترميز UTF-8)</span>
+        <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleFileSelect(event)">
+        <div id="file-info" style="margin-top: 15px; font-weight: bold; color: #059669; display: none;"></div>
+    </div>
+
+    <div style="text-align: left;">
+        <button id="process-btn" class="btn-import" onclick="window.startBulkImport()" disabled>
+            <i class="bi bi-lightning-charge"></i> ابدأ المعالجة وضخ البيانات للسيرفر
+        </button>
+    </div>
+</div>
+
+<script type="module">
+    import { db } from './js/firebase-config.js';
+    import { collection, writeBatch, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    let fileLinesData = [];
+
+    // التحقق من اختيار الملف وتجهيز الزر
+    window.handleFileSelect = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        document.getElementById('file-info').style.display = 'block';
+        document.getElementById('file-info').innerHTML = `<i class="bi bi-file-earmark-check"></i> تم اختيار: ${file.name} (${Math.round(file.size/1024)} KB)`;
+        document.getElementById('process-btn').disabled = false;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            fileLinesData = e.target.result.split('\n');
+        };
+        reader.readAsText(file, 'UTF-8');
+    };
+
+    // محرك الضخ السحابي للمنظومة
+    window.startBulkImport = async () => {
+        if (fileLinesData.length === 0) return;
+        
+        const btn = document.getElementById('process-btn');
+        btn.disabled = true;
+        btn.innerHTML = "⏳ جاري تهيئة قاعدة البيانات وضخ الفصول...";
+
+        const batch = writeBatch(db);
+        const user = JSON.parse(localStorage.getItem('hs_user'));
+        const schoolId = user?.schoolId;
+
+        if(!schoolId) {
+            alert("❌ خطأ: لم يتم العثور على معرف المدرسة في الجلسة!");
+            btn.disabled = false;
+            return;
+        }
+
+        let importedCount = 0;
+
+        try {
+            // معالجة البيانات ضخاً (مع تخطي سطر العناوين إن وجد)
+            for (let i = 0; i < fileLinesData.length; i++) {
+                const line = fileLinesData[i].trim();
+                if (!line) continue;
+
+                const columns = line.split(',');
+                if (columns.length < 2) continue; // تخطي السطور الفارغة أو التالفة
+
+                const studentName = columns[0].trim();
+                const classId = columns[1].trim();
+                const parentPhone = columns[2] ? columns[2].trim() : '';
+
+                // تجنب رفع سطر العناوين التوضيحي لو نسيه المستخدم
+                if (studentName.includes("الاسم") || studentName.includes("name")) continue;
+
+                const studentRef = doc(collection(db, 'students'));
+                batch.set(studentRef, {
+                    name: studentName,
+                    classId: classId,
+                    parentPhone: parentPhone,
+                    schoolId: schoolId,
+                    status: 'active'
+                });
+                importedCount++;
+            }
+
+            await batch.commit();
+            alert(`✅ تم بنجاح رفع وتوزيع ${importedCount} طالب على فصولهم السحابية بمدرسة سالم الحسينان!`);
+            window.location.reload();
+
+        } catch (error) {
+            alert("❌ فشل ضخ البيانات: " + error.message);
+            btn.disabled = false;
+            btn.innerHTML = "ابدأ المعالجة وضخ البيانات للسيرفر";
+        }
+    };
+</script>
+
+</body>
+</html>
