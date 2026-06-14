@@ -1,55 +1,405 @@
-import { db } from './js/firebase-config.js';
-import { collection, writeBatch, doc, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بوابة المعلم - المنظومة الرقمية</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+:root { --primary:#1a1a2e; --accent:#e67e22; --bg:#f5f6fa; --success:#27ae60; --danger:#e74c3c; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
+body{background:var(--bg);color:#333;}
+.header{background:var(--primary);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid var(--accent);}
+.header h2{font-size:16px;font-weight:900;}
+.header-sub{font-size:11px;opacity:.7;margin-top:2px;}
+.header-btns{display:flex;gap:8px;}
+.btn-sm{padding:6px 14px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;}
+.tabs{background:#fff;display:flex;gap:4px;padding:10px;border-bottom:2px solid #eee;overflow-x:auto;}
+.tab{padding:8px 16px;border:none;background:#f8f9fa;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;color:var(--primary);white-space:nowrap;}
+.tab.active{background:var(--primary);color:#fff;}
+.content{max-width:900px;margin:0 auto;padding:1.2rem;}
+.card{background:#fff;border-radius:12px;padding:1.2rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.04);border-top:4px solid var(--primary);}
+.card h3{font-size:16px;font-weight:900;margin-bottom:1rem;color:var(--primary);}
+select,input{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:10px;font-weight:600;text-align:right;outline:none;}
+select:focus,input:focus{border-color:var(--accent);}
+.btn{background:var(--primary);color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn:hover{background:var(--accent);}
+.btn-success{background:var(--success);}
+.btn-danger{background:var(--danger);}
+.student-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0;}
+.student-name{font-weight:700;font-size:14px;}
+.status-btns{display:flex;gap:6px;}
+.status-btn{padding:5px 12px;border:2px solid #ddd;background:#fff;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.status-btn.present{border-color:var(--success);background:#e8f8f0;color:var(--success);}
+.status-btn.absent{border-color:var(--danger);background:#fde8e8;color:var(--danger);}
+.status-btn.late{border-color:#f39c12;background:#fef5e7;color:#f39c12;}
+.summary-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
+.summary-item{background:#f8f9fa;border-radius:8px;padding:10px;text-align:center;}
+.summary-item .num{font-size:22px;font-weight:900;}
+.summary-item .lbl{font-size:11px;color:#666;margin-top:2px;}
+.hidden{display:none!important;}
+.spinner{text-align:center;padding:40px;color:#999;font-weight:700;}
+.empty{text-align:center;padding:30px;color:#aaa;}
+</style>
+</head>
+<body>
 
-window.saveAttendanceLive = async function() {
-    const schoolId = window.getActiveSchoolId(); 
-    const currentUser = JSON.parse(localStorage.getItem('hs_user'));
-    const todayISO = window.getTodayISO();
-    
-    const batch = writeBatch(db);
-    
-    // تجميع الصفوف المعلمة غياب داخل الجدول
-    const absentRows = document.querySelectorAll('.attendance-row[data-status="absent"]');
-    
-    // 1. إجراء عملية الحفظ الأساسية للدفعة (Batch Commit)
-    // (هنا كود الحفظ العادي الخاص بك لبيانات التحضير)
-    
+<div class="header">
+  <div>
+    <h2>🏫 بوابة المعلم — <span id="lbl-teacher-name">جاري التحميل...</span></h2>
+    <div class="header-sub" id="lbl-school-name">المنظومة الرقمية الشاملة</div>
+  </div>
+  <div class="header-btns">
+    <button class="btn-sm" onclick="goToAdmin()" id="btn-admin" style="display:none;">
+      <i class="bi bi-speedometer2"></i> لوحة المدير
+    </button>
+    <button class="btn-sm" onclick="doLogout()">
+      <i class="bi bi-box-arrow-left"></i> خروج
+    </button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('tab-attendance', this)">✏️ تسجيل الغياب</button>
+  <button class="tab" onclick="switchTab('tab-records', this)">📋 سجلاتي</button>
+  <button class="tab" onclick="switchTab('tab-students', this)">👥 الطلاب</button>
+</div>
+
+<div class="content">
+
+  <!-- تسجيل الغياب -->
+  <div id="tab-attendance">
+    <div class="card">
+      <h3>✏️ تسجيل حضور وغياب الفصل</h3>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">اختر الفصل</label>
+      <select id="sel-class" onchange="onClassChange(this.value)">
+        <option value="">-- اختر الفصل الدراسي --</option>
+        <option value="6/1">6/1</option><option value="6/2">6/2</option>
+        <option value="6/3">6/3</option><option value="6/4">6/4</option>
+        <option value="7/1">7/1</option><option value="7/2">7/2</option>
+        <option value="7/3">7/3</option><option value="7/4">7/4</option>
+        <option value="8/1">8/1</option><option value="8/2">8/2</option>
+        <option value="8/3">8/3</option><option value="8/4">8/4</option>
+        <option value="9/1">9/1</option><option value="9/2">9/2</option>
+        <option value="9/3">9/3</option><option value="9/4">9/4</option>
+      </select>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">الحصة</label>
+      <select id="sel-period">
+        <option value="1">الحصة الأولى</option>
+        <option value="2">الحصة الثانية</option>
+        <option value="3">الحصة الثالثة</option>
+        <option value="4">الحصة الرابعة</option>
+        <option value="5">الحصة الخامسة</option>
+        <option value="6">الحصة السادسة</option>
+        <option value="7">الحصة السابعة</option>
+      </select>
+    </div>
+
+    <div id="att-summary" class="hidden">
+      <div class="summary-bar">
+        <div class="summary-item"><div class="num" id="cnt-total" style="color:var(--primary)">0</div><div class="lbl">الإجمالي</div></div>
+        <div class="summary-item"><div class="num" id="cnt-present" style="color:var(--success)">0</div><div class="lbl">حاضر</div></div>
+        <div class="summary-item"><div class="num" id="cnt-absent" style="color:var(--danger)">0</div><div class="lbl">غائب</div></div>
+        <div class="summary-item"><div class="num" id="cnt-late" style="color:#f39c12">0</div><div class="lbl">متأخر</div></div>
+      </div>
+    </div>
+
+    <div id="students-list"></div>
+
+    <div id="save-section" class="hidden" style="margin-top:12px;">
+      <button class="btn btn-success" onclick="saveAttendance()">
+        <i class="bi bi-cloud-upload-fill"></i> حفظ ورفع سجل الحضور
+      </button>
+    </div>
+  </div>
+
+  <!-- سجلاتي -->
+  <div id="tab-records" class="hidden">
+    <div class="card">
+      <h3>📋 سجلات الغياب المسجلة</h3>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">اختر الفصل</label>
+      <select id="rec-class" onchange="loadMyRecords()">
+        <option value="">-- اختر --</option>
+        <option value="6/1">6/1</option><option value="6/2">6/2</option>
+        <option value="6/3">6/3</option><option value="6/4">6/4</option>
+        <option value="7/1">7/1</option><option value="7/2">7/2</option>
+        <option value="7/3">7/3</option><option value="7/4">7/4</option>
+        <option value="8/1">8/1</option><option value="8/2">8/2</option>
+        <option value="8/3">8/3</option><option value="8/4">8/4</option>
+        <option value="9/1">9/1</option><option value="9/2">9/2</option>
+        <option value="9/3">9/3</option><option value="9/4">9/4</option>
+      </select>
+      <div id="records-list"></div>
+    </div>
+  </div>
+
+  <!-- الطلاب -->
+  <div id="tab-students" class="hidden">
+    <div class="card">
+      <h3>👥 قائمة الطلاب</h3>
+      <select id="view-class" onchange="loadStudentsList(this.value)">
+        <option value="">-- اختر الفصل --</option>
+        <option value="6/1">6/1</option><option value="6/2">6/2</option>
+        <option value="6/3">6/3</option><option value="6/4">6/4</option>
+        <option value="7/1">7/1</option><option value="7/2">7/2</option>
+        <option value="7/3">7/3</option><option value="7/4">7/4</option>
+        <option value="8/1">8/1</option><option value="8/2">8/2</option>
+        <option value="8/3">8/3</option><option value="8/4">8/4</option>
+        <option value="9/1">9/1</option><option value="9/2">9/2</option>
+        <option value="9/3">9/3</option><option value="9/4">9/4</option>
+      </select>
+      <div id="students-view"></div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { db, getActiveSchoolId, getTodayISO } from './js/firebase-config.js';
+import { collection, getDocs, addDoc, query, where, orderBy, limit, writeBatch, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ===== حماية الجلسة =====
+let currentUser = null;
+(function() {
+    const saved = localStorage.getItem('hs_user');
+    if(!saved) { window.location.replace('index.html'); return; }
     try {
-        await batch.commit();
-        
-        // 2. ضخ الغائبين فوراً لـ notifications_queue ليعمل رادار الأخصائي والواتساب
-        for(const row of absentRows) {
-            const studentName = row.getAttribute('data-name');
-            const currentAbsencesCount = parseInt(row.getAttribute('data-total-absences') || '0') + 1;
-
-            await addDoc(collection(db, 'notifications_queue'), {
-                schoolId: schoolId,
-                studentName: studentName,
-                classId: selectedClassId,
-                period: selectedPeriod,
-                date: todayISO,
-                message: `غياب الطالب: ${studentName} — فصل: ${selectedClassId} — الحصة: ${selectedPeriod} — تاريخ: ${todayISO}`,
-                recordedBy: currentUser.name,
-                type: 'absence',
-                sent: false,
-                createdAt: serverTimestamp()
-            });
-
-            // 3. نظام الإنذارات الآلي التجاري: لو تجاوز الطالب 5 أيام غياب، يولد إنذاراً أحمر فورياً للأخصائي
-            if(currentAbsencesCount >= 5) {
-                await addDoc(collection(db, 'critical_warnings'), {
-                    schoolId: schoolId,
-                    studentName: studentName,
-                    classId: selectedClassId,
-                    totalDays: currentAbsencesCount,
-                    status: 'pending_warning_letter',
-                    createdAt: serverTimestamp()
-                });
+        currentUser = JSON.parse(saved);
+        const allowed = ['teacher', 'social_worker'];
+        if(!currentUser || !allowed.includes(String(currentUser.role||'').trim().toLowerCase())) {
+            // المدير يُوجَّه للوحة المدير
+            if(['admin','assistant_manager','wing_supervisor'].includes(String(currentUser?.role||'').toLowerCase())) {
+                window.location.replace('admin.html');
+            } else {
+                window.location.replace('index.html');
             }
+            return;
         }
-        
-        alert("✅ تم رصد حضور الصف، وضخ غيابات الطلاب لغرفة التدقيق الإداري بنجاح!");
-    } catch (error) {
-        alert("❌ فشل عملية الحفظ السحابي: " + error.message);
+        document.getElementById('lbl-teacher-name').textContent = currentUser.name || 'المعلم';
+        document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'المنظومة الرقمية';
+    } catch(e) { window.location.replace('index.html'); }
+})();
+
+// ===== التبويبات =====
+window.switchTab = function(tabId, btn) {
+    document.querySelectorAll('.tab-content, #tab-attendance, #tab-records, #tab-students')
+        .forEach(el => el.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+};
+
+// ===== تسجيل الغياب =====
+let studentStatuses = {};
+let allStudentsLoaded = [];
+
+window.onClassChange = async function(classId) {
+    const listEl = document.getElementById('students-list');
+    const saveEl = document.getElementById('save-section');
+    const summaryEl = document.getElementById('att-summary');
+    studentStatuses = {};
+    allStudentsLoaded = [];
+
+    if(!classId) {
+        listEl.innerHTML = '';
+        saveEl.classList.add('hidden');
+        summaryEl.classList.add('hidden');
+        return;
+    }
+
+    listEl.innerHTML = '<div class="spinner">⏳ جاري تحميل الطلاب...</div>';
+
+    try {
+        const schoolId = getActiveSchoolId();
+        const q = query(collection(db,'students'), where('schoolId','==',schoolId), where('classId','==',classId));
+        const snap = await getDocs(q);
+
+        allStudentsLoaded = [];
+        snap.forEach(doc => { if(doc.data().name) allStudentsLoaded.push(doc.data().name.trim()); });
+        allStudentsLoaded.sort((a,b) => a.localeCompare(b,'ar'));
+
+        if(!allStudentsLoaded.length) {
+            listEl.innerHTML = '<div class="empty">⚠️ لا يوجد طلاب في هذا الفصل</div>';
+            return;
+        }
+
+        // تهيئة الحالات — كلهم حاضر افتراضياً
+        allStudentsLoaded.forEach(n => studentStatuses[n] = 'present');
+
+        renderStudentsList();
+        saveEl.classList.remove('hidden');
+        summaryEl.classList.remove('hidden');
+        updateSummary();
+
+    } catch(e) {
+        listEl.innerHTML = `<div class="empty" style="color:red;">❌ خطأ: ${e.message}</div>`;
     }
 };
+
+function renderStudentsList() {
+    const listEl = document.getElementById('students-list');
+    let html = '<div class="card" style="padding:0.8rem;">';
+    allStudentsLoaded.forEach(name => {
+        const s = studentStatuses[name] || 'present';
+        html += `
+        <div class="student-row">
+            <span class="student-name">👤 ${name}</span>
+            <div class="status-btns">
+                <button class="status-btn ${s==='present'?'present':''}" onclick="setStatus('${name}','present',this.parentElement)">✅ حاضر</button>
+                <button class="status-btn ${s==='absent'?'absent':''}" onclick="setStatus('${name}','absent',this.parentElement)">❌ غائب</button>
+                <button class="status-btn ${s==='late'?'late':''}" onclick="setStatus('${name}','late',this.parentElement)">⏰ متأخر</button>
+            </div>
+        </div>`;
+    });
+    html += '</div>';
+    listEl.innerHTML = html;
+}
+
+window.setStatus = function(name, status, btnsEl) {
+    studentStatuses[name] = status;
+    btnsEl.querySelectorAll('.status-btn').forEach(b => b.className = 'status-btn');
+    const btn = [...btnsEl.querySelectorAll('.status-btn')].find(b => b.textContent.includes(status==='present'?'حاضر':status==='absent'?'غائب':'متأخر'));
+    if(btn) btn.classList.add(status);
+    updateSummary();
+};
+
+function updateSummary() {
+    const total = allStudentsLoaded.length;
+    const absent = Object.values(studentStatuses).filter(s=>s==='absent').length;
+    const late   = Object.values(studentStatuses).filter(s=>s==='late').length;
+    const present = total - absent - late;
+    document.getElementById('cnt-total').textContent   = total;
+    document.getElementById('cnt-present').textContent = present;
+    document.getElementById('cnt-absent').textContent  = absent;
+    document.getElementById('cnt-late').textContent    = late;
+}
+
+window.saveAttendance = async function() {
+    const classId = document.getElementById('sel-class').value;
+    const period  = document.getElementById('sel-period').value;
+    if(!classId) { alert('اختر الفصل أولاً'); return; }
+    if(!allStudentsLoaded.length) { alert('لا يوجد طلاب'); return; }
+
+    const schoolId = getActiveSchoolId();
+    const todayISO = getTodayISO();
+
+    // منع التكرار
+    try {
+        const dupQ = query(collection(db,'attendance'),
+            where('schoolId','==',schoolId), where('classId','==',classId),
+            where('date','==',todayISO), where('period','==',period), limit(1));
+        const dupSnap = await getDocs(dupQ);
+        if(!dupSnap.empty) {
+            if(!confirm(`⚠️ تم تسجيل الحضور لفصل ${classId} الحصة ${period} اليوم مسبقاً.\nهل تريد إعادة التسجيل؟`)) return;
+        }
+    } catch(e) {}
+
+    const saveBtn = document.getElementById('save-section').querySelector('button');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الحفظ...';
+
+    try {
+        const batch = writeBatch(db);
+        allStudentsLoaded.forEach(name => {
+            const ref = doc(collection(db,'attendance'));
+            batch.set(ref, {
+                schoolId:   schoolId,
+                classId:    classId,
+                period:     period,
+                studentName: name,
+                date:       todayISO,
+                status:     studentStatuses[name] || 'present',
+                recordedBy: currentUser.name || '',
+                createdAt:  serverTimestamp()
+            });
+        });
+        await batch.commit();
+
+        // notifications_queue للغائبين
+        const absentList = allStudentsLoaded.filter(n => studentStatuses[n] === 'absent');
+        for(const name of absentList) {
+            await addDoc(collection(db,'notifications_queue'), {
+                schoolId, studentName: name, classId, period, date: todayISO,
+                message: `غياب ${name} — فصل ${classId} — الحصة ${period} — ${todayISO}`,
+                recordedBy: currentUser.name || '', type: 'absence', sent: false,
+                createdAt: serverTimestamp()
+            });
+        }
+
+        alert(`✅ تم حفظ الحضور بنجاح!\n${allStudentsLoaded.length} طالب | ${absentList.length} غائب`);
+        document.getElementById('sel-class').value = '';
+        document.getElementById('students-list').innerHTML = '';
+        document.getElementById('save-section').classList.add('hidden');
+        document.getElementById('att-summary').classList.add('hidden');
+        studentStatuses = {}; allStudentsLoaded = [];
+
+    } catch(e) {
+        alert('❌ خطأ في الحفظ: ' + e.message);
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="bi bi-cloud-upload-fill"></i> حفظ ورفع سجل الحضور';
+    }
+};
+
+// ===== سجلاتي =====
+window.loadMyRecords = async function() {
+    const classId = document.getElementById('rec-class').value;
+    const el = document.getElementById('records-list');
+    if(!classId) { el.innerHTML=''; return; }
+
+    el.innerHTML = '<div class="spinner">⏳ جاري التحميل...</div>';
+    try {
+        const schoolId = getActiveSchoolId();
+        const todayISO = getTodayISO();
+        const q = query(collection(db,'attendance'),
+            where('schoolId','==',schoolId), where('classId','==',classId),
+            where('date','==',todayISO));
+        const snap = await getDocs(q);
+
+        if(snap.empty) { el.innerHTML='<div class="empty">لا توجد سجلات اليوم لهذا الفصل</div>'; return; }
+
+        const grouped = {};
+        snap.forEach(doc => {
+            const d=doc.data(), p=d.period||'?';
+            if(!grouped[p]) grouped[p]=[];
+            grouped[p].push(d);
+        });
+
+        let html='';
+        Object.keys(grouped).sort().forEach(period => {
+            const rows=grouped[period];
+            const absent=rows.filter(r=>r.status==='absent').length;
+            html+=`<div style="background:#f8f9fa;border-radius:8px;padding:10px;margin-bottom:8px;">
+                <b>الحصة ${period}</b> — ${rows.length} طالب | <span style="color:var(--danger)">${absent} غائب</span>
+            </div>`;
+        });
+        el.innerHTML=html;
+    } catch(e) { el.innerHTML=`<div class="empty" style="color:red;">❌ ${e.message}</div>`; }
+};
+
+// ===== قائمة الطلاب =====
+window.loadStudentsList = async function(classId) {
+    const el = document.getElementById('students-view');
+    if(!classId) { el.innerHTML=''; return; }
+    el.innerHTML='<div class="spinner">⏳ جاري التحميل...</div>';
+    try {
+        const q = query(collection(db,'students'),
+            where('schoolId','==',getActiveSchoolId()), where('classId','==',classId));
+        const snap = await getDocs(q);
+        const students=[];
+        snap.forEach(doc => { if(doc.data().name) students.push(doc.data().name.trim()); });
+        students.sort((a,b)=>a.localeCompare(b,'ar'));
+        if(!students.length){ el.innerHTML='<div class="empty">لا يوجد طلاب</div>'; return; }
+        let html=`<p style="font-weight:700;margin-bottom:8px;color:#666;">إجمالي: ${students.length} طالب</p>`;
+        students.forEach((n,i)=>{ html+=`<div class="student-row"><span class="student-name">${i+1}. ${n}</span></div>`; });
+        el.innerHTML=html;
+    } catch(e){ el.innerHTML=`<div class="empty" style="color:red;">❌ ${e.message}</div>`; }
+};
+
+// ===== أدوات =====
+window.doLogout = function() { localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
+window.goToAdmin = function() { window.location.replace('admin.html'); };
+</script>
+</body>
+</html>
