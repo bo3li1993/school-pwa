@@ -12,7 +12,7 @@
         .top-navbar { background: #fff; padding: 15px 25px; display: flex; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
-        .menu-item { padding: 15px; cursor: pointer; color: #b2bec3; font-weight: 700; }
+        .menu-item { padding: 15px; cursor: pointer; color: #b2bec3; font-weight: 700; display: flex; align-items: center; gap: 10px; }
         .menu-item:hover, .menu-item.active { color: #fff; background: #2c2c3e; border-right: 4px solid var(--hover-color); }
         button { cursor: pointer; padding: 8px 16px; border-radius: 6px; border: none; font-weight: bold; }
     </style>
@@ -20,9 +20,10 @@
 <body>
     <div class="sidebar">
         <div style="padding:20px; font-weight:900; border-bottom:1px solid #2c2c3e;">مدرسة سالم الحسينان</div>
-        <ul style="list-style:none;">
+        <ul style="list-style:none; padding:0; margin:0;">
             <li class="menu-item active" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i> 📊 المؤشرات اليومية</li>
             <li class="menu-item" onclick="window.switchTab('tab-student')"><i class="bi bi-person"></i> 👤 ملف الطالب</li>
+            <li class="menu-item" onclick="window.location.href='import.html'"><i class="bi bi-file-earmark-excel"></i> 📥 رفع كشف المدرسة</li>
         </ul>
     </div>
     <div class="main-content">
@@ -37,7 +38,7 @@
     <script type="module">
         import { db } from './js/firebase-config.js';
         
-        // 1. القفل الأمني الجديد: حظر الحارس وتوجيهه لصفحته المخصصة
+        // 1. القفل الأمني الحصين: حظر الحراس وتوجيههم لصفحة الحراسة
         (function() {
             const saved = localStorage.getItem('hs_user');
             if(!saved) { window.location.replace('index.html'); return; }
@@ -62,7 +63,7 @@
 
         window.logout = () => { localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
 
-        // 2. محرك بث الغياب الذكي المجاني عبر الواتساب
+        // 2. محرك بث غياب الطلاب التلقائي المباشر لولي الأمر عبر الواتساب
         window.sendAbsenceViaWhatsApp = function(classId, absentList, date) {
             const user = JSON.parse(localStorage.getItem('hs_user'));
             const schoolName = user?.schoolName || 'المدرسة';
@@ -73,6 +74,7 @@
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
         };
 
+        // 3. التوجيه الديناميكي وتحميل موديولات معالجة البيانات اليومية والأداء المستقر
         window.switchTab = async function(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
