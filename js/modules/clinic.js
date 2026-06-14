@@ -77,7 +77,7 @@ export async function initClinicModule() {
         
         // دعم التوافقية للمدرسة القديمة
         if (classesSet.size === 0 && schoolId === 'hosainan') {
-            const fSnap = await getDocs(collection(db, 'students'));
+            const fSnap = await getDocs(getActiveSchoolId() ? query(collection(db, 'students'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'students'));
             fSnap.forEach(doc => { if(!doc.data().schoolId && doc.data().classId) classesSet.add(doc.data().classId.trim()); });
         }
         
