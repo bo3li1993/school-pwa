@@ -50,7 +50,7 @@ async function loadSchoolClassesStatsLive() {
         
         // دعم التوافقية للمدرسة القديمة (في حال وجود داتا قديمة بدون schoolId)
         if (snap.empty && schoolId === 'hosainan') {
-            snap = await getDocs(collection(db, 'students'));
+            snap = await getDocs(getActiveSchoolId() ? query(collection(db, 'students'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'students'));
         }
 
         let classCounts = {};
