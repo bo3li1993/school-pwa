@@ -213,7 +213,7 @@ function loadBehaviorLogsLive() {
         
         // إذا كان فارغاً والمدرسة هي الحسينان، نسحب الأرشيف القديم الغير مقيد بـ schoolId
         if (snapshot.empty && schoolId === 'hosainan') {
-            getDocs(collection(db, 'behavior')).then(oldSnap => {
+            getDocs(getActiveSchoolId() ? query(collection(db, 'behavior'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'behavior')).then(oldSnap => {
                 let fHtml = '';
                 oldSnap.forEach(d => {
                     const data = d.data();
