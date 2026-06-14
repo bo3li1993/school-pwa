@@ -1,45 +1,670 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>المنظومة الرقمية | الإدارة المدرسية الذكية</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        body { font-family: 'Cairo', sans-serif; margin: 0; background: #f4f6f9; color: #333; }
-        .hero { background: #1a1a2e; color: #fff; padding: 80px 20px; text-align: center; }
-        .hero h1 { font-size: 3rem; margin-bottom: 20px; color: #e67e22; }
-        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 60px 20px; max-width: 1200px; margin: auto; }
-        .feature-card { background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); text-align: center; }
-        .feature-card i { font-size: 3rem; color: #e67e22; margin-bottom: 20px; }
-        .pricing { padding: 60px 20px; text-align: center; }
-        .btn-cta { background: #e67e22; color: #fff; padding: 15px 40px; border-radius: 50px; font-weight: 900; text-decoration: none; display: inline-block; margin-top: 20px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المنظومة الرقمية — إدارة المدارس</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+
+:root {
+  --navy: #0b2545;
+  --sky:  #1a78c2;
+  --ice:  #eaf4fd;
+  --gold: #d4920a;
+  --goldl:#f5c842;
+  --white:#ffffff;
+  --off:  #f8f9fc;
+  --text: #111827;
+  --mid:  #4b5563;
+  --soft: #9ca3af;
+  --line: #e5e7eb;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;color:var(--text);background:var(--white);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:99;
+  height:62px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;
+  padding:0 6%;
+  justify-content:space-between;
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-mark{
+  width:36px;height:36px;
+  background:var(--navy);
+  border-radius:9px;
+  display:grid;place-items:center;
+  color:#fff;font-size:18px;font-weight:900;
+}
+.nav-name{font-weight:800;font-size:16px;color:var(--navy)}
+.nav-links{display:flex;gap:28px;font-size:13.5px;font-weight:600;color:var(--mid)}
+.nav-links a:hover{color:var(--sky)}
+.nav-login{
+  background:var(--navy);color:#fff;
+  padding:9px 22px;border-radius:8px;
+  font-size:13px;font-weight:700;
+  font-family:'Cairo',sans-serif;
+  border:none;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;
+  transition:background .18s;
+}
+.nav-login:hover{background:#134074}
+
+/* ── HERO ── */
+.hero{
+  padding:90px 6% 80px;
+  background:var(--white);
+  position:relative;
+  overflow:hidden;
+}
+
+/* الشريط الأيسر الملوّن — العنصر المميز للصفحة */
+.hero-stripe{
+  position:absolute;
+  top:0;left:0;
+  width:4px;
+  height:100%;
+  background:linear-gradient(180deg,var(--goldl) 0%,var(--sky) 50%,var(--navy) 100%);
+}
+
+.hero-inner{
+  max-width:1120px;margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 440px;
+  gap:80px;
+  align-items:center;
+}
+
+.hero-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--ice);
+  border:1px solid #c3dff7;
+  color:var(--sky);
+  font-size:12px;font-weight:700;
+  padding:4px 14px;border-radius:30px;
+  margin-bottom:22px;
+}
+
+h1{
+  font-size:clamp(2rem,3.8vw,3.1rem);
+  font-weight:900;
+  line-height:1.15;
+  color:var(--navy);
+  margin-bottom:18px;
+}
+
+h1 mark{
+  background:none;
+  color:var(--sky);
+  position:relative;
+}
+
+/* خط ذهبي تحت الكلمة الرئيسية */
+h1 mark::after{
+  content:'';
+  position:absolute;
+  bottom:-2px;right:0;left:0;
+  height:5px;
+  background:linear-gradient(90deg,var(--goldl),var(--gold));
+  border-radius:3px;
+  opacity:.75;
+}
+
+.hero-p{
+  font-size:1.05rem;
+  color:var(--mid);
+  max-width:460px;
+  line-height:1.78;
+  margin-bottom:34px;
+}
+
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+
+.btn-fill{
+  background:var(--navy);color:#fff;
+  padding:13px 28px;border-radius:10px;
+  font-size:14.5px;font-weight:700;
+  display:inline-flex;align-items:center;gap:8px;
+  border:2px solid var(--navy);
+  transition:all .18s;
+}
+.btn-fill:hover{background:#134074;border-color:#134074}
+
+.btn-line{
+  background:transparent;color:var(--navy);
+  padding:13px 28px;border-radius:10px;
+  font-size:14.5px;font-weight:700;
+  display:inline-flex;align-items:center;gap:8px;
+  border:2px solid var(--line);
+  transition:border-color .18s;
+}
+.btn-line:hover{border-color:var(--navy)}
+
+/* Preview card */
+.preview{
+  background:var(--off);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 4px 30px rgba(0,0,0,.07);
+}
+
+.preview-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:18px;
+}
+.preview-title{font-weight:800;font-size:14px;color:var(--navy)}
+.preview-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  background:#22c55e;
+  box-shadow:0 0 0 3px #dcfce7;
+}
+
+.preview-nums{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-bottom:20px;
+}
+.pnum{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px 10px;
+  text-align:center;
+}
+.pnum-n{font-size:1.7rem;font-weight:900}
+.pnum-l{font-size:10px;color:var(--soft);margin-top:2px;font-weight:600}
+
+.preview-bars{display:flex;flex-direction:column;gap:9px}
+.pbar-row{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;color:var(--text)}
+.pbar-lbl{width:34px;flex-shrink:0}
+.pbar-track{flex:1;height:7px;background:var(--line);border-radius:4px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:4px}
+.pbar-pct{width:32px;text-align:left;color:var(--soft);font-weight:600}
+
+/* ── STATS ── */
+.stats{background:var(--navy);padding:0}
+.stats-grid{
+  max-width:1120px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(4,1fr);
+}
+.stat{
+  padding:32px 20px;
+  text-align:center;
+  border-left:1px solid rgba(255,255,255,.07);
+}
+.stat:last-child{border:none}
+.stat-n{font-size:2rem;font-weight:900;color:#fff;line-height:1}
+.stat-n em{font-style:normal;color:var(--goldl)}
+.stat-l{font-size:11.5px;color:rgba(255,255,255,.4);margin-top:6px;font-weight:600}
+
+/* ── SECTION SHARED ── */
+.sec{padding:80px 6%}
+.sec-inner{max-width:1120px;margin:0 auto}
+.sec-tag{font-size:11px;font-weight:800;letter-spacing:2px;color:var(--sky);text-transform:uppercase;margin-bottom:8px}
+.sec-h2{font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:900;color:var(--navy);margin-bottom:10px;line-height:1.22}
+.sec-p{font-size:.95rem;color:var(--mid);max-width:490px;line-height:1.75;margin-bottom:50px}
+
+/* ── FEATURES ── */
+.feats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+.feat{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:26px 24px;
+  position:relative;
+  overflow:hidden;
+  transition:box-shadow .2s,transform .2s;
+}
+.feat:hover{
+  box-shadow:0 8px 28px rgba(0,0,0,.07);
+  transform:translateY(-3px);
+}
+.feat::after{
+  content:'';
+  position:absolute;top:0;right:0;left:0;
+  height:3px;
+  background:var(--ice);
+  transition:background .2s;
+}
+.feat:hover::after{background:linear-gradient(90deg,var(--sky),var(--navy))}
+
+.feat-icon{font-size:28px;margin-bottom:14px;display:block}
+.feat-h{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:7px}
+.feat-p{font-size:13px;color:var(--mid);line-height:1.7}
+
+/* ── ROLES ── */
+.roles-sec{background:var(--off);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.roles-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:14px;
+  margin-top:48px;
+}
+.role{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:24px 16px;
+  text-align:center;
+  transition:border-color .18s,box-shadow .18s;
+}
+.role:hover{border-color:var(--sky);box-shadow:0 4px 16px rgba(26,120,194,.09)}
+.role-icon{font-size:2rem;margin-bottom:10px;display:block}
+.role-name{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.role-sub{font-size:11px;color:var(--soft);line-height:1.5}
+
+/* ── PRICING ── */
+.plans{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin-top:48px;
+}
+.plan{
+  border:1.5px solid var(--line);
+  border-radius:18px;
+  padding:30px 26px;
+  background:var(--white);
+  position:relative;
+  transition:box-shadow .2s;
+}
+.plan:hover{box-shadow:0 8px 28px rgba(0,0,0,.07)}
+.plan.hot{
+  border-color:var(--navy);
+  background:var(--navy);
+}
+.plan-badge{
+  position:absolute;top:-13px;right:22px;
+  background:var(--goldl);
+  color:var(--navy);
+  font-size:11px;font-weight:800;
+  padding:3px 14px;border-radius:20px;
+}
+.plan-tier{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--soft);margin-bottom:6px}
+.plan.hot .plan-tier{color:rgba(255,255,255,.5)}
+.plan-price{font-size:2.6rem;font-weight:900;color:var(--navy);line-height:1;margin-bottom:4px}
+.plan.hot .plan-price{color:#fff}
+.plan-price small{font-size:.9rem;font-weight:600}
+.plan-period{font-size:12px;color:var(--soft);margin-bottom:22px}
+.plan.hot .plan-period{color:rgba(255,255,255,.4)}
+.plan-items{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
+.plan-items li{
+  display:flex;align-items:center;gap:9px;
+  font-size:13px;color:var(--mid);
+}
+.plan.hot .plan-items li{color:rgba(255,255,255,.8)}
+.plan-items li i{color:var(--sky);font-size:14px;flex-shrink:0}
+.plan.hot .plan-items li i{color:var(--goldl)}
+.plan-btn{
+  display:block;width:100%;text-align:center;
+  padding:12px;border-radius:9px;
+  font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;
+  cursor:pointer;border:2px solid var(--navy);
+  color:var(--navy);background:transparent;
+  transition:all .18s;
+}
+.plan-btn:hover{background:var(--navy);color:#fff}
+.plan.hot .plan-btn{background:var(--goldl);color:var(--navy);border-color:var(--goldl)}
+.plan.hot .plan-btn:hover{background:#f0c940}
+
+/* ── CTA ── */
+.cta-sec{padding:0 6% 80px}
+.cta-box{
+  max-width:1120px;margin:0 auto;
+  background:linear-gradient(125deg,var(--navy) 0%,#1a3a6b 100%);
+  border-radius:24px;
+  padding:64px 6%;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.cta-box::before{
+  content:'';
+  position:absolute;
+  top:-100px;right:-100px;
+  width:320px;height:320px;
+  background:radial-gradient(circle,rgba(245,200,66,.12) 0%,transparent 70%);
+}
+.cta-h2{font-size:clamp(1.4rem,2.5vw,2rem);font-weight:900;color:#fff;margin-bottom:10px;position:relative}
+.cta-p{color:rgba(255,255,255,.55);font-size:.95rem;margin-bottom:28px;position:relative}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative}
+.btn-gold{
+  background:var(--goldl);color:var(--navy);
+  padding:13px 28px;border-radius:10px;
+  font-size:15px;font-weight:800;
+  display:inline-flex;align-items:center;gap:8px;
+  border:none;cursor:pointer;font-family:'Cairo',sans-serif;
+  transition:background .18s;
+}
+.btn-gold:hover{background:#f0c940}
+.btn-wh{
+  background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);
+  padding:13px 28px;border-radius:10px;
+  font-size:15px;font-weight:700;
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid rgba(255,255,255,.2);
+  transition:background .18s;
+}
+.btn-wh:hover{background:rgba(255,255,255,.17)}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--off);
+  border-top:1px solid var(--line);
+  padding:24px 6%;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+}
+footer p{font-size:12px;color:var(--soft)}
+footer a{color:var(--sky);font-weight:600}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hero-inner{grid-template-columns:1fr;gap:40px}
+  .preview{display:none}
+  .feats{grid-template-columns:1fr 1fr}
+  .roles-grid{grid-template-columns:repeat(3,1fr)}
+  .plans{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .nav-links{display:none}
+  .feats{grid-template-columns:1fr}
+  .roles-grid{grid-template-columns:repeat(2,1fr)}
+  .sec{padding:60px 5%}
+}
+</style>
 </head>
 <body>
 
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-mark">م</div>
+    <span class="nav-name">المنظومة الرقمية</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">المميزات</a>
+    <a href="#roles">الأدوار</a>
+    <a href="#pricing">الأسعار</a>
+  </div>
+  <a href="index.html" class="nav-login">
+    <i class="bi bi-box-arrow-in-right"></i> دخول المنظومة
+  </a>
+</nav>
+
+<!-- HERO -->
 <section class="hero">
-    <h1>مستقبل الإدارة المدرسية بين يديك</h1>
-    <p style="font-size: 1.2rem;">نظام سحابي متكامل يرصد الغياب، ينظم السلوك، ويحمي بيانات مدرستك.</p>
-    <a href="mailto:your-email@school.com" class="btn-cta">اشترك في المنظومة الآن</a>
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-chip">
+        <i class="bi bi-cloud-check-fill"></i>
+        منصة سحابية للمدارس الكويتية
+      </div>
+      <h1>
+        إدارة مدرستك<br>
+        بدون <mark>ورق</mark><br>
+        وبدون تعقيد
+      </h1>
+      <p class="hero-p">
+        منظومة رقمية شاملة تجمع رصد الغياب، الزيارات الصفية، العيادة المدرسية،
+        بوابة ولي الأمر، وشاشة القيادة الذكية — كلها من مكان واحد.
+      </p>
+      <div class="hero-btns">
+        <a href="index.html" class="btn-fill">
+          <i class="bi bi-play-fill"></i> ابدأ مجاناً
+        </a>
+        <a href="#features" class="btn-line">
+          اكتشف المميزات <i class="bi bi-arrow-left-short"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview">
+      <div class="preview-header">
+        <span class="preview-title">📊 لوحة القيادة — اليوم</span>
+        <span class="preview-dot"></span>
+      </div>
+      <div class="preview-nums">
+        <div class="pnum">
+          <div class="pnum-n" style="color:var(--sky)">367</div>
+          <div class="pnum-l">حاضر</div>
+        </div>
+        <div class="pnum">
+          <div class="pnum-n" style="color:#ef4444">13</div>
+          <div class="pnum-l">غائب</div>
+        </div>
+        <div class="pnum">
+          <div class="pnum-n" style="color:var(--gold)">12</div>
+          <div class="pnum-l">فصل سجّل</div>
+        </div>
+      </div>
+      <div class="preview-bars">
+        <div class="pbar-row">
+          <span class="pbar-lbl">6/1</span>
+          <div class="pbar-track"><div class="pbar-fill" style="width:95%;background:var(--sky)"></div></div>
+          <span class="pbar-pct">95%</span>
+        </div>
+        <div class="pbar-row">
+          <span class="pbar-lbl">7/2</span>
+          <div class="pbar-track"><div class="pbar-fill" style="width:100%;background:#22c55e"></div></div>
+          <span class="pbar-pct">100%</span>
+        </div>
+        <div class="pbar-row">
+          <span class="pbar-lbl">8/1</span>
+          <div class="pbar-track"><div class="pbar-fill" style="width:80%;background:var(--goldl)"></div></div>
+          <span class="pbar-pct">80%</span>
+        </div>
+        <div class="pbar-row">
+          <span class="pbar-lbl">9/3</span>
+          <div class="pbar-track"><div class="pbar-fill" style="width:88%;background:var(--sky)"></div></div>
+          <span class="pbar-pct">88%</span>
+        </div>
+        <div style="margin-top:4px;padding:10px;background:#fef2f2;border-radius:10px;font-size:12px;color:#ef4444;font-weight:700;display:flex;align-items:center;gap:7px;">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          3 فصول لم تسجل بعد
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<section class="features">
-    <div class="feature-card">
-        <i class="bi bi-speedometer2"></i>
-        <h3>رصد حي ولحظي</h3>
-        <p>لا مزيد من الكشوف الورقية. رصد الحضور والغياب يتم بضغطة زر وتظهر النتائج فوراً في مكتب المدير.</p>
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-n">380<em>+</em></div><div class="stat-l">طالب مُدار</div></div>
+    <div class="stat"><div class="stat-n">15</div><div class="stat-l">فصل دراسي</div></div>
+    <div class="stat"><div class="stat-n">22</div><div class="stat-l">وحدة برمجية</div></div>
+    <div class="stat"><div class="stat-n">6<em>+</em></div><div class="stat-l">أدوار وظيفية</div></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div id="features" class="sec">
+  <div class="sec-inner">
+    <div class="sec-tag">ماذا تقدم المنظومة</div>
+    <h2 class="sec-h2">كل أدوات إدارة المدرسة في مكان واحد</h2>
+    <p class="sec-p">مصممة لواقع المدرسة الكويتية — بسيطة للمعلم على جواله، شاملة للمدير في مكتبه</p>
+    <div class="feats">
+      <div class="feat">
+        <span class="feat-icon">📺</span>
+        <div class="feat-h">شاشة القيادة الذكية</div>
+        <div class="feat-p">تُعرض على تلفزيون مكتب المدير — عداد حي للحضور ورادار الفصول التي لم تسجل الغياب بعد.</div>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">✅</span>
+        <div class="feat-h">رصد الغياب اللحظي</div>
+        <div class="feat-p">المعلم يسجل حضور الفصل من جواله في ثوانٍ — يظهر فوراً في لوحة المدير.</div>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">👨‍👦</span>
+        <div class="feat-h">بوابة ولي الأمر</div>
+        <div class="feat-p">ولي الأمر يتابع غياب ابنه ويتواصل مع الإدارة مباشرة من جواله.</div>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">⚠️</span>
+        <div class="feat-h">إنذارات الغياب المتكرر</div>
+        <div class="feat-p">النظام يرصد تلقائياً الطلاب فوق 5 أيام غياب ويُنبّه الإدارة فوراً.</div>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🔍</span>
+        <div class="feat-h">الزيارات الصفية</div>
+        <div class="feat-p">تسجيل الزيارات الإشرافية رقمياً — تقارير جاهزة للمنطقة التعليمية بضغطة زر.</div>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🩺</span>
+        <div class="feat-h">العيادة المدرسية</div>
+        <div class="feat-p">سجل رقمي كامل لمراجعات الطلاب مع التاريخ والمتابعة — لا ورق لا ضياع.</div>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">🎫</span>
+        <div class="feat-h">الاستئذان الرقمي</div>
+        <div class="feat-p">إدارة تصاريح الاستئذان من الطلب حتى الموافقة — موثقة وشفافة.</div>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">💬</span>
+        <div class="feat-h">المراسلات الرسمية</div>
+        <div class="feat-p">قناة تواصل منظمة بين الإدارة وأولياء الأمور — مؤرشفة ومتابعة.</div>
+      </div>
+      <div class="feat">
+        <span class="feat-icon">📄</span>
+        <div class="feat-h">تقارير PDF آلية</div>
+        <div class="feat-p">تقرير أسبوعي شامل بضغطة زر — جاهز للطباعة أو الإرسال للمنطقة التعليمية.</div>
+      </div>
     </div>
-    <div class="feature-card">
-        <i class="bi bi-tv"></i>
-        <h3>شاشة القيادة TV</h3>
-        <p>غرفة تحكم رقمية تعرض إحصائيات المدرسة كاملة بشكل حي أمام عينيك.</p>
+  </div>
+</div>
+
+<!-- ROLES -->
+<div id="roles" class="sec roles-sec">
+  <div class="sec-inner">
+    <div class="sec-tag">من يستخدم المنظومة</div>
+    <h2 class="sec-h2">منصة واحدة — ستة أدوار</h2>
+    <p class="sec-p">كل مستخدم يرى ما يخصه فقط — واجهة مصممة خصيصاً لكل دور وظيفي</p>
+    <div class="roles-grid">
+      <div class="role">
+        <span class="role-icon">👔</span>
+        <div class="role-name">مدير المدرسة</div>
+        <div class="role-sub">لوحة قيادة شاملة وتقارير فورية</div>
+      </div>
+      <div class="role">
+        <span class="role-icon">👨‍🏫</span>
+        <div class="role-name">المعلم</div>
+        <div class="role-sub">تسجيل الغياب من الجوال بسهولة</div>
+      </div>
+      <div class="role">
+        <span class="role-icon">🧑‍⚕️</span>
+        <div class="role-name">الممرض المدرسي</div>
+        <div class="role-sub">سجل العيادة ومراجعات الطلاب</div>
+      </div>
+      <div class="role">
+        <span class="role-icon">🧑‍💼</span>
+        <div class="role-name">الأخصائي الاجتماعي</div>
+        <div class="role-sub">متابعة الحالات والتقارير</div>
+      </div>
+      <div class="role">
+        <span class="role-icon">🚪</span>
+        <div class="role-name">الحارس المدرسي</div>
+        <div class="role-sub">تسجيل الزوار والخروج المبكر</div>
+      </div>
     </div>
-    <div class="feature-card">
-        <i class="bi bi-whatsapp"></i>
-        <h3>إشعارات ذكية</h3>
-        <p>تنبيه تلقائي لأولياء الأمور عبر الواتساب فور رصد غياب الطالب.</p>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div id="pricing" class="sec">
+  <div class="sec-inner">
+    <div class="sec-tag">خطط الاشتراك</div>
+    <h2 class="sec-h2">سعر واضح — بدون مفاجآت</h2>
+    <p class="sec-p">جرّب مجاناً لمدة شهر كامل — لا بطاقة ائتمان مطلوبة</p>
+    <div class="plans">
+
+      <div class="plan">
+        <div class="plan-tier">BASIC · الأساسي</div>
+        <div class="plan-price">150 <small>KWD</small></div>
+        <div class="plan-period">سنوياً</div>
+        <ul class="plan-items">
+          <li><i class="bi bi-check-circle-fill"></i> رصد الغياب اليومي</li>
+          <li><i class="bi bi-check-circle-fill"></i> بوابة ولي الأمر</li>
+          <li><i class="bi bi-check-circle-fill"></i> تقارير شهرية</li>
+          <li><i class="bi bi-check-circle-fill"></i> حتى 50 مستخدم</li>
+        </ul>
+        <a href="index.html" class="plan-btn">ابدأ مجاناً</a>
+      </div>
+
+      <div class="plan hot">
+        <div class="plan-badge">⭐ الأكثر طلباً</div>
+        <div class="plan-tier">PRO · الاحترافي</div>
+        <div class="plan-price">250 <small>KWD</small></div>
+        <div class="plan-period">سنوياً</div>
+        <ul class="plan-items">
+          <li><i class="bi bi-check-circle-fill"></i> كل مميزات الأساسي</li>
+          <li><i class="bi bi-check-circle-fill"></i> شاشة القيادة TV</li>
+          <li><i class="bi bi-check-circle-fill"></i> الزيارات الصفية</li>
+          <li><i class="bi bi-check-circle-fill"></i> العيادة والاستئذان</li>
+          <li><i class="bi bi-check-circle-fill"></i> حتى 100 مستخدم</li>
+        </ul>
+        <a href="index.html" class="plan-btn">ابدأ مجاناً</a>
+      </div>
+
+      <div class="plan">
+        <div class="plan-tier">ENTERPRISE · المؤسسي</div>
+        <div class="plan-price">400 <small>KWD</small></div>
+        <div class="plan-period">سنوياً</div>
+        <ul class="plan-items">
+          <li><i class="bi bi-check-circle-fill"></i> كل المميزات</li>
+          <li><i class="bi bi-check-circle-fill"></i> تدريب الموظفين</li>
+          <li><i class="bi bi-check-circle-fill"></i> دعم فني مباشر</li>
+          <li><i class="bi bi-check-circle-fill"></i> مستخدمون غير محدودين</li>
+        </ul>
+        <a href="index.html" class="plan-btn">تواصل معنا</a>
+      </div>
+
     </div>
-</section>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-sec">
+  <div class="cta-box">
+    <h2 class="cta-h2">جاهز تبدأ؟ شهر تجريبي مجاني كامل</h2>
+    <p class="cta-p">سجّل مدرستك الآن وابدأ الاستخدام خلال دقائق — بدون أي التزام</p>
+    <div class="cta-btns">
+      <a href="index.html" class="btn-gold">
+        <i class="bi bi-rocket-takeoff-fill"></i> ابدأ التجربة المجانية
+      </a>
+      <a href="parent.html" class="btn-wh">
+        <i class="bi bi-person-hearts"></i> بوابة ولي الأمر
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>المنظومة الرقمية الشاملة © 2026 — تطوير: <strong>أ. حسين</strong></p>
+  <p>
+    <a href="index.html">دخول المنظومة</a> ·
+    <a href="parent.html">ولي الأمر</a> ·
+    <a href="tv.html">شاشة TV</a>
+  </p>
+</footer>
 
 </body>
 </html>
