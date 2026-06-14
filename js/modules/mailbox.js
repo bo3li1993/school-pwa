@@ -71,7 +71,7 @@ async function loadParentMailboxLive() {
         
         // التوافقية للداتا القديمة
         if (snap.empty && schoolId === 'hosainan') {
-            snap = await getDocs(collection(db, 'school_threads'));
+            snap = await getDocs(getActiveSchoolId() ? query(collection(db, 'school_threads'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'school_threads'));
         }
 
         let html = '';
