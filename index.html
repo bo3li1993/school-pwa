@@ -10,7 +10,7 @@
 
     <script type="module">
         import { db, auth } from './js/firebase-config.js';
-        import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { collection, query, where, getDocs, getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
         import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
         window.login = async (e) => {
@@ -22,11 +22,17 @@
             if(snap.empty) return alert("خطأ في البيانات");
             
             const userData = snap.docs[0].data();
+            const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
+            const schoolData = schoolSnap.data();
+
+            if(schoolData.status === 'suspended') return alert('⚠️ المدرسة موقوفة');
+            if(new Date(schoolData.subscriptionEnd) < new Date()) return alert('⚠️ انتهى الاشتراك');
+
             if(userData.authMigrated) {
                 await signInWithEmailAndPassword(auth, userData.email, pass);
             } else if(userData.plainPass !== pass) return alert("كلمة المرور خاطئة");
             
-            localStorage.setItem('hs_user', JSON.stringify(userData));
+            localStorage.setItem('hs_user', JSON.stringify({ ...userData, schoolId: userData.schoolId }));
             window.location.replace('admin.html');
         };
     </script>
