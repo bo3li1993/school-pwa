@@ -1,72 +1,46 @@
-const CACHE_NAME = `hosainan-school-${new Date().toISOString().slice(0, 10)}`;
-
+const CACHE_NAME = 'hs-system-v1';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './login.html',
-  './manifest.json',
-  './style.css',
-  './logo.png',
-  './favicon.ico',
-  './parent.html',
-  './admin.html',
-  './teacher.html',
-  './social.html',
-  './super.html',
-  './js/firebase-config.js' // ✓ تم تصحيح المسار ليتوافق مع باقي صفحات المنظومة
+    './',
+    './index.html',
+    './admin.html',
+    './teacher.html',
+    './super.html',
+    './import.html',
+    'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
+    'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap'
 ];
 
-// ⏳ 1. حدث التثبيت الذكي
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      console.log(`📦 جاري تهيئة أصول المنظومة لكاش ${CACHE_NAME}...`);
-      
-      for (const asset of ASSETS_TO_CACHE) {
-        try {
-          await cache.add(asset);
-          console.log(`✓ تم حفظه بالكاش: ${asset}`);
-        } catch (err) {
-          console.warn(`⚠️ تنبيه: تعذر كاش الملف: ${asset}`);
-        }
-      }
-    })
-  );
-  self.skipWaiting();
-});
-
-// 🧹 2. حدث التنشيط (تنظيف كل الكاشات القديمة التي لا تطابق تاريخ اليوم)
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log('🧹 تنظيف مخلفات الكاش القديم:', key);
-            return caches.delete(key);
-          }
+// 1. تثبيت الكاش وحفظ الملفات
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => {
+            return cache.addAll(ASSETS_TO_CACHE);
         })
-      );
-    })
-  );
-  self.clients.claim();
+    );
+    self.skipWaiting();
 });
 
-// 🌐 3. استراتيجية جلب البيانات (الإنترنت أولاً لضمان حية البيانات)
-self.addEventListener('fetch', (e) => {
-  // تجاهل روابط الفايربيس (API) الخارجية لكي لا تتعطل عمليات المزامنة الحية
-  if (!e.request.url.startsWith(self.location.origin)) return;
+// 2. تفعيل وحذف الكاش القديم لو سويت تحديث
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(keys => {
+            return Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
+        })
+    );
+    self.clients.claim();
+});
 
-  e.respondWith(
-    fetch(e.request)
-      .then((response) => {
-        // إذا الإنترنت شغال، نحدث نسخة الكاش الخاصة بيومنا هذا فوراً
-        if (response.status === 200) {
-          const resClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, resClone));
-        }
-        return response;
-      })
-      .catch(() => caches.match(e.request)) // 💡 إغلاق الدالة المقطوعة: في حال فصل الإنترنت، يعرض آخر نسخة محفوظة
-  );
+// 3. محرك السرعة (جلب من الكاش أولاً، وإذا مافي يجيب من النت)
+self.addEventListener('fetch', event => {
+    // نتخطى طلبات فايربيس عشان البيانات تكون لايف دايماً
+    if (event.request.url.includes('firestore') || event.request.url.includes('identitytoolkit')) return;
+
+    event.respondWith(
+        caches.match(event.request).then(cachedResponse => {
+            return cachedResponse || fetch(event.request);
+        }).catch(() => {
+            // لو مافي نت نهائياً ومافي كاش، يرجعه لصفحة الدخول
+            return caches.match('./index.html');
+        })
+    );
 });
