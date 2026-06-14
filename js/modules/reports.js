@@ -39,7 +39,7 @@ window.generateWeeklyPDFReportLive = async function() {
 
         // توافقية البيانات القديمة (سالم الحسينان)
         if (attSnap.empty && schoolId === 'hosainan') {
-            attSnap = await getDocs(collection(db, 'attendance'));
+            attSnap = await getDocs(getActiveSchoolId() ? query(collection(db, 'attendance'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'attendance'));
         }
         
         let absences = {};
