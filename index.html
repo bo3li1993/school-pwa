@@ -105,22 +105,45 @@
             const id = document.getElementById('id').value;
             const pass = document.getElementById('pass').value;
             
+            // جلب كل المستخدمين بنفس الرقم (قد يكونون من مدارس مختلفة)
             const snap = await getDocs(query(collection(db, 'users'), where('userId', '==', id)));
-            if(snap.empty) return alert("خطأ في بيانات الدخول");
+            if(snap.empty) return alert('❌ رقم المستخدم غير مسجل في النظام');
             
-            const userData = snap.docs[0].data();
+            // مطابقة كلمة المرور أولاً — يحل مشكلة تعارض المدارس
+            let userData = null;
+            for(const d of snap.docs) {
+                const dData = d.data();
+                const storedPass = String(dData.plainPass || '').trim();
+                const inputPass  = String(pass || '').trim();
+                if(storedPass === inputPass) { userData = dData; break; }
+            }
+            if(!userData) return alert('❌ كلمة المرور غير صحيحة');
+            if(!userData.schoolId) return alert('❌ المستخدم غير مرتبط بمدرسة — تواصل مع مدير المدرسة');
+
+            // فحص حالة المدرسة
             const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
+            if(!schoolSnap.exists()) return alert('❌ مدرستك غير مسجلة في النظام');
             const schoolData = schoolSnap.data();
 
-            if(schoolData.status === 'suspended') return alert('⚠️ تم إيقاف اشتراك هذه المدرسة، راجع المطور.');
-            if(new Date(schoolData.subscriptionEnd) < new Date()) return alert('⚠️ انتهت صلاحية الاشتراك السنوي للمدرسة.');
+            if(schoolData.status === 'suspended')
+                return alert('⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً\nللاستفسار تواصل مع المطور');
+            if(schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date())
+                return alert('⚠️ انتهى اشتراك مدرستك\nللتجديد تواصل مع المطور');
 
-            if(userData.authMigrated) {
-                await signInWithEmailAndPassword(auth, userData.email, pass);
-            } else if(userData.plainPass !== pass) return alert("كلمة المرور غير صحيحة");
+            // حفظ الجلسة والتوجيه
+            const role = String(userData.role || '').trim().toLowerCase();
+            localStorage.setItem('hs_user', JSON.stringify({
+                userId:     userData.userId,
+                name:       userData.name || '',
+                role:       role,
+                schoolId:   userData.schoolId,
+                schoolName: schoolData.name || '',
+                classId:    userData.classId || ''
+            }));
             
-            localStorage.setItem('hs_user', JSON.stringify({ ...userData, schoolId: userData.schoolId }));
-            window.location.replace('admin.html');
+            // توجيه حسب الدور
+            const adminRoles = ['admin','assistant_manager','wing_supervisor','social_worker'];
+            window.location.replace(adminRoles.includes(role) ? 'admin.html' : 'teacher.html');
         };
 
         // الـ PWA Install Prompt
