@@ -10,10 +10,21 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
         
         :root {
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --primary: #3b82f6;
-            --accent: #e67e22;
+  --navy:  #0b2545;
+  --sky:   #1a78c2;
+  --ice:   #eaf4fd;
+  --gold:  #d4920a;
+  --white: #ffffff;
+  --off:   #f8f9fc;
+  --line:  #e5e7eb;
+  --text:  #111827;
+  --mid:   #6b7280;
+  --green: #059669;
+  --red:   #dc2626;
+            --bg-dark: var(--off);
+            --card-bg: var(--off);
+            --primary: var(--sky);
+            --accent: var(--gold);
             --success: #25d366;
             --text-main: #f1f5f9;
         }
@@ -21,26 +32,26 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
 
-        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 30px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); text-align: center; margin-bottom: 20px; }
+        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 30px; border-radius: 16px; border: 1px solid var(--line); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); text-align: center; margin-bottom: 20px; }
         h1 { font-size: 26px; font-weight: 900; margin-bottom: 10px; color: #fff; }
         p { font-size: 14px; color: #94a3b8; margin-bottom: 25px; }
 
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 14px; text-align: center; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--line); background: var(--off); color: #fff; font-size: 14px; text-align: center; }
         input:focus { border-color: var(--primary); outline: none; }
 
         button { width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
         .btn-primary { background: var(--primary); color: #fff; margin-bottom: 10px; }
         .btn-success { background: var(--success); color: #fff; margin-top: 5px; }
-        .btn-install { background: #27ae60; color: #fff; max-width: 420px; margin-bottom: 15px; display: none; }
+        .btn-install { background: var(--green); color: #fff; max-width: 420px; margin-bottom: 15px; display: none; }
 
         /* نافذة المحاكاة الذكية المدمجة */
         .demo-section { margin-top: 20px; width: 100%; max-width: 800px; display: none; }
-        .screen-frame { background: var(--card-bg); border: 4px solid #334155; border-radius: 12px; height: 400px; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: right; }
+        .screen-frame { background: var(--card-bg); border: 4px solid var(--line); border-radius: 12px; height: 400px; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: right; }
         .cursor { position: absolute; width: 20px; height: 20px; background: url('https://cur.cursors-4u.net/arrow/arr-13/arr1219.png'), auto; z-index: 9999; transition: all 1s ease-in-out; pointer-events: none; }
-        .sim-sidebar { width: 200px; background: #0f172a; height: 100%; position: absolute; right: 0; padding: 15px; border-left: 1px solid #334155; }
+        .sim-sidebar { width: 200px; background: var(--off); height: 100%; position: absolute; right: 0; padding: 15px; border-left: 1px solid var(--line); }
         .sim-main { margin-right: 200px; padding: 25px; height: 100%; position: relative; }
         .sim-popup { display: none; position: absolute; top: 25%; left: 15%; background: white; color: black; padding: 20px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); width: 300px; text-align: center; }
-        .subtitle-bar { background: var(--card-bg); border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; color: #fbbf24; font-weight: 700; width: 100%; max-width: 800px; }
+        .subtitle-bar { background: var(--card-bg); border: 1px solid var(--line); padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; color: #fbbf24; font-weight: 700; width: 100%; max-width: 800px; }
     </style>
 </head>
 <body>
@@ -70,14 +81,14 @@
             
             <div class="sim-sidebar">
                 <h3 style="color:var(--accent); font-size:13px; margin-bottom:20px;"><i class="bi bi-shield-check"></i> سالم الحسينان</h3>
-                <div id="sim-nav-1" style="padding:8px; background:#1e293b; border-radius:6px; font-size:12px; margin-bottom:8px; font-weight:bold;"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
+                <div id="sim-nav-1" style="padding:8px; background:var(--off); border-radius:6px; font-size:12px; margin-bottom:8px; font-weight:bold;"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
                 <div id="sim-nav-2" style="padding:8px; font-size:12px; opacity:0.5;"><i class="bi bi-file-earmark-pdf"></i> تقارير الغياب</div>
             </div>
 
             <div class="sim-main">
                 <div id="sim-content">
                     <h2 style="font-size:18px; font-weight:700; margin-bottom:15px;">لوحة الإجراءات السريعة والمباشرة</h2>
-                    <div style="background:#334155; padding:15px; border-radius:10px;">
+                    <div style="background:var(--line); padding:15px; border-radius:10px;">
                         <span style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:8px;">محرك بث غياب الحصة الحالي لأولياء الأمور:</span>
                         <select style="padding:6px; width:120px; border-radius:6px; font-weight:bold;"><option>الصف 9/1</option></select>
                         <button id="sim-whatsapp-btn" style="background:var(--success); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; margin-right:8px;">بث للواتساب</button>
@@ -86,7 +97,7 @@
 
                 <div class="sim-popup" id="sim-whatsapp-popup">
                     <h3 style="color:var(--success); font-size:16px; margin-bottom:10px;"><i class="bi bi-check-circle-fill"></i> نجح محرك البث!</h3>
-                    <p style="font-size:12px; color:#475569; line-height:1.5;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
+                    <p style="font-size:12px; color:var(--mid); line-height:1.5;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
                 </div>
             </div>
         </div>
@@ -195,7 +206,7 @@
             }, 8500);
 
             setTimeout(() => {
-                navReport.style.background = '#1e293b';
+                navReport.style.background = 'var(--off)';
                 navReport.style.opacity = '1';
                 subtitle.textContent = "يقوم النظام بتصدير كشوف الغياب التراكمي وتجهيز ملفات PDF المطابقة للمنطقة التعليمية فوراً.";
             }, 10500);
