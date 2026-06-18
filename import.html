@@ -5,32 +5,46 @@
     <title>رفع بيانات الطلاب جماعياً</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
+:root {
+  --navy:  #0b2545;
+  --sky:   #1a78c2;
+  --ice:   #eaf4fd;
+  --gold:  #d4920a;
+  --white: #ffffff;
+  --off:   #f8f9fc;
+  --line:  #e5e7eb;
+  --text:  #111827;
+  --mid:   #6b7280;
+  --green: #059669;
+  --red:   #dc2626;
+}
+
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
         
-        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; color: #334155; padding: 30px; margin: 0; }
+        body { font-family: 'Cairo', sans-serif; background: var(--off); color: var(--line); padding: 30px; margin: 0; }
         .import-card { background: #fff; max-width: 850px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
         
-        h2 { color: #1e293b; font-weight: 900; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        h2 { color: var(--off); font-weight: 900; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         
         /* صندوق الإرشادات */
-        .guide-box { background: #f8fafc; border-right: 4px solid #3b82f6; border-radius: 8px; padding: 20px; margin-bottom: 25px; }
+        .guide-box { background: #f8fafc; border-right: 4px solid var(--sky); border-radius: 8px; padding: 20px; margin-bottom: 25px; }
         .guide-box h4 { color: #1e3a8a; font-weight: 700; margin-bottom: 12px; }
         .guide-box ol { padding-right: 20px; line-height: 1.8; font-size: 14px; }
         .guide-box li { margin-bottom: 8px; }
         
         /* تنسيق جدول العينة */
         .sample-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; text-align: center; }
-        .sample-table th { background: #e2e8f0; color: #334155; padding: 8px; font-weight: 700; }
+        .sample-table th { background: #e2e8f0; color: var(--line); padding: 8px; font-weight: 700; }
         .sample-table td { border: 1px solid #e2e8f0; padding: 8px; background: #fff; }
         
         .alert-warning { background: #fffbeb; border: 1px solid #fef3c7; color: #b45309; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 10px; }
         
         /* منطقة رفع الملف */
         .upload-zone { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 30px; text-align: center; background: #fdfdfd; cursor: pointer; transition: 0.3s; margin-top: 25px; }
-        .upload-zone:hover { border-color: #3b82f6; background: #f0f7ff; }
+        .upload-zone:hover { border-color: var(--sky); background: #f0f7ff; }
         .upload-zone i { font-size: 40px; color: #94a3b8; display: block; margin-bottom: 10px; }
         
-        .btn-import { background: #3b82f6; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 15px; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-import { background: var(--sky); color: white; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 15px; display: inline-flex; align-items: center; gap: 8px; }
         .btn-import:disabled { background: #cbd5e1; cursor: not-allowed; }
     </style>
 </head>
