@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-:root { --primary:#1a1a2e; --accent:#e67e22; --bg:#f5f6fa; --success:#27ae60; --danger:#e74c3c; }
+:root { --primary:var(--navy); --accent:var(--gold); --bg:#f5f6fa; --success:var(--green); --danger:#e74c3c; }
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
 body{background:var(--bg);color:#333;}
 .header{background:var(--primary);color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid var(--accent);}
@@ -33,7 +33,7 @@ select:focus,input:focus{border-color:var(--accent);}
 .status-btn{padding:5px 12px;border:2px solid #ddd;background:#fff;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;}
 .status-btn.present{border-color:var(--success);background:#e8f8f0;color:var(--success);}
 .status-btn.absent{border-color:var(--danger);background:#fde8e8;color:var(--danger);}
-.status-btn.late{border-color:#f39c12;background:#fef5e7;color:#f39c12;}
+.status-btn.late{border-color:var(--gold);background:#fef5e7;color:var(--gold);}
 .summary-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
 .summary-item{background:#f8f9fa;border-radius:8px;padding:10px;text-align:center;}
 .summary-item .num{font-size:22px;font-weight:900;}
@@ -101,7 +101,7 @@ select:focus,input:focus{border-color:var(--accent);}
         <div class="summary-item"><div class="num" id="cnt-total" style="color:var(--primary)">0</div><div class="lbl">الإجمالي</div></div>
         <div class="summary-item"><div class="num" id="cnt-present" style="color:var(--success)">0</div><div class="lbl">حاضر</div></div>
         <div class="summary-item"><div class="num" id="cnt-absent" style="color:var(--danger)">0</div><div class="lbl">غائب</div></div>
-        <div class="summary-item"><div class="num" id="cnt-late" style="color:#f39c12">0</div><div class="lbl">متأخر</div></div>
+        <div class="summary-item"><div class="num" id="cnt-late" style="color:var(--gold)">0</div><div class="lbl">متأخر</div></div>
       </div>
     </div>
 
