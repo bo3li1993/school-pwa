@@ -13,7 +13,18 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
 :root {
-    --primary-color: #1e293b; --hover-color: #e67e22; --bg-light: #f4f6f9;
+  --navy:  #0b2545;
+  --sky:   #1a78c2;
+  --ice:   #eaf4fd;
+  --gold:  #d4920a;
+  --white: #ffffff;
+  --off:   #f8f9fc;
+  --line:  #e5e7eb;
+  --text:  #111827;
+  --mid:   #6b7280;
+  --green: #059669;
+  --red:   #dc2626;
+    --primary-color: var(--off); --hover-color: var(--gold); --bg-light: #f4f6f9;
     --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
@@ -107,7 +118,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </form>
     </div>
 
-    <div class="card" style="border-top: 4px solid #3b82f6;">
+    <div class="card" style="border-top: 4px solid var(--sky);">
         <h2><i class="bi bi-gear-fill"></i> إعدادات الحساب وتغيير كلمة المرور للحارس</h2>
         <form id="guard-profile-form" onsubmit="window.updateGuardProfileLive(event)">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap:15px;">
@@ -120,7 +131,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     <input type="text" id="guard-profile-pass" placeholder="اتركها فاضية إذا لا ترغب بالتغيير">
                 </div>
             </div>
-            <button type="submit" class="btn-submit" style="background:#3b82f6; box-shadow:none;"><i class="bi bi-person-check-fill"></i> تحديث بيانات الملف الشخصي وكلمة المرور فوراً</button>
+            <button type="submit" class="btn-submit" style="background:var(--sky); box-shadow:none;"><i class="bi bi-person-check-fill"></i> تحديث بيانات الملف الشخصي وكلمة المرور فوراً</button>
         </form>
     </div>
 
@@ -146,7 +157,7 @@ function getUnifiedTimeString() {
     return `${hours}:${minutes} ${ampm}`;
 }
 
-// 🔔 الفلترة الذكية والربط الفوري المباشر مع استئذانات الأخصائي المعتمدة الحين للمدرسة الحالية
+// ---
 function startGuardLiveGatepassListener() {
     const tbody = document.getElementById('guard-live-gatepass-tbody');
     const emptyBox = document.getElementById('empty-gatepass-box');
@@ -174,7 +185,7 @@ function startGuardLiveGatepassListener() {
                 html += `<tr style="border-bottom: 2px solid #f1f5f9; background:#fffdf5;">
                     <td><span style="background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px;">${d.classId || '-'}</span></td>
                     <td style="font-size:14px; font-weight:900; color:var(--primary-color);">👤 ${d.studentName}</td>
-                    <td style="font-weight:bold; color:#1e293b;">${d.relative}</td>
+                    <td style="font-weight:bold; color:var(--off);">${d.relative}</td>
                     <td><span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">${d.relation}</span></td>
                     <td><code>${d.relativeCivilId}</code></td>
                     <td><a href="tel:${d.relativePhone}" style="color:#2563eb; font-weight:bold;">${d.relativePhone}</a></td>
