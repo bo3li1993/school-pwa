@@ -5,21 +5,21 @@
     <title>المنظومة الرقمية - لوحة الإدارة الحصينة</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root { --primary-color: #1a1a2e; --hover-color: #e67e22; --danger-color: #e74c3c; }
-        body { font-family: 'Cairo', sans-serif; background: #f4f6f9; display: flex; min-height: 100vh; margin: 0; }
+        :root { --primary-color: var(--navy); --hover-color: var(--gold); --danger-color: #e74c3c; }
+        body { font-family: 'Cairo', sans-serif; background: var(--off); display: flex; min-height: 100vh; margin: 0; }
         .sidebar { width: 280px; background: #161625; color: #fff; height: 100vh; position: fixed; right: 0; }
         .main-content { margin-right: 280px; width: 100%; }
         .top-navbar { background: #fff; padding: 15px 25px; display: flex; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
         .menu-item { padding: 15px; cursor: pointer; color: #b2bec3; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-        .menu-item:hover, .menu-item.active { color: #fff; background: #2c2c3e; border-right: 4px solid var(--hover-color); }
+        .menu-item:hover, .menu-item.active { color: #fff; background: var(--navy); border-right: 4px solid var(--hover-color); }
         button { cursor: pointer; padding: 8px 16px; border-radius: 6px; border: none; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <div style="padding:20px; font-weight:900; border-bottom:1px solid #2c2c3e;">مدرسة سالم الحسينان</div>
+        <div style="padding:20px; font-weight:900; border-bottom:1px solid var(--navy);">مدرسة سالم الحسينان</div>
         <ul style="list-style:none; padding:0; margin:0;">
             <li class="menu-item active" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i> 📊 المؤشرات اليومية</li>
             <li class="menu-item" onclick="window.switchTab('tab-student')"><i class="bi bi-person"></i> 👤 ملف الطالب</li>
