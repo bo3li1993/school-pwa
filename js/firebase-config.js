@@ -11,23 +11,21 @@ export const firebaseConfig = {
     appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
 };
 
-// تشغيل وتأمين الاتصال بدون تكرار
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const db = getFirestore(app);
-export const auth = getAuth(app); // تصدير محرك الأمان الرسمي للمنظومة
+export const auth = getAuth(app);
 
-// 🏢 دالة جلب معرّف المدرسة ديناميكياً من جلسة المستخدم الحالي (تخدم تعدد المدارس)
+// جلب schoolId من الجلسة — بدون fallback حتى لا تختلط بيانات المدارس
 export function getActiveSchoolId() {
     try {
         const user = JSON.parse(localStorage.getItem('hs_user'));
-        // إذا كان اليوزر مسجل، نسحب مدرسة، وإلا نرجع مدرسة الحسينان كخلفية أمنية دائمية
-        return user?.schoolId || 'hosainan'; 
+        return user?.schoolId || null;
     } catch (e) {
-        return 'hosainan';
+        return null;
     }
 }
 
-// 📅 دالة توحيد صيغة التاريخ العالمية بصيغة ISO (YYYY-MM-DD) منعاً لأي تعارض بين المنصات
+// صيغة التاريخ الموحدة ISO
 export function getTodayISO() {
     return new Date().toISOString().slice(0, 10);
 }
