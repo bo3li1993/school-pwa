@@ -173,6 +173,10 @@ tr:hover td{background:#fafafa}
 .action-btn.go:hover{background:var(--green);color:#fff}
 .action-btn.del{border-color:#fca5a5;color:var(--red);background:#fff;margin-right:4px}
 .action-btn.del:hover{background:var(--red);color:#fff}
+.action-btn.link{border-color:#93c5fd;color:var(--sky);background:#fff}
+.action-btn.link:hover{background:var(--sky);color:#fff}
+.action-btn.info{border-color:#fde68a;color:#92400e;background:#fff}
+.action-btn.info:hover{background:#f59e0b;color:#fff}
 
 .empty-row td{text-align:center;padding:32px;color:var(--mid)}
 
@@ -394,7 +398,15 @@ function initDashboard() {
                 </span></td>
                 <td style="${endColor};font-weight:700">${endLabel}</td>
                 <td>
-                    <div style="display:flex;gap:6px;align-items:center">
+                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                        <button class="action-btn link"
+                            onclick="copySchoolLink('${docSnap.id}')">
+                            🔗 اللينك
+                        </button>
+                        <button class="action-btn info"
+                            onclick="showAdminCreds('${docSnap.id}','${s.name||docSnap.id}')">
+                            👤 بيانات المدير
+                        </button>
                         <button class="action-btn ${isActive ? 'stop':'go'}"
                             onclick="toggleSchool('${docSnap.id}','${isActive ? 'suspended':'active'}')">
                             ${isActive ? 'إيقاف':'تفعيل'}
@@ -457,11 +469,12 @@ window.createSchool = async function() {
         });
 
         // رسالة النجاح
+        const customLink = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
         alert(`✅ تم تفعيل منصة "${schoolName}" بنجاح!\n\n` +
               `📋 بيانات المدير:\n` +
               `رقم المستخدم: ${adminId}\n` +
               `كلمة المرور: ${adminPass}\n\n` +
-              `الرابط: https://bo3li1993.github.io/school-pwa/`);
+              `🔗 رابط المدرسة المخصص:\n${customLink}`);
 
         // تفريغ النموذج
         ['f-school-id','f-school-name','f-admin-id','f-admin-name','f-admin-pass','f-admin-phone']
@@ -489,6 +502,45 @@ window.deleteSchool = async function(schoolId, schoolName) {
         await deleteDoc(doc(db, 'schools', schoolId));
         alert(`✅ تم حذف "${schoolName}" من قائمة المدارس`);
     } catch(err) { alert('❌ خطأ: ' + err.message); }
+};
+
+// ===== نسخ رابط المدرسة =====
+// ===== عرض بيانات مدير المدرسة =====
+window.showAdminCreds = async function(schoolId, schoolName) {
+    try {
+        const snap = await getDocs(query(collection(db,'users'), where('schoolId','==',schoolId), where('role','==','admin')));
+        if(snap.empty) { alert(`⚠️ لا يوجد حساب مدير مسجّل لمدرسة "${schoolName}"`); return; }
+
+        let html = `👤 مديرو مدرسة "${schoolName}":\n\n`;
+        const admins = [];
+        snap.forEach(d => {
+            const u = d.data();
+            admins.push({ docId: d.id, userId: u.userId, name: u.name, pass: u.plainPass });
+            html += `الاسم: ${u.name}\nرقم المستخدم: ${u.userId}\nكلمة المرور: ${u.plainPass}\n\n`;
+        });
+
+        const action = confirm(html + 'هل تريد تغيير كلمة مرور أول مدير في القائمة؟\n(إلغاء = إغلاق فقط)');
+        if(action && admins.length) {
+            const newPass = prompt(`كلمة مرور جديدة لـ "${admins[0].name}":`);
+            if(newPass && newPass.trim()) {
+                await updateDoc(doc(db,'users',admins[0].docId), { plainPass: newPass.trim() });
+                alert(`✅ تم تغيير كلمة المرور إلى: ${newPass.trim()}`);
+            }
+        }
+    } catch(err) { alert('❌ خطأ: ' + err.message); }
+};
+
+window.copySchoolLink = function(schoolId) {
+    const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
+    if(navigator.clipboard) {
+        navigator.clipboard.writeText(link).then(() => {
+            alert(`✅ تم نسخ الرابط:\n${link}`);
+        }).catch(() => {
+            prompt('انسخ الرابط:', link);
+        });
+    } else {
+        prompt('انسخ الرابط:', link);
+    }
 };
 
 window.toggleSchool = async function(schoolId, newStatus) {
