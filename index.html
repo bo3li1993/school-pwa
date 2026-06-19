@@ -145,6 +145,11 @@ if(schoolFromUrl) {
             if(!userData) return alert('❌ كلمة المرور غير صحيحة');
             if(!userData.schoolId) return alert('❌ المستخدم غير مرتبط بمدرسة — تواصل مع مدير المدرسة');
 
+            // 🔒 لو الرابط مخصص لمدرسة معينة (?school=xxx) — يجب أن يطابق schoolId المستخدم
+            if(schoolFromUrl && userData.schoolId !== schoolFromUrl) {
+                return alert(`❌ هذا الرابط مخصص لمدرسة أخرى\nرجاءً استخدم رابط مدرستك الصحيح`);
+            }
+
             // فحص حالة المدرسة
             const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
             if(!schoolSnap.exists()) return alert('❌ مدرستك غير مسجلة في النظام');
