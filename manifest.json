@@ -1,11 +1,11 @@
-{
+
   "name": "المنظومة الرقمية الموحدة",
   "short_name": "المنظومة",
   "description": "منظومة سحابية لإدارة المنشآت التعليمية والغياب",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#3b82f6",
+  "background_color": "#f8f9fc",
+  "theme_color": "#0b2545",
   "orientation": "portrait",
   "icons": [
     {
