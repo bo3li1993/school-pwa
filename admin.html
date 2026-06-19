@@ -20,25 +20,30 @@
   --white:#fff; --off:#f8f9fc; --line:#e5e7eb; --text:#111827; --mid:#6b7280;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);display:flex;min-height:100vh}
+body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);display:flex;min-height:100vh;font-size:15px}
 
 .sidebar{width:260px;background:var(--navy);color:#fff;min-height:100vh;position:fixed;right:0;top:0;overflow-y:auto;z-index:40}
 .sidebar-head{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
-.sidebar-head h2{font-size:15px;font-weight:900}
-.sidebar-head p{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px}
-.menu-item{padding:12px 18px;cursor:pointer;color:rgba(255,255,255,.65);font-weight:700;font-size:13px;display:flex;align-items:center;gap:10px;border-right:3px solid transparent;transition:all .15s}
+.sidebar-head h2{font-size:17px;font-weight:900}
+.sidebar-head p{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;font-weight:600}
+.menu-item{padding:14px 18px;cursor:pointer;color:rgba(255,255,255,.7);font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px;border-right:3px solid transparent;transition:all .15s}
 .menu-item:hover{color:#fff;background:rgba(255,255,255,.05)}
 .menu-item.active{color:#fff;background:rgba(255,255,255,.08);border-right-color:var(--gold)}
-.menu-group-title{padding:14px 18px 6px;font-size:10px;color:rgba(255,255,255,.35);font-weight:800;letter-spacing:1px}
+.menu-group-title{padding:16px 18px 7px;font-size:11.5px;color:rgba(255,255,255,.4);font-weight:800;letter-spacing:1px}
 
 .main{margin-right:260px;flex:1;min-height:100vh}
 .topbar{background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
-.topbar-info{font-size:13px;font-weight:700;color:var(--navy)}
+.topbar-info{font-size:15px;font-weight:700;color:var(--navy)}
 .topbar-info span{color:var(--mid);font-size:11px;font-weight:600;display:block}
-.logout-btn{background:transparent;border:1.5px solid var(--line);color:var(--mid);padding:7px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.logout-btn{background:transparent;border:1.5px solid var(--line);color:var(--mid);padding:8px 18px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
 .logout-btn:hover{border-color:#dc2626;color:#dc2626}
 
-.content{padding:24px}
+.content{padding:24px;font-size:15px}
+.content label{font-size:14.5px!important}
+.content input,.content select,.content textarea{font-size:15px!important;padding:11px 13px!important}
+.content button{font-size:14px!important}
+.content table{font-size:14px!important}
+.content th{font-size:13px!important}
 .tab-content{display:none}
 .tab-content.active{display:block}
 .loading-box{text-align:center;padding:60px;color:var(--mid);font-weight:700}
