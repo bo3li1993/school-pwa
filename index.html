@@ -107,6 +107,20 @@
 
     <!-- محرك العمليات السحابية والأمان -->
     <script type="module">
+// قراءة كود المدرسة من الرابط (?school=alanwar) — للروابط المخصصة
+const urlParams = new URLSearchParams(window.location.search);
+const schoolFromUrl = urlParams.get('school');
+if(schoolFromUrl) {
+    // عرض اسم المدرسة المتوقع كرسالة ترحيب بصرية فقط (لا تأثير على المنطق)
+    document.addEventListener('DOMContentLoaded', () => {
+        const hint = document.createElement('div');
+        hint.style.cssText = 'background:var(--ice);color:var(--sky);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;text-align:center;margin-bottom:14px;';
+        hint.textContent = `🏫 بوابة دخول: ${schoolFromUrl}`;
+        const card = document.querySelector('.login-card') || document.querySelector('form')?.parentElement;
+        if(card) card.insertBefore(hint, card.firstChild);
+    });
+}
+
         import { db, auth } from './js/firebase-config.js';
         import { collection, query, where, getDocs, getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
         import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
