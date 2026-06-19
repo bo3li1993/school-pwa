@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>بوابة المعلم - المنظومة الرقمية</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b2545">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
@@ -400,6 +406,11 @@ window.loadStudentsList = async function(classId) {
 // ===== أدوات =====
 window.doLogout = function() { localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
 window.goToAdmin = function() { window.location.replace('admin.html'); };
+</script>
+<script>
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+}
 </script>
 </body>
 </html>
