@@ -64,6 +64,7 @@ button:hover { background:var(--accent-color); }
 <!-- 📱 لوحة التحكم الفورية لولي الأمر (SPA) -->
 <div id="parent-dashboard-screen" class="container hidden" style="max-width:650px; margin:0 auto;">
     <div class="card" style="background:var(--primary-color); color:#fff; border:none; text-align:center; padding:25px;">
+        <p id="lbl-parent-school" style="font-size:11px; opacity:0.75; font-weight:700; margin-bottom:6px;">جاري التحميل...</p>
         <h3 style="font-weight:900; font-size:19px;">👤 الطالب: <span id="lbl-student-name">-</span></h3>
         <p style="font-size:12px; opacity:0.8; font-weight:bold; margin-top:3px;">الصف والفصل الحالي: <span id="lbl-student-class">-</span></p>
         
@@ -94,7 +95,7 @@ button:hover { background:var(--accent-color); }
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 // 🔔 استدعاء مكتبة قوقل الرسمية لإدارة بث واستقبال الإشعارات السحابية للـ PWA
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
 
@@ -109,19 +110,32 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+// قراءة كود المدرسة من رابط مخصص (?school=xxx) لتسريع وتدقيق البحث
+const urlParams = new URLSearchParams(window.location.search);
+const schoolFromUrl = urlParams.get('school');
+
 window.handleParentLoginLive = async function(e) {
     e.preventDefault();
     const studentId = document.getElementById('parent-student-id').value.trim();
     if(!studentId) return;
 
     try {
+        // البحث بحقل studentNumber فقط (قد يتكرر بين مدارس مختلفة)
         const q = query(collection(db, 'students'), where('studentNumber', '==', studentId));
         const snap = await getDocs(q);
+        let candidates = [];
+        snap.forEach(doc => candidates.push(doc.data()));
+
+        // لو الرابط مخصص لمدرسة، نفلتر عليها مباشرة
         let found = null;
-        snap.forEach(doc => { 
-            const d = doc.data();
-            found = d;
-        });
+        if(schoolFromUrl) {
+            found = candidates.find(d => d.schoolId === schoolFromUrl) || null;
+        } else if(candidates.length === 1) {
+            found = candidates[0];
+        } else if(candidates.length > 1) {
+            alert('⚠️ يوجد أكثر من طالب بهذا الرقم في مدارس مختلفة.\nيرجى استخدام رابط مدرستك الخاص للدخول.');
+            return;
+        }
 
         if(found) {
             activeStudent = found;
@@ -133,11 +147,21 @@ window.handleParentLoginLive = async function(e) {
     } catch(err) { alert('خطأ في الاتصال: ' + err.message); }
 };
 
-function showParentDashboard() {
+async function showParentDashboard() {
     document.getElementById('parent-login-screen').classList.add('hidden');
     document.getElementById('parent-dashboard-screen').classList.remove('hidden');
     document.getElementById('lbl-student-name').textContent = activeStudent.name;
     document.getElementById('lbl-student-class').textContent = activeStudent.classId;
+
+    // جلب اسم المدرسة من schools collection
+    if(activeStudent.schoolId) {
+        try {
+            const schoolSnap = await getDoc(doc(db, 'schools', activeStudent.schoolId));
+            document.getElementById('lbl-parent-school').textContent = schoolSnap.exists() ? schoolSnap.data().name : 'المنظومة الرقمية';
+        } catch(e) {
+            document.getElementById('lbl-parent-school').textContent = 'المنظومة الرقمية';
+        }
+    }
 
     loadStudentAttendanceLive();
     startParentChatListenerLive(); // ⚡ تحويل الشات لبث حي حقيقي لايف
