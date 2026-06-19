@@ -1,92 +1,207 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>المنظومة الرقمية - لوحة الإدارة الحصينة</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        :root { --primary-color: var(--navy); --hover-color: var(--gold); --danger-color: #e74c3c; }
-        body { font-family: 'Cairo', sans-serif; background: var(--off); display: flex; min-height: 100vh; margin: 0; }
-        .sidebar { width: 280px; background: #161625; color: #fff; height: 100vh; position: fixed; right: 0; }
-        .main-content { margin-right: 280px; width: 100%; }
-        .top-navbar { background: #fff; padding: 15px 25px; display: flex; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .tab-content { display: none; padding: 20px; }
-        .tab-content.active { display: block; }
-        .menu-item { padding: 15px; cursor: pointer; color: #b2bec3; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-        .menu-item:hover, .menu-item.active { color: #fff; background: var(--navy); border-right: 4px solid var(--hover-color); }
-        button { cursor: pointer; padding: 8px 16px; border-radius: 6px; border: none; font-weight: bold; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة — المنظومة الرقمية</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --navy:#0b2545; --sky:#1a78c2; --ice:#eaf4fd; --gold:#d4920a;
+  --white:#fff; --off:#f8f9fc; --line:#e5e7eb; --text:#111827; --mid:#6b7280;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);display:flex;min-height:100vh}
+
+.sidebar{width:260px;background:var(--navy);color:#fff;min-height:100vh;position:fixed;right:0;top:0;overflow-y:auto;z-index:40}
+.sidebar-head{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-head h2{font-size:15px;font-weight:900}
+.sidebar-head p{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px}
+.menu-item{padding:12px 18px;cursor:pointer;color:rgba(255,255,255,.65);font-weight:700;font-size:13px;display:flex;align-items:center;gap:10px;border-right:3px solid transparent;transition:all .15s}
+.menu-item:hover{color:#fff;background:rgba(255,255,255,.05)}
+.menu-item.active{color:#fff;background:rgba(255,255,255,.08);border-right-color:var(--gold)}
+.menu-group-title{padding:14px 18px 6px;font-size:10px;color:rgba(255,255,255,.35);font-weight:800;letter-spacing:1px}
+
+.main{margin-right:260px;flex:1;min-height:100vh}
+.topbar{background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+.topbar-info{font-size:13px;font-weight:700;color:var(--navy)}
+.topbar-info span{color:var(--mid);font-size:11px;font-weight:600;display:block}
+.logout-btn{background:transparent;border:1.5px solid var(--line);color:var(--mid);padding:7px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.logout-btn:hover{border-color:#dc2626;color:#dc2626}
+
+.content{padding:24px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.loading-box{text-align:center;padding:60px;color:var(--mid);font-weight:700}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-right:0}
+  .menu-toggle{display:block!important}
+}
+.menu-toggle{display:none;background:transparent;border:none;font-size:22px;color:var(--navy);cursor:pointer}
+</style>
 </head>
 <body>
-    <div class="sidebar">
-        <div style="padding:20px; font-weight:900; border-bottom:1px solid var(--navy);">مدرسة سالم الحسينان</div>
-        <ul style="list-style:none; padding:0; margin:0;">
-            <li class="menu-item active" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i> 📊 المؤشرات اليومية</li>
-            <li class="menu-item" onclick="window.switchTab('tab-student')"><i class="bi bi-person"></i> 👤 ملف الطالب</li>
-            <li class="menu-item" onclick="window.location.href='import.html'"><i class="bi bi-file-earmark-excel"></i> 📥 رفع كشف المدرسة</li>
-        </ul>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <h2>المنظومة الرقمية</h2>
+    <p id="lbl-school-name">جاري التحميل...</p>
+  </div>
+
+  <div class="menu-group-title">عام</div>
+  <div class="menu-item active" data-tab="tab-index" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
+  <div class="menu-item" data-tab="tab-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person"></i> ملف الطالب</div>
+  <div class="menu-item" data-tab="tab-date" onclick="window.switchTab('tab-date')"><i class="bi bi-calendar3"></i> بحث بتاريخ</div>
+
+  <div class="menu-group-title">الطلاب والفصول</div>
+  <div class="menu-item" data-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-people"></i> إدارة الطلاب</div>
+  <div class="menu-item" data-tab="tab-classes" onclick="window.switchTab('tab-classes')"><i class="bi bi-grid-3x3"></i> الفصول والتوزيع</div>
+  <div class="menu-item" onclick="window.location.href='import.html'"><i class="bi bi-file-earmark-excel"></i> رفع كشف المدرسة</div>
+
+  <div class="menu-group-title">الحضور والسلوك</div>
+  <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i> الغياب اليومي</div>
+  <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-triangle"></i> الغياب المتكرر</div>
+  <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
+  <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
+  <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
+
+  <div class="menu-group-title">المعلمون والزيارات</div>
+  <div class="menu-item" data-tab="tab-teachers" onclick="window.switchTab('tab-teachers')"><i class="bi bi-person-badge"></i> دليل المعلمين</div>
+  <div class="menu-item" data-tab="tab-teacher-perf" onclick="window.switchTab('tab-teacher-perf')"><i class="bi bi-star"></i> كفاءة الأداء</div>
+  <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-clipboard-data"></i> الزيارات الفنية</div>
+  <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-person-check"></i> زيارات المدير</div>
+  <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-arrow-repeat"></i> جولة الجناح</div>
+
+  <div class="menu-group-title">التواصل والتميز</div>
+  <div class="menu-item" data-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i> صندوق المراسلات</div>
+  <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
+  <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-gift"></i> الحوافز والتميز</div>
+
+  <div class="menu-group-title">الإدارة</div>
+  <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people-fill"></i> إدارة المستخدمين</div>
+  <div class="menu-item" onclick="window.location.href='tv.html'"><i class="bi bi-tv"></i> شاشة القيادة TV</div>
+  <div class="menu-item" onclick="window.location.href='guard.html'"><i class="bi bi-shield-lock"></i> بوابة الحارس</div>
+  <div class="menu-item" onclick="window.location.href='social.html'"><i class="bi bi-clipboard2-pulse"></i> الأخصائي الاجتماعي</div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+      <i class="bi bi-list"></i>
+    </button>
+    <div class="topbar-info">
+      <span id="lbl-admin-name">جاري التحميل...</span>
     </div>
-    <div class="main-content">
-        <div class="top-navbar">
-            <div>مرحباً: <b id="lbl-admin-name">..</b></div>
-            <button onclick="logout()" style="background:var(--danger-color); color:#fff;"><i class="bi bi-box-arrow-left"></i> خروج آمن</button>
-        </div>
-        <div id="tab-index" class="tab-content active"></div>
-        <div id="tab-student" class="tab-content"></div>
-    </div>
+    <button class="logout-btn" onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> خروج</button>
+  </div>
 
-    <script type="module">
-        import { db } from './js/firebase-config.js';
-        
-        // 1. القفل الأمني الحصين: حظر الحراس وتوجيههم لصفحة الحراسة
-        (function() {
-            const saved = localStorage.getItem('hs_user');
-            if(!saved) { window.location.replace('index.html'); return; }
-            try {
-                const u = JSON.parse(saved);
-                const roleClean = String(u.role||'').trim().toLowerCase();
-                
-                if(roleClean === 'guard') {
-                    window.location.replace('guard.html');
-                    return;
-                }
+  <div class="content">
+    <div id="tab-index" class="tab-content active"><div class="loading-box">⏳ جاري التحميل...</div></div>
+    <div id="tab-student" class="tab-content"></div>
+    <div id="tab-date" class="tab-content"></div>
+    <div id="tab-students-manage" class="tab-content"></div>
+    <div id="tab-classes" class="tab-content"></div>
+    <div id="tab-attendance" class="tab-content"></div>
+    <div id="tab-repeat" class="tab-content"></div>
+    <div id="tab-behavior" class="tab-content"></div>
+    <div id="tab-gatepass" class="tab-content"></div>
+    <div id="tab-clinic" class="tab-content"></div>
+    <div id="tab-teachers" class="tab-content"></div>
+    <div id="tab-teacher-perf" class="tab-content"></div>
+    <div id="tab-visits" class="tab-content"></div>
+    <div id="tab-manager-visits" class="tab-content"></div>
+    <div id="tab-rounds" class="tab-content"></div>
+    <div id="tab-mailbox" class="tab-content"></div>
+    <div id="tab-honors" class="tab-content"></div>
+    <div id="tab-rewards" class="tab-content"></div>
+    <div id="tab-users" class="tab-content"></div>
+  </div>
+</div>
 
-                const allowed = ['admin', 'assistant_manager', 'wing_supervisor', 'social_worker'];
-                if(!allowed.includes(roleClean)) {
-                    alert('🔒 الوصول مرفوض — هذه اللوحة للإدارة العليا فقط');
-                    window.location.replace('index.html');
-                    return;
-                }
-                document.getElementById('lbl-admin-name').textContent = u.name;
-            } catch(e) { window.location.replace('index.html'); }
-        })();
+<script type="module">
+// حماية الجلسة والصلاحيات
+const savedUser = localStorage.getItem('hs_user');
+if(!savedUser) { window.location.replace('index.html'); }
+let currentUser = null;
+try {
+    currentUser = JSON.parse(savedUser);
+    const roleClean = String(currentUser.role||'').trim().toLowerCase();
+    const allowed = ['admin', 'assistant_manager', 'wing_supervisor', 'social_worker'];
+    if(!allowed.includes(roleClean)) {
+        alert('🔒 الوصول مرفوض — هذه اللوحة للإدارة فقط');
+        window.location.replace('index.html');
+    }
+    document.getElementById('lbl-admin-name').textContent = `مرحباً، ${currentUser.name||'المسؤول'}`;
+    document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'لوحة الإدارة';
+} catch(e) { window.location.replace('index.html'); }
 
-        window.logout = () => { localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
+window.doLogout = function(){ localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
 
-        // 2. محرك بث غياب الطلاب التلقائي المباشر لولي الأمر عبر الواتساب
-        window.sendAbsenceViaWhatsApp = function(classId, absentList, date) {
-            const user = JSON.parse(localStorage.getItem('hs_user'));
-            const schoolName = user?.schoolName || 'المدرسة';
-            const msg = `*إشعار غياب رسمي*\n*${schoolName}*\n*الفصل:* ${classId} | *التاريخ:* ${date}\n\n` +
-                        `*الغائبون (${absentList.length}):*\n` +
-                        absentList.map((n,i) => `${i+1}. ${n}`).join('\n') +
-                        `\n\n_المنظومة الرقمية الشاملة_`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-        };
+// خريطة الموديلات
+const moduleMap = {
+    'tab-index':            { file: './js/modules/today.js',           init: 'initTodayModule' },
+    'tab-student':          { file: './js/modules/student.js',         init: 'initStudentModule' },
+    'tab-date':             { file: './js/modules/date_search.js',     init: 'initDateSearchModule' },
+    'tab-students-manage':  { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
+    'tab-classes':          { file: './js/modules/classes.js',         init: 'initClassesModule' },
+    'tab-attendance':       { file: './js/modules/attendance.js',      init: 'initAttendanceModule' },
+    'tab-repeat':           { file: './js/modules/repeat.js',          init: 'initRepeatModule' },
+    'tab-behavior':         { file: './js/modules/behavior.js',        init: 'initBehaviorModule' },
+    'tab-gatepass':         { file: './js/modules/gatepass.js',        init: 'initGatepassModule' },
+    'tab-clinic':           { file: './js/modules/clinic.js',          init: 'initClinicModule' },
+    'tab-teachers':         { file: './js/modules/teachers.js',        init: 'initTeachersModule' },
+    'tab-teacher-perf':     { file: './js/modules/teacher_perf.js',    init: 'initTeacherPerfModule' },
+    'tab-visits':           { file: './js/modules/visits.js',          init: 'initVisitsModule' },
+    'tab-manager-visits':   { file: './js/modules/manager_visits.js',  init: 'initManagerVisitsModule' },
+    'tab-rounds':           { file: './js/modules/rounds.js',          init: 'initRoundsModule' },
+    'tab-mailbox':          { file: './js/modules/mailbox.js',         init: 'initMailboxModule' },
+    'tab-honors':           { file: './js/modules/honors.js',          init: 'initHonorsModule' },
+    'tab-rewards':          { file: './js/modules/rewards.js',         init: 'initRewardsModule' },
+    'tab-users':            { file: './js/modules/users.js',           init: 'initUsersModule' },
+};
 
-        // 3. التوجيه الديناميكي وتحميل موديولات معالجة البيانات اليومية والأداء المستقر
-        window.switchTab = async function(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            const moduleMap = {
-                'tab-index': { file: './js/modules/today.js', init: 'initTodayModule' },
-                'tab-student': { file: './js/modules/student.js', init: 'initStudentModule' }
-            };
-            if(moduleMap[tabId]) {
-                const mod = await import(moduleMap[tabId].file);
-                if(mod[moduleMap[tabId].init]) mod[moduleMap[tabId].init]();
-            }
-        };
-    </script>
+const loadedTabs = new Set();
+
+window.switchTab = async function(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    
+    const target = document.getElementById(tabId);
+    if(target) target.classList.add('active');
+    
+    const btn = document.querySelector(`.menu-item[data-tab="${tabId}"]`);
+    if(btn) btn.classList.add('active');
+
+    // إغلاق القائمة الجانبية على الموبايل
+    document.getElementById('sidebar').classList.remove('open');
+
+    if(loadedTabs.has(tabId)) return;
+
+    const mapEntry = moduleMap[tabId];
+    if(!mapEntry) return;
+
+    try {
+        const mod = await import(mapEntry.file);
+        if(mod[mapEntry.init]) {
+            mod[mapEntry.init]();
+            loadedTabs.add(tabId);
+        }
+    } catch(err) {
+        document.getElementById(tabId).innerHTML =
+            `<div class="loading-box" style="color:#dc2626">❌ خطأ تحميل الموديل: ${err.message}</div>`;
+        console.error(`فشل تحميل ${tabId}:`, err);
+    }
+};
+
+// تحميل التبويب الأول تلقائياً
+window.switchTab('tab-index');
+</script>
 </body>
 </html>
