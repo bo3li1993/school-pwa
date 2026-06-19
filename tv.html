@@ -154,11 +154,20 @@
         </div>
     </div>
 
+    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; margin:20px 30px; text-align:center;">
+        <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; font-weight:700; letter-spacing:1px;">
+            🔴 الفصول التي لم تسجّل الغياب اليوم
+        </div>
+        <div id="tv-missing" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
+            <span style="color:rgba(255,255,255,0.3); font-size:13px;">جاري التحميل...</span>
+        </div>
+    </div>
+
     <button class="btn-exit" onclick="window.location.replace('admin.html')"><i class="bi bi-box-arrow-right"></i> إغلاق الشاشة</button>
 
     <script type="module">
-        import { db } from './js/firebase-config.js';
-        import { collection, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { db, getActiveSchoolId, getTodayISO } from './js/firebase-config.js';
+        import { collection, query, where, onSnapshot, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         // 1. الحماية السريعة وجلب بيانات الجلسة
         const saved = localStorage.getItem('hs_user');
@@ -227,15 +236,15 @@ async function updateMissingClasses() {
     try {
         const schoolId = getActiveSchoolId();
         const todayISO = getTodayISO();
-        const { getDocs: gd, query: q, collection: col, where: wh } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-        const snap = await gd(q(col(db,'attendance'), wh('schoolId','==',schoolId), wh('date','==',todayISO)));
+        if(!schoolId) return;
+        const snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',todayISO)));
         const recorded = new Set();
         snap.forEach(d => recorded.add(d.data().classId));
         const missing = ALL_CLASSES.filter(c => !recorded.has(c));
         const el = document.getElementById('tv-missing');
         if(!el) return;
         if(missing.length === 0) {
-            el.innerHTML = '<span style="color:#10b981;font-weight:900;font-size:18px;">✅ جميع الفصول سجّلت</span>';
+            el.innerHTML = '<span style="color:#10b981;font-weight:900;font-size:18px;">✅ جميع الفصول سجّلت الغياب</span>';
         } else {
             el.innerHTML = missing.map(c =>
                 `<span style="background:#ef4444;color:#fff;padding:6px 14px;border-radius:8px;font-weight:900;font-size:16px;margin:3px;">${c}</span>`
@@ -244,7 +253,8 @@ async function updateMissingClasses() {
     } catch(e) { console.warn('Missing classes error:', e); }
 }
 
-// تحديث رادار الفصول كل دقيقة
+// تشغيل فوري عند التحميل + تحديث كل دقيقة
+updateMissingClasses();
 setInterval(updateMissingClasses, 60000);
 </script>
 <script>
