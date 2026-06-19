@@ -56,7 +56,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 <div class="header-nav">
     <div>
         <h1 id="lbl-guard-title"><i class="bi bi-shield-lock-fill"></i> بوابة الأمن: جاري التحميل...</h1>
-        <p>وزارة التربية - المنظومة الرقمية السحابية الموحدة</p>
+    <p id="lbl-guard-school" style="font-weight:700;">جاري التحميل...</p>
     </div>
     <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer;">خروج</button>
 </div>
@@ -302,6 +302,8 @@ document.addEventListener("DOMContentLoaded", function() {
     currentGuardName = user.name || "حارس الأمن";
     
     document.getElementById('lbl-guard-title').innerHTML = `<i class="bi bi-shield-lock-fill"></i> بوابة الأمن: أ. ${currentGuardName}`;
+    const schoolEl = document.getElementById('lbl-guard-school');
+    if(schoolEl) schoolEl.textContent = user.schoolName || 'المنظومة الرقمية';
     document.getElementById('guard-profile-name').value = currentGuardName;
     
     startGuardLiveGatepassListener();
