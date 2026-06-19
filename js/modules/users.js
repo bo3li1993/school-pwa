@@ -1,6 +1,5 @@
-import { db, auth, getActiveSchoolId } from '../firebase-config.js';
-import { collection, getDocs, addDoc, updateDoc, deleteField, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initUsersModule() {
     const container = document.getElementById('tab-users');
@@ -8,16 +7,6 @@ export async function initUsersModule() {
     const schoolId = getActiveSchoolId();
 
     container.innerHTML = `
-    <div class="card" id="migration-card" style="border-top: 5px solid var(--danger-color); background: #fffcfc; display:none;">
-        <h2 style="color:var(--danger-color);"><i class="bi bi-shield-lock-fill"></i> درع الحماية: ترحيل الحسابات</h2>
-        <p style="font-size:12px; color:#555; font-weight:bold; margin-bottom:15px;">
-            🚨 أولوية قصوى: هذا الإجراء يحول الحسابات إلى Firebase Auth ويحذف كلمات المرور المكشوفة نهائياً.
-        </p>
-        <button onclick="window.migrateAllSchoolUsersLive()" style="background:var(--danger-color); font-weight:bold; font-size:13px; width:100%; padding:12px; color:white; border:none; cursor:pointer;">
-            <i class="bi bi-cpu-fill"></i> ⚡ ابدأ الترحيل الفوري وتشفير حسابات المنشأة
-        </button>
-    </div>
-
     <div class="card" style="border-top: 5px solid var(--primary-color);">
         <h2><i class="bi bi-person-plus-fill"></i> قيد مستخدم جديد (${schoolId})</h2>
         <form id="new-user-form" onsubmit="window.handleCreateNewUserLive(event)">
@@ -43,7 +32,7 @@ export async function initUsersModule() {
                     <input type="password" id="reg-user-pass" required>
                 </div>
             </div>
-            <button type="submit" style="width:100%; font-weight:bold; margin-top:10px; background:var(--primary-color); color:white; border:none; padding:10px;">اعتماد الحساب</button>
+            <button type="submit" style="width:100%; font-weight:bold; margin-top:10px; background:var(--primary-color); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer;">اعتماد الحساب</button>
         </form>
     </div>
 
@@ -56,7 +45,9 @@ export async function initUsersModule() {
                         <th>المعرف</th><th>الاسم الرسمي</th><th>الصلاحية</th><th>الحالة</th>
                     </tr>
                 </thead>
-                <tbody id="system-users-tbody"></tbody>
+                <tbody id="system-users-tbody">
+                    <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">جاري تحميل الحسابات...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>`;
@@ -64,4 +55,105 @@ export async function initUsersModule() {
     loadSystemUsersDirectoryLive();
 }
 
-// ... (الدوال البرمجية تبقى كما هي، مع تعديل بسيط في الترحيل لإضافة schoolId أثناء القيد)
+window.handleCreateNewUserLive = async function (e) {
+    e.preventDefault();
+
+    const schoolId = document.getElementById('reg-school-id').value.trim();
+    const userId = document.getElementById('reg-user-id').value.trim();
+    const name = document.getElementById('reg-user-name').value.trim();
+    const role = document.getElementById('reg-user-role').value;
+    const plainPass = document.getElementById('reg-user-pass').value.trim();
+
+    if (!schoolId) {
+        alert('⚠️ خطأ: لا يوجد schoolId نشط لهذا الحساب، لا يمكن إضافة المستخدم.');
+        return;
+    }
+    if (!userId || !name || !plainPass) {
+        alert('⚠️ الرجاء تعبئة جميع الحقول.');
+        return;
+    }
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ جاري الحفظ...';
+
+    try {
+        // تحقق من عدم تكرار المعرف داخل نفس المدرسة
+        const dupCheck = query(
+            collection(db, 'users'),
+            where('schoolId', '==', schoolId),
+            where('userId', '==', userId)
+        );
+        const dupSnap = await getDocs(dupCheck);
+        if (!dupSnap.empty) {
+            alert(`⚠️ المعرف "${userId}" مستخدم بالفعل في هذه المدرسة.`);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'اعتماد الحساب';
+            return;
+        }
+
+        await addDoc(collection(db, 'users'), {
+            schoolId: schoolId,
+            userId: userId,
+            name: name,
+            role: role,
+            plainPass: plainPass,
+            status: 'active',
+            createdAt: serverTimestamp()
+        });
+
+        alert(`✅ تم اعتماد حساب "${name}" بنجاح.`);
+        document.getElementById('new-user-form').reset();
+        loadSystemUsersDirectoryLive();
+    } catch (err) {
+        alert('❌ تعذر إضافة المستخدم: ' + err.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'اعتماد الحساب';
+    }
+};
+
+async function loadSystemUsersDirectoryLive() {
+    const tbody = document.getElementById('system-users-tbody');
+    if (!tbody) return;
+
+    const schoolId = getActiveSchoolId();
+    if (!schoolId) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:15px;">⚠️ لا يوجد schoolId نشط — لا يمكن جلب الحسابات.</td></tr>';
+        return;
+    }
+
+    try {
+        const q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold; color:#999;">💡 لا يوجد مستخدمين مقيدين بهذه المدرسة.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        snap.forEach(docSnap => {
+            const u = docSnap.data();
+            const roleLabel = u.role === 'admin' ? 'مسؤول إداري'
+                : u.role === 'assistant_manager' ? 'مساعد مدير'
+                : u.role === 'wing_supervisor' ? 'مشرف جناح'
+                : u.role === 'social_worker' ? 'أخصائي اجتماعي'
+                : u.role === 'guard' ? 'حارس'
+                : 'معلم';
+            const statusLabel = u.status === 'suspended' ? '⏸ موقوف' : '✅ فعّال';
+
+            html += `
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="font-weight:700;">${u.userId || '-'}</td>
+                    <td>${u.name || '-'}</td>
+                    <td>${roleLabel}</td>
+                    <td>${statusLabel}</td>
+                </tr>`;
+        });
+
+        tbody.innerHTML = html;
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red; padding:15px; font-weight:bold;">❌ تعذر جلب الحسابات: ${e.message}</td></tr>`;
+    }
+}
