@@ -53,11 +53,36 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   .sidebar.open{transform:translateX(0)}
   .main{margin-right:0}
   .menu-toggle{display:block!important}
+  .content{padding-bottom:84px}
 }
 .menu-toggle{display:none;background:transparent;border:none;font-size:22px;color:var(--navy);cursor:pointer}
+
+/* شاشة الافتتاح */
+.splash{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s ease;}
+.splash.hide{opacity:0;pointer-events:none}
+.splash-mark{display:flex;flex-direction:column;align-items:center;gap:10px}
+.splash-badge{width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--gold)}
+.splash-mark h1{color:#fff;font-size:16px;font-weight:900;letter-spacing:.3px}
+.splash-mark p{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600}
+@media(prefers-reduced-motion:reduce){.splash{transition:none}}
+
+/* شريط تنقل سفلي — موبايل فقط */
+.bottom-nav{display:none;position:fixed;right:0;left:0;bottom:0;background:var(--white);border-top:1px solid var(--line);z-index:45;padding-bottom:env(safe-area-inset-bottom)}
+@media(max-width:900px){.bottom-nav{display:flex}}
+.bn-item{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 0 7px;color:var(--mid);font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer}
+.bn-item i{font-size:19px}
+.bn-item.active{color:var(--sky)}
 </style>
 </head>
 <body>
+
+<div class="splash" id="splash">
+  <div class="splash-mark">
+    <div class="splash-badge">م</div>
+    <h1>المنظومة الرقمية</h1>
+    <p id="splash-school">جاري التحميل...</p>
+  </div>
+</div>
 
 <div class="sidebar" id="sidebar">
   <div class="sidebar-head">
@@ -135,6 +160,14 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   </div>
 </div>
 
+<div class="bottom-nav" id="bottom-nav">
+  <button class="bn-item active" data-bn-tab="tab-index" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i>المؤشرات</button>
+  <button class="bn-item" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i>الغياب</button>
+  <button class="bn-item" data-bn-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-people"></i>الطلاب</button>
+  <button class="bn-item" data-bn-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i>المراسلات</button>
+  <button class="bn-item" id="bn-more" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="bi bi-grid-3x3-gap"></i>المزيد</button>
+</div>
+
 <script type="module">
 // حماية الجلسة والصلاحيات
 const savedUser = localStorage.getItem('hs_user');
@@ -150,6 +183,7 @@ try {
     }
     document.getElementById('lbl-admin-name').textContent = `مرحباً، ${currentUser.name||'المسؤول'}`;
     document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'لوحة الإدارة';
+    document.getElementById('splash-school').textContent = currentUser.schoolName || 'لوحة الإدارة';
 } catch(e) { window.location.replace('index.html'); }
 
 window.doLogout = function(){ localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
@@ -182,12 +216,16 @@ const loadedTabs = new Set();
 window.switchTab = async function(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-    
+    document.querySelectorAll('.bn-item').forEach(el => el.classList.remove('active'));
+
     const target = document.getElementById(tabId);
     if(target) target.classList.add('active');
-    
+
     const btn = document.querySelector(`.menu-item[data-tab="${tabId}"]`);
     if(btn) btn.classList.add('active');
+
+    const bnBtn = document.querySelector(`.bn-item[data-bn-tab="${tabId}"]`);
+    if(bnBtn) bnBtn.classList.add('active');
 
     // إغلاق القائمة الجانبية على الموبايل
     document.getElementById('sidebar').classList.remove('open');
@@ -211,7 +249,9 @@ window.switchTab = async function(tabId) {
 };
 
 // تحميل التبويب الأول تلقائياً
-window.switchTab('tab-index');
+window.switchTab('tab-index').finally(() => {
+    document.getElementById('splash').classList.add('hide');
+});
 
 // تسجيل Service Worker للعمل كـ PWA كامل
 if('serviceWorker' in navigator) {
