@@ -52,7 +52,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   .sidebar{transform:translateX(100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .main{margin-right:0}
-  .menu-toggle{display:block!important}
+  .menu-toggle{display:none!important}
   .content{padding-bottom:84px}
 }
 .menu-toggle{display:none;background:transparent;border:none;font-size:22px;color:var(--navy);cursor:pointer}
@@ -69,9 +69,21 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
 /* شريط تنقل سفلي — موبايل فقط */
 .bottom-nav{display:none;position:fixed;right:0;left:0;bottom:0;background:var(--white);border-top:1px solid var(--line);z-index:45;padding-bottom:env(safe-area-inset-bottom)}
 @media(max-width:900px){.bottom-nav{display:flex}}
-.bn-item{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 0 7px;color:var(--mid);font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer}
-.bn-item i{font-size:19px}
+.bn-item{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:11px 0 9px;color:var(--mid);font-family:'Cairo',sans-serif;font-size:12px;font-weight:800;cursor:pointer}
+.bn-item i{font-size:22px;width:40px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:10px;transition:background .15s,color .15s}
 .bn-item.active{color:var(--sky)}
+.bn-item.active i{background:var(--ice);color:var(--sky)}
+
+/* صفحة المزيد */
+.more-group{margin-bottom:22px}
+.more-group-title{font-size:12.5px;font-weight:800;color:var(--mid);letter-spacing:.3px;margin:0 4px 9px}
+.more-list{background:var(--white);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.more-row{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;border-bottom:1px solid var(--line)}
+.more-row:last-child{border-bottom:none}
+.more-row:active{background:var(--off)}
+.more-icon{width:34px;height:34px;border-radius:9px;background:var(--ice);color:var(--sky);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.more-row span{flex:1;font-weight:700;font-size:15px;color:var(--text)}
+.more-row i.bi-chevron-left{color:var(--mid);font-size:13px}
 </style>
 </head>
 <body>
@@ -157,6 +169,63 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
     <div id="tab-honors" class="tab-content"></div>
     <div id="tab-rewards" class="tab-content"></div>
     <div id="tab-users" class="tab-content"></div>
+
+    <div id="tab-more" class="tab-content">
+      <div class="more-group">
+        <div class="more-group-title">عام</div>
+        <div class="more-list">
+          <div class="more-row" onclick="window.switchTab('tab-student')"><div class="more-icon"><i class="bi bi-person"></i></div><span>ملف الطالب</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-date')"><div class="more-icon"><i class="bi bi-calendar3"></i></div><span>بحث بتاريخ</span><i class="bi bi-chevron-left"></i></div>
+        </div>
+      </div>
+
+      <div class="more-group">
+        <div class="more-group-title">الطلاب والفصول</div>
+        <div class="more-list">
+          <div class="more-row" onclick="window.switchTab('tab-classes')"><div class="more-icon"><i class="bi bi-grid-3x3"></i></div><span>الفصول والتوزيع</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.location.href='import.html'"><div class="more-icon"><i class="bi bi-file-earmark-excel"></i></div><span>رفع كشف المدرسة</span><i class="bi bi-chevron-left"></i></div>
+        </div>
+      </div>
+
+      <div class="more-group">
+        <div class="more-group-title">الحضور والسلوك</div>
+        <div class="more-list">
+          <div class="more-row" onclick="window.switchTab('tab-repeat')"><div class="more-icon"><i class="bi bi-exclamation-triangle"></i></div><span>الغياب المتكرر</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-behavior')"><div class="more-icon"><i class="bi bi-shield-exclamation"></i></div><span>السلوك</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-gatepass')"><div class="more-icon"><i class="bi bi-door-open"></i></div><span>الاستئذان</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-clinic')"><div class="more-icon"><i class="bi bi-heart-pulse"></i></div><span>العيادة</span><i class="bi bi-chevron-left"></i></div>
+        </div>
+      </div>
+
+      <div class="more-group">
+        <div class="more-group-title">المعلمون والزيارات</div>
+        <div class="more-list">
+          <div class="more-row" onclick="window.switchTab('tab-teachers')"><div class="more-icon"><i class="bi bi-person-badge"></i></div><span>دليل المعلمين</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-teacher-perf')"><div class="more-icon"><i class="bi bi-star"></i></div><span>كفاءة الأداء</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-visits')"><div class="more-icon"><i class="bi bi-clipboard-data"></i></div><span>الزيارات الفنية</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-manager-visits')"><div class="more-icon"><i class="bi bi-person-check"></i></div><span>زيارات المدير</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-rounds')"><div class="more-icon"><i class="bi bi-arrow-repeat"></i></div><span>جولة الجناح</span><i class="bi bi-chevron-left"></i></div>
+        </div>
+      </div>
+
+      <div class="more-group">
+        <div class="more-group-title">التواصل والتميز</div>
+        <div class="more-list">
+          <div class="more-row" onclick="window.switchTab('tab-honors')"><div class="more-icon"><i class="bi bi-trophy"></i></div><span>لوحة الشرف</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-rewards')"><div class="more-icon"><i class="bi bi-gift"></i></div><span>الحوافز والتميز</span><i class="bi bi-chevron-left"></i></div>
+        </div>
+      </div>
+
+      <div class="more-group">
+        <div class="more-group-title">الإدارة</div>
+        <div class="more-list">
+          <div class="more-row" onclick="window.switchTab('tab-users')"><div class="more-icon"><i class="bi bi-people-fill"></i></div><span>إدارة المستخدمين</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.location.href='tv.html'"><div class="more-icon"><i class="bi bi-tv"></i></div><span>شاشة القيادة TV</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.location.href='guard.html'"><div class="more-icon"><i class="bi bi-shield-lock"></i></div><span>بوابة الحارس</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.location.href='social.html'"><div class="more-icon"><i class="bi bi-clipboard2-pulse"></i></div><span>الأخصائي الاجتماعي</span><i class="bi bi-chevron-left"></i></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -165,7 +234,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   <button class="bn-item" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i>الغياب</button>
   <button class="bn-item" data-bn-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-people"></i>الطلاب</button>
   <button class="bn-item" data-bn-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i>المراسلات</button>
-  <button class="bn-item" id="bn-more" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="bi bi-grid-3x3-gap"></i>المزيد</button>
+  <button class="bn-item" data-bn-tab="tab-more" onclick="window.switchTab('tab-more')"><i class="bi bi-grid-3x3-gap"></i>المزيد</button>
 </div>
 
 <script type="module">
