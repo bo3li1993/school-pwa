@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b2545">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>بوابة الأمن والسلامة - المنظومة الموحدة</title>
@@ -24,7 +26,7 @@
   --mid:   #6b7280;
   --green: #059669;
   --red:   #dc2626;
-    --primary-color: var(--off); --hover-color: var(--gold); --bg-light: #f4f6f9;
+    --primary-color: var(--navy); --hover-color: var(--gold); --bg-light: #f4f6f9;
     --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
@@ -49,9 +51,25 @@ th, td { padding: 12px 10px; border: 1px solid #e2e8f0; font-weight: 700; }
 th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 .btn-emergency { width: 100%; background: var(--danger-color); color: #fff; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 16px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 20px rgba(239,68,68,0.3); margin-bottom: 20px; }
+
+.splash{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s ease;}
+.splash.hide{opacity:0;pointer-events:none}
+.splash-mark{display:flex;flex-direction:column;align-items:center;gap:10px}
+.splash-badge{width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--gold)}
+.splash-mark h1{color:#fff;font-size:16px;font-weight:900;letter-spacing:.3px}
+.splash-mark p{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600}
+@media(prefers-reduced-motion:reduce){.splash{transition:none}}
 </style>
 </head>
 <body>
+
+<div class="splash" id="splash">
+  <div class="splash-mark">
+    <div class="splash-badge">م</div>
+    <h1>المنظومة الرقمية</h1>
+    <p id="splash-school">جاري التحميل...</p>
+  </div>
+</div>
 
 <div class="header-nav">
     <div>
@@ -185,7 +203,7 @@ function startGuardLiveGatepassListener() {
                 html += `<tr style="border-bottom: 2px solid #f1f5f9; background:#fffdf5;">
                     <td><span style="background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px;">${d.classId || '-'}</span></td>
                     <td style="font-size:14px; font-weight:900; color:var(--primary-color);">👤 ${d.studentName}</td>
-                    <td style="font-weight:bold; color:var(--off);">${d.relative}</td>
+                    <td style="font-weight:bold; color:var(--text);">${d.relative}</td>
                     <td><span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">${d.relation}</span></td>
                     <td><code>${d.relativeCivilId}</code></td>
                     <td><a href="tel:${d.relativePhone}" style="color:#2563eb; font-weight:bold;">${d.relativePhone}</a></td>
@@ -307,7 +325,13 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('guard-profile-name').value = currentGuardName;
     
     startGuardLiveGatepassListener();
+    document.getElementById('splash-school').textContent = user.schoolName || 'المنظومة الرقمية';
+    document.getElementById('splash').classList.add('hide');
 });
+
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+}
 </script>
 </body>
 </html>

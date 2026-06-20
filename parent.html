@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b2545">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
 <title>بوابة ولي الأمر الإلكترونية - مدرسة سالم الحسينان</title>
@@ -24,8 +26,8 @@
   --mid:   #6b7280;
   --green: #059669;
   --red:   #dc2626; 
-    --primary-color: #2c3e50; --accent-color: #2980b9; 
-    --success-color: var(--green); --danger-color: #e74c3c; --bg-light: #f4f6f9; 
+    --primary-color: var(--navy); --accent-color: var(--gold);
+    --success-color: var(--green); --danger-color: #e74c3c; --bg-light: #f4f6f9;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
 body { background: var(--bg-light); color: #333; padding: 15px; }
@@ -42,9 +44,25 @@ button:hover { background:var(--accent-color); }
 .msg { max-width:85%; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:600; line-height:1.4; }
 .msg.parent { background:#e1f5fe; color:#1565c0; align-self:flex-start; border-bottom-right-radius:2px; }
 .msg.admin { background:#fff3e0; color:#e65100; align-self:flex-end; border-bottom-left-radius:2px; }
+
+.splash{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s ease;}
+.splash.hide{opacity:0;pointer-events:none}
+.splash-mark{display:flex;flex-direction:column;align-items:center;gap:10px}
+.splash-badge{width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--gold)}
+.splash-mark h1{color:#fff;font-size:16px;font-weight:900;letter-spacing:.3px}
+.splash-mark p{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600}
+@media(prefers-reduced-motion:reduce){.splash{transition:none}}
 </style>
 </head>
 <body>
+
+<div class="splash" id="splash">
+  <div class="splash-mark">
+    <div class="splash-badge">م</div>
+    <h1>المنظومة الرقمية</h1>
+    <p>بوابة ولي الأمر</p>
+  </div>
+</div>
 
 <!-- 🔒 شاشة تسجيل الدخول الموحدة برقم الطالب الفريد -->
 <div id="parent-login-screen" class="container" style="max-width:400px; margin:50px auto 0 auto;">
@@ -108,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
         activeStudent = JSON.parse(saved);
         showParentDashboard();
     }
+    document.getElementById('splash').classList.add('hide');
 });
 
 // قراءة كود المدرسة من رابط مخصص (?school=xxx) لتسريع وتدقيق البحث
@@ -318,6 +337,10 @@ window.sendParentMessageLive = async function(e) {
         input.value = '';
     } catch(err) { alert('تعذر إرسال الرسالة: ' + err.message); }
 };
+
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+}
 </script>
 </body>
 </html>
