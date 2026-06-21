@@ -648,7 +648,12 @@ window.updateSocialProfileLive = async function(e) {
     const newPass = document.getElementById('social-profile-pass').value.trim();
 
     try {
-        const userDocRef = doc(db, 'users', currentWorkerId);
+        const schoolId = getActiveSchoolId();
+        const q = query(collection(db, 'users'), where('schoolId','==',schoolId), where('userId','==',currentWorkerId));
+        const snap = await getDocs(q);
+        if (snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات.'); return; }
+
+        const userDocRef = snap.docs[0].ref;
         let updatedData = { name: newName };
         if (newPass) updatedData.plainPass = newPass;
 

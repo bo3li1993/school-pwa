@@ -179,17 +179,75 @@ select:focus,input:focus{border-color:var(--accent);}
     </div>
   </div>
 
+  <!-- السلوك -->
+  <div id="tab-behavior" class="hidden">
+    <div class="card" style="border-top-color:var(--danger);">
+      <h3>🛡️ رصد ومتابعة سلوك الطالب</h3>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">الفصل</label>
+      <select id="beh-class" onchange="onBehClassChange(this.value)">
+        <option value="">-- اختر الفصل --</option>
+        <option value="6/1">6/1</option><option value="6/2">6/2</option>
+        <option value="6/3">6/3</option><option value="6/4">6/4</option>
+        <option value="7/1">7/1</option><option value="7/2">7/2</option>
+        <option value="7/3">7/3</option><option value="7/4">7/4</option>
+        <option value="8/1">8/1</option><option value="8/2">8/2</option>
+        <option value="8/3">8/3</option><option value="8/4">8/4</option>
+        <option value="9/1">9/1</option><option value="9/2">9/2</option>
+        <option value="9/3">9/3</option><option value="9/4">9/4</option>
+      </select>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">اسم الطالب</label>
+      <select id="beh-student" disabled>
+        <option value="">-- اختر الفصل أولاً --</option>
+      </select>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">الإجراء التربوي المتخذ</label>
+      <select id="beh-action">
+        <option value="تنبيه شفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
+        <option value="تعهد خطي رسمي">📝 أخذ تعهد خطي رسمي</option>
+        <option value="استدعاء ولي أمر الطالب">👥 استدعاء ولي أمر الطالب</option>
+        <option value="تحويل إلى إدارة المدرسة">⚖️ تحويل إلى إدارة المدرسة</option>
+      </select>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">موقف المتابعة</label>
+      <select id="beh-followup">
+        <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال</option>
+        <option value="قيد المتابعة والمراجعة">⏳ قيد المتابعة والمراجعة</option>
+      </select>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">ملاحظات</label>
+      <textarea id="beh-notes" rows="3" placeholder="تفاصيل الحالة..." required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-weight:600;outline:none;"></textarea>
+      <button class="btn btn-danger" style="margin-top:10px;" onclick="saveBehavior()">
+        <i class="bi bi-file-earmark-plus-fill"></i> تسجيل الإجراء السلوكي
+      </button>
+    </div>
+  </div>
+
+  <!-- حسابي -->
+  <div id="tab-profile" class="hidden">
+    <div class="card">
+      <h3>⚙️ بياناتي وكلمة المرور</h3>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">الاسم الكامل</label>
+      <input type="text" id="prof-name">
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">البريد الإلكتروني</label>
+      <input type="email" id="prof-email" placeholder="example@email.com">
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">كلمة مرور جديدة (اتركها فاضية لو ما تبي تغييرها)</label>
+      <input type="text" id="prof-pass" placeholder="••••••">
+      <button class="btn" onclick="saveProfile()">
+        <i class="bi bi-check-circle-fill"></i> حفظ التعديلات
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <div class="bottom-nav">
-  <button class="bn-item active" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance', this)"><i class="bi bi-pencil-square"></i>تسجيل الغياب</button>
+  <button class="bn-item active" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance', this)"><i class="bi bi-pencil-square"></i>الغياب</button>
+  <button class="bn-item" data-bn-tab="tab-behavior" onclick="window.switchTab('tab-behavior', this)"><i class="bi bi-shield-exclamation"></i>السلوك</button>
   <button class="bn-item" data-bn-tab="tab-records" onclick="window.switchTab('tab-records', this)"><i class="bi bi-clipboard-data"></i>سجلاتي</button>
   <button class="bn-item" data-bn-tab="tab-students" onclick="window.switchTab('tab-students', this)"><i class="bi bi-people"></i>الطلاب</button>
+  <button class="bn-item" data-bn-tab="tab-profile" onclick="window.switchTab('tab-profile', this)"><i class="bi bi-gear"></i>حسابي</button>
 </div>
 
 <script type="module">
 import { db, getActiveSchoolId, getTodayISO } from './js/firebase-config.js';
-import { collection, getDocs, addDoc, query, where, orderBy, limit, writeBatch, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, addDoc, updateDoc, query, where, orderBy, limit, writeBatch, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // ===== حماية الجلسة =====
 let currentUser = null;
@@ -211,13 +269,14 @@ let currentUser = null;
         document.getElementById('lbl-teacher-name').textContent = currentUser.name || 'المعلم';
         document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'المنظومة الرقمية';
         document.getElementById('splash-school').textContent = currentUser.schoolName || 'المنظومة الرقمية';
+        loadMyProfile();
     } catch(e) { window.location.replace('index.html'); }
 })();
 document.getElementById('splash').classList.add('hide');
 
 // ===== التبويبات =====
 window.switchTab = function(tabId, btn) {
-    document.querySelectorAll('.tab-content, #tab-attendance, #tab-records, #tab-students')
+    document.querySelectorAll('#tab-attendance, #tab-records, #tab-students, #tab-behavior, #tab-profile')
         .forEach(el => el.classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
     document.querySelectorAll('.bn-item').forEach(t => t.classList.remove('active'));
@@ -429,6 +488,94 @@ window.loadStudentsList = async function(classId) {
         students.forEach((n,i)=>{ html+=`<div class="student-row"><span class="student-name">${i+1}. ${n}</span></div>`; });
         el.innerHTML=html;
     } catch(e){ el.innerHTML=`<div class="empty" style="color:red;">❌ ${e.message}</div>`; }
+};
+
+// ===== السلوك =====
+window.onBehClassChange = async function(classId) {
+    const sel = document.getElementById('beh-student');
+    if(!classId) { sel.innerHTML = '<option value="">-- اختر الفصل أولاً --</option>'; sel.disabled = true; return; }
+    sel.innerHTML = '<option value="">⏳ جاري التحميل...</option>';
+    sel.disabled = true;
+    try {
+        const q = query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId));
+        const snap = await getDocs(q);
+        const names = [];
+        snap.forEach(d => { if(d.data().name) names.push(d.data().name.trim()); });
+        names.sort((a,b)=>a.localeCompare(b,'ar'));
+        if(!names.length) { sel.innerHTML = '<option value="">⚠️ لا يوجد طلاب</option>'; return; }
+        sel.innerHTML = '<option value="">-- اختر اسم الطالب --</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
+        sel.disabled = false;
+    } catch(e) { sel.innerHTML = '<option value="">❌ خطأ بالتحميل</option>'; }
+};
+
+window.saveBehavior = async function() {
+    const classId = document.getElementById('beh-class').value;
+    const student = document.getElementById('beh-student').value;
+    const action = document.getElementById('beh-action').value;
+    const followup = document.getElementById('beh-followup').value;
+    const notes = document.getElementById('beh-notes').value.trim();
+
+    if(!classId || !student) { alert('اختر الفصل والطالب أولاً'); return; }
+    if(!notes) { alert('أدخل ملاحظات الحالة'); return; }
+
+    try {
+        const todayISO = getTodayISO();
+        await addDoc(collection(db,'behavior'), {
+            schoolId: getActiveSchoolId(),
+            studentName: student,
+            name: student,
+            classId: classId,
+            referredBy: currentUser.name || '',
+            action: action,
+            followUpStatus: followup,
+            notes: notes,
+            dateStr: todayISO,
+            date: todayISO,
+            createdAt: serverTimestamp()
+        });
+        alert('✅ تم تسجيل الإجراء السلوكي بنجاح.');
+        document.getElementById('beh-notes').value = '';
+        document.getElementById('beh-class').value = '';
+        document.getElementById('beh-student').innerHTML = '<option value="">-- اختر الفصل أولاً --</option>';
+        document.getElementById('beh-student').disabled = true;
+    } catch(e) { alert('❌ خطأ في الحفظ: ' + e.message); }
+};
+
+// ===== حسابي =====
+async function loadMyProfile() {
+    try {
+        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
+        const snap = await getDocs(q);
+        if(snap.empty) return;
+        const d = snap.docs[0].data();
+        document.getElementById('prof-name').value = d.name || '';
+        document.getElementById('prof-email').value = d.email || '';
+    } catch(e) {}
+}
+
+window.saveProfile = async function() {
+    const newName = document.getElementById('prof-name').value.trim();
+    const newEmail = document.getElementById('prof-email').value.trim();
+    const newPass = document.getElementById('prof-pass').value.trim();
+    if(!newName) { alert('الاسم مطلوب'); return; }
+
+    try {
+        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
+        const snap = await getDocs(q);
+        if(snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات'); return; }
+
+        const updateData = { name: newName, email: newEmail };
+        if(newPass) updateData.plainPass = newPass;
+
+        await updateDoc(snap.docs[0].ref, updateData);
+
+        currentUser.name = newName;
+        localStorage.setItem('hs_user', JSON.stringify(currentUser));
+        document.getElementById('lbl-teacher-name').textContent = newName;
+        document.getElementById('prof-pass').value = '';
+
+        alert('✅ تم حفظ بياناتك بنجاح.');
+    } catch(e) { alert('❌ خطأ في الحفظ: ' + e.message); }
 };
 
 // ===== أدوات =====

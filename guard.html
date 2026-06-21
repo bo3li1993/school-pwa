@@ -157,7 +157,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 
 <script type="module">
 import { db, getActiveSchoolId } from './js/firebase-config.js';
-import { collection, addDoc, doc, updateDoc, onSnapshot, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, addDoc, doc, updateDoc, onSnapshot, query, where, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentGuardId = "";
 let currentGuardName = "حارس الأمن";
@@ -295,7 +295,12 @@ window.updateGuardProfileLive = async function(e) {
     const newPass = document.getElementById('guard-profile-pass').value.trim();
 
     try {
-        const userDocRef = doc(db, 'users', currentGuardId);
+        const schoolId = getActiveSchoolId();
+        const q = query(collection(db,'users'), where('schoolId','==',schoolId), where('userId','==',currentGuardId));
+        const snap = await getDocs(q);
+        if (snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات.'); return; }
+
+        const userDocRef = snap.docs[0].ref;
         let updatedData = { name: newName };
         if (newPass) updatedData.plainPass = newPass;
 
