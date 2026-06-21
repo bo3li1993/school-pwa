@@ -379,6 +379,14 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                         <input type="text" id="social-profile-name" required>
                     </div>
                     <div>
+                        <label style="font-weight:700; font-size:12px;">البريد الإلكتروني:</label>
+                        <input type="email" id="social-profile-email" placeholder="example@email.com">
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px;">رقم الهاتف:</label>
+                        <input type="tel" id="social-profile-phone" placeholder="99887766">
+                    </div>
+                    <div>
                         <label style="font-weight:700; font-size:12px;">كلمة المرور الجديدة (Password):</label>
                         <input type="text" id="social-profile-pass" placeholder="اتركها فاضية إذا لا ترغب بالتغيير">
                     </div>
@@ -645,6 +653,8 @@ window.saveNewCircularLive = async function(e) {
 window.updateSocialProfileLive = async function(e) {
     e.preventDefault();
     const newName = document.getElementById('social-profile-name').value.trim();
+    const newEmail = document.getElementById('social-profile-email').value.trim();
+    const newPhone = document.getElementById('social-profile-phone').value.trim();
     const newPass = document.getElementById('social-profile-pass').value.trim();
 
     try {
@@ -654,7 +664,7 @@ window.updateSocialProfileLive = async function(e) {
         if (snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات.'); return; }
 
         const userDocRef = snap.docs[0].ref;
-        let updatedData = { name: newName };
+        let updatedData = { name: newName, email: newEmail, phone: newPhone };
         if (newPass) updatedData.plainPass = newPass;
 
         await updateDoc(userDocRef, updatedData);
@@ -754,6 +764,18 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('lbl-worker-title').innerHTML = `<i class="bi bi-person-workspace"></i> بوابة الأخصائي: أ. ${currentWorkerName}`;
     document.getElementById('lbl-social-school').textContent = user.schoolName || 'المنظومة الرقمية السحابية الموحدة';
     document.getElementById('social-profile-name').value = currentWorkerName;
+
+    (async () => {
+        try {
+            const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentWorkerId));
+            const snap = await getDocs(q);
+            if(!snap.empty) {
+                const d = snap.docs[0].data();
+                document.getElementById('social-profile-email').value = d.email || '';
+                document.getElementById('social-profile-phone').value = d.phone || '';
+            }
+        } catch(e) {}
+    })();
     document.getElementById('txt-search-date').value = getUnifiedDateString();
     
     startSocialCentralListeners();

@@ -133,6 +133,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
 
   <div class="menu-group-title">الإدارة</div>
   <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people-fill"></i> إدارة المستخدمين</div>
+  <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-gear"></i> حسابي</div>
   <div class="menu-item" onclick="window.location.href='tv.html'"><i class="bi bi-tv"></i> شاشة القيادة TV</div>
   <div class="menu-item" onclick="window.location.href='guard.html'"><i class="bi bi-shield-lock"></i> بوابة الحارس</div>
   <div class="menu-item" onclick="window.location.href='social.html'"><i class="bi bi-clipboard2-pulse"></i> الأخصائي الاجتماعي</div>
@@ -169,6 +170,23 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
     <div id="tab-honors" class="tab-content"></div>
     <div id="tab-rewards" class="tab-content"></div>
     <div id="tab-users" class="tab-content"></div>
+
+    <div id="tab-myaccount" class="tab-content">
+      <div class="card" style="max-width:520px;">
+        <h2><i class="bi bi-person-gear"></i> بياناتي الشخصية</h2>
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">الاسم الكامل</label>
+        <input type="text" id="acc-name" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">البريد الإلكتروني</label>
+        <input type="email" id="acc-email" placeholder="example@email.com" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">القسم / المسمى الوظيفي</label>
+        <input type="text" id="acc-dept" placeholder="مثال: الإدارة، شؤون الطلبة..." style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">رقم الهاتف</label>
+        <input type="tel" id="acc-phone" placeholder="99887766" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">كلمة مرور جديدة (اتركها فاضية لو ما تبي تغييرها)</label>
+        <input type="text" id="acc-pass" placeholder="••••••" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <button onclick="window.saveMyAccount()" style="margin-top:14px;width:100%;background:var(--sky);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;"><i class="bi bi-check-circle-fill"></i> حفظ التعديلات</button>
+      </div>
+    </div>
 
     <div id="tab-more" class="tab-content">
       <div class="more-group">
@@ -220,6 +238,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
         <div class="more-group-title">الإدارة</div>
         <div class="more-list">
           <div class="more-row" onclick="window.switchTab('tab-users')"><div class="more-icon"><i class="bi bi-people-fill"></i></div><span>إدارة المستخدمين</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-myaccount')"><div class="more-icon"><i class="bi bi-person-gear"></i></div><span>حسابي</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.location.href='tv.html'"><div class="more-icon"><i class="bi bi-tv"></i></div><span>شاشة القيادة TV</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.location.href='guard.html'"><div class="more-icon"><i class="bi bi-shield-lock"></i></div><span>بوابة الحارس</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.location.href='social.html'"><div class="more-icon"><i class="bi bi-clipboard2-pulse"></i></div><span>الأخصائي الاجتماعي</span><i class="bi bi-chevron-left"></i></div>
@@ -238,6 +257,9 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
 </div>
 
 <script type="module">
+import { db, getActiveSchoolId } from './js/firebase-config.js';
+import { collection, query, where, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
 // حماية الجلسة والصلاحيات
 const savedUser = localStorage.getItem('hs_user');
 if(!savedUser) { window.location.replace('index.html'); }
@@ -301,6 +323,8 @@ window.switchTab = async function(tabId) {
 
     if(loadedTabs.has(tabId)) return;
 
+    if(tabId === 'tab-myaccount') { loadMyAccount(); return; }
+
     const mapEntry = moduleMap[tabId];
     if(!mapEntry) return;
 
@@ -315,6 +339,46 @@ window.switchTab = async function(tabId) {
             `<div class="loading-box" style="color:#dc2626">❌ خطأ تحميل الموديل: ${err.message}</div>`;
         console.error(`فشل تحميل ${tabId}:`, err);
     }
+};
+
+async function loadMyAccount() {
+    try {
+        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
+        const snap = await getDocs(q);
+        if(snap.empty) return;
+        const d = snap.docs[0].data();
+        document.getElementById('acc-name').value = d.name || '';
+        document.getElementById('acc-email').value = d.email || '';
+        document.getElementById('acc-dept').value = d.department || '';
+        document.getElementById('acc-phone').value = d.phone || '';
+    } catch(e) {}
+}
+
+window.saveMyAccount = async function() {
+    const newName = document.getElementById('acc-name').value.trim();
+    const newEmail = document.getElementById('acc-email').value.trim();
+    const newDept = document.getElementById('acc-dept').value.trim();
+    const newPhone = document.getElementById('acc-phone').value.trim();
+    const newPass = document.getElementById('acc-pass').value.trim();
+    if(!newName) { alert('الاسم مطلوب'); return; }
+
+    try {
+        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
+        const snap = await getDocs(q);
+        if(snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات'); return; }
+
+        const updateData = { name: newName, email: newEmail, department: newDept, phone: newPhone };
+        if(newPass) updateData.plainPass = newPass;
+
+        await updateDoc(snap.docs[0].ref, updateData);
+
+        currentUser.name = newName;
+        localStorage.setItem('hs_user', JSON.stringify(currentUser));
+        document.getElementById('lbl-admin-name').textContent = `مرحباً، ${newName}`;
+        document.getElementById('acc-pass').value = '';
+
+        alert('✅ تم حفظ بياناتك بنجاح.');
+    } catch(e) { alert('❌ خطأ في الحفظ: ' + e.message); }
 };
 
 // تحميل التبويب الأول تلقائياً

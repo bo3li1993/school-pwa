@@ -227,6 +227,10 @@ select:focus,input:focus{border-color:var(--accent);}
       <input type="text" id="prof-name">
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">البريد الإلكتروني</label>
       <input type="email" id="prof-email" placeholder="example@email.com">
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">القسم / التخصص</label>
+      <input type="text" id="prof-dept" placeholder="مثال: رياضيات، علوم، إنجليزي...">
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">رقم الهاتف</label>
+      <input type="tel" id="prof-phone" placeholder="مثال: 99887766">
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">كلمة مرور جديدة (اتركها فاضية لو ما تبي تغييرها)</label>
       <input type="text" id="prof-pass" placeholder="••••••">
       <button class="btn" onclick="saveProfile()">
@@ -550,12 +554,16 @@ async function loadMyProfile() {
         const d = snap.docs[0].data();
         document.getElementById('prof-name').value = d.name || '';
         document.getElementById('prof-email').value = d.email || '';
+        document.getElementById('prof-dept').value = d.department || '';
+        document.getElementById('prof-phone').value = d.phone || '';
     } catch(e) {}
 }
 
 window.saveProfile = async function() {
     const newName = document.getElementById('prof-name').value.trim();
     const newEmail = document.getElementById('prof-email').value.trim();
+    const newDept = document.getElementById('prof-dept').value.trim();
+    const newPhone = document.getElementById('prof-phone').value.trim();
     const newPass = document.getElementById('prof-pass').value.trim();
     if(!newName) { alert('الاسم مطلوب'); return; }
 
@@ -564,7 +572,7 @@ window.saveProfile = async function() {
         const snap = await getDocs(q);
         if(snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات'); return; }
 
-        const updateData = { name: newName, email: newEmail };
+        const updateData = { name: newName, email: newEmail, department: newDept, phone: newPhone };
         if(newPass) updateData.plainPass = newPass;
 
         await updateDoc(snap.docs[0].ref, updateData);

@@ -145,6 +145,14 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     <input type="text" id="guard-profile-name" required>
                 </div>
                 <div>
+                    <label style="font-weight:700; font-size:12px;">البريد الإلكتروني:</label>
+                    <input type="email" id="guard-profile-email" placeholder="example@email.com">
+                </div>
+                <div>
+                    <label style="font-weight:700; font-size:12px;">رقم الهاتف:</label>
+                    <input type="tel" id="guard-profile-phone" placeholder="99887766">
+                </div>
+                <div>
                     <label style="font-weight:700; font-size:12px;">كلمة المرور الجديدة (Password):</label>
                     <input type="text" id="guard-profile-pass" placeholder="اتركها فاضية إذا لا ترغب بالتغيير">
                 </div>
@@ -292,6 +300,8 @@ window.triggerEmergencyAlertLive = async function() {
 window.updateGuardProfileLive = async function(e) {
     e.preventDefault();
     const newName = document.getElementById('guard-profile-name').value.trim();
+    const newEmail = document.getElementById('guard-profile-email').value.trim();
+    const newPhone = document.getElementById('guard-profile-phone').value.trim();
     const newPass = document.getElementById('guard-profile-pass').value.trim();
 
     try {
@@ -301,7 +311,7 @@ window.updateGuardProfileLive = async function(e) {
         if (snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات.'); return; }
 
         const userDocRef = snap.docs[0].ref;
-        let updatedData = { name: newName };
+        let updatedData = { name: newName, email: newEmail, phone: newPhone };
         if (newPass) updatedData.plainPass = newPass;
 
         await updateDoc(userDocRef, updatedData);
@@ -328,6 +338,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const schoolEl = document.getElementById('lbl-guard-school');
     if(schoolEl) schoolEl.textContent = user.schoolName || 'المنظومة الرقمية';
     document.getElementById('guard-profile-name').value = currentGuardName;
+
+    (async () => {
+        try {
+            const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentGuardId));
+            const snap = await getDocs(q);
+            if(!snap.empty) {
+                const d = snap.docs[0].data();
+                document.getElementById('guard-profile-email').value = d.email || '';
+                document.getElementById('guard-profile-phone').value = d.phone || '';
+            }
+        } catch(e) {}
+    })();
     
     startGuardLiveGatepassListener();
     document.getElementById('splash-school').textContent = user.schoolName || 'المنظومة الرقمية';
