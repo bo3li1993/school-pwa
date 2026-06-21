@@ -237,6 +237,50 @@ select:focus,input:focus{border-color:var(--accent);}
         <i class="bi bi-check-circle-fill"></i> حفظ التعديلات
       </button>
     </div>
+  <!-- الرسائل -->
+  <div id="tab-messages" class="hidden">
+    <div class="card">
+      <h3>💬 التواصل مع ولي الأمر</h3>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">الفصل</label>
+      <select id="msg-class" onchange="onMsgClassChange(this.value)">
+        <option value="">-- اختر الفصل --</option>
+        <option value="6/1">6/1</option><option value="6/2">6/2</option>
+        <option value="6/3">6/3</option><option value="6/4">6/4</option>
+        <option value="7/1">7/1</option><option value="7/2">7/2</option>
+        <option value="7/3">7/3</option><option value="7/4">7/4</option>
+        <option value="8/1">8/1</option><option value="8/2">8/2</option>
+        <option value="8/3">8/3</option><option value="8/4">8/4</option>
+        <option value="9/1">9/1</option><option value="9/2">9/2</option>
+        <option value="9/3">9/3</option><option value="9/4">9/4</option>
+      </select>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">اسم الطالب</label>
+      <select id="msg-student" disabled onchange="onMsgStudentChange(this.value)">
+        <option value="">-- اختر الفصل أولاً --</option>
+      </select>
+      <div id="msg-chat-box" style="max-height:260px;overflow-y:auto;border:1px solid #eee;border-radius:8px;padding:10px;margin:12px 0;background:#fcfcfc;display:flex;flex-direction:column;gap:8px;">
+        <p style="text-align:center;color:#aaa;font-size:12px;padding:15px;">اختر الفصل والطالب لعرض المحادثة مع ولي الأمر</p>
+      </div>
+      <div id="msg-send-area" class="hidden" style="display:flex;gap:8px;">
+        <input type="text" id="msg-input" placeholder="اكتب رسالتك لولي الأمر..." style="margin-bottom:0;">
+        <button class="btn" style="width:60px;" onclick="sendTeacherMessage()"><i class="bi bi-send-fill"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- المزيد -->
+  <div id="tab-more" class="hidden">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div onclick="window.switchTab('tab-students')" style="display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;border-bottom:1px solid var(--line);">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--ice);color:var(--sky);display:flex;align-items:center;justify-content:center;font-size:17px;"><i class="bi bi-people"></i></div>
+        <span style="flex:1;font-weight:700;font-size:15px;">الطلاب</span>
+        <i class="bi bi-chevron-left" style="color:var(--mid);font-size:13px;"></i>
+      </div>
+      <div onclick="window.switchTab('tab-profile')" style="display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--ice);color:var(--sky);display:flex;align-items:center;justify-content:center;font-size:17px;"><i class="bi bi-gear"></i></div>
+        <span style="flex:1;font-weight:700;font-size:15px;">حسابي</span>
+        <i class="bi bi-chevron-left" style="color:var(--mid);font-size:13px;"></i>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -244,14 +288,14 @@ select:focus,input:focus{border-color:var(--accent);}
 <div class="bottom-nav">
   <button class="bn-item active" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance', this)"><i class="bi bi-pencil-square"></i>الغياب</button>
   <button class="bn-item" data-bn-tab="tab-behavior" onclick="window.switchTab('tab-behavior', this)"><i class="bi bi-shield-exclamation"></i>السلوك</button>
+  <button class="bn-item" data-bn-tab="tab-messages" onclick="window.switchTab('tab-messages', this)"><i class="bi bi-chat-left-text"></i>الرسائل</button>
   <button class="bn-item" data-bn-tab="tab-records" onclick="window.switchTab('tab-records', this)"><i class="bi bi-clipboard-data"></i>سجلاتي</button>
-  <button class="bn-item" data-bn-tab="tab-students" onclick="window.switchTab('tab-students', this)"><i class="bi bi-people"></i>الطلاب</button>
-  <button class="bn-item" data-bn-tab="tab-profile" onclick="window.switchTab('tab-profile', this)"><i class="bi bi-gear"></i>حسابي</button>
+  <button class="bn-item" data-bn-tab="tab-more" onclick="window.switchTab('tab-more', this)"><i class="bi bi-grid-3x3-gap"></i>المزيد</button>
 </div>
 
 <script type="module">
 import { db, getActiveSchoolId, getTodayISO } from './js/firebase-config.js';
-import { collection, getDocs, addDoc, updateDoc, query, where, orderBy, limit, writeBatch, doc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, addDoc, updateDoc, query, where, orderBy, limit, writeBatch, doc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // ===== حماية الجلسة =====
 let currentUser = null;
@@ -280,11 +324,17 @@ document.getElementById('splash').classList.add('hide');
 
 // ===== التبويبات =====
 window.switchTab = function(tabId, btn) {
-    document.querySelectorAll('#tab-attendance, #tab-records, #tab-students, #tab-behavior, #tab-profile')
+    document.querySelectorAll('#tab-attendance, #tab-records, #tab-students, #tab-behavior, #tab-profile, #tab-messages, #tab-more')
         .forEach(el => el.classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
     document.querySelectorAll('.bn-item').forEach(t => t.classList.remove('active'));
-    if(btn) btn.classList.add('active');
+
+    if(btn) {
+        btn.classList.add('active');
+    } else if(['tab-students','tab-profile'].includes(tabId)) {
+        const moreBtn = document.querySelector('.bn-item[data-bn-tab="tab-more"]');
+        if(moreBtn) moreBtn.classList.add('active');
+    }
 };
 
 // ===== تسجيل الغياب =====
@@ -584,6 +634,84 @@ window.saveProfile = async function() {
 
         alert('✅ تم حفظ بياناتك بنجاح.');
     } catch(e) { alert('❌ خطأ في الحفظ: ' + e.message); }
+};
+
+// ===== الرسائل =====
+let msgUnsubscribe = null;
+let msgCurrentStudent = null;
+let msgCurrentClass = null;
+
+window.onMsgClassChange = async function(classId) {
+    const sel = document.getElementById('msg-student');
+    document.getElementById('msg-chat-box').innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:15px;">اختر الفصل والطالب لعرض المحادثة مع ولي الأمر</p>';
+    document.getElementById('msg-send-area').classList.add('hidden');
+    if(msgUnsubscribe) { msgUnsubscribe(); msgUnsubscribe = null; }
+
+    if(!classId) { sel.innerHTML = '<option value="">-- اختر الفصل أولاً --</option>'; sel.disabled = true; return; }
+    sel.innerHTML = '<option value="">⏳ جاري التحميل...</option>';
+    sel.disabled = true;
+    try {
+        const q = query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId));
+        const snap = await getDocs(q);
+        const names = [];
+        snap.forEach(d => { if(d.data().name) names.push(d.data().name.trim()); });
+        names.sort((a,b)=>a.localeCompare(b,'ar'));
+        if(!names.length) { sel.innerHTML = '<option value="">⚠️ لا يوجد طلاب</option>'; return; }
+        sel.innerHTML = '<option value="">-- اختر اسم الطالب --</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
+        sel.disabled = false;
+    } catch(e) { sel.innerHTML = '<option value="">❌ خطأ بالتحميل</option>'; }
+};
+
+window.onMsgStudentChange = function(studentName) {
+    if(msgUnsubscribe) { msgUnsubscribe(); msgUnsubscribe = null; }
+    if(!studentName) {
+        document.getElementById('msg-send-area').classList.add('hidden');
+        return;
+    }
+    msgCurrentStudent = studentName;
+    msgCurrentClass = document.getElementById('msg-class').value;
+    document.getElementById('msg-send-area').classList.remove('hidden');
+
+    const box = document.getElementById('msg-chat-box');
+    box.innerHTML = '<p style="text-align:center;color:#aaa;font-size:12px;padding:15px;">⏳ جاري تحميل المحادثة...</p>';
+
+    const q = query(collection(db,'school_threads'),
+        where('schoolId','==',getActiveSchoolId()), where('studentName','==',studentName.trim()));
+
+    msgUnsubscribe = onSnapshot(q, (snap) => {
+        const docs = snap.docs.sort((a,b) => (a.data().createdAt?.seconds||0) - (b.data().createdAt?.seconds||0));
+        let html = '';
+        docs.forEach(d => {
+            const m = d.data();
+            const isParent = m.senderRole === 'parent';
+            html += `<div style="max-width:85%;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;line-height:1.4;
+                ${isParent ? 'background:#e1f5fe;color:#1565c0;align-self:flex-start;' : 'background:#fff3e0;color:#e65100;align-self:flex-end;'}">
+                <span style="font-size:10px;opacity:.75;display:block;font-weight:bold;margin-bottom:2px;">${isParent ? 'ولي الأمر' : (currentUser.name || 'المعلم')}</span>
+                ${m.message}
+            </div>`;
+        });
+        box.innerHTML = html || '<p style="text-align:center;color:#aaa;font-size:12px;padding:15px;">💬 لا توجد رسائل سابقة بعد، ابدأ المحادثة.</p>';
+        box.scrollTop = box.scrollHeight;
+    }, () => { box.innerHTML = '<p style="text-align:center;color:red;font-size:12px;padding:15px;">❌ خطأ بالمزامنة الحية</p>'; });
+};
+
+window.sendTeacherMessage = async function() {
+    const input = document.getElementById('msg-input');
+    const msg = input.value.trim();
+    if(!msg || !msgCurrentStudent) return;
+
+    try {
+        await addDoc(collection(db,'school_threads'), {
+            schoolId: getActiveSchoolId(),
+            studentName: msgCurrentStudent,
+            classId: msgCurrentClass,
+            message: msg,
+            senderRole: 'teacher',
+            senderName: currentUser.name || '',
+            createdAt: serverTimestamp()
+        });
+        input.value = '';
+    } catch(e) { alert('❌ تعذر إرسال الرسالة: ' + e.message); }
 };
 
 // ===== أدوات =====
