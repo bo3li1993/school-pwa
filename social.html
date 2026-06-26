@@ -236,6 +236,13 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     <label style="font-weight:700; font-size:12px;">الإجراء التربوي أو التوجيهي المتخذ فوراً:</label>
                     <input type="text" id="beh-action" placeholder="مثال: استدعاء ولي أمر / تعهد خطي / تكريم بالإذاعة" required>
                 </div>
+                <div>
+                    <label style="font-weight:700; font-size:12px;">حالة المتابعة:</label>
+                    <select id="beh-followup">
+                        <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال</option>
+                        <option value="قيد المتابعة والمراجعة">⏳ قيد المتابعة والمراجعة</option>
+                    </select>
+                </div>
                 <button type="submit" class="btn-submit" style="background:var(--danger-color); box-shadow: 0 4px 10px rgba(239,68,68,0.2);"><i class="bi bi-file-earmark-check"></i> حفظ وإثبات الحالة السلوكية بالسجل المركزي</button>
             </form>
         </div>
@@ -528,15 +535,21 @@ window.saveBehaviorLogLive = async function(e) {
     const type = document.getElementById('beh-type').value;
     const details = document.getElementById('beh-details').value.trim();
     const action = document.getElementById('beh-action').value.trim();
+    const followup = document.getElementById('beh-followup').value;
     const schoolId = getActiveSchoolId();
 
     if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً لرصد حالته!"); return; }
 
     try {
-        await addDoc(collection(db, 'behavior_logs'), {
+        // 🔗 موحّد مع نفس كولكشن "behavior" المستخدم بصفحة المدير والمعلم
+        // (كان سابقاً بكولكشن منفصل "behavior_logs" وهذا كان يخفي الحالات عن باقي الأدوار)
+        await addDoc(collection(db, 'behavior'), {
             schoolId: schoolId, // 🔑 فصل البيانات للسيرفر
-            classId, studentName, type, details, action,
-            dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), officerName: currentWorkerName, createdAt: serverTimestamp()
+            classId, studentName, name: studentName,
+            type, notes: details, action,
+            referredBy: currentWorkerName, followUpStatus: followup,
+            dateStr: getUnifiedDateString(), date: getUnifiedDateString(), timeStr: getUnifiedTimeString(),
+            officerName: currentWorkerName, createdAt: serverTimestamp()
         });
         alert(`✓ تم توثيق ورصد الحالة السلوكية بنجاح للطالب [ ${studentName} ].`);
         document.getElementById('social-behavior-form').reset();
@@ -590,7 +603,7 @@ window.searchStudentFullProfileLive = async function() {
     // ب) جلب السجل السلوكي للمدرسة الحالية
     try {
         const qBeh = query(
-            collection(db, 'behavior_logs'),
+            collection(db, 'behavior'),
             where('schoolId', '==', schoolId),
             where('studentName', '==', sName.trim())
         );
@@ -598,11 +611,11 @@ window.searchStudentFullProfileLive = async function() {
         let hBeh = '';
         snapBeh.forEach(doc => {
             const d = doc.data();
-            const badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : 'background:var(--success-color);';
+            const badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : (d.type === 'إيجابي' ? 'background:var(--success-color);' : 'background:#94a3b8;');
             hBeh += `<tr>
-                <td>🕒 ${d.dateStr || '-'}</td>
-                <td><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type}</span></td>
-                <td>${d.details || '-'}</td>
+                <td>🕒 ${d.dateStr || d.date || '-'}</td>
+                <td><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type || '—'}</span></td>
+                <td>${d.notes || d.details || '-'}</td>
                 <td style="color:var(--hover-color);">${d.action || '-'}</td>
             </tr>`;
         });
@@ -707,21 +720,22 @@ function startSocialCentralListeners() {
         tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center; color:#999;">💡 لا توجد تصاريح استئذان مسجلة بالتاريخ المحدد.</td></tr>';
     });
 
-    // 2. مراقبة وإحصاء السجل السلوكي المركزي
-    const qBeh = query(collection(db, 'behavior_logs'), where('schoolId', '==', schoolId));
+    // 2. مراقبة وإحصاء السجل السلوكي المركزي (موحّد مع المدير والمعلم بكولكشن "behavior")
+    const qBeh = query(collection(db, 'behavior'), where('schoolId', '==', schoolId));
     onSnapshot(qBeh, (snapshot) => {
         const tbody = document.getElementById('social-behavior-tbody');
         let html = ''; let posCount = 0; let negCount = 0;
         
         snapshot.forEach(doc => {
             const d = doc.data();
-            if(d.type === 'إيجابي') posCount++; else negCount++;
-            
+            if(d.type === 'إيجابي') posCount++; else if(d.type === 'سلبي') negCount++;
+            const typeBadge = d.type === 'سلبي' ? 'var(--danger-color)' : (d.type === 'إيجابي' ? 'var(--success-color)' : '#94a3b8');
+
             html += `<tr style="border-bottom:1px solid #e2e8f0;">
-                <td>🕒 ${d.dateStr || '-'}</td> <td><b>👤 ${d.studentName || '-'}</b></td>
+                <td>🕒 ${d.dateStr || d.date || '-'}</td> <td><b>👤 ${d.studentName || d.name || '-'}</b></td>
                 <td><span style="background:var(--off); color:#fff; padding:2px 6px; border-radius:4px;">${d.classId || '-'}</span></td>
-                <td><span style="background:${d.type==='سلبي'?'var(--danger-color)':'var(--success-color)'}; color:#fff; padding:2px 6px; border-radius:4px; font-size:11px;">${d.type}</span></td>
-                <td>${d.details || '-'}</td> <td style="color:var(--hover-color); font-weight:bold;">${d.action || '-'}</td> <td>أ. ${d.officerName || 'الأخصائي'}</td>
+                <td><span style="background:${typeBadge}; color:#fff; padding:2px 6px; border-radius:4px; font-size:11px;">${d.type || '—'}</span></td>
+                <td>${d.notes || d.details || '-'}</td> <td style="color:var(--hover-color); font-weight:bold;">${d.action || '-'}</td> <td>أ. ${d.referredBy || d.officerName || 'غير محدد'}</td>
             </tr>`;
         });
         document.getElementById('lbl-stat-negative').innerText = negCount;
