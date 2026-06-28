@@ -153,10 +153,17 @@ window.showStudentProfile = function(studentDocId) {
             </table></div>
         </div>
 
-        <div class="card">
+        <div class="card" style="margin-bottom:14px;">
             <h3 style="font-size:14px;"><i class="bi bi-door-open" style="color:var(--sky);"></i> سجل الاستئذان وبوابة الأمن</h3>
             <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
                 <tbody id="profile-table-gatepass"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+            </table></div>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size:14px;"><i class="bi bi-heart-pulse" style="color:var(--danger-color);"></i> سجل زيارات العيادة</h3>
+            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
+                <tbody id="profile-table-clinic"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
     `;
@@ -224,6 +231,23 @@ async function loadStudentHistory(studentName) {
         });
         document.getElementById('profile-table-gatepass').innerHTML = hGate || `<tr><td style="text-align:center; padding:15px; color:#999;">💡 لم يتم رصد أي استئذانات سابقة.</td></tr>`;
     } catch(e) { document.getElementById('profile-table-gatepass').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
+
+    // د) زيارات العيادة
+    try {
+        const qClinic = query(collection(db, 'clinic'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
+        const snapClinic = await getDocs(qClinic);
+        let hClinic = '';
+        snapClinic.forEach(docSnap => {
+            const d = docSnap.data();
+            const dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('ar-KW') : (d.dateStr || '-');
+            hClinic += `<tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">🕒 ${dateStr}</td>
+                <td style="padding:8px; font-weight:bold; color:var(--danger-color);">${d.complaint || '-'}</td>
+                <td style="padding:8px;">${d.treatment || '-'}</td>
+            </tr>`;
+        });
+        document.getElementById('profile-table-clinic').innerHTML = hClinic || `<tr><td style="text-align:center; padding:15px; color:#999;">💡 لا توجد زيارات سابقة للعيادة.</td></tr>`;
+    } catch(e) { document.getElementById('profile-table-clinic').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
 }
 
 // ===== نقل الطالب لفصل جديد =====
