@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | المنظومة الرقمية الموحدة</title>
+  <link rel="manifest" href="manifest.json">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        
+        :root {
+  --navy:  #0b2545;
+  --sky:   #1a78c2;
+  --ice:   #eaf4fd;
+  --gold:  #d4920a;
+  --white: #ffffff;
+  --off:   #f8f9fc;
+  --line:  #e5e7eb;
+  --text:  #111827;
+  --mid:   #6b7280;
+  --green: #059669;
+  --red:   #dc2626;
+            --bg-dark: var(--off);
+            --card-bg: var(--off);
+            --primary: var(--sky);
+            --accent: var(--gold);
+            --success: #25d366;
+            --text-main: #f1f5f9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+
+        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 30px; border-radius: 16px; border: 1px solid var(--line); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); text-align: center; margin-bottom: 20px; }
+        h1 { font-size: 26px; font-weight: 900; margin-bottom: 10px; color: #fff; }
+        p { font-size: 14px; color: #94a3b8; margin-bottom: 25px; }
+
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--line); background: var(--off); color: #fff; font-size: 14px; text-align: center; }
+        input:focus { border-color: var(--primary); outline: none; }
+
+        button { width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: #fff; margin-bottom: 10px; }
+        .btn-success { background: var(--success); color: #fff; margin-top: 5px; }
+        .btn-install { background: var(--green); color: #fff; max-width: 420px; margin-bottom: 15px; display: none; }
+
+        /* نافذة المحاكاة الذكية المدمجة */
+        .demo-section { margin-top: 20px; width: 100%; max-width: 800px; display: none; }
+        .screen-frame { background: var(--card-bg); border: 4px solid var(--line); border-radius: 12px; height: 400px; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: right; }
+        .cursor { position: absolute; width: 20px; height: 20px; background: url('https://cur.cursors-4u.net/arrow/arr-13/arr1219.png'), auto; z-index: 9999; transition: all 1s ease-in-out; pointer-events: none; }
+        .sim-sidebar { width: 200px; background: var(--off); height: 100%; position: absolute; right: 0; padding: 15px; border-left: 1px solid var(--line); }
+        .sim-main { margin-right: 200px; padding: 25px; height: 100%; position: relative; }
+        .sim-popup { display: none; position: absolute; top: 25%; left: 15%; background: white; color: black; padding: 20px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); width: 300px; text-align: center; }
+        .subtitle-bar { background: var(--card-bg); border: 1px solid var(--line); padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; color: #fbbf24; font-weight: 700; width: 100%; max-width: 800px; }
+    </style>
+</head>
+<body>
+
+    <!-- زر تثبيت التطبيق PWA -->
+    <button id="btn-install-pwa" class="btn-install"><i class="bi bi-phone"></i> ثبّت المنظومة كتطبيق على جهازك</button>
+
+    <!-- بطاقة الدخول الموحدة -->
+    <div class="login-container">
+        <h1>المنظومة الرقمية الموحدة</h1>
+        <p>مدرسة سالم الحسينان المتوسطة</p>
+        
+        <form onsubmit="window.login(event)">
+            <input type="text" id="id" placeholder="رقم المستخدم" required>
+            <input type="password" id="pass" placeholder="كلمة المرور" required>
+            <button type="submit" class="btn-primary"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول</button>
+        </form>
+
+        <!-- زر تشغيل العرض التوضيحي المدمج -->
+        <button class="btn-success" onclick="startIntegratedDemo()"><i class="bi bi-play-btn-fill"></i> شاهد العرض الحي للمنظومة</button>
+
+        <a href="privacy.html" style="display:block; margin-top:14px; font-size:12px; color:var(--mid); text-decoration:none;">
+            <i class="bi bi-shield-lock"></i> سياسة الخصوصية
+        </a>
+    </div>
+
+    <!-- شاشة المحاكاة الحركية التفاعلية -->
+    <div class="demo-section" id="demo-zone">
+        <div class="screen-frame">
+            <div class="cursor" id="fake-cursor" style="top: 220px; left: 300px;"></div>
+            
+            <div class="sim-sidebar">
+                <h3 style="color:var(--accent); font-size:13px; margin-bottom:20px;"><i class="bi bi-shield-check"></i> سالم الحسينان</h3>
+                <div id="sim-nav-1" style="padding:8px; background:var(--off); border-radius:6px; font-size:12px; margin-bottom:8px; font-weight:bold;"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
+                <div id="sim-nav-2" style="padding:8px; font-size:12px; opacity:0.5;"><i class="bi bi-file-earmark-pdf"></i> تقارير الغياب</div>
+            </div>
+
+            <div class="sim-main">
+                <div id="sim-content">
+                    <h2 style="font-size:18px; font-weight:700; margin-bottom:15px;">لوحة الإجراءات السريعة والمباشرة</h2>
+                    <div style="background:var(--line); padding:15px; border-radius:10px;">
+                        <span style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:8px;">محرك بث غياب الحصة الحالي لأولياء الأمور:</span>
+                        <select style="padding:6px; width:120px; border-radius:6px; font-weight:bold;"><option>الصف 9/1</option></select>
+                        <button id="sim-whatsapp-btn" style="background:var(--success); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; margin-right:8px;">بث للواتساب</button>
+                    </div>
+                </div>
+
+                <div class="sim-popup" id="sim-whatsapp-popup">
+                    <h3 style="color:var(--success); font-size:16px; margin-bottom:10px;"><i class="bi bi-check-circle-fill"></i> نجح محرك البث!</h3>
+                    <p style="font-size:12px; color:var(--mid); line-height:1.5;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="subtitle-bar" id="sim-subtitle">جاري تجهيز بيئة العرض التفاعلي...</div>
+    </div>
+
+    <!-- محرك العمليات السحابية والأمان -->
+    <script type="module">
+// قراءة كود المدرسة من الرابط (?school=alanwar) — للروابط المخصصة
+const urlParams = new URLSearchParams(window.location.search);
+const schoolFromUrl = urlParams.get('school');
+if(schoolFromUrl) {
+    // عرض اسم المدرسة المتوقع كرسالة ترحيب بصرية فقط (لا تأثير على المنطق)
+    document.addEventListener('DOMContentLoaded', () => {
+        const hint = document.createElement('div');
+        hint.style.cssText = 'background:var(--ice);color:var(--sky);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;text-align:center;margin-bottom:14px;';
+        hint.textContent = `🏫 بوابة دخول: ${schoolFromUrl}`;
+        const card = document.querySelector('.login-card') || document.querySelector('form')?.parentElement;
+        if(card) card.insertBefore(hint, card.firstChild);
+    });
+}
+
+        import { db, auth } from './js/firebase-config.js';
+        import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+        import { signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+        const functions = getFunctions(auth.app);
+        const loginUserFn = httpsCallable(functions, 'loginUser');
+
+        window.login = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('id').value.trim();
+            const pass = document.getElementById('pass').value.trim();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ جاري التحقق...';
+
+            try {
+                // 🔐 التحقق من كلمة المرور يتم بالكامل على السيرفر الآن (Cloud Function)
+                // plainPass لا يُرسل أبداً للمتصفح بأي مرحلة
+                const result = await loginUserFn({ schoolId: schoolFromUrl || null, userId: id, password: pass });
+                const userData = result.data;
+
+                // 🔒 لو الرابط مخصص لمدرسة معينة (?school=xxx) — يجب أن يطابق schoolId المستخدم
+                if(schoolFromUrl && userData.schoolId !== schoolFromUrl) {
+                    throw { code: 'school-mismatch' };
+                }
+
+                await signInWithCustomToken(auth, userData.token);
+
+                // فحص حالة المدرسة
+                const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
+                if(!schoolSnap.exists()) throw { code: 'school-not-found' };
+                const schoolData = schoolSnap.data();
+
+                if(schoolData.status === 'suspended') throw { code: 'school-suspended' };
+                if(schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) throw { code: 'subscription-ended' };
+
+                // حفظ الجلسة والتوجيه
+                const role = String(userData.role || '').trim().toLowerCase();
+                localStorage.setItem('hs_user', JSON.stringify({
+                    userId:     id,
+                    name:       userData.name || '',
+                    role:       role,
+                    schoolId:   userData.schoolId,
+                    schoolName: schoolData.name || '',
+                    classId:    userData.classId || ''
+                }));
+
+                const adminRoles = ['admin','assistant_manager','wing_supervisor','social_worker'];
+                window.location.replace(adminRoles.includes(role) ? 'admin.html' : 'teacher.html');
+
+            } catch(err) {
+                const code = err.code || '';
+                const messages = {
+                    'functions/not-found':         '❌ رقم المستخدم غير مسجل في النظام',
+                    'functions/permission-denied': '❌ كلمة المرور غير صحيحة، أو الحساب موقوف',
+                    'functions/invalid-argument':  '⚠️ يرجى تعبئة جميع الحقول',
+                    'school-mismatch':   '❌ هذا الرابط مخصص لمدرسة أخرى\nرجاءً استخدم رابط مدرستك الصحيح',
+                    'school-not-found':  '❌ مدرستك غير مسجلة في النظام',
+                    'school-suspended':  '⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً\nللاستفسار تواصل مع المطور',
+                    'subscription-ended':'⚠️ انتهى اشتراك مدرستك\nللتجديد تواصل مع المطور'
+                };
+                alert(messages[code] || ('❌ خطأ غير متوقع: ' + (err.message || 'تحقق من اتصال الإنترنت')));
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول';
+            }
+        };
+
+        // الـ PWA Install Prompt
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            const installBtn = document.getElementById('btn-install-pwa');
+            installBtn.style.display = 'flex';
+            window.deferredPrompt = e;
+        });
+        document.getElementById('btn-install-pwa').addEventListener('click', async () => {
+            if(!window.deferredPrompt) return;
+            window.deferredPrompt.prompt();
+            await window.deferredPrompt.userChoice;
+            window.deferredPrompt = null;
+            document.getElementById('btn-install-pwa').style.display = 'none';
+        });
+    </script>
+
+    <!-- محرك تشغيل العرض التفاعلي التلقائي -->
+    <script>
+        function startIntegratedDemo() {
+            const demoZone = document.getElementById('demo-zone');
+            demoZone.style.display = 'block';
+            demoZone.scrollIntoView({ behavior: 'smooth' });
+
+            const cursor = document.getElementById('fake-cursor');
+            const subtitle = document.getElementById('sim-subtitle');
+            const popup = document.getElementById('sim-whatsapp-popup');
+            const navReport = document.getElementById('sim-nav-2');
+
+            subtitle.textContent = "مرحباً بك في العرض الحي للمنظومة السحابية.. هكذا تدار البيانات الفنية للمدارس.";
+            
+            setTimeout(() => {
+                cursor.style.top = '125px';
+                cursor.style.left = '290px';
+                subtitle.textContent = "يختار المسؤول أو الوكيل الفصل الدراسي، ويتجه مباشرة إلى زر البث الذكي المباشر..";
+            }, 2500);
+
+            setTimeout(() => {
+                popup.style.display = 'block';
+                subtitle.textContent = "بضغطة واحدة، يقوم النظام بسحب الغياب الفعلي وإشعار أولياء الأمور تلقائياً عبر الواتساب دون تكاليف SMS!";
+            }, 5000);
+
+            setTimeout(() => {
+                popup.style.display = 'none';
+                cursor.style.top = '90px';
+                cursor.style.left = '650px';
+                subtitle.textContent = "الآن نتوجه بالماوس إلى موديول التقارير الإحصائية المعتمدة..";
+            }, 8500);
+
+            setTimeout(() => {
+                navReport.style.background = 'var(--off)';
+                navReport.style.opacity = '1';
+                subtitle.textContent = "يقوم النظام بتصدير كشوف الغياب التراكمي وتجهيز ملفات PDF المطابقة للمنطقة التعليمية فوراً.";
+            }, 10500);
+        }
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('✅ تم تشغيل محرك السرعة PWA بنجاح', reg.scope))
+                .catch(err => console.error('❌ فشل تشغيل PWA', err));
+        });
+    }
+</script>
+</body>
+</html>
