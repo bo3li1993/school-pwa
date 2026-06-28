@@ -1,4 +1,4 @@
-import { db } from '../firebase-config.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, query, where, getDocs, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const ALL_CLASSES = [
@@ -38,8 +38,8 @@ export async function initStudentModule() {
         <div id="student-results-container"></div>
 
         <style>
-            .st-label{font-weight:700;font-size:14.5px;color:var(--text);display:block;margin-bottom:6px}
-            .st-input{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:16px;font-weight:600;text-align:right;outline:none;background:#fff}
+            .st-label{font-weight:700;font-size:12.5px;color:var(--text);display:block;margin-bottom:5px}
+            .st-input{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;text-align:right;outline:none;background:#fff}
             .st-input:focus{border-color:var(--sky)}
             .st-input:disabled{background:var(--off);color:var(--soft)}
         </style>
@@ -109,7 +109,7 @@ window.showStudentProfile = function(studentDocId) {
     if (!data) return;
 
     resultsDiv.innerHTML = `
-        <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--line); border-right:4px solid var(--sky); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+        <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--line); border-right:4px solid var(--sky); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:14px;">
             <div>
                 <h3 style="margin:0 0 6px; color:var(--navy); font-weight:900; font-size:17px;">${data.name}</h3>
                 <span style="background:var(--ice); color:var(--sky); padding:4px 10px; border-radius:6px; font-size:13px; font-weight:700;">
@@ -138,8 +138,93 @@ window.showStudentProfile = function(studentDocId) {
                 </div>
             </div>
         </div>
+
+        <div class="card" style="margin-bottom:14px;">
+            <h3 style="font-size:14px;"><i class="bi bi-calendar-x" style="color:var(--danger-color);"></i> سجل الحضور والغياب</h3>
+            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
+                <tbody id="profile-table-attendance"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+            </table></div>
+        </div>
+
+        <div class="card" style="margin-bottom:14px;">
+            <h3 style="font-size:14px;"><i class="bi bi-shield-exclamation" style="color:var(--accent-color);"></i> السجل السلوكي</h3>
+            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
+                <tbody id="profile-table-behavior"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+            </table></div>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size:14px;"><i class="bi bi-door-open" style="color:var(--sky);"></i> سجل الاستئذان وبوابة الأمن</h3>
+            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
+                <tbody id="profile-table-gatepass"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+            </table></div>
+        </div>
     `;
+
+    loadStudentHistory(data.name.trim());
 };
+
+// ===== جلب سجلات الحضور/السلوك/الاستئذان للطالب المختار =====
+async function loadStudentHistory(studentName) {
+    const schoolId = getActiveSchoolId();
+
+    // أ) الحضور والغياب
+    try {
+        const qAtt = query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
+        const snapAtt = await getDocs(qAtt);
+        let hAtt = '';
+        snapAtt.forEach(docSnap => {
+            const d = docSnap.data();
+            const badgeColor = d.status === 'absent' ? 'background:var(--danger-color);' : (d.status === 'late' ? 'background:var(--accent-color);' : 'background:var(--success-color);');
+            const statusText = d.status === 'absent' ? 'غياب' : (d.status === 'late' ? 'تأخير' : 'حضور');
+            hAtt += `<tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">🕒 ${d.date || d.dateStr || '-'}</td>
+                <td style="padding:8px;"><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${statusText}</span></td>
+                <td style="padding:8px; font-weight:bold;">الحصة: ${d.period || 'غير محددة'}</td>
+                <td style="padding:8px; color:#666;">${d.teacherName || d.recordedBy || '-'}</td>
+            </tr>`;
+        });
+        document.getElementById('profile-table-attendance').innerHTML = hAtt || `<tr><td style="text-align:center; padding:15px; color:#999;">✨ سجل الطالب ممتاز، لا توجد حالات غياب مرصودة.</td></tr>`;
+    } catch(e) { document.getElementById('profile-table-attendance').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
+
+    // ب) السلوك
+    try {
+        const qBeh = query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
+        const snapBeh = await getDocs(qBeh);
+        let hBeh = '';
+        snapBeh.forEach(docSnap => {
+            const d = docSnap.data();
+            const badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : (d.type === 'إيجابي' ? 'background:var(--success-color);' : 'background:#94a3b8;');
+            hBeh += `<tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">🕒 ${d.dateStr || d.date || '-'}</td>
+                <td style="padding:8px;"><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type || '—'}</span></td>
+                <td style="padding:8px;">${d.notes || d.details || '-'}</td>
+                <td style="padding:8px; color:var(--hover-color); font-weight:bold;">${d.action || '-'}</td>
+            </tr>`;
+        });
+        document.getElementById('profile-table-behavior').innerHTML = hBeh || `<tr><td style="text-align:center; padding:15px; color:#999;">✅ السجل السلوكي نظيف تماماً.</td></tr>`;
+    } catch(e) { document.getElementById('profile-table-behavior').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
+
+    // ج) الاستئذان
+    try {
+        const qGate = query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
+        const snapGate = await getDocs(qGate);
+        let hGate = '';
+        snapGate.forEach(docSnap => {
+            const d = docSnap.data();
+            const statusBadge = d.status === 'exited' ? 'background:var(--success-color); color:#fff;' : 'background:var(--accent-color); color:#fff;';
+            const statusText = d.status === 'exited' ? 'غادر المدرسة رسميًا ✅' : 'مأذون له / معلق عند الباب ⏳';
+            hGate += `<tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">🕒 ${d.dateStr || '-'}</td>
+                <td style="padding:8px;">${d.relative || '-'}</td>
+                <td style="padding:8px;">${d.relation || '-'}</td>
+                <td style="padding:8px;">${d.reason || '-'}</td>
+                <td style="padding:8px;"><span style="padding:2px 6px; border-radius:4px; font-size:11px; ${statusBadge}">${statusText}</span></td>
+            </tr>`;
+        });
+        document.getElementById('profile-table-gatepass').innerHTML = hGate || `<tr><td style="text-align:center; padding:15px; color:#999;">💡 لم يتم رصد أي استئذانات سابقة.</td></tr>`;
+    } catch(e) { document.getElementById('profile-table-gatepass').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
+}
 
 // ===== نقل الطالب لفصل جديد =====
 window.transferStudent = async function(docId) {
