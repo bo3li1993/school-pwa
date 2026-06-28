@@ -109,61 +109,56 @@ window.showStudentProfile = function(studentDocId) {
     if (!data) return;
 
     resultsDiv.innerHTML = `
-        <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--line); border-right:4px solid var(--sky); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; margin-bottom:14px;">
+        <div class="card" style="border-right:5px solid var(--sky); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
             <div>
-                <h3 style="margin:0 0 6px; color:var(--navy); font-weight:900; font-size:17px;">${data.name}</h3>
-                <span style="background:var(--ice); color:var(--sky); padding:4px 10px; border-radius:6px; font-size:13px; font-weight:700;">
-                    فصل: <span id="class-display-${data.id}">${data.classId}</span>
-                </span>
-                <span style="color:var(--mid); font-size:13px; margin-right:10px;">
-                    <i class="bi bi-telephone-fill"></i> ${data.parentPhone || 'غير مسجل'}
-                </span>
+                <h3 style="margin:0 0 6px;">👤 ملف الطالب الشامل: ${data.name}</h3>
+                <p style="font-size:13px; font-weight:700; color:var(--mid);">الفصل الدراسي: صف ( <span id="class-display-${data.id}">${data.classId}</span> ) &nbsp;&nbsp; <i class="bi bi-telephone-fill"></i> ${data.parentPhone || 'غير مسجل'}</p>
             </div>
-
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <button onclick="window.contactParent('${data.parentPhone||''}', '${data.name}')"
                     style="background:#25d366; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo';">
                     <i class="bi bi-whatsapp"></i> مراسلة
                 </button>
-
                 <div style="display:flex; align-items:center; gap:0; border:1.5px solid var(--line); border-radius:8px; overflow:hidden;">
-                    <select id="new-class-${data.id}" class="st-input" style="border:none; border-radius:0; min-width:100px;">
+                    <select id="new-class-${data.id}" style="border:none; border-radius:0; margin:0; min-width:100px;">
                         <option value="">نقل لفصل...</option>
                         ${ALL_CLASSES.filter(c => c !== data.classId).map(c => `<option value="${c}">${c}</option>`).join('')}
                     </select>
                     <button onclick="window.transferStudent('${data.id}')"
-                        style="background:var(--navy); color:#fff; border:none; padding:9px 16px; font-weight:700; cursor:pointer; font-family:'Cairo';">
-                        نقل
-                    </button>
+                        style="background:var(--navy); color:#fff; border:none; padding:9px 16px; font-weight:700; cursor:pointer; font-family:'Cairo';">نقل</button>
                 </div>
             </div>
         </div>
 
-        <div class="card" style="margin-bottom:14px;">
-            <h3 style="font-size:14px;"><i class="bi bi-calendar-x" style="color:var(--danger-color);"></i> سجل الحضور والغياب</h3>
-            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
-                <tbody id="profile-table-attendance"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+        <div class="card" style="border-right:5px solid #64748b;">
+            <h4 style="font-size:14px; color:#64748b;"><i class="bi bi-calendar-x-fill"></i> سجل الانتظام، الغياب والتأخير</h4>
+            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead><tr style="background:#f8fafc;"><th>التاريخ</th><th>نوع الحالة</th><th>الحصة</th><th>المسجل المسؤول</th></tr></thead>
+                <tbody id="profile-table-attendance"><tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
 
-        <div class="card" style="margin-bottom:14px;">
-            <h3 style="font-size:14px;"><i class="bi bi-shield-exclamation" style="color:var(--accent-color);"></i> السجل السلوكي</h3>
-            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
-                <tbody id="profile-table-behavior"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+        <div class="card" style="border-right:5px solid var(--danger-color);">
+            <h4 style="font-size:14px; color:var(--danger-color);"><i class="bi bi-shield-slash"></i> الأرشيف السلوكي (إيجابي / سلبي)</h4>
+            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead><tr style="background:#f8fafc;"><th>التاريخ</th><th>النوع</th><th>التفاصيل الموثقة</th><th>الإجراء المتخذ</th></tr></thead>
+                <tbody id="profile-table-behavior"><tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
 
-        <div class="card" style="margin-bottom:14px;">
-            <h3 style="font-size:14px;"><i class="bi bi-door-open" style="color:var(--sky);"></i> سجل الاستئذان وبوابة الأمن</h3>
-            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
-                <tbody id="profile-table-gatepass"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+        <div class="card" style="border-right:5px solid var(--success-color);">
+            <h4 style="font-size:14px; color:var(--success-color);"><i class="bi bi-ticket-detailed"></i> الأذونات وبوابة الأمن</h4>
+            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead><tr style="background:#f8fafc;"><th>التاريخ</th><th>المستلم</th><th>الصلة</th><th>السبب</th><th>حالة البوابة</th></tr></thead>
+                <tbody id="profile-table-gatepass"><tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
 
-        <div class="card">
-            <h3 style="font-size:14px;"><i class="bi bi-heart-pulse" style="color:var(--danger-color);"></i> سجل زيارات العيادة</h3>
-            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
-                <tbody id="profile-table-clinic"><tr><td style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+        <div class="card" style="border-right:5px solid var(--gold);">
+            <h4 style="font-size:14px; color:var(--gold);"><i class="bi bi-heart-pulse"></i> سجل زيارات العيادة</h4>
+            <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead><tr style="background:#f8fafc;"><th>التاريخ</th><th>الشكوى / العارض</th><th>الإجراء والعلاج</th></tr></thead>
+                <tbody id="profile-table-clinic"><tr><td colspan="3" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
     `;
@@ -191,7 +186,7 @@ async function loadStudentHistory(studentName) {
                 <td style="padding:8px; color:#666;">${d.teacherName || d.recordedBy || '-'}</td>
             </tr>`;
         });
-        document.getElementById('profile-table-attendance').innerHTML = hAtt || `<tr><td style="text-align:center; padding:15px; color:#999;">✨ سجل الطالب ممتاز، لا توجد حالات غياب مرصودة.</td></tr>`;
+        document.getElementById('profile-table-attendance').innerHTML = hAtt || `<tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">✨ سجل الطالب ممتاز، لا توجد حالات غياب مرصودة.</td></tr>`;
     } catch(e) { document.getElementById('profile-table-attendance').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
 
     // ب) السلوك
@@ -209,7 +204,7 @@ async function loadStudentHistory(studentName) {
                 <td style="padding:8px; color:var(--hover-color); font-weight:bold;">${d.action || '-'}</td>
             </tr>`;
         });
-        document.getElementById('profile-table-behavior').innerHTML = hBeh || `<tr><td style="text-align:center; padding:15px; color:#999;">✅ السجل السلوكي نظيف تماماً.</td></tr>`;
+        document.getElementById('profile-table-behavior').innerHTML = hBeh || `<tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">✅ السجل السلوكي نظيف تماماً.</td></tr>`;
     } catch(e) { document.getElementById('profile-table-behavior').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
 
     // ج) الاستئذان
@@ -229,7 +224,7 @@ async function loadStudentHistory(studentName) {
                 <td style="padding:8px;"><span style="padding:2px 6px; border-radius:4px; font-size:11px; ${statusBadge}">${statusText}</span></td>
             </tr>`;
         });
-        document.getElementById('profile-table-gatepass').innerHTML = hGate || `<tr><td style="text-align:center; padding:15px; color:#999;">💡 لم يتم رصد أي استئذانات سابقة.</td></tr>`;
+        document.getElementById('profile-table-gatepass').innerHTML = hGate || `<tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">💡 لم يتم رصد أي استئذانات سابقة.</td></tr>`;
     } catch(e) { document.getElementById('profile-table-gatepass').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
 
     // د) زيارات العيادة
@@ -246,7 +241,7 @@ async function loadStudentHistory(studentName) {
                 <td style="padding:8px;">${d.treatment || '-'}</td>
             </tr>`;
         });
-        document.getElementById('profile-table-clinic').innerHTML = hClinic || `<tr><td style="text-align:center; padding:15px; color:#999;">💡 لا توجد زيارات سابقة للعيادة.</td></tr>`;
+        document.getElementById('profile-table-clinic').innerHTML = hClinic || `<tr><td colspan="3" style="text-align:center; padding:15px; color:#999;">💡 لا توجد زيارات سابقة للعيادة.</td></tr>`;
     } catch(e) { document.getElementById('profile-table-clinic').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
 }
 
