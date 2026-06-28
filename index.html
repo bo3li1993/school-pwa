@@ -122,58 +122,72 @@ if(schoolFromUrl) {
 }
 
         import { db, auth } from './js/firebase-config.js';
-        import { collection, query, where, getDocs, getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-        import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+        import { signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+        const functions = getFunctions(auth.app);
+        const loginUserFn = httpsCallable(functions, 'loginUser');
 
         window.login = async (e) => {
             e.preventDefault();
-            const id = document.getElementById('id').value;
-            const pass = document.getElementById('pass').value;
-            
-            // جلب كل المستخدمين بنفس الرقم (قد يكونون من مدارس مختلفة)
-            const snap = await getDocs(query(collection(db, 'users'), where('userId', '==', id)));
-            if(snap.empty) return alert('❌ رقم المستخدم غير مسجل في النظام');
-            
-            // مطابقة كلمة المرور أولاً — يحل مشكلة تعارض المدارس
-            let userData = null;
-            for(const d of snap.docs) {
-                const dData = d.data();
-                const storedPass = String(dData.plainPass || '').trim();
-                const inputPass  = String(pass || '').trim();
-                if(storedPass === inputPass) { userData = dData; break; }
+            const id = document.getElementById('id').value.trim();
+            const pass = document.getElementById('pass').value.trim();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ جاري التحقق...';
+
+            try {
+                // 🔐 التحقق من كلمة المرور يتم بالكامل على السيرفر الآن (Cloud Function)
+                // plainPass لا يُرسل أبداً للمتصفح بأي مرحلة
+                const result = await loginUserFn({ schoolId: schoolFromUrl || null, userId: id, password: pass });
+                const userData = result.data;
+
+                // 🔒 لو الرابط مخصص لمدرسة معينة (?school=xxx) — يجب أن يطابق schoolId المستخدم
+                if(schoolFromUrl && userData.schoolId !== schoolFromUrl) {
+                    throw { code: 'school-mismatch' };
+                }
+
+                await signInWithCustomToken(auth, userData.token);
+
+                // فحص حالة المدرسة
+                const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
+                if(!schoolSnap.exists()) throw { code: 'school-not-found' };
+                const schoolData = schoolSnap.data();
+
+                if(schoolData.status === 'suspended') throw { code: 'school-suspended' };
+                if(schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) throw { code: 'subscription-ended' };
+
+                // حفظ الجلسة والتوجيه
+                const role = String(userData.role || '').trim().toLowerCase();
+                localStorage.setItem('hs_user', JSON.stringify({
+                    userId:     id,
+                    name:       userData.name || '',
+                    role:       role,
+                    schoolId:   userData.schoolId,
+                    schoolName: schoolData.name || '',
+                    classId:    userData.classId || ''
+                }));
+
+                const adminRoles = ['admin','assistant_manager','wing_supervisor','social_worker'];
+                window.location.replace(adminRoles.includes(role) ? 'admin.html' : 'teacher.html');
+
+            } catch(err) {
+                const code = err.code || '';
+                const messages = {
+                    'functions/not-found':         '❌ رقم المستخدم غير مسجل في النظام',
+                    'functions/permission-denied': '❌ كلمة المرور غير صحيحة، أو الحساب موقوف',
+                    'functions/invalid-argument':  '⚠️ يرجى تعبئة جميع الحقول',
+                    'school-mismatch':   '❌ هذا الرابط مخصص لمدرسة أخرى\nرجاءً استخدم رابط مدرستك الصحيح',
+                    'school-not-found':  '❌ مدرستك غير مسجلة في النظام',
+                    'school-suspended':  '⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً\nللاستفسار تواصل مع المطور',
+                    'subscription-ended':'⚠️ انتهى اشتراك مدرستك\nللتجديد تواصل مع المطور'
+                };
+                alert(messages[code] || ('❌ خطأ غير متوقع: ' + (err.message || 'تحقق من اتصال الإنترنت')));
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول';
             }
-            if(!userData) return alert('❌ كلمة المرور غير صحيحة');
-            if(!userData.schoolId) return alert('❌ المستخدم غير مرتبط بمدرسة — تواصل مع مدير المدرسة');
-
-            // 🔒 لو الرابط مخصص لمدرسة معينة (?school=xxx) — يجب أن يطابق schoolId المستخدم
-            if(schoolFromUrl && userData.schoolId !== schoolFromUrl) {
-                return alert(`❌ هذا الرابط مخصص لمدرسة أخرى\nرجاءً استخدم رابط مدرستك الصحيح`);
-            }
-
-            // فحص حالة المدرسة
-            const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
-            if(!schoolSnap.exists()) return alert('❌ مدرستك غير مسجلة في النظام');
-            const schoolData = schoolSnap.data();
-
-            if(schoolData.status === 'suspended')
-                return alert('⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً\nللاستفسار تواصل مع المطور');
-            if(schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date())
-                return alert('⚠️ انتهى اشتراك مدرستك\nللتجديد تواصل مع المطور');
-
-            // حفظ الجلسة والتوجيه
-            const role = String(userData.role || '').trim().toLowerCase();
-            localStorage.setItem('hs_user', JSON.stringify({
-                userId:     userData.userId,
-                name:       userData.name || '',
-                role:       role,
-                schoolId:   userData.schoolId,
-                schoolName: schoolData.name || '',
-                classId:    userData.classId || ''
-            }));
-            
-            // توجيه حسب الدور
-            const adminRoles = ['admin','assistant_manager','wing_supervisor','social_worker'];
-            window.location.replace(adminRoles.includes(role) ? 'admin.html' : 'teacher.html');
         };
 
         // الـ PWA Install Prompt
