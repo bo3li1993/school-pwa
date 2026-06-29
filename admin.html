@@ -130,6 +130,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   <div class="menu-group-title">الحضور والسلوك</div>
   <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i> الغياب اليومي</div>
   <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-triangle"></i> الغياب المتكرر</div>
+  <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-file-earmark-pdf"></i> التقارير الأسبوعية</div>
   <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
   <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
   <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
@@ -140,6 +141,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-clipboard-data"></i> الزيارات الفنية</div>
   <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-person-check"></i> زيارات المدير</div>
   <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-arrow-repeat"></i> جولة الجناح</div>
+  <div class="menu-item" data-tab="tab-coverage" onclick="window.switchTab('tab-coverage')"><i class="bi bi-shuffle"></i> توزيع الاحتياط</div>
 
   <div class="menu-group-title">التواصل والتميز</div>
   <div class="menu-item" data-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i> صندوق المراسلات</div>
@@ -173,6 +175,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
     <div id="tab-classes" class="tab-content"></div>
     <div id="tab-attendance" class="tab-content"></div>
     <div id="tab-repeat" class="tab-content"></div>
+    <div id="tab-reports" class="tab-content"></div>
     <div id="tab-behavior" class="tab-content"></div>
     <div id="tab-gatepass" class="tab-content"></div>
     <div id="tab-clinic" class="tab-content"></div>
@@ -181,6 +184,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
     <div id="tab-visits" class="tab-content"></div>
     <div id="tab-manager-visits" class="tab-content"></div>
     <div id="tab-rounds" class="tab-content"></div>
+    <div id="tab-coverage" class="tab-content"></div>
     <div id="tab-mailbox" class="tab-content"></div>
     <div id="tab-honors" class="tab-content"></div>
     <div id="tab-rewards" class="tab-content"></div>
@@ -224,6 +228,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
         <div class="more-group-title">الحضور والسلوك</div>
         <div class="more-list">
           <div class="more-row" onclick="window.switchTab('tab-repeat')"><div class="more-icon"><i class="bi bi-exclamation-triangle"></i></div><span>الغياب المتكرر</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-reports')"><div class="more-icon"><i class="bi bi-file-earmark-pdf"></i></div><span>التقارير الأسبوعية</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-behavior')"><div class="more-icon"><i class="bi bi-shield-exclamation"></i></div><span>السلوك</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-gatepass')"><div class="more-icon"><i class="bi bi-door-open"></i></div><span>الاستئذان</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-clinic')"><div class="more-icon"><i class="bi bi-heart-pulse"></i></div><span>العيادة</span><i class="bi bi-chevron-left"></i></div>
@@ -238,6 +243,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
           <div class="more-row" onclick="window.switchTab('tab-visits')"><div class="more-icon"><i class="bi bi-clipboard-data"></i></div><span>الزيارات الفنية</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-manager-visits')"><div class="more-icon"><i class="bi bi-person-check"></i></div><span>زيارات المدير</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-rounds')"><div class="more-icon"><i class="bi bi-arrow-repeat"></i></div><span>جولة الجناح</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-coverage')"><div class="more-icon"><i class="bi bi-shuffle"></i></div><span>توزيع الاحتياط</span><i class="bi bi-chevron-left"></i></div>
         </div>
       </div>
 
@@ -303,6 +309,7 @@ const moduleMap = {
     'tab-classes':          { file: './js/modules/classes.js',         init: 'initClassesModule' },
     'tab-attendance':       { file: './js/modules/attendance.js',      init: 'initAttendanceModule' },
     'tab-repeat':           { file: './js/modules/repeat.js',          init: 'initRepeatModule' },
+    'tab-reports':          { file: './js/modules/reports.js',         init: 'initReportsModule' },
     'tab-behavior':         { file: './js/modules/behavior.js',        init: 'initBehaviorModule' },
     'tab-gatepass':         { file: './js/modules/gatepass.js',        init: 'initGatepassModule' },
     'tab-clinic':           { file: './js/modules/clinic.js',          init: 'initClinicModule' },
@@ -311,6 +318,7 @@ const moduleMap = {
     'tab-visits':           { file: './js/modules/visits.js',          init: 'initVisitsModule' },
     'tab-manager-visits':   { file: './js/modules/manager_visits.js',  init: 'initManagerVisitsModule' },
     'tab-rounds':           { file: './js/modules/rounds.js',          init: 'initRoundsModule' },
+    'tab-coverage':         { file: './js/modules/distribution.js',    init: 'initDistributionModule' },
     'tab-mailbox':          { file: './js/modules/mailbox.js',         init: 'initMailboxModule' },
     'tab-honors':           { file: './js/modules/honors.js',          init: 'initHonorsModule' },
     'tab-rewards':          { file: './js/modules/rewards.js',         init: 'initRewardsModule' },
