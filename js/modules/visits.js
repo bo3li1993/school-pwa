@@ -114,7 +114,9 @@ export async function initVisitsModule() {
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:14px;">
                     <div>
                         <label class="v-label">اسم المعلم المزار</label>
-                        <input type="text" id="visit-teacher-name" class="v-input" placeholder="الاسم الثلاثي" required>
+                        <select id="visit-teacher-name" class="v-input" required>
+                            <option value="">⏳ جاري تحميل دليل المعلمين...</option>
+                        </select>
                     </div>
                     <div>
                         <label class="v-label">القسم / المادة الدراسية</label>
@@ -125,7 +127,7 @@ export async function initVisitsModule() {
                     </div>
                     <div>
                         <label class="v-label">اسم الموجه الفني / الزائر</label>
-                        <input type="text" id="visit-visitor-name" class="v-input" placeholder="رئيس القسم أو الموجه" required>
+                        <input type="text" id="visit-visitor-name" class="v-input" value="${(JSON.parse(localStorage.getItem('hs_user')||'{}').name)||''}" readonly style="background:var(--off); color:var(--mid); font-weight:700;">
                     </div>
                 </div>
 
@@ -177,6 +179,23 @@ export async function initVisitsModule() {
     `;
 
     loadTechVisitsLive();
+    loadTeacherDirectoryForVisits();
+}
+
+async function loadTeacherDirectoryForVisits() {
+    const sel = document.getElementById('visit-teacher-name');
+    if (!sel) return;
+    try {
+        const schoolId = getActiveSchoolId();
+        const q = query(collection(db,'users'), where('schoolId','==',schoolId), where('role','==','teacher'));
+        const snap = await getDocs(q);
+        const names = [];
+        snap.forEach(d => { if(d.data().name) names.push(d.data().name.trim()); });
+        names.sort((a,b)=>a.localeCompare(b,'ar'));
+        sel.innerHTML = names.length
+            ? '<option value="">-- اختر المعلم --</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('')
+            : '<option value="">⚠️ لا يوجد معلمين مسجّلين</option>';
+    } catch(e) { sel.innerHTML = '<option value="">❌ خطأ بالتحميل</option>'; }
 }
 
 // ===== رسم بنود التقييم حسب القسم المختار =====

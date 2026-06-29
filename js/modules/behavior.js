@@ -5,6 +5,8 @@ export async function initBehaviorModule() {
     const container = document.getElementById('tab-behavior');
     if (!container) return;
 
+    const currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
+
     try {
         container.innerHTML = `
         <div class="card" style="border-top: 5px solid var(--danger-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
@@ -27,7 +29,7 @@ export async function initBehaviorModule() {
                     </div>
                     <div>
                         <label style="font-weight:700; font-size:12px; color:#444;">3. المعلم المحيل للحالة (جهة الإحالة):</label>
-                        <input type="text" id="beh-referred-by" placeholder="مثال: أ. محمد الشمري" required style="padding:12px;">
+                        <input type="text" id="beh-referred-by" value="${currentUser.name || ''}" readonly style="padding:12px; background:var(--off); color:var(--mid); font-weight:700;">
                     </div>
                     <div>
                         <label style="font-weight:700; font-size:12px; color:#444;">4. الإجراء التربوي المتخذ:</label>

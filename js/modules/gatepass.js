@@ -38,7 +38,16 @@ export async function initGatepassModule() {
                 
                 <div style="margin-top:12px;">
                     <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">سبب الاستئذان الرسمي</label>
-                    <input type="text" id="gate-reason" placeholder="مثال: مراجعة مستشفى حكومي" required style="width:100%; padding:8px;">
+                    <select id="gate-reason" onchange="window.handleGateReasonChange(this.value)" required style="width:100%; padding:8px;">
+                        <option value="">-- اختر السبب --</option>
+                        <option value="مراجعة مستشفى / عيادة">🏥 مراجعة مستشفى / عيادة</option>
+                        <option value="موعد طبي مسبق">📅 موعد طبي مسبق</option>
+                        <option value="ظرف عائلي طارئ">👨‍👩‍👧 ظرف عائلي طارئ</option>
+                        <option value="إجراء حكومي رسمي">🏛️ إجراء حكومي رسمي (جوازات/أحوال مدنية)</option>
+                        <option value="مشاركة بمناسبة خارجية">🎤 مشاركة بمناسبة أو فعالية خارجية</option>
+                        <option value="أخرى">📌 أخرى (حدد السبب)</option>
+                    </select>
+                    <input type="text" id="gate-reason-other" placeholder="اكتب السبب بالتفصيل..." style="width:100%; padding:8px; margin-top:8px; display:none;">
                 </div>
                 
                 <button type="submit" style="width:100%; background:var(--accent-color); color:#fff; border:none; padding:10px; font-weight:700; margin-top:10px; cursor:pointer; border-radius:5px;"><i class="bi bi-printer-fill"></i> اعتماد وحفظ تصريح الخروج السحابي</button>
@@ -104,20 +113,36 @@ window.handleGateClassChange = async function(classId) {
     }
 };
 
+window.handleGateReasonChange = function(value) {
+    const otherInput = document.getElementById('gate-reason-other');
+    if (value === 'أخرى') {
+        otherInput.style.display = 'block';
+        otherInput.required = true;
+    } else {
+        otherInput.style.display = 'none';
+        otherInput.required = false;
+    }
+};
+
 window.handleRegisterGatepassLive = async function(e) {
     e.preventDefault();
     const schoolId = getActiveSchoolId();
-    
+    const reasonSelect = document.getElementById('gate-reason').value;
+    const finalReason = reasonSelect === 'أخرى' ? document.getElementById('gate-reason-other').value.trim() : reasonSelect;
+
+    if(!finalReason) { alert('⚠️ يرجى تحديد سبب الاستئذان'); return; }
+
     await addDoc(collection(db, 'gatepass'), {
         schoolId: schoolId,
         studentName: document.getElementById('gate-student-select').value,
         classId: document.getElementById('gate-class-select').value,
         relative: document.getElementById('gate-relative').value,
-        reason: document.getElementById('gate-reason').value.trim(),
+        reason: finalReason,
         createdAt: serverTimestamp()
     });
     alert('✓ تم حفظ واعتماد التصريح!');
     document.getElementById('gatepass-reg-form').reset();
+    document.getElementById('gate-reason-other').style.display = 'none';
     loadGatepassLogsLive();
 };
 

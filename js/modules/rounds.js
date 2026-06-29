@@ -5,20 +5,22 @@ export async function initRoundsModule() {
     const container = document.getElementById('tab-rounds');
     if (!container) return;
 
+    const currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
+
     container.innerHTML = `
-    <div class="card" style="border-top:5px solid var(--accent-color); padding:20px; background:#fff; border-radius:12px; margin-bottom:20px;">
+    <div class="card" style="border-top:5px solid var(--accent-color); margin-bottom:20px;">
         <h2><i class="bi bi-clipboard-check-fill"></i> توثيق ورصد جولة تفقد الجناح المدرسي اليومية</h2>
         <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:15px;">نموذج المشرف الإداري لتوثيق استقرار الفصول وحصر النواقص الهندسية والتنظيمية بالأجنحة.</p>
         <form id="wing-round-form" onsubmit="window.handleRegisterWingRoundLive(event)">
-            <label style="font-weight:700; font-size:12px;">اسم المشرف الإداري / وكيل الجناح</label>
-            <input type="text" id="round-officer-name" placeholder="أدخل اسم الوكيل المسؤول" required style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+            <label style="font-weight:700; font-size:12px;">المشرف المسجِّل للجولة</label>
+            <input type="text" id="round-officer-name" value="${currentUser.name || ''}" readonly style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px; background:var(--off); color:var(--mid); font-weight:700;">
             <label style="font-weight:700; font-size:12px;">الملاحظة الإدارية (حالة النظافة والاستقرار)</label>
             <input type="text" id="round-wing-notes" placeholder="مثال: الجناح مستقر..." required style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
             <button type="submit" style="background:var(--accent-color); width:100%; font-weight:bold; border:none; padding:12px; color:#fff; cursor:pointer; border-radius:5px;"><i class="bi bi-bookmark-plus-fill"></i> تقييد وحفظ الجولة الإدارية</button>
         </form>
     </div>
 
-    <div class="card" style="border-top: 5px solid var(--primary-color); padding:20px; border-radius:12px;">
+    <div class="card" style="border-top: 5px solid var(--primary-color);">
         <h2><i class="bi bi-list-columns-reverse"></i> سجل الجولات التفقدية (أرشيف لايف)</h2>
         <div style="overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; font-size:13px;">
@@ -45,7 +47,7 @@ window.handleRegisterWingRoundLive = async function(e) {
             createdAt: serverTimestamp()
         });
         alert('✓ تم التوثيق بنجاح.');
-        document.getElementById('wing-round-form').reset();
+        document.getElementById('round-wing-notes').value = '';
     } catch(err) { alert('خطأ: ' + err.message); }
 };
 
@@ -54,7 +56,6 @@ function loadWingRoundsLive() {
     if (!tbody) return;
 
     const schoolId = getActiveSchoolId();
-    // استعلام محمي خاص بالمدرسة فقط
     const q = query(collection(db, 'wing_rounds'), where('schoolId', '==', schoolId));
     
     onSnapshot(q, (snap) => {
