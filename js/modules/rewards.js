@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initRewardsModule() {
-    const container = document.getElementById('tab-honors');
+    const container = document.getElementById('tab-rewards');
     if (!container) return;
 
     try {
