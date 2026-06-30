@@ -24,7 +24,11 @@ export async function initUsersModule() {
                     <label style="font-weight:700; font-size:13px;">الصلاحية</label>
                     <select id="reg-user-role" required>
                         <option value="teacher">معلم</option>
-                        <option value="admin">مسؤول إداري</option>
+                        <option value="admin">مسؤول إداري (مدير)</option>
+                        <option value="assistant_manager">مساعد مدير</option>
+                        <option value="wing_supervisor">مشرف جناح</option>
+                        <option value="social_worker">أخصائي اجتماعي</option>
+                        <option value="guard">حارس</option>
                     </select>
                 </div>
                 <div>
