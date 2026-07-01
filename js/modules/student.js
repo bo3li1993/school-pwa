@@ -109,55 +109,56 @@ window.showStudentProfile = function(studentDocId) {
     if (!data) return;
 
     resultsDiv.innerHTML = `
-        <div class="card" style="border-right:5px solid var(--sky); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+        <div class="card" style="border-right:5px solid var(--sky); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:16px;">
             <div>
-                <h3 style="margin:0 0 6px;">👤 ملف الطالب الشامل: ${data.name}</h3>
-                <p style="font-size:13px; font-weight:700; color:var(--mid);">الفصل الدراسي: صف ( <span id="class-display-${data.id}">${data.classId}</span> ) &nbsp;&nbsp; <i class="bi bi-telephone-fill"></i> ${data.parentPhone || 'غير مسجل'}</p>
+                <h3 style="margin:0 0 4px; font-size:16px;">👤 ${data.name}</h3>
+                <span style="background:var(--ice); color:var(--sky); padding:3px 10px; border-radius:6px; font-size:13px; font-weight:700;">الفصل: ${data.classId}</span>
+                <span style="color:var(--mid); font-size:13px; margin-right:8px;"><i class="bi bi-telephone-fill"></i> ${data.parentPhone || 'غير مسجل'}</span>
             </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button onclick="window.contactParent('${data.parentPhone||''}', '${data.name}')"
-                    style="background:#25d366; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo';">
+                    style="background:#25d366; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:13px;">
                     <i class="bi bi-whatsapp"></i> مراسلة
                 </button>
-                <div style="display:flex; align-items:center; gap:0; border:1.5px solid var(--line); border-radius:8px; overflow:hidden;">
-                    <select id="new-class-${data.id}" style="border:none; border-radius:0; margin:0; min-width:100px;">
+                <div style="display:flex; align-items:center; border:1.5px solid var(--line); border-radius:8px; overflow:hidden;">
+                    <select id="new-class-${data.id}" style="border:none; border-radius:0; margin:0; min-width:90px; font-size:13px;">
                         <option value="">نقل لفصل...</option>
                         ${ALL_CLASSES.filter(c => c !== data.classId).map(c => `<option value="${c}">${c}</option>`).join('')}
                     </select>
                     <button onclick="window.transferStudent('${data.id}')"
-                        style="background:var(--navy); color:#fff; border:none; padding:9px 16px; font-weight:700; cursor:pointer; font-family:'Cairo';">نقل</button>
+                        style="background:var(--navy); color:#fff; border:none; padding:8px 14px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:13px;">نقل</button>
                 </div>
             </div>
         </div>
 
-        <div class="card" style="border-right:5px solid #64748b;">
-            <h4 style="font-size:14px; color:#64748b;"><i class="bi bi-calendar-x-fill"></i> سجل الانتظام، الغياب والتأخير</h4>
+        <div class="card" style="border-right:5px solid var(--danger-color);">
+            <h4 style="font-size:14px; color:var(--danger-color); margin-bottom:8px;"><i class="bi bi-calendar-x"></i> سجل الغياب والتأخير فقط</h4>
             <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">
-                <thead><tr style="background:#f8fafc;"><th>التاريخ</th><th>نوع الحالة</th><th>الحصة</th><th>المسجل المسؤول</th></tr></thead>
+                <thead><tr style="background:#f8fafc;"><th style="padding:8px;">التاريخ</th><th style="padding:8px;">الحالة</th><th style="padding:8px;">الحصة</th><th style="padding:8px;">سجّلها</th></tr></thead>
                 <tbody id="profile-table-attendance"><tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
 
-        <div class="card" style="border-right:5px solid var(--danger-color);">
-            <h4 style="font-size:14px; color:var(--danger-color);"><i class="bi bi-shield-slash"></i> الأرشيف السلوكي (إيجابي / سلبي)</h4>
+        <div class="card" style="border-right:5px solid var(--gold);">
+            <h4 style="font-size:14px; color:var(--gold); margin-bottom:8px;"><i class="bi bi-shield-slash"></i> السجل السلوكي</h4>
             <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">
-                <thead><tr style="background:#f8fafc;"><th>التاريخ</th><th>النوع</th><th>التفاصيل الموثقة</th><th>الإجراء المتخذ</th></tr></thead>
+                <thead><tr style="background:#f8fafc;"><th style="padding:8px;">التاريخ</th><th style="padding:8px;">النوع</th><th style="padding:8px;">التفاصيل</th><th style="padding:8px;">الإجراء</th></tr></thead>
                 <tbody id="profile-table-behavior"><tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
 
         <div class="card" style="border-right:5px solid var(--success-color);">
-            <h4 style="font-size:14px; color:var(--success-color);"><i class="bi bi-ticket-detailed"></i> الأذونات وبوابة الأمن</h4>
+            <h4 style="font-size:14px; color:var(--success-color); margin-bottom:8px;"><i class="bi bi-ticket-detailed"></i> الاستئذان</h4>
             <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">
-                <thead><tr style="background:#f8fafc;"><th>التاريخ</th><th>المستلم</th><th>الصلة</th><th>السبب</th><th>حالة البوابة</th></tr></thead>
-                <tbody id="profile-table-gatepass"><tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
+                <thead><tr style="background:#f8fafc;"><th style="padding:8px;">التاريخ</th><th style="padding:8px;">السبب</th><th style="padding:8px;">المستلم</th><th style="padding:8px;">الحالة</th></tr></thead>
+                <tbody id="profile-table-gatepass"><tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
 
-        <div class="card" style="border-right:5px solid var(--gold);">
-            <h4 style="font-size:14px; color:var(--gold);"><i class="bi bi-heart-pulse"></i> سجل زيارات العيادة</h4>
+        <div class="card" style="border-right:5px solid var(--sky);">
+            <h4 style="font-size:14px; color:var(--sky); margin-bottom:8px;"><i class="bi bi-heart-pulse"></i> زيارات العيادة</h4>
             <div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:13px;">
-                <thead><tr style="background:#f8fafc;"><th>التاريخ</th><th>الشكوى / العارض</th><th>الإجراء والعلاج</th></tr></thead>
+                <thead><tr style="background:#f8fafc;"><th style="padding:8px;">التاريخ</th><th style="padding:8px;">الشكوى</th><th style="padding:8px;">العلاج</th></tr></thead>
                 <tbody id="profile-table-clinic"><tr><td colspan="3" style="text-align:center; padding:15px; color:#999;">🔍 جاري الفحص...</td></tr></tbody>
             </table></div>
         </div>
@@ -166,28 +167,38 @@ window.showStudentProfile = function(studentDocId) {
     loadStudentHistory(data.name.trim());
 };
 
-// ===== جلب سجلات الحضور/السلوك/الاستئذان للطالب المختار =====
+// ===== جلب سجلات السلوك/الاستئذان/العيادة للطالب المختار =====
 async function loadStudentHistory(studentName) {
     const schoolId = getActiveSchoolId();
 
-    // أ) الحضور والغياب
+    // أ) الغياب والتأخير فقط (بدون حضور)
     try {
-        const qAtt = query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
+        const qAtt = query(collection(db, 'attendance'),
+            where('schoolId', '==', schoolId),
+            where('studentName', '==', studentName),
+            where('status', 'in', ['absent', 'late']));
         const snapAtt = await getDocs(qAtt);
         let hAtt = '';
-        snapAtt.forEach(docSnap => {
+        const docs = snapAtt.docs.sort((a,b) => (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
+        docs.forEach(docSnap => {
             const d = docSnap.data();
-            const badgeColor = d.status === 'absent' ? 'background:var(--danger-color);' : (d.status === 'late' ? 'background:var(--accent-color);' : 'background:var(--success-color);');
-            const statusText = d.status === 'absent' ? 'غياب' : (d.status === 'late' ? 'تأخير' : 'حضور');
+            const isAbsent = d.status === 'absent';
+            const badge = isAbsent
+                ? 'background:var(--danger-color); color:#fff;'
+                : 'background:var(--accent-color); color:#fff;';
             hAtt += `<tr style="border-bottom:1px solid #eee;">
-                <td style="padding:8px;">🕒 ${d.date || d.dateStr || '-'}</td>
-                <td style="padding:8px;"><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${statusText}</span></td>
-                <td style="padding:8px; font-weight:bold;">الحصة: ${d.period || 'غير محددة'}</td>
+                <td style="padding:8px;">${d.dateStr || d.date || '-'}</td>
+                <td style="padding:8px;"><span style="padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; ${badge}">${isAbsent ? 'غائب' : 'متأخر'}</span></td>
+                <td style="padding:8px; text-align:center;">الحصة ${d.period || '-'}</td>
                 <td style="padding:8px; color:#666;">${d.teacherName || d.recordedBy || '-'}</td>
             </tr>`;
         });
-        document.getElementById('profile-table-attendance').innerHTML = hAtt || `<tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">✨ سجل الطالب ممتاز، لا توجد حالات غياب مرصودة.</td></tr>`;
-    } catch(e) { document.getElementById('profile-table-attendance').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
+        document.getElementById('profile-table-attendance').innerHTML = hAtt ||
+            `<tr><td colspan="4" style="text-align:center; padding:15px; color:var(--success-color); font-weight:bold;">✅ لا يوجد غياب أو تأخير مسجّل.</td></tr>`;
+    } catch(e) {
+        document.getElementById('profile-table-attendance').innerHTML =
+            `<tr><td colspan="4" style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`;
+    }
 
     // ب) السلوك
     try {
@@ -198,14 +209,18 @@ async function loadStudentHistory(studentName) {
             const d = docSnap.data();
             const badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : (d.type === 'إيجابي' ? 'background:var(--success-color);' : 'background:#94a3b8;');
             hBeh += `<tr style="border-bottom:1px solid #eee;">
-                <td style="padding:8px;">🕒 ${d.dateStr || d.date || '-'}</td>
+                <td style="padding:8px;">${d.dateStr || d.date || '-'}</td>
                 <td style="padding:8px;"><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type || '—'}</span></td>
                 <td style="padding:8px;">${d.notes || d.details || '-'}</td>
-                <td style="padding:8px; color:var(--hover-color); font-weight:bold;">${d.action || '-'}</td>
+                <td style="padding:8px; font-weight:bold;">${d.action || '-'}</td>
             </tr>`;
         });
-        document.getElementById('profile-table-behavior').innerHTML = hBeh || `<tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">✅ السجل السلوكي نظيف تماماً.</td></tr>`;
-    } catch(e) { document.getElementById('profile-table-behavior').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
+        document.getElementById('profile-table-behavior').innerHTML = hBeh ||
+            `<tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">✅ السجل السلوكي نظيف.</td></tr>`;
+    } catch(e) {
+        document.getElementById('profile-table-behavior').innerHTML =
+            `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`;
+    }
 
     // ج) الاستئذان
     try {
@@ -214,18 +229,19 @@ async function loadStudentHistory(studentName) {
         let hGate = '';
         snapGate.forEach(docSnap => {
             const d = docSnap.data();
-            const statusBadge = d.status === 'exited' ? 'background:var(--success-color); color:#fff;' : 'background:var(--accent-color); color:#fff;';
-            const statusText = d.status === 'exited' ? 'غادر المدرسة رسميًا ✅' : 'مأذون له / معلق عند الباب ⏳';
             hGate += `<tr style="border-bottom:1px solid #eee;">
-                <td style="padding:8px;">🕒 ${d.dateStr || '-'}</td>
-                <td style="padding:8px;">${d.relative || '-'}</td>
-                <td style="padding:8px;">${d.relation || '-'}</td>
+                <td style="padding:8px;">${d.dateStr || '-'}</td>
                 <td style="padding:8px;">${d.reason || '-'}</td>
-                <td style="padding:8px;"><span style="padding:2px 6px; border-radius:4px; font-size:11px; ${statusBadge}">${statusText}</span></td>
+                <td style="padding:8px;">${d.relative || '-'} (${d.relation || '-'})</td>
+                <td style="padding:8px;"><span style="padding:2px 6px; border-radius:4px; font-size:11px; ${d.status==='exited'?'background:var(--success-color);':'background:var(--accent-color);'} color:#fff;">${d.status==='exited'?'غادر ✅':'معلّق ⏳'}</span></td>
             </tr>`;
         });
-        document.getElementById('profile-table-gatepass').innerHTML = hGate || `<tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">💡 لم يتم رصد أي استئذانات سابقة.</td></tr>`;
-    } catch(e) { document.getElementById('profile-table-gatepass').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
+        document.getElementById('profile-table-gatepass').innerHTML = hGate ||
+            `<tr><td colspan="4" style="text-align:center; padding:15px; color:#999;">💡 لا توجد استئذانات.</td></tr>`;
+    } catch(e) {
+        document.getElementById('profile-table-gatepass').innerHTML =
+            `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`;
+    }
 
     // د) زيارات العيادة
     try {
@@ -236,13 +252,17 @@ async function loadStudentHistory(studentName) {
             const d = docSnap.data();
             const dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('ar-KW') : (d.dateStr || '-');
             hClinic += `<tr style="border-bottom:1px solid #eee;">
-                <td style="padding:8px;">🕒 ${dateStr}</td>
+                <td style="padding:8px;">${dateStr}</td>
                 <td style="padding:8px; font-weight:bold; color:var(--danger-color);">${d.complaint || '-'}</td>
                 <td style="padding:8px;">${d.treatment || '-'}</td>
             </tr>`;
         });
-        document.getElementById('profile-table-clinic').innerHTML = hClinic || `<tr><td colspan="3" style="text-align:center; padding:15px; color:#999;">💡 لا توجد زيارات سابقة للعيادة.</td></tr>`;
-    } catch(e) { document.getElementById('profile-table-clinic').innerHTML = `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`; }
+        document.getElementById('profile-table-clinic').innerHTML = hClinic ||
+            `<tr><td colspan="3" style="text-align:center; padding:15px; color:#999;">💡 لا توجد زيارات عيادة.</td></tr>`;
+    } catch(e) {
+        document.getElementById('profile-table-clinic').innerHTML =
+            `<tr><td style="padding:8px; color:red;">خطأ: ${e.message}</td></tr>`;
+    }
 }
 
 // ===== نقل الطالب لفصل جديد =====
