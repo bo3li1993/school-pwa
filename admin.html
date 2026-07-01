@@ -129,6 +129,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
 
   <div class="menu-group-title">الحضور والسلوك</div>
   <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i> الغياب اليومي</div>
+  <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-calendar-week"></i> كشف يومي شامل</div>
   <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-triangle"></i> الغياب المتكرر</div>
   <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-file-earmark-pdf"></i> التقارير الأسبوعية</div>
   <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
@@ -174,6 +175,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
     <div id="tab-students-manage" class="tab-content"></div>
     <div id="tab-classes" class="tab-content"></div>
     <div id="tab-attendance" class="tab-content"></div>
+    <div id="tab-daily-report" class="tab-content"></div>
     <div id="tab-repeat" class="tab-content"></div>
     <div id="tab-reports" class="tab-content"></div>
     <div id="tab-behavior" class="tab-content"></div>
@@ -227,6 +229,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
       <div class="more-group">
         <div class="more-group-title">الحضور والسلوك</div>
         <div class="more-list">
+          <div class="more-row" onclick="window.switchTab('tab-daily-report')"><div class="more-icon"><i class="bi bi-calendar-week"></i></div><span>كشف يومي شامل</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-repeat')"><div class="more-icon"><i class="bi bi-exclamation-triangle"></i></div><span>الغياب المتكرر</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-reports')"><div class="more-icon"><i class="bi bi-file-earmark-pdf"></i></div><span>التقارير الأسبوعية</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-behavior')"><div class="more-icon"><i class="bi bi-shield-exclamation"></i></div><span>السلوك</span><i class="bi bi-chevron-left"></i></div>
@@ -308,6 +311,7 @@ const moduleMap = {
     'tab-students-manage':  { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
     'tab-classes':          { file: './js/modules/classes.js',         init: 'initClassesModule' },
     'tab-attendance':       { file: './js/modules/attendance.js',      init: 'initAttendanceModule' },
+    'tab-daily-report':     { file: './js/modules/daily_report.js',    init: 'initDailyReportModule' },
     'tab-repeat':           { file: './js/modules/repeat.js',          init: 'initRepeatModule' },
     'tab-reports':          { file: './js/modules/reports.js',         init: 'initReportsModule' },
     'tab-behavior':         { file: './js/modules/behavior.js',        init: 'initBehaviorModule' },
