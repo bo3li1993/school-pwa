@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initMailboxModule() {
-    const container = document.getElementById('tab-announcements');
+    const container = document.getElementById('tab-mailbox');
     if (!container) return;
 
     try {
