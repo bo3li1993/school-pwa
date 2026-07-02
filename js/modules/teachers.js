@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initTeachersModule() {
-    const container = document.getElementById('tab-teacher-directory');
+    const container = document.getElementById('tab-teachers');
     if (!container) return;
 
     // 🏢 البصمة المدرسية للفلترة الأمنية
