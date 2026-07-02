@@ -59,6 +59,11 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 .splash-mark h1{color:#fff;font-size:16px;font-weight:900;letter-spacing:.3px}
 .splash-mark p{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600}
 @media(prefers-reduced-motion:reduce){.splash{transition:none}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:12px;font-size:13.5px;font-weight:700;z-index:9999;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:toastIn .3s ease;font-family:'Cairo',sans-serif;white-space:nowrap;}
+.toast.success{background:#059669;}.toast.error{background:#dc2626;}.toast.info{background:var(--sky);}
+.btn-whatsapp{background:#25d366;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;font-family:'Cairo',sans-serif;display:inline-flex;align-items:center;gap:6px;}
 </style>
 </head>
 <body>
@@ -237,8 +242,18 @@ function startGuardLiveGatepassListener() {
     });
 }
 
+// ===== Toast =====
+function showToast(msg, type='success') {
+    document.querySelectorAll('.toast').forEach(t=>t.remove());
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>{t.style.animation='toastOut .4s forwards';setTimeout(()=>t.remove(),400);},2500);
+}
+
 // ✅ دالة إثبات خروج الطالب الفعلي وتغيير حالته على السيستم المركزي
-window.confirmStudentExitLive = async function(docId, studentName) {
+window.confirmStudentExitLive = async function(docId, studentName, parentPhone) {
     if(!confirm(`هل تأكدت من هوية ولي الأمر وغادر الطالب [ ${studentName} ] المدرسة الآن؟`)) return;
     try {
         const docRef = doc(db, 'gatepass', docId);
@@ -246,8 +261,15 @@ window.confirmStudentExitLive = async function(docId, studentName) {
             status: 'exited',
             exitTimeStr: getUnifiedTimeString()
         });
-        alert(`✓ تم إثبات خروج الطالب [ ${studentName} ] بنجاح، وتأمين البوابة.`);
-    } catch(err) { alert("خطأ في تحديث البيانات: " + err.message); }
+        showToast(`✓ تم إثبات خروج الطالب [ ${studentName} ]`);
+        // WhatsApp لولي الأمر
+        if(parentPhone && parentPhone.trim()) {
+            const msg = encodeURIComponent(`تنبيه من المدرسة: غادر ابنكم ${studentName} المدرسة بتاريخ ${getUnifiedDateString()} الساعة ${getUnifiedTimeString()}`);
+            const phone = parentPhone.replace(/\D/g,'');
+            const waLink = `https://wa.me/965${phone}?text=${msg}`;
+            if(confirm('هل تريد إشعار ولي الأمر عبر WhatsApp؟')) window.open(waLink, '_blank');
+        }
+    } catch(err) { showToast('خطأ في تحديث البيانات: ' + err.message, 'error'); }
 };
 
 // 🔒 تسجيل زائر جديد في الكشف السحابي الموحد وتخصيصه للمدرسة الحالية
