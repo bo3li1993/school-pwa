@@ -1,4 +1,12 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
+
+// Toast helper (يعتمد على admin.html الذي يعرّفها عالمياً)
+const showToast = window.showToast || ((msg, type='success') => {
+    const t=document.createElement('div');
+    t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:10px;font-family:Cairo;font-size:13px;font-weight:700;z-index:9999;color:#fff;background:'+(type==='error'?'#dc2626':type==='info'?'#1a78c2':'#059669')+';box-shadow:0 4px 12px rgba(0,0,0,.2)';
+    t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
+});
+
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initMailboxModule() {
@@ -53,9 +61,9 @@ window.handlePublishAnnouncementLive = async function(e) {
             message: text,
             createdAt: serverTimestamp()
         });
-        alert('✓ تم بنجاح بث ونشر التعميم الرسمي لجميع أولياء الأمور.');
+        showToast('✓ تم نشر التعميم بنجاح');
         document.getElementById('announcement-form').reset();
-    } catch(err) { alert('خطأ في النشر: ' + err.message); }
+    } catch(err) { showToast('خطأ في النشر: ' + err.message, 'error'); }
 };
 
 async function loadParentMailboxLive() {
@@ -113,9 +121,9 @@ window.sendAdminReplyLive = async function(studentName, classId) {
             senderRole: 'admin',
             createdAt: serverTimestamp()
         });
-        alert('✅ تم إرسال وبث الرد الرسمي لولي الأمر بنجاح، وظهر بصفحته لايف.');
+        showToast('✅ تم إرسال الرد بنجاح');
         loadParentMailboxLive(); 
     } catch(err) {
-        alert('❌ فشل إرسال الرد السحابي: ' + err.message);
+        showToast('❌ فشل الإرسال: ' + err.message, 'error');
     }
 };
