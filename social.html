@@ -101,7 +101,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         <h1 id="lbl-worker-title"><i class="bi bi-person-workspace"></i> بوابة الأخصائي الاجتماعي</h1>
         <p id="lbl-social-school">جاري التحميل...</p>
     </div>
-    <button onclick="localStorage.removeItem('hs_user'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer;">تسجيل الخروج</button>
+    <button onclick="localStorage.removeItem('hs_user'); localStorage.removeItem('hs_custom_token'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff; border:none; padding:8px 16px; font-weight:bold; border-radius:6px; cursor:pointer;">تسجيل الخروج</button>
 </div>
 
 <div class="workspace-container">

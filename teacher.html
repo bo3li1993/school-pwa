@@ -715,7 +715,7 @@ window.sendTeacherMessage = async function() {
 };
 
 // ===== أدوات =====
-window.doLogout = function() { localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
+window.doLogout = function() { localStorage.removeItem('hs_user'); localStorage.removeItem('hs_custom_token'); window.location.replace('index.html'); };
 window.goToAdmin = function() { window.location.replace('admin.html'); };
 </script>
 <script>
