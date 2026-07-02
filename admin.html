@@ -99,6 +99,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
 .more-icon{width:34px;height:34px;border-radius:9px;background:var(--ice);color:var(--sky);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .more-row span{flex:1;font-weight:700;font-size:15px;color:var(--text)}
 .more-row i.bi-chevron-left{color:var(--mid);font-size:13px}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 </style>
 </head>
 <body>
@@ -330,6 +331,21 @@ const moduleMap = {
 };
 
 const loadedTabs = new Set();
+
+// ===== Toast (متاحة عالمياً لكل الموديلات) =====
+window.showToast = function(msg, type='success') {
+    document.querySelectorAll('.toast-msg').forEach(t=>t.remove());
+    const t = document.createElement('div');
+    t.className = 'toast-msg';
+    const colors = {success:'#059669', error:'#dc2626', info:'#1a78c2', warning:'#d97706'};
+    t.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+        padding:11px 24px;border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;
+        font-weight:700;z-index:99999;color:#fff;background:${colors[type]||colors.success};
+        box-shadow:0 4px 16px rgba(0,0,0,.2);animation:toastIn .3s ease;white-space:nowrap;`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);}, 2500);
+};
 
 window.switchTab = async function(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
