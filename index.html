@@ -153,6 +153,8 @@ if(schoolFromUrl) {
                 }
 
                 await signInWithCustomToken(auth, userData.token);
+                // 💾 احفظ الـ token لاستعادة الجلسة عند تحميل الصفحات الأخرى
+                localStorage.setItem('hs_custom_token', userData.token);
 
                 // فحص حالة المدرسة
                 const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
