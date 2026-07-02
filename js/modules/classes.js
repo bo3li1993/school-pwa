@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initClassesModule() {
-    const container = document.getElementById('tab-classes-list') || document.getElementById('tab-classes');
+    const container = document.getElementById('tab-classes') || document.getElementById('tab-classes');
     if (!container) return;
 
     // 🛡️ جدار حماية وعزل الأخطاء
