@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { getAuth, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
 export const firebaseConfig = {
     apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
@@ -14,21 +14,24 @@ export const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export { onAuthStateChanged };
 
-// تفعيل المصادقة المجهولة فور تحميل الملف (لضمان عمل الـ Rules)
-signInAnonymously(auth).catch(e => console.error('Anon auth failed:', e));
+// 🔐 استعادة جلسة Custom Token تلقائياً عند تحميل أي صفحة
+// (لا نستخدم signInAnonymously لأنه كان يُلغي صلاحيات Custom Token)
+const savedToken = localStorage.getItem('hs_custom_token');
+if (savedToken && !auth.currentUser) {
+    signInWithCustomToken(auth, savedToken).catch(() => {
+        localStorage.removeItem('hs_custom_token');
+    });
+}
 
-// جلب schoolId من الجلسة
 export function getActiveSchoolId() {
     try {
         const user = JSON.parse(localStorage.getItem('hs_user'));
         return user?.schoolId || null;
-    } catch (e) {
-        return null;
-    }
+    } catch { return null; }
 }
 
-// صيغة التاريخ الموحدة ISO (نعتمد التاريخ المحلي لتجنب أخطاء التوقيت)
 export function getTodayISO() {
     const d = new Date();
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
