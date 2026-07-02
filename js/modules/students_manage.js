@@ -3,7 +3,7 @@ import { collection, getDocs, query, where } from 'https://www.gstatic.com/fireb
 
 let localStudentsMap = {};
 
-export async function initStudentModule() {
+export async function initStudentsManageModule() {
     const container = document.getElementById('tab-student');
     if (!container) return;
 
