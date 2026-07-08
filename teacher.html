@@ -154,15 +154,7 @@ select:focus,input:focus{border-color:var(--accent);}
       <h3>📋 سجلات الغياب المسجلة</h3>
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">اختر الفصل</label>
       <select id="rec-class" onchange="loadMyRecords()">
-        <option value="">-- اختر --</option>
-        <option value="6/1">6/1</option><option value="6/2">6/2</option>
-        <option value="6/3">6/3</option><option value="6/4">6/4</option>
-        <option value="7/1">7/1</option><option value="7/2">7/2</option>
-        <option value="7/3">7/3</option><option value="7/4">7/4</option>
-        <option value="8/1">8/1</option><option value="8/2">8/2</option>
-        <option value="8/3">8/3</option><option value="8/4">8/4</option>
-        <option value="9/1">9/1</option><option value="9/2">9/2</option>
-        <option value="9/3">9/3</option><option value="9/4">9/4</option>
+        <option value="">⏳ جاري تحميل الفصول...</option>
       </select>
       <div id="records-list"></div>
     </div>
@@ -173,15 +165,7 @@ select:focus,input:focus{border-color:var(--accent);}
     <div class="card">
       <h3>👥 قائمة الطلاب</h3>
       <select id="view-class" onchange="loadStudentsList(this.value)">
-        <option value="">-- اختر الفصل --</option>
-        <option value="6/1">6/1</option><option value="6/2">6/2</option>
-        <option value="6/3">6/3</option><option value="6/4">6/4</option>
-        <option value="7/1">7/1</option><option value="7/2">7/2</option>
-        <option value="7/3">7/3</option><option value="7/4">7/4</option>
-        <option value="8/1">8/1</option><option value="8/2">8/2</option>
-        <option value="8/3">8/3</option><option value="8/4">8/4</option>
-        <option value="9/1">9/1</option><option value="9/2">9/2</option>
-        <option value="9/3">9/3</option><option value="9/4">9/4</option>
+        <option value="">⏳ جاري تحميل الفصول...</option>
       </select>
       <div id="students-view"></div>
     </div>
@@ -193,15 +177,7 @@ select:focus,input:focus{border-color:var(--accent);}
       <h3>🛡️ رصد ومتابعة سلوك الطالب</h3>
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">الفصل</label>
       <select id="beh-class" onchange="onBehClassChange(this.value)">
-        <option value="">-- اختر الفصل --</option>
-        <option value="6/1">6/1</option><option value="6/2">6/2</option>
-        <option value="6/3">6/3</option><option value="6/4">6/4</option>
-        <option value="7/1">7/1</option><option value="7/2">7/2</option>
-        <option value="7/3">7/3</option><option value="7/4">7/4</option>
-        <option value="8/1">8/1</option><option value="8/2">8/2</option>
-        <option value="8/3">8/3</option><option value="8/4">8/4</option>
-        <option value="9/1">9/1</option><option value="9/2">9/2</option>
-        <option value="9/3">9/3</option><option value="9/4">9/4</option>
+        <option value="">⏳ جاري تحميل الفصول...</option>
       </select>
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">اسم الطالب</label>
       <select id="beh-student" disabled>
@@ -321,7 +297,7 @@ let currentUser = null;
         document.getElementById('splash-school').textContent = currentUser.schoolName || 'المنظومة الرقمية';
         loadMyProfile();
         // تحميل الفصول ديناميكياً لكل dropdowns
-        loadClassesDropdown('sel-class', 'beh-class', 'msg-class');
+        loadClassesDropdown('sel-class', 'beh-class', 'msg-class', 'rec-class', 'view-class');
     } catch(e) { window.location.replace('index.html'); }
 })();
 document.getElementById('splash').classList.add('hide');
