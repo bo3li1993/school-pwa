@@ -176,8 +176,12 @@ if(schoolFromUrl) {
                     classId:    userData.classId || ''
                 }));
 
-                const adminRoles = ['admin','assistant_manager','wing_supervisor','social_worker'];
-                window.location.replace(adminRoles.includes(role) ? 'admin.html' : 'teacher.html');
+                const adminRoles = ['admin','assistant_manager','wing_supervisor'];
+                const dest = adminRoles.includes(role) ? 'admin.html'
+                           : role === 'social_worker' ? 'social.html'
+                           : role === 'guard' ? 'guard.html'
+                           : 'teacher.html';
+                window.location.replace(dest);
 
             } catch(err) {
                 const code = err.code || '';
