@@ -38,8 +38,8 @@ window.loadDailyReport = async function() {
     const dateVal = document.getElementById('dr-date-input').value;
     if (!dateVal) { alert('⚠️ اختر التاريخ أولاً'); return; }
 
-    const [y, m, d] = dateVal.split('-');
-    const dateStr = `${parseInt(y)}/${parseInt(m)}/${parseInt(d)}`;
+    // صيغة ISO مطابقة لما تحفظه attendance.js و teacher.html
+    const isoDate = dateVal; // format: 2026-07-11
 
     const results = document.getElementById('dr-results');
     results.innerHTML = `<p style="text-align:center; padding:20px; color:#999; font-weight:bold;">⏳ جاري جمع التقارير...</p>`;
@@ -49,7 +49,7 @@ window.loadDailyReport = async function() {
 
     // ===== أ) كشف الغياب مجمّع بالفصل =====
     try {
-        const q = query(collection(db,'attendance'), where('schoolId','==',schoolId), where('dateStr','==',dateStr));
+        const q = query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',isoDate));
         const snap = await getDocs(q);
         const byClass = {};
         snap.forEach(docSnap => {
@@ -65,7 +65,7 @@ window.loadDailyReport = async function() {
         const totalLate = snap.docs.filter(d => d.data().status === 'late').length;
 
         html += `<div class="card" style="border-right:5px solid var(--danger-color);">
-            <h3 style="font-size:15px; color:var(--danger-color); margin-bottom:8px;"><i class="bi bi-calendar-x-fill"></i> الغياب والتأخير — ${dateStr} &nbsp; <span style="font-size:12px; font-weight:600; color:#666;">(${totalAbsent} غياب · ${totalLate} تأخير)</span></h3>`;
+            <h3 style="font-size:15px; color:var(--danger-color); margin-bottom:8px;"><i class="bi bi-calendar-x-fill"></i> الغياب والتأخير — ${isoDate} &nbsp; <span style="font-size:12px; font-weight:600; color:#666;">(${totalAbsent} غياب · ${totalLate} تأخير)</span></h3>`;
 
         if (!classes.length) {
             html += `<p style="text-align:center; color:var(--success-color); font-weight:bold; padding:15px;">✅ لا يوجد غياب أو تأخير مسجّل لهذا اليوم.</p>`;
@@ -90,7 +90,7 @@ window.loadDailyReport = async function() {
 
     // ===== ب) الاستئذانات =====
     try {
-        const q = query(collection(db,'gatepass'), where('schoolId','==',schoolId), where('dateStr','==',dateStr));
+        const q = query(collection(db,'gatepass'), where('schoolId','==',schoolId), where('date','==',isoDate));
         const snap = await getDocs(q);
         let rows = '';
         snap.forEach(docSnap => {
@@ -104,14 +104,14 @@ window.loadDailyReport = async function() {
         });
 
         html += `<div class="card" style="border-right:5px solid var(--success-color);">
-            <h3 style="font-size:15px; color:var(--success-color); margin-bottom:8px;"><i class="bi bi-ticket-detailed-fill"></i> الاستئذانات — ${dateStr} &nbsp;<span style="font-size:12px; color:#666;">(${snap.size})</span></h3>
+            <h3 style="font-size:15px; color:var(--success-color); margin-bottom:8px;"><i class="bi bi-ticket-detailed-fill"></i> الاستئذانات — ${isoDate} &nbsp;<span style="font-size:12px; color:#666;">(${snap.size})</span></h3>
             ${snap.size ? `<table style="width:100%; border-collapse:collapse; font-size:12.5px;"><thead><tr style="background:#f4f6f9;"><th style="padding:6px;">الطالب</th><th style="padding:6px;">الفصل</th><th style="padding:6px;">السبب</th><th style="padding:6px;">المستلم</th></tr></thead><tbody>${rows}</tbody></table>` : `<p style="text-align:center; color:#999; padding:15px;">💡 لا توجد استئذانات لهذا اليوم.</p>`}
         </div>`;
     } catch(e) { html += `<div class="card" style="color:red;">خطأ بالاستئذان: ${e.message}</div>`; }
 
     // ===== ج) زيارات العيادة =====
     try {
-        const q = query(collection(db,'clinic'), where('schoolId','==',schoolId), where('dateStr','==',dateStr));
+        const q = query(collection(db,'clinic'), where('schoolId','==',schoolId), where('date','==',isoDate));
         const snap = await getDocs(q);
         let rows = '';
         snap.forEach(docSnap => {
@@ -125,7 +125,7 @@ window.loadDailyReport = async function() {
         });
 
         html += `<div class="card" style="border-right:5px solid var(--gold);">
-            <h3 style="font-size:15px; color:var(--gold); margin-bottom:8px;"><i class="bi bi-heart-pulse-fill"></i> زيارات العيادة — ${dateStr} &nbsp;<span style="font-size:12px; color:#666;">(${snap.size})</span></h3>
+            <h3 style="font-size:15px; color:var(--gold); margin-bottom:8px;"><i class="bi bi-heart-pulse-fill"></i> زيارات العيادة — ${isoDate} &nbsp;<span style="font-size:12px; color:#666;">(${snap.size})</span></h3>
             ${snap.size ? `<table style="width:100%; border-collapse:collapse; font-size:12.5px;"><thead><tr style="background:#f4f6f9;"><th style="padding:6px;">الطالب</th><th style="padding:6px;">الفصل</th><th style="padding:6px;">الشكوى</th><th style="padding:6px;">العلاج</th></tr></thead><tbody>${rows}</tbody></table>` : `<p style="text-align:center; color:#999; padding:15px;">💡 لا توجد زيارات عيادة لهذا اليوم.</p>`}
         </div>`;
     } catch(e) { html += `<div class="card" style="color:red;">خطأ بالعيادة: ${e.message}</div>`; }
