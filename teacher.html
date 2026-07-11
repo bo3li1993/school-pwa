@@ -164,10 +164,13 @@ select:focus,input:focus{border-color:var(--accent);}
   <div id="tab-students" class="hidden">
     <div class="card">
       <h3>👥 قائمة الطلاب</h3>
+      <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">اختر الفصل لعرض الأسماء</label>
       <select id="view-class" onchange="loadStudentsList(this.value)">
         <option value="">⏳ جاري تحميل الفصول...</option>
       </select>
-      <div id="students-view"></div>
+      <div id="students-view" style="margin-top:12px;">
+        <p style="text-align:center;color:#aaa;padding:20px;font-weight:700;">👆 اختر الفصل أعلاه لعرض قائمة الطلاب</p>
+      </div>
     </div>
   </div>
 
