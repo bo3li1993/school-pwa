@@ -347,6 +347,169 @@ window.showToast = function(msg, type='success') {
     setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);}, 2500);
 };
 
+// ===== نظام الطباعة الرسمي المركزي =====
+// يُستخدم من كل الموديلات لتوليد تقارير رسمية بهوية وزارة التربية
+
+window.ManzoumaReport = {
+
+    // بيانات المدرسة من الجلسة
+    getSchoolInfo() {
+        const u = JSON.parse(localStorage.getItem('hs_user') || '{}');
+        return {
+            schoolName: u.schoolName || 'مدرسة سالم الحسينان المتوسطة بنين',
+            userName: u.name || '',
+            role: u.role || ''
+        };
+    },
+
+    // ترويسة رسمية موحدة لكل التقارير
+    buildHeader(title, subtitle = '') {
+        const { schoolName } = this.getSchoolInfo();
+        const today = new Date();
+        const dateAr = today.toLocaleDateString('ar-KW', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        return `
+        <div style="border-bottom:3px double #0b2545; padding-bottom:16px; margin-bottom:20px; text-align:center;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="text-align:right; font-size:11px; color:#555; line-height:1.8;">
+                    <div style="font-weight:900; font-size:13px; color:#0b2545;">دولة الكويت</div>
+                    <div>وزارة التربية</div>
+                    <div>منطقة مبارك الكبير التعليمية</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="width:70px; height:70px; border:2px solid #0b2545; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-size:28px;">🏫</div>
+                    <div style="font-size:10px; color:#888;">المنظومة الرقمية</div>
+                </div>
+                <div style="text-align:left; font-size:11px; color:#555; line-height:1.8;">
+                    <div style="font-weight:900; font-size:13px; color:#0b2545;">${schoolName}</div>
+                    <div>التاريخ: ${dateAr}</div>
+                    <div>السنة الدراسية: ${today.getFullYear()}/${today.getFullYear()+1}</div>
+                </div>
+            </div>
+            <div style="background:#0b2545; color:#fff; padding:10px 20px; border-radius:8px; display:inline-block; min-width:300px;">
+                <div style="font-size:17px; font-weight:900; letter-spacing:1px;">${title}</div>
+                ${subtitle ? `<div style="font-size:11px; opacity:.85; margin-top:3px;">${subtitle}</div>` : ''}
+            </div>
+        </div>`;
+    },
+
+    // تذييل رسمي
+    buildFooter() {
+        const { userName, role } = this.getSchoolInfo();
+        const roleLabel = role === 'admin' ? 'مدير المدرسة' : role === 'assistant_manager' ? 'مساعد المدير' : 'المسؤول';
+        return `
+        <div style="margin-top:30px; border-top:1px solid #ddd; padding-top:15px; display:flex; justify-content:space-between; font-size:11px; color:#555;">
+            <div style="text-align:right;">
+                <div style="font-weight:700; margin-bottom:20px;">أعدّه: ${userName} — ${roleLabel}</div>
+                <div style="border-top:1px solid #999; padding-top:4px; width:150px; text-align:center;">التوقيع</div>
+            </div>
+            <div style="text-align:center; font-size:10px; color:#aaa; align-self:flex-end;">
+                صدر بتاريخ ${new Date().toLocaleDateString('ar-KW')}<br>
+                المنظومة الرقمية © ${new Date().getFullYear()}
+            </div>
+            <div style="text-align:left;">
+                <div style="font-weight:700; margin-bottom:20px;">الختم الرسمي</div>
+                <div style="border:1px solid #999; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#ccc; font-size:11px; text-align:center;">ختم<br>المدرسة</div>
+            </div>
+        </div>`;
+    },
+
+    // CSS موحد للطباعة
+    getPrintCSS() {
+        return `
+        body { font-family: 'Cairo', Arial, sans-serif; direction: rtl; text-align: right; background: #fff; color: #000; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+        th { background: #0b2545; color: #fff; padding: 8px 10px; font-weight: 700; text-align: right; font-size: 11px; }
+        td { padding: 7px 10px; border-bottom: 1px solid #e0e0e0; font-size: 11.5px; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        tr:last-child td { border-bottom: none; }
+        .badge-absent { background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-weight: 700; border: 1px solid #fca5a5; }
+        .badge-late { background: #fffbeb; color: #d97706; padding: 2px 8px; border-radius: 4px; font-weight: 700; border: 1px solid #fcd34d; }
+        .section-title { background: #f1f5f9; border-right: 4px solid #0b2545; padding: 6px 12px; font-weight: 900; font-size: 13px; color: #0b2545; margin: 16px 0 8px; border-radius: 0 6px 6px 0; }
+        @media print { body { margin: 0; } }`;
+    },
+
+    // ===== دالة التصدير الرئيسية =====
+    async exportPDF(contentHTML, filename, title, subtitle = '') {
+        const printEl = document.createElement('div');
+        printEl.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:794px;background:#fff;padding:30px;font-family:Cairo,Arial,sans-serif;direction:rtl;';
+        printEl.innerHTML = `<style>${this.getPrintCSS()}</style>${this.buildHeader(title, subtitle)}${contentHTML}${this.buildFooter()}`;
+        document.body.appendChild(printEl);
+
+        try {
+            showToast('⏳ جاري تجهيز التقرير...', 'info');
+            await new Promise(r => setTimeout(r, 400));
+            const canvas = await html2canvas(printEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false });
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageW = 210, pageH = 297, margin = 8;
+            const imgW = pageW - margin * 2;
+            const imgH = (canvas.height * imgW) / canvas.width;
+            let y = margin;
+            const pageImgH = pageH - margin * 2;
+
+            if (imgH <= pageImgH) {
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', margin, y, imgW, imgH);
+            } else {
+                // دعم طباعة متعددة الصفحات
+                let remaining = imgH;
+                let srcY = 0;
+                while (remaining > 0) {
+                    const sliceH = Math.min(pageImgH, remaining);
+                    const sliceCanvas = document.createElement('canvas');
+                    sliceCanvas.width = canvas.width;
+                    sliceCanvas.height = (sliceH / imgW) * canvas.width;
+                    const ctx = sliceCanvas.getContext('2d');
+                    ctx.drawImage(canvas, 0, srcY * canvas.width / imgW, canvas.width, sliceCanvas.height, 0, 0, canvas.width, sliceCanvas.height);
+                    if (srcY > 0) pdf.addPage();
+                    pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgW, sliceH);
+                    srcY += sliceH;
+                    remaining -= sliceH;
+                }
+            }
+
+            pdf.save(`${filename}_${new Date().toISOString().slice(0,10)}.pdf`);
+            showToast('✅ تم تصدير التقرير بنجاح');
+        } catch(e) {
+            showToast('❌ خطأ في تصدير التقرير: ' + e.message, 'error');
+        } finally {
+            document.body.removeChild(printEl);
+        }
+    },
+
+    // ===== طباعة مباشرة (Browser Print) =====
+    printDirect(contentHTML, title, subtitle = '') {
+        const w = window.open('', '_blank', 'width=900,height=700');
+        w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+        <meta charset="UTF-8">
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+        <title>${title}</title>
+        <style>
+            ${this.getPrintCSS()}
+            body { padding: 20mm; margin: 0; }
+            @page { size: A4; margin: 15mm; }
+            @media print { .no-print { display: none; } }
+        </style></head><body>
+        <div class="no-print" style="position:fixed;top:10px;right:10px;z-index:999;display:flex;gap:8px;">
+            <button onclick="window.print()" style="background:#0b2545;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;font-size:14px;">🖨️ طباعة</button>
+            <button onclick="window.close()" style="background:#dc2626;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;font-size:14px;">✕</button>
+        </div>
+        ${this.buildHeader(title, subtitle)}
+        ${contentHTML}
+        ${this.buildFooter()}
+        </body></html>`);
+        w.document.close();
+        setTimeout(() => w.print(), 800);
+    }
+};
+
+// ===== توافق مع الكود القديم (attendance.js و teacher_perf.js يستدعيانها) =====
+window.exportAsManzoumaPDF = async function(containerId, filename) {
+    const container = document.getElementById(containerId);
+    if (!container) { showToast('⚠️ التبويب غير موجود', 'info'); return; }
+    const title = containerId === 'tab-absent' ? 'كشف الغياب اليومي' : 'تقرير كفاءة الأداء التعليمي';
+    await window.ManzoumaReport.exportPDF(container.innerHTML, filename, title);
+};
+
 window.switchTab = async function(tabId) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
