@@ -457,7 +457,39 @@ window.saveAttendance = async function() {
             });
         }
 
-        showToast(`✅ تم حفظ الحضور بنجاح!\n${allStudentsLoaded.length} طالب | ${absentList.length} غائب`);
+        showToast(`✅ تم حفظ الحضور — ${allStudentsLoaded.length} طالب | ${absentList.length} غائب`);
+
+        // إشعار واتساب تلقائي للغائبين
+        if (absentList.length > 0) {
+            const wantWA = confirm(`👥 يوجد ${absentList.length} طالب غائب\nهل تريد إرسال إشعارات واتساب لأولياء الأمور؟`);
+            if (wantWA) {
+                // جلب أرقام أولياء الأمور
+                const q = query(collection(db,'students'),
+                    where('schoolId','==',schoolId), where('classId','==',classId));
+                const snap = await getDocs(q);
+                const phoneMap = {};
+                snap.forEach(d => { if(d.data().parentPhone) phoneMap[d.data().name.trim()] = d.data().parentPhone; });
+
+                let sentCount = 0;
+                for (const name of absentList) {
+                    const phone = phoneMap[name];
+                    if (phone) {
+                        const msg = encodeURIComponent(
+                            `السلام عليكم ولي أمر الطالب/ة ${name}\n` +
+                            `نُعلمكم بغياب ابنكم عن المدرسة اليوم ${todayISO} — الحصة ${period}\n` +
+                            `مدرسة ${currentUser.schoolName || ''}`
+                        );
+                        const cleanPhone = phone.replace(/\D/g,'');
+                        window.open(`https://wa.me/965${cleanPhone}?text=${msg}`, '_blank');
+                        sentCount++;
+                        await new Promise(r => setTimeout(r, 800)); // تأخير بين كل رسالة
+                    }
+                }
+                if (sentCount > 0) showToast(`✅ تم فتح ${sentCount} محادثة واتساب`);
+                else showToast('⚠️ لا توجد أرقام مسجّلة لأولياء الأمور', 'info');
+            }
+        }
+
         document.getElementById('sel-class').value = '';
         document.getElementById('students-list').innerHTML = '';
         document.getElementById('save-section').classList.add('hidden');
