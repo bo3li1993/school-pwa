@@ -9,8 +9,11 @@ export async function initReportsModule() {
     <div class="card">
         <h2><i class="bi bi-file-earmark-pdf-fill"></i> التقرير الأسبوعي لحالات الغياب المتكرر</h2>
         <p style="font-size:13px;color:#666;">يولّد ملف PDF رسمي يحصر كل طالب تغيّب 3 أيام أو أكثر خلال آخر 7 أيام.</p>
-        <button id="btn-trigger-weekly-pdf" onclick="window.generateWeeklyPDFReportLive()" style="background:var(--success-color);width:100%;margin-top:10px;font-weight:bold;padding:12px;border-radius:8px;border:none;color:#fff;cursor:pointer;">
-            <i class="bi bi-file-earmark-pdf-fill"></i> إصدار التقرير الأسبوعي الشامل
+        <button id="btn-trigger-weekly-pdf" onclick="window.generateWeeklyPDFReportLive()" style="background:#dc2626;width:48%;margin-top:10px;font-weight:bold;padding:12px;border-radius:8px;border:none;color:#fff;cursor:pointer;font-family:'Cairo',sans-serif;">
+            <i class="bi bi-file-earmark-pdf-fill"></i> تصدير PDF
+        </button>
+        <button onclick="window.generateWeeklyPDFReportLive('print')" style="background:#0b2545;width:48%;margin-top:10px;font-weight:bold;padding:12px;border-radius:8px;border:none;color:#fff;cursor:pointer;font-family:'Cairo',sans-serif;margin-right:4%;">
+            <i class="bi bi-printer-fill"></i> طباعة مباشرة
         </button>
     </div>
     <div id="weekly-report-container"></div>`;
@@ -32,14 +35,19 @@ window.generateWeeklyPDFReportLive = async function() {
         const snap = await getDocs(q);
 
         const counts = {};
-        snap.forEach(doc => {
-            const d = doc.data();
-            if (!d.dateStr && !d.date) return;
-            const dateParts = (d.dateStr || d.date).split('/');
-            if (dateParts.length !== 3) return;
-            const recordDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+        snap.forEach(docSnap => {
+            const d = docSnap.data();
+            const dateField = d.date || d.dateStr || '';
+            if (!dateField) return;
+            // دعم كلا الصيغتين ISO و كويتي
+            let recordDate;
+            if (dateField.includes('-')) {
+                recordDate = new Date(dateField);
+            } else {
+                const p = dateField.split('/');
+                recordDate = new Date(p[0], p[1]-1, p[2]);
+            }
             if (recordDate < sevenDaysAgo) return;
-
             const key = `${d.studentName || d.name}|||${d.classId || '-'}`;
             counts[key] = (counts[key] || 0) + 1;
         });
@@ -50,36 +58,47 @@ window.generateWeeklyPDFReportLive = async function() {
             .sort((a, b) => b.count - a.count);
 
         if (!repeatedAbsentees.length) {
-            alert('✅ لا توجد حالات غياب متكرر (3 أيام أو أكثر) خلال آخر 7 أيام.');
+            showToast('✅ لا توجد حالات غياب متكرر (3+ أيام) خلال آخر أسبوع', 'info');
             return;
         }
 
-        const printEl = document.createElement('div');
-        printEl.style.cssText = "padding:30px; font-family:'Cairo',sans-serif; direction:rtl; text-align:right; background:#fff; color:#000; width:800px; position:absolute; left:-9999px; top:-9999px;";
-        printEl.innerHTML = `
-            <div style="border-bottom:3px solid #1a1a2e; padding-bottom:15px; margin-bottom:20px;">
-                <h2 style="font-size:16px; font-weight:900; color:#1a1a2e;">التقرير الأسبوعي لحالات الغياب المتكرر</h2>
-                <p style="font-size:11px; color:#666;">آخر 7 أيام — ${repeatedAbsentees.length} حالة مرصودة</p>
-            </div>
-            <table style="width:100%; border-collapse:collapse; font-size:12px;">
-                <thead><tr style="background:#fff0f0;"><th style="padding:8px; border:1px solid #eee;">اسم الطالب</th><th style="padding:8px; border:1px solid #eee;">الفصل</th><th style="padding:8px; border:1px solid #eee;">عدد أيام الغياب</th></tr></thead>
-                <tbody>${repeatedAbsentees.map(r => `<tr><td style="padding:8px; border:1px solid #eee;">${r.name}</td><td style="padding:8px; border:1px solid #eee; text-align:center;">${r.classId}</td><td style="padding:8px; border:1px solid #eee; text-align:center; color:#dc2626; font-weight:bold;">${r.count}</td></tr>`).join('')}</tbody>
-            </table>`;
-        document.body.appendChild(printEl);
+        // تجميع بالفصول
+        const byClass = {};
+        repeatedAbsentees.forEach(r => {
+            if (!byClass[r.classId]) byClass[r.classId] = [];
+            byClass[r.classId].push(r);
+        });
 
-        await new Promise(r => setTimeout(r, 200));
-        const canvas = await html2canvas(printEl, { scale: 2, useCORS: true });
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-        pdf.save(`تقرير_الغياب_المتكرر_${today.toISOString().slice(0,10)}.pdf`);
-        document.body.removeChild(printEl);
+        let contentHTML = `
+        <div style="background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:12px 16px; margin-bottom:16px; display:flex; justify-content:space-between;">
+            <span style="font-weight:900; color:#dc2626; font-size:14px;">إجمالي الحالات: ${repeatedAbsentees.length} طالب</span>
+            <span style="color:#666; font-size:12px;">آخر 7 أيام — ${Object.keys(byClass).length} فصل</span>
+        </div>`;
+
+        Object.keys(byClass).sort().forEach(cls => {
+            const rows = byClass[cls];
+            contentHTML += `
+            <div class="section-title">📚 فصل ${cls} — ${rows.length} طالب</div>
+            <table>
+                <thead><tr><th>م</th><th>اسم الطالب</th><th>أيام الغياب</th><th>مستوى الخطورة</th></tr></thead>
+                <tbody>${rows.map((r,i) => `<tr>
+                    <td style="text-align:center;color:#666;">${i+1}</td>
+                    <td style="font-weight:700;">${r.name}</td>
+                    <td style="text-align:center;"><span class="badge-absent">${r.count} أيام</span></td>
+                    <td style="text-align:center; font-size:11px; color:${r.count >= 5 ? '#dc2626' : r.count >= 4 ? '#d97706' : '#059669'}; font-weight:700;">${r.count >= 5 ? '🔴 مرتفعة' : r.count >= 4 ? '🟡 متوسطة' : '🟢 منخفضة'}</td>
+                </tr>`).join('')}</tbody>
+            </table>`;
+        });
+
+        await window.ManzoumaReport.exportPDF(
+            contentHTML,
+            'تقرير_الغياب_المتكرر',
+            'التقرير الأسبوعي للغياب المتكرر',
+            `الفترة: آخر 7 أيام — ${repeatedAbsentees.length} حالة في ${Object.keys(byClass).length} فصل`
+        );
 
     } catch (err) {
-        alert('❌ خطأ أثناء توليد التقرير: ' + err.message);
+        showToast('❌ خطأ أثناء توليد التقرير: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
