@@ -19,8 +19,11 @@ export async function initDateSearchModule() {
             <button onclick="window.fetchHistoricAttendanceByClassLive()" style="background:var(--primary-color); color:#fff; border:none; padding:11px 20px; border-radius:8px; font-weight:700; cursor:pointer;">
                 <i class="bi bi-search"></i> بحث
             </button>
-            <button id="btn-historic-pdf" onclick="window.exportDateSearchPDF()" style="display:none; background:var(--success-color); color:#fff; border:none; padding:11px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
+            <button id="btn-historic-pdf" onclick="window.exportDateSearchPDF()" style="display:none; background:#dc2626; color:#fff; border:none; padding:11px 16px; border-radius:8px; font-weight:700; cursor:pointer; font-family:Cairo,sans-serif;">
                 <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+            </button>
+            <button id="btn-historic-print" onclick="window.printDateSearchDirect()" style="display:none; background:#0b2545; color:#fff; border:none; padding:11px 16px; border-radius:8px; font-weight:700; cursor:pointer; font-family:Cairo,sans-serif;">
+                <i class="bi bi-printer-fill"></i> طباعة
             </button>
             <button id="btn-historic-reset" onclick="window.resetHistoricSearch()" style="display:none; background:#fff; color:var(--danger-color); border:1px solid var(--danger-color); padding:11px 16px; border-radius:8px; font-weight:700; cursor:pointer;">
                 <i class="bi bi-x-circle"></i> إعادة تعيين
@@ -43,7 +46,7 @@ window.setTodayAndSearch = function() {
 window.resetHistoricSearch = function() {
     document.getElementById('search-date-input').value = '';
     document.getElementById('btn-historic-reset').style.display = 'none';
-    document.getElementById('btn-historic-pdf').style.display = 'none';
+    document.getElementById('btn-historic-pdf').style.display = 'none'; const _pbtn=document.getElementById('btn-historic-print'); if(_pbtn)_pbtn.style.display='none';
     document.getElementById('historic-results-display-area').innerHTML =
         `<p style="text-align:center; padding:30px; color:#999; font-weight:bold;">💡 اختر تاريخاً ثم اضغط "بحث" لعرض سجل الغياب الخاص بذلك اليوم.</p>`;
 };
@@ -154,7 +157,7 @@ window.fetchHistoricAttendanceByClassLive = async function() {
 
         displayArea.innerHTML = html;
         lastGroupedData = groupedData;
-        pdfBtn.style.display = 'inline-flex';
+        pdfBtn.style.display = 'inline-flex'; const _pb=document.getElementById('btn-historic-print'); if(_pb)_pb.style.display='inline-flex';
 
     } catch (err) {
         displayArea.innerHTML = `<p style="color:red; font-weight:bold;">❌ خطأ في عملية الفرز السحابي: ${err.message}</p>`;
@@ -163,44 +166,57 @@ window.fetchHistoricAttendanceByClassLive = async function() {
 
 let lastGroupedData = {};
 
-window.exportDateSearchPDF = function() {
+window.exportDateSearchPDF = async function() {
     const sortedClasses = Object.keys(lastGroupedData).sort();
-    if (!sortedClasses.length) { alert('⚠️ لا توجد نتائج لتصديرها.'); return; }
+    if (!sortedClasses.length) { showToast('⚠️ لا توجد نتائج لتصديرها', 'info'); return; }
 
-    const printEl = document.createElement('div');
-    printEl.id = 'date-search-print-area';
-    printEl.style.cssText = "padding:30px; font-family:'Cairo',sans-serif; direction:rtl; text-align:right; background:#fff; color:#000; width:800px; position:absolute; left:-9999px; top:-9999px;";
-
-    let bodyHtml = `
-        <div style="border-bottom:3px solid #1a1a2e; padding-bottom:15px; margin-bottom:20px;">
-            <h2 style="font-size:16px; font-weight:900; color:#1a1a2e;">كشف الغياب والتأخير — بتاريخ ${lastSearchedDate}</h2>
-        </div>`;
+    let contentHTML = '';
+    let totalAbsent = 0, totalLate = 0;
 
     sortedClasses.forEach(classKey => {
         const rows = lastGroupedData[classKey];
-        bodyHtml += `
-        <h3 style="font-size:13px; font-weight:900; background:#f4f6f9; padding:8px; border-radius:6px; margin:14px 0 8px;">فصل ${classKey} (${rows.length} حالة)</h3>
-        <table style="width:100%; border-collapse:collapse; font-size:11.5px; margin-bottom:10px;">
-            <thead><tr style="background:#fff0f0;"><th style="padding:6px; border:1px solid #eee;">اسم الطالب</th><th style="padding:6px; border:1px solid #eee;">الحصة</th><th style="padding:6px; border:1px solid #eee;">الحالة</th><th style="padding:6px; border:1px solid #eee;">سجّلها</th></tr></thead>
-            <tbody>${rows.map(r => `
-                <tr><td style="padding:6px; border:1px solid #eee;">${r.name}</td><td style="padding:6px; border:1px solid #eee; text-align:center;">${r.period}</td><td style="padding:6px; border:1px solid #eee; text-align:center;">${r.status==='absent'?'غائب':'متأخر'}</td><td style="padding:6px; border:1px solid #eee;">${r.teacher}</td></tr>`).join('')}
-            </tbody>
+        totalAbsent += rows.filter(r => r.status === 'absent').length;
+        totalLate += rows.filter(r => r.status === 'late').length;
+
+        contentHTML += `
+        <div class="section-title">📋 فصل ${classKey} — ${rows.length} حالة</div>
+        <table>
+            <thead><tr>
+                <th>م</th><th>اسم الطالب</th><th>الحصة</th><th>الحالة</th><th>سجّلها</th>
+            </tr></thead>
+            <tbody>${rows.map((r, i) => `<tr>
+                <td style="text-align:center;color:#666;">${i+1}</td>
+                <td style="font-weight:700;">${r.name}</td>
+                <td style="text-align:center;">الحصة ${r.period || '-'}</td>
+                <td><span class="${r.status === 'absent' ? 'badge-absent' : 'badge-late'}">${r.status === 'absent' ? 'غائب' : 'متأخر'}</span></td>
+                <td style="color:#666;">أ. ${r.teacher}</td>
+            </tr>`).join('')}</tbody>
         </table>`;
     });
 
-    printEl.innerHTML = bodyHtml;
-    document.body.appendChild(printEl);
+    const subtitle = `إجمالي: ${totalAbsent} غياب · ${totalLate} تأخير · ${sortedClasses.length} فصل — تاريخ ${lastSearchedDate}`;
+    await window.ManzoumaReport.exportPDF(contentHTML, `كشف_الغياب_${lastSearchedDate.replace(/\//g,'-')}`, 'كشف الغياب والتأخير', subtitle);
+};
 
-    setTimeout(() => {
-        html2canvas(printEl, { scale: 2, useCORS: true }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgWidth = 210;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-            pdf.save(`كشف_الغياب_${lastSearchedDate.replace(/\//g,'-')}.pdf`);
-            document.body.removeChild(printEl);
-        });
-    }, 300);
+// ===== طباعة مباشرة =====
+window.printDateSearchDirect = function() {
+    const sortedClasses = Object.keys(lastGroupedData).sort();
+    if (!sortedClasses.length) { showToast('⚠️ لا توجد نتائج', 'info'); return; }
+
+    let contentHTML = '';
+    sortedClasses.forEach(classKey => {
+        const rows = lastGroupedData[classKey];
+        contentHTML += `
+        <div class="section-title">فصل ${classKey}</div>
+        <table>
+            <thead><tr><th>م</th><th>الطالب</th><th>الحصة</th><th>الحالة</th><th>المعلم</th></tr></thead>
+            <tbody>${rows.map((r,i) => `<tr>
+                <td>${i+1}</td><td>${r.name}</td>
+                <td>الحصة ${r.period||'-'}</td>
+                <td><span class="${r.status==='absent'?'badge-absent':'badge-late'}">${r.status==='absent'?'غائب':'متأخر'}</span></td>
+                <td>أ. ${r.teacher}</td>
+            </tr>`).join('')}</tbody>
+        </table>`;
+    });
+    window.ManzoumaReport.printDirect(contentHTML, 'كشف الغياب والتأخير', `تاريخ ${lastSearchedDate}`);
 };
