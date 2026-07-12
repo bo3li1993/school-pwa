@@ -120,6 +120,14 @@ window.showStudentProfile = function(studentDocId) {
                     style="background:#25d366; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:13px;">
                     <i class="bi bi-whatsapp"></i> مراسلة
                 </button>
+                <button onclick="window.exportStudentProfilePDF('${data.name}', '${data.classId}', '${data.parentPhone||''}')"
+                    style="background:#dc2626; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:13px;">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                </button>
+                <button onclick="window.printStudentProfileDirect('${data.name}', '${data.classId}')"
+                    style="background:#0b2545; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:13px;">
+                    <i class="bi bi-printer-fill"></i> طباعة
+                </button>
                 <div style="display:flex; align-items:center; border:1.5px solid var(--line); border-radius:8px; overflow:hidden;">
                     <select id="new-class-${data.id}" style="border:none; border-radius:0; margin:0; min-width:90px; font-size:13px;">
                         <option value="">نقل لفصل...</option>
@@ -296,4 +304,71 @@ window.contactParent = function(phone, studentName) {
 
     let formattedPhone = phone.startsWith('965') ? phone : '965' + phone;
     window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+// ===== تصدير ملف الطالب PDF =====
+window.exportStudentProfilePDF = async function(studentName, classId, parentPhone) {
+    const container = document.getElementById('student-results-container');
+    if (!container) return;
+
+    const tables = container.querySelectorAll('.card');
+    let contentHTML = `
+    <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:12px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <div style="font-size:16px; font-weight:900; color:#0b2545;">${studentName}</div>
+            <div style="font-size:12px; color:#666; margin-top:2px;">الفصل: ${classId} &nbsp;|&nbsp; هاتف ولي الأمر: ${parentPhone || 'غير مسجل'}</div>
+        </div>
+        <div style="font-size:24px;">👤</div>
+    </div>`;
+
+    // نسخ محتوى الكروت مباشرة
+    tables.forEach(card => {
+        const h4 = card.querySelector('h4');
+        const table = card.querySelector('table');
+        if (h4 && table) {
+            contentHTML += `<div class="section-title">${h4.textContent}</div>`;
+            // إعادة بناء الجدول بستايل الطباعة
+            const headers = [...table.querySelectorAll('th')].map(th => th.textContent);
+            const rows = [...table.querySelectorAll('tbody tr')].map(tr =>
+                [...tr.querySelectorAll('td')].map(td => td.textContent.trim())
+            );
+            if (rows.length === 0) {
+                contentHTML += `<p style="color:#666; font-size:12px; padding:8px 0;">لا توجد سجلات.</p>`;
+            } else {
+                contentHTML += `<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+                <tbody>${rows.map(row=>`<tr>${row.map(cell=>`<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+            }
+        }
+    });
+
+    await window.ManzoumaReport.exportPDF(
+        contentHTML,
+        `ملف_الطالب_${studentName.replace(/ /g,'_')}`,
+        `ملف الطالب الشامل`,
+        `${studentName} — الفصل ${classId}`
+    );
+};
+
+// ===== طباعة مباشرة =====
+window.printStudentProfileDirect = function(studentName, classId) {
+    const container = document.getElementById('student-results-container');
+    if (!container) return;
+
+    const tables = container.querySelectorAll('.card');
+    let contentHTML = `<div style="font-size:16px; font-weight:900; margin-bottom:16px; color:#0b2545;">الطالب: ${studentName} — الفصل: ${classId}</div>`;
+    tables.forEach(card => {
+        const h4 = card.querySelector('h4');
+        const table = card.querySelector('table');
+        if (h4 && table) {
+            const headers = [...table.querySelectorAll('th')].map(th => th.textContent);
+            const rows = [...table.querySelectorAll('tbody tr')].map(tr =>
+                [...tr.querySelectorAll('td')].map(td => td.textContent.trim())
+            );
+            contentHTML += `<div class="section-title">${h4.textContent}</div>`;
+            contentHTML += `<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+            <tbody>${rows.length ? rows.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${headers.length}" style="text-align:center;color:#999;">لا توجد سجلات</td></tr>`}</tbody></table>`;
+        }
+    });
+
+    window.ManzoumaReport.printDirect(contentHTML, 'ملف الطالب الشامل', `${studentName} — الفصل ${classId}`);
 };
