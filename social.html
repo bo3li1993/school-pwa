@@ -500,8 +500,8 @@ window.broadcastGatepassLive = async function(e) {
     const reason = document.getElementById('pass-reason').value.trim();
     const schoolId = getActiveSchoolId();
 
-    if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً من القائمة!"); return; }
-    if (civil.length !== 12) { alert("⚠️ الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
+    if(!studentName) { showToast("⚠️ يرجى اختيار اسم الطالب أولاً من القائمة!"); return; }
+    if (civil.length !== 12) { showToast("⚠️ الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
 
     try {
         await addDoc(collection(db, 'gatepass'), {
@@ -509,10 +509,10 @@ window.broadcastGatepassLive = async function(e) {
             classId, studentName, relative, relation, relativeCivilId: civil, relativePhone: phone, reason,
             status: 'approved', dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), officerName: currentWorkerName
         });
-        alert(`🚀 تم بث استئذان الطالب [ ${studentName} ] بنجاح لشاشة الحارس عند البوابة.`);
+        showToast(`✓ تم بث استئذان الطالب [ ${studentName} ] بنجاح.`);
         document.getElementById('social-gatepass-form').reset();
         window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
-    } catch (err) { alert("خطأ: " + err.message); }
+    } catch (err) { showToast("❌ خطأ: " + err.message, "error"); }
 };
 
 // 🛡️ رصد وإثبات المخالفات والتميز السلوكي
@@ -526,7 +526,7 @@ window.saveBehaviorLogLive = async function(e) {
     const followup = document.getElementById('beh-followup').value;
     const schoolId = getActiveSchoolId();
 
-    if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً لرصد حالته!"); return; }
+    if(!studentName) { showToast("⚠️ يرجى اختيار اسم الطالب أولاً لرصد حالته!"); return; }
 
     try {
         // 🔗 موحّد مع نفس كولكشن "behavior" المستخدم بصفحة المدير والمعلم
@@ -539,17 +539,17 @@ window.saveBehaviorLogLive = async function(e) {
             dateStr: getUnifiedDateString(), date: getUnifiedDateString(), timeStr: getUnifiedTimeString(),
             officerName: currentWorkerName, createdAt: serverTimestamp()
         });
-        alert(`✓ تم توثيق ورصد الحالة السلوكية بنجاح للطالب [ ${studentName} ].`);
+        showToast(`✓ تم توثيق ورصد الحالة السلوكية بنجاح للطالب [ ${studentName} ].`);
         document.getElementById('social-behavior-form').reset();
         window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
-    } catch(err) { alert("خطأ بالحفظ: " + err.message); }
+    } catch(err) { showToast("❌ خطأ بالحفظ: " + err.message, "error"); }
 };
 
 // 👤 فحص رادار الـ 360 درجة لملف الطالب الموحد محلياً داخل نطاق المنشأة
 window.searchStudentFullProfileLive = async function() {
     const sClass = document.getElementById('txt-profile-search-class').value;
     const sName = document.getElementById('txt-profile-search-name').value;
-    if(!sName) { alert("⚠️ يرجى اختيار اسم الطالب من القائمة أولاً لفحص سجلاته."); return; }
+    if(!sName) { showToast("⚠️ يرجى اختيار اسم الطالب من القائمة أولاً لفحص سجلاته."); return; }
 
     const boxResults = document.getElementById('box-profile-results');
     const tableBeh = document.getElementById('table-profile-behavior');
@@ -645,9 +645,9 @@ window.saveNewCircularLive = async function(e) {
             schoolId: schoolId, // 🔑 الحظر الآمن للـ SaaS
             title, target, content, dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), senderName: currentWorkerName, createdAt: serverTimestamp()
         });
-        alert("✓ تم نشر وتعميم التوجيه بنجاح، وظهر في لوحات التحكم المستهدفة الحين.");
+        showToast("✓ تم نشر وتعميم التوجيه بنجاح، وظهر في لوحات التحكم المستهدفة الحين.");
         document.getElementById('social-message-form').reset();
-    } catch(err) { alert("خطأ بالبث: " + err.message); }
+    } catch(err) { showToast("❌ خطأ بالبث: " + err.message, "error"); }
 };
 
 // ⚙️ تحديث البروفايل الشخصي للأخصائي
@@ -662,7 +662,7 @@ window.updateSocialProfileLive = async function(e) {
         const schoolId = getActiveSchoolId();
         const q = query(collection(db, 'users'), where('schoolId','==',schoolId), where('userId','==',currentWorkerId));
         const snap = await getDocs(q);
-        if (snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات.'); return; }
+        if (snap.empty) { showToast('⚠️ تعذر إيجاد حسابك بقاعدة البيانات.'); return; }
 
         const userDocRef = snap.docs[0].ref;
         let updatedData = { name: newName, email: newEmail, phone: newPhone };
@@ -674,9 +674,9 @@ window.updateSocialProfileLive = async function(e) {
         localData.name = newName;
         localStorage.setItem('hs_user', JSON.stringify(localData));
 
-        alert("✓ تم تحديث ملفك الشخصي وكلمة المرور بنجاح تام بقاعدة البيانات.");
+        showToast("✓ تم تحديث ملفك الشخصي وكلمة المرور بنجاح تام بقاعدة البيانات.");
         window.location.replace('social.html');
-    } catch(err) { alert("خطأ في الحفظ: " + err.message); }
+    } catch(err) { showToast("❌ خطأ في الحفظ: " + err.message, "error"); }
 };
 
 // ⚡ الاستماع المركزي اللحظي المقيد بـ schoolId لمنع تداخل المدارس
@@ -771,6 +771,22 @@ async function loadSocialClassDropdowns() {
             if(el) el.innerHTML = '<option value="">⚠️ خطأ بتحميل الفصول</option>';
         });
     }
+}
+
+
+// Toast (بدل alert)
+function showToast(msg, type='success') {
+    document.querySelectorAll('.sw-toast').forEach(t=>t.remove());
+    const t = document.createElement('div');
+    t.className = 'sw-toast';
+    const colors = {success:'#059669',error:'#dc2626',info:'#1a78c2',warning:'#d97706'};
+    t.style.cssText = `position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:11px 22px;
+        border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;z-index:99999;
+        color:#fff;background:${colors[type]||colors.success};box-shadow:0 4px 16px rgba(0,0,0,.2);
+        white-space:nowrap;max-width:90vw;text-align:center;`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);},2500);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
