@@ -1,4 +1,4 @@
-import { db } from '../firebase-config.js';
+import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initRepeatModule() {
@@ -23,25 +23,24 @@ export async function initRepeatModule() {
 
     try {
         // جلب سجلات الغياب للمدرسة الحالية
-        const q = query(collection(db, 'attendance'), where('schoolId', '==', user.schoolId), where('status', '==', 'absent'));
+        // فلتر آخر 30 يوم بالاستعلام نفسه (لا نجلب كل البيانات ثم نفلتر)
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - 30);
+        const cutoffISO = cutoffDate.toISOString().slice(0, 10); // e.g. 2026-06-13
+
+        const q = query(
+            collection(db, 'attendance'),
+            where('schoolId', '==', user.schoolId),
+            where('status', '==', 'absent'),
+            where('date', '>=', cutoffISO)
+        );
         const snap = await getDocs(q);
         
         const absences = {};
         
-        // حساب تاريخ قطع الـ 30 يوماً الماضية
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - 30);
-        
         snap.forEach(docSnap => {
             const d = docSnap.data();
-            
-            // تطبيق الفلتر الزمني الذكي لآخر 30 يوماً فقط
-            let withinRange = true;
-            if(d.createdAt && d.createdAt.toDate) {
-                withinRange = d.createdAt.toDate() >= cutoffDate;
-            }
-            
-            if (d.status === 'absent' && d.studentName && withinRange) {
+            if (d.studentName) {
                 if (!absences[d.studentName]) {
                     absences[d.studentName] = { name: d.studentName, classId: d.classId, count: 0 };
                 }
