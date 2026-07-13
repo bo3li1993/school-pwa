@@ -62,9 +62,8 @@ window.fetchHistoricAttendanceByClassLive = async function() {
 
     if (!dateInput) { alert("⚠️ يرجى تحديد التاريخ أولاً للبدء!"); return; }
 
-    const dParts = dateInput.split('-');
-    const targetDateStr = `${parseInt(dParts[0])}/${parseInt(dParts[1])}/${parseInt(dParts[2])}`;
-    lastSearchedDate = targetDateStr;
+    const isoDate = dateInput; // صيغة ISO المطابقة لما يحفظه attendance.js
+    lastSearchedDate = isoDate;
 
     displayArea.innerHTML = `<p style="text-align:center; padding:25px; font-weight:bold; color:var(--hover-color);">⏳ جاري فحص الكشوف السحابية الخاصة بمدرستك فقط...</p>`;
     resetBtn.style.display = 'inline-flex';
@@ -72,7 +71,7 @@ window.fetchHistoricAttendanceByClassLive = async function() {
 
     try {
         const q = query(collection(db, 'attendance'),
-                        where('dateStr', '==', targetDateStr),
+                        where('date', '==', isoDate),
                         where('schoolId', '==', schoolId));
 
         const snap = await getDocs(q);
@@ -81,7 +80,7 @@ window.fetchHistoricAttendanceByClassLive = async function() {
             displayArea.innerHTML = `
             <div class="card" style="text-align:center; padding:30px;">
                 <i class="bi bi-calendar-x" style="font-size:40px; color:var(--danger-color);"></i>
-                <p style="font-weight:bold; color:#555; margin-top:10px;">لا توجد سجلات غياب للمدرسة بتاريخ: (${targetDateStr})</p>
+                <p style="font-weight:bold; color:#555; margin-top:10px;">لا توجد سجلات غياب للمدرسة بتاريخ: (${isoDate})</p>
             </div>`;
             return;
         }
@@ -114,7 +113,7 @@ window.fetchHistoricAttendanceByClassLive = async function() {
 
         let html = `<div class="card" style="margin-bottom:14px;">
             <h3 style="font-size:15px; color:var(--primary-color);">
-                <i class="bi bi-calendar-check"></i> نتائج بحث يوم: ${targetDateStr}
+                <i class="bi bi-calendar-check"></i> نتائج بحث يوم: ${isoDate}
                 <span style="float:left; font-size:12px; color:#888; font-weight:600;">${sortedClasses.length} فصل به غياب/تأخير</span>
             </h3>
         </div>`;
