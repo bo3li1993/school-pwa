@@ -225,18 +225,26 @@
         });
     
 // ===== رادار الفصول =====
-const ALL_CLASSES = [
-    '6/1','6/2','6/3','6/4',
-    '7/1','7/2','7/3','7/4',
-    '8/1','8/2','8/3','8/4',
-    '9/1','9/2','9/3','9/4'
-];
+// ALL_CLASSES تُجلب ديناميكياً من Firestore
+
+let ALL_CLASSES = [];
+
+// جلب الفصول مرة واحدة عند التحميل
+async function loadTVClasses() {
+    try {
+        const schoolId = getActiveSchoolId();
+        if(!schoolId) return;
+        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+        ALL_CLASSES = [...new Set(snap.docs.map(d=>d.data().classId).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    } catch(e) { console.warn('TV classes load error:', e); }
+}
+loadTVClasses();
 
 async function updateMissingClasses() {
     try {
         const schoolId = getActiveSchoolId();
         const todayISO = getTodayISO();
-        if(!schoolId) return;
+        if(!schoolId || !ALL_CLASSES.length) return;
         const snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',todayISO)));
         const recorded = new Set();
         snap.forEach(d => recorded.add(d.data().classId));
