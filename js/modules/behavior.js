@@ -59,6 +59,17 @@ export async function initBehaviorModule() {
             </form>
         </div>
 
+        
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button onclick="window.printBehaviorPDF()" 
+                    style="background:#dc2626; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> تصدير PDF
+                </button>
+                <button onclick="window.printBehaviorDirect()" 
+                    style="background:#0b2545; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
+                    <i class="bi bi-printer-fill"></i> طباعة مباشرة
+                </button>
+            </div>
         <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-list-task"></i> الأرشيف المركزي لقرارات الضبط السلوكي والمتابعة</h2>
             <div style="overflow-x:auto;">
@@ -175,7 +186,7 @@ window.handleRegisterBehaviorLive = async function(e) {
     const notes = document.getElementById('beh-notes').value.trim();
     const schoolId = getActiveSchoolId(); // 🏢 ربط الـ SaaS المركزي
 
-    if(!sName || !cId) { alert("⚠️ الرجاء تحديد الطالب والصف أولاً قبل الاعتماد!"); return; }
+    if(!sName || !cId) { window.showToast("⚠️ الرجاء تحديد الطالب والصف أولاً قبل الاعتماد!"); return; }
 
     try {
         const todayISO = getTodayISO(); // التاريخ الدولي الموحد والمصحح للمقارنات التلقائية
@@ -194,11 +205,11 @@ window.handleRegisterBehaviorLive = async function(e) {
             createdAt: serverTimestamp()
         });
         
-        alert('✓ تم اعتماد وتسجيل الإجراء التربوي بنجاح، وتحديث ملف الطالب التراكمي فوراً.');
+        window.showToast('✓ تم اعتماد وتسجيل الإجراء التربوي بنجاح، وتحديث ملف الطالب التراكمي فوراً.');
         document.getElementById('behavior-reg-form').reset();
         document.getElementById('beh-student-select').innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
         document.getElementById('beh-student-select').disabled = true;
-    } catch(err) { alert('خطأ أثناء الحفظ السحابي: ' + err.message); }
+    } catch(err) { window.showToast('❌ خطأ: ' + err.message, 'error'); }
 };
 
 function loadBehaviorLogsLive() {
@@ -249,3 +260,17 @@ function buildBehaviorRowHtml(data) {
             <td style="padding:10px; color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
         </tr>`;
 }
+// ===== طباعة السجل =====
+window.printBehaviorPDF = async function() {
+    const tbody = document.getElementById('behavior-logs-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الإجراء</th><th>المتابعة</th><th>المحيل</th><th>الملاحظات</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    await window.ManzoumaReport.exportPDF(contentHTML, 'سجل_الإجراءات_السلوكية', 'سجل الإجراءات السلوكية');
+};
+
+window.printBehaviorDirect = function() {
+    const tbody = document.getElementById('behavior-logs-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الإجراء</th><th>المتابعة</th><th>المحيل</th><th>الملاحظات</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    window.ManzoumaReport.printDirect(contentHTML, 'سجل الإجراءات السلوكية');
+};
