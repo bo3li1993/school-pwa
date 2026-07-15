@@ -152,18 +152,72 @@ window.handleParentLoginLive = async function(e) {
         } else if(candidates.length === 1) {
             found = candidates[0];
         } else if(candidates.length > 1) {
-            alert('⚠️ يوجد أكثر من طالب بهذا الرقم في مدارس مختلفة.\nيرجى استخدام رابط مدرستك الخاص للدخول.');
+            // رسالة بدل alert
+            const errEl = document.getElementById('parent-err') || document.createElement('p');
+            errEl.id = 'parent-err';
+            errEl.style.cssText = 'color:#dc2626;font-weight:700;text-align:center;margin-top:8px;';
+            errEl.textContent = '⚠️ رقم مكرر — استخدم رابط مدرستك الخاص';
+            document.querySelector('#parent-login-screen form')?.appendChild(errEl);
             return;
         }
 
         if(found) {
-            activeStudent = found;
-            localStorage.setItem('hs_parent', JSON.stringify(found));
-            showParentDashboard();
+            // ===== Step 5: جلب الأشقاء =====
+            let siblings = [found];
+            if(found.parentPhone) {
+                try {
+                    const sibQ = query(collection(db,'students'),
+                        where('schoolId','==',found.schoolId),
+                        where('parentPhone','==',found.parentPhone));
+                    const sibSnap = await getDocs(sibQ);
+                    if(!sibSnap.empty) {
+                        siblings = [];
+                        sibSnap.forEach(d => siblings.push({...d.data(), docId: d.id}));
+                    }
+                } catch(e) { siblings = [found]; }
+            }
+
+            if(siblings.length > 1) {
+                // عرض قائمة الأشقاء
+                window._siblingsList = siblings;
+                var listEl = document.getElementById('parent-login-screen');
+                var lHtml = '<div style="padding:24px;max-width:400px;margin:0 auto;direction:rtl;font-family:Cairo,sans-serif;">';
+                lHtml += '<h3 style="text-align:center;color:#0b2545;margin-bottom:16px;">اختر الطالب</h3>';
+                for(var si=0; si<siblings.length; si++) {
+                    var sib = siblings[si];
+                    lHtml += '<div onclick="window.selectSibling(' + si + ')" style="padding:14px;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;margin-bottom:8px;">';
+                    lHtml += '<b>' + sib.name + '</b> — الفصل: ' + sib.classId;
+                    lHtml += '</div>';
+                }
+                lHtml += '<button onclick="window.location.reload()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-family:Cairo,sans-serif;margin-top:6px;">رجوع</button></div>';
+                listEl.innerHTML = lHtml;
+            } else {
+                activeStudent = found;
+                localStorage.setItem('hs_parent', JSON.stringify(found));
+                showParentDashboard();
+            }
         } else {
-            alert('⚠️ تنبيه: لم يتم العثور على طالب مقيد بهذا الرقم، يرجى مراجعة الإدارة.');
+            const errEl = document.getElementById('parent-err') || document.createElement('p');
+            errEl.id = 'parent-err';
+            errEl.style.cssText = 'color:#dc2626;font-weight:700;text-align:center;margin-top:8px;';
+            errEl.textContent = '⚠️ لم يتم العثور على الطالب — راجع الإدارة';
+            document.querySelector('#parent-login-screen form')?.appendChild(errEl);
         }
-    } catch(err) { alert('خطأ في الاتصال: ' + err.message); }
+    } catch(err) {
+        const errEl = document.getElementById('parent-err') || document.createElement('p');
+        errEl.id = 'parent-err';
+        errEl.style.cssText = 'color:#dc2626;font-weight:700;text-align:center;margin-top:8px;';
+        errEl.textContent = '❌ خطأ في الاتصال: ' + err.message;
+        document.querySelector('#parent-login-screen form')?.appendChild(errEl);
+    }
+};
+
+window.selectSibling = function(index) {
+    const student = window._siblingsList?.[index];
+    if(!student) return;
+    activeStudent = student;
+    localStorage.setItem('hs_parent', JSON.stringify(student));
+    showParentDashboard();
 };
 
 async function showParentDashboard() {
