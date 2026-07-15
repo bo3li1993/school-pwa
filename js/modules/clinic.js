@@ -46,6 +46,17 @@ export async function initClinicModule() {
             </form>
         </div>
 
+        
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button onclick="window.printClinicPDF()" 
+                    style="background:#dc2626; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> تصدير PDF
+                </button>
+                <button onclick="window.printClinicDirect()" 
+                    style="background:#0b2545; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
+                    <i class="bi bi-printer-fill"></i> طباعة مباشرة
+                </button>
+            </div>
         <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-capsule"></i> كشف زيارات العيادة المدرسية المقيدة اليوم لايف</h2>
             <div style="overflow-x:auto;">
@@ -147,12 +158,12 @@ window.handleRegisterClinicLive = async function(e) {
             treatment: treatment,
             createdAt: serverTimestamp()
         });
-        alert('✓ تم تسجيل البيانات الصحية للطالب بنجاح.');
+        window.showToast('✓ تم تسجيل البيانات الصحية للطالب بنجاح.');
         document.getElementById('clinic-reg-form').reset();
         document.getElementById('clinic-student-select').innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
         document.getElementById('clinic-student-select').disabled = true;
     } catch(err) {
-        alert('خطأ في الاتصال: ' + err.message);
+        window.showToast('❌ خطأ في الاتصال: ' + err.message, 'error');
     }
 };
 
@@ -178,3 +189,17 @@ function loadClinicLogsLive() {
         tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 لا توجد زيارات مقيدة للعيادة اليوم.</td></tr>';
     });
 }
+// ===== طباعة السجل =====
+window.printClinicPDF = async function() {
+    const tbody = document.getElementById('clinic-logs-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الشكوى</th><th>العلاج</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    await window.ManzoumaReport.exportPDF(contentHTML, 'سجل_العيادة_المدرسية', 'سجل العيادة المدرسية');
+};
+
+window.printClinicDirect = function() {
+    const tbody = document.getElementById('clinic-logs-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الشكوى</th><th>العلاج</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    window.ManzoumaReport.printDirect(contentHTML, 'سجل العيادة المدرسية');
+};
