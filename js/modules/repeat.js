@@ -111,3 +111,17 @@ window.notifyAbsence = function(studentName, classId, daysCount) {
     
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 };
+// ===== طباعة السجل =====
+window.printRepeatPDF = async function() {
+    const tbody = document.getElementById('repeat-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>أيام الغياب</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    await window.ManzoumaReport.exportPDF(contentHTML, 'تقرير_الغياب_المتكرر', 'تقرير الغياب المتكرر');
+};
+
+window.printRepeatDirect = function() {
+    const tbody = document.getElementById('repeat-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>أيام الغياب</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    window.ManzoumaReport.printDirect(contentHTML, 'تقرير الغياب المتكرر');
+};
