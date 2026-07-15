@@ -78,7 +78,7 @@ window.handlePostToHonorsBoardLive = async function(e) {
     const name = document.getElementById('honor-std-name').value.trim();
     const badge = document.getElementById('honor-badge-title').value.trim();
 
-    if(!classId || !name || !badge) { alert('⚠️ يرجى تعبئة جميع الحقول'); return; }
+    if(!classId || !name || !badge) { window.showToast('⚠️ يرجى تعبئة جميع الحقول'); return; }
 
     try {
         await addDoc(collection(db, 'honors_board'), { 
@@ -88,11 +88,11 @@ window.handlePostToHonorsBoardLive = async function(e) {
             badge: badge, 
             createdAt: serverTimestamp() 
         });
-        alert('✓ تم بنجاح تخليد اسم الطالب بلوحة الشرف.');
+        window.showToast('✓ تم بنجاح تخليد اسم الطالب بلوحة الشرف.');
         document.getElementById('honors-board-add-form').reset();
         document.getElementById('honor-std-name').innerHTML = '<option value="">-- اختر الفصل أولاً --</option>';
         document.getElementById('honor-std-name').disabled = true;
-    } catch(err) { alert('خطأ: ' + err.message); }
+    } catch(err) { window.showToast('❌ خطأ: ' + err.message, 'error'); }
 };
 
 async function loadHonorsBoardCardsLive() {
@@ -117,3 +117,18 @@ async function loadHonorsBoardCardsLive() {
         grid.innerHTML = html || `<p style="text-align:center; color:#999; grid-column:1/-1; font-weight:bold;">💡 اللوحة بانتظار قيد الفائقين الأوائل.</p>`;
     });
 }
+
+// ===== طباعة السجل =====
+window.printHonorsPDF = async function() {
+    const tbody = document.getElementById('honors-board-display-grid');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>الاسم</th><th>الفصل</th><th>الوسام</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    await window.ManzoumaReport.exportPDF(contentHTML, 'لوحة_الشرف', 'لوحة الشرف');
+};
+
+window.printHonorsDirect = function() {
+    const tbody = document.getElementById('honors-board-display-grid');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>الاسم</th><th>الفصل</th><th>الوسام</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    window.ManzoumaReport.printDirect(contentHTML, 'لوحة الشرف');
+};
