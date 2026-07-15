@@ -54,6 +54,17 @@ export async function initGatepassModule() {
             </form>
         </div>
 
+        
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button onclick="window.printGatepassPDF()" 
+                    style="background:#dc2626; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> تصدير PDF
+                </button>
+                <button onclick="window.printGatepassDirect()" 
+                    style="background:#0b2545; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
+                    <i class="bi bi-printer-fill"></i> طباعة مباشرة
+                </button>
+            </div>
         <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px; margin-top:20px;">
             <h2><i class="bi bi-door-open"></i> كشف الطلاب المخرجين بتصاريح اليوم</h2>
             <div style="overflow-x:auto;">
@@ -130,7 +141,7 @@ window.handleRegisterGatepassLive = async function(e) {
     const reasonSelect = document.getElementById('gate-reason').value;
     const finalReason = reasonSelect === 'أخرى' ? document.getElementById('gate-reason-other').value.trim() : reasonSelect;
 
-    if(!finalReason) { alert('⚠️ يرجى تحديد سبب الاستئذان'); return; }
+    if(!finalReason) { window.showToast('⚠️ يرجى تحديد سبب الاستئذان'); return; }
 
     await addDoc(collection(db, 'gatepass'), {
         schoolId: schoolId,
@@ -140,7 +151,7 @@ window.handleRegisterGatepassLive = async function(e) {
         reason: finalReason,
         createdAt: serverTimestamp()
     });
-    alert('✓ تم حفظ واعتماد التصريح!');
+    window.showToast('✓ تم حفظ واعتماد التصريح!');
     document.getElementById('gatepass-reg-form').reset();
     document.getElementById('gate-reason-other').style.display = 'none';
     loadGatepassLogsLive();
@@ -160,3 +171,17 @@ async function loadGatepassLogsLive() {
     });
     tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;">لا يوجد استئذان اليوم.</td></tr>';
 }
+// ===== طباعة السجل =====
+window.printGatepassPDF = async function() {
+    const tbody = document.getElementById('gatepass-logs-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    await window.ManzoumaReport.exportPDF(contentHTML, 'سجل_تصاريح_الاستئذان', 'سجل تصاريح الاستئذان');
+};
+
+window.printGatepassDirect = function() {
+    const tbody = document.getElementById('gatepass-logs-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
+    const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    window.ManzoumaReport.printDirect(contentHTML, 'سجل تصاريح الاستئذان');
+};
