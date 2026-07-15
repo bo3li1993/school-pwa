@@ -196,15 +196,39 @@
             }
 
             await batch.commit();
-            alert(`✅ تم بنجاح رفع وتوزيع ${importedCount} طالب على فصولهم السحابية بمدرسة سالم الحسينان!`);
-            window.location.reload();
+            
+            // ===== Step 4: تحديث كولكشن classes بعد رفع الطلاب مباشرة =====
+            // هذا يمنع الحاجة لمسح كل الطلاب لجلب أسماء الفصول (يحل قنبلة الفواتير)
+            const classesBatch = writeBatch(db);
+            classesSet.forEach(classId => {
+                const classRef = doc(db, 'classes', `${schoolId}_${classId}`);
+                classesBatch.set(classRef, {
+                    schoolId: schoolId,
+                    classId: classId,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+            });
+            await classesBatch.commit();
+
+            showImportToast(`✅ تم رفع ${importedCount} طالب بنجاح — ${classesSet.size} فصل مُحدَّث`);
+            setTimeout(() => window.location.reload(), 2000);
 
         } catch (error) {
-            alert("❌ فشل ضخ البيانات: " + error.message);
+            showImportToast("❌ فشل الرفع: " + error.message, 'error');
             btn.disabled = false;
             btn.innerHTML = "ابدأ المعالجة وضخ البيانات للسيرفر";
         }
     };
+
+function showImportToast(msg, type='success') {
+    const t = document.createElement('div');
+    t.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:12px 24px;
+        border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;z-index:9999;
+        color:#fff;background:${type==='error'?'#dc2626':'#059669'};box-shadow:0 4px 12px rgba(0,0,0,.2);`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(), 3000);
+}
 </script>
 
 </body>
