@@ -37,3 +37,20 @@ export function getTodayISO() {
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     return d.toISOString().slice(0, 10);
 }
+
+// ===== Step 4: جلب الفصول الديناميكية (من classes أولاً، fallback لـ students) =====
+export async function getSchoolClasses(db, schoolId) {
+    try {
+        // أولاً: جرّب كولكشن classes (خفيف جداً)
+        const { getDocs, query, collection, where } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const classesSnap = await getDocs(query(collection(db, 'classes'), where('schoolId', '==', schoolId)));
+        if (!classesSnap.empty) {
+            return classesSnap.docs.map(d => d.data().classId).filter(Boolean).sort((a,b)=>a.localeCompare(b));
+        }
+        // Fallback: مسح students (أثقل لكن يعمل دائماً)
+        const studentsSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+        return [...new Set(studentsSnap.docs.map(d => d.data().classId).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    } catch(e) {
+        return [];
+    }
+}
