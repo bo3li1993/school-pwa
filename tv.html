@@ -182,7 +182,7 @@
         const schoolId = user?.schoolId;
 
         if (!schoolId) {
-            alert('❌ خطأ: لم يتم التعرف على هوية المدرسة.');
+            window.showToast('❌ خطأ: لم يتم التعرف على هوية المدرسة.');
             window.location.replace('index.html');
         }
 
