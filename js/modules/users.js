@@ -69,11 +69,11 @@ window.handleCreateNewUserLive = async function (e) {
     const plainPass = document.getElementById('reg-user-pass').value.trim();
 
     if (!schoolId) {
-        alert('⚠️ خطأ: لا يوجد schoolId نشط لهذا الحساب، لا يمكن إضافة المستخدم.');
+        window.showToast('⚠️ خطأ: لا يوجد schoolId نشط لهذا الحساب، لا يمكن إضافة المستخدم.');
         return;
     }
     if (!userId || !name || !plainPass) {
-        alert('⚠️ الرجاء تعبئة جميع الحقول.');
+        window.showToast('⚠️ الرجاء تعبئة جميع الحقول.');
         return;
     }
 
@@ -90,7 +90,7 @@ window.handleCreateNewUserLive = async function (e) {
         );
         const dupSnap = await getDocs(dupCheck);
         if (!dupSnap.empty) {
-            alert(`⚠️ المعرف "${userId}" مستخدم بالفعل في هذه المدرسة.`);
+            window.showToast(`⚠️ المعرف "${userId}" مستخدم بالفعل في هذه المدرسة.`);
             submitBtn.disabled = false;
             submitBtn.textContent = 'اعتماد الحساب';
             return;
@@ -106,11 +106,11 @@ window.handleCreateNewUserLive = async function (e) {
             createdAt: serverTimestamp()
         });
 
-        alert(`✅ تم اعتماد حساب "${name}" بنجاح.`);
+        window.showToast(`✅ تم اعتماد حساب "${name}" بنجاح.`);
         document.getElementById('new-user-form').reset();
         loadSystemUsersDirectoryLive();
     } catch (err) {
-        alert('❌ تعذر إضافة المستخدم: ' + err.message);
+        window.showToast('❌ تعذر إضافة المستخدم: ' + err.message);
     } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'اعتماد الحساب';
