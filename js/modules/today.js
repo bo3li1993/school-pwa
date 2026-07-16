@@ -107,7 +107,7 @@ window.triggerWhatsAppBroadcast = async function() {
         btn.disabled = false;
 
         if(absentList.length === 0) {
-            alert(`✅ لا يوجد غياب مسجل في النظام للصف ${classId} هذا اليوم.`);
+            window.showToast(`✅ لا يوجد غياب مسجل في النظام للصف ${classId} هذا اليوم.`);
             return;
         }
 
@@ -123,7 +123,7 @@ window.triggerWhatsAppBroadcast = async function() {
         }
     } catch(e) {
         console.error("❌ خطأ في البث:", e);
-        alert("حدث خطأ في تجميع البيانات.");
+        window.showToast("حدث خطأ في تجميع البيانات.");
         btn.innerHTML = originalText;
         btn.disabled = false;
     }
