@@ -46,9 +46,9 @@ window.handleRegisterWingRoundLive = async function(e) {
             notes: notes,
             createdAt: serverTimestamp()
         });
-        alert('✓ تم التوثيق بنجاح.');
+        window.showToast('✓ تم التوثيق بنجاح.');
         document.getElementById('round-wing-notes').value = '';
-    } catch(err) { alert('خطأ: ' + err.message); }
+    } catch(err) { window.showToast('خطأ: ' + err.message, 'error'); }
 };
 
 function loadWingRoundsLive() {
