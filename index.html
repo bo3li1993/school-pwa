@@ -2,27 +2,34 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تسجيل الدخول | المنظومة الرقمية الموحدة</title>
-  <link rel="manifest" href="manifest.json">
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b2545">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link class="apple-touch-icon" href="./logo.png">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
         
         :root {
-  --navy:  #0b2545;
-  --sky:   #1a78c2;
-  --ice:   #eaf4fd;
-  --gold:  #d4920a;
-  --white: #ffffff;
-  --off:   #f8f9fc;
-  --line:  #e5e7eb;
-  --text:  #111827;
-  --mid:   #6b7280;
-  --green: #059669;
-  --red:   #dc2626;
-            --bg-dark: var(--off);
-            --card-bg: var(--off);
+            --navy:   #0b2545;
+            --sky:    #1a78c2;
+            --ice:    #eaf4fd;
+            --gold:   #d4920a;
+            --white:  #ffffff;
+            --off:    #f8f9fc;
+            --line:   #e5e7eb;
+            --text:   #111827;
+            --mid:    #6b7280;
+            --green:  #059669;
+            --red:    #dc2626;
+            
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
             --primary: var(--sky);
             --accent: var(--gold);
             --success: #25d366;
@@ -30,78 +37,77 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; justify-content: center; }
 
-        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 30px; border-radius: 16px; border: 1px solid var(--line); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); text-align: center; margin-bottom: 20px; }
-        h1 { font-size: 26px; font-weight: 900; margin-bottom: 10px; color: #fff; }
-        p { font-size: 14px; color: #94a3b8; margin-bottom: 25px; }
+        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 35px 30px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4); text-align: center; margin-bottom: 20px; }
+        h1 { font-size: 24px; font-weight: 900; margin-bottom: 8px; color: #fff; }
+        p { font-size: 14px; color: #94a3b8; margin-bottom: 25px; font-weight: 600; }
 
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--line); background: var(--off); color: #fff; font-size: 14px; text-align: center; }
-        input:focus { border-color: var(--primary); outline: none; }
+        input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 14px; text-align: center; font-weight: 700; outline: none; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 120, 194, 0.2); }
+        input::placeholder { color: #475569; }
 
-        button { width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: #fff; margin-bottom: 10px; }
-        .btn-success { background: var(--success); color: #fff; margin-top: 5px; }
-        .btn-install { background: var(--green); color: #fff; max-width: 420px; margin-bottom: 15px; display: none; }
+        button { width: 100%; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: #fff; margin-bottom: 10px; font-weight: 900; }
+        .btn-primary:hover { background: #1462a0; }
+        .btn-success { background: rgba(37, 211, 102, 0.15); color: #25d366; border: 1px solid rgba(37, 211, 102, 0.3); margin-top: 5px; }
+        .btn-success:hover { background: rgba(37, 211, 102, 0.25); }
+        .btn-install { background: var(--green); color: #fff; max-width: 420px; margin-bottom: 15px; display: none; font-weight: 900; }
 
         /* نافذة المحاكاة الذكية المدمجة */
         .demo-section { margin-top: 20px; width: 100%; max-width: 800px; display: none; }
-        .screen-frame { background: var(--card-bg); border: 4px solid var(--line); border-radius: 12px; height: 400px; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: right; }
+        .screen-frame { background: #1e293b; border: 4px solid #334155; border-radius: 12px; height: 400px; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: right; }
         .cursor { position: absolute; width: 20px; height: 20px; background: url('https://cur.cursors-4u.net/arrow/arr-13/arr1219.png'), auto; z-index: 9999; transition: all 1s ease-in-out; pointer-events: none; }
-        .sim-sidebar { width: 200px; background: var(--off); height: 100%; position: absolute; right: 0; padding: 15px; border-left: 1px solid var(--line); }
-        .sim-main { margin-right: 200px; padding: 25px; height: 100%; position: relative; }
+        .sim-sidebar { width: 200px; background: #0f172a; height: 100%; position: absolute; right: 0; padding: 15px; border-left: 1px solid #334155; }
+        .sim-main { margin-right: 200px; padding: 25px; height: 100%; position: relative; color: #fff; }
         .sim-popup { display: none; position: absolute; top: 25%; left: 15%; background: white; color: black; padding: 20px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); width: 300px; text-align: center; }
-        .subtitle-bar { background: var(--card-bg); border: 1px solid var(--line); padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; color: #fbbf24; font-weight: 700; width: 100%; max-width: 800px; }
+        .subtitle-bar { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; color: #fbbf24; font-weight: 700; width: 100%; max-width: 800px; font-size: 13.5px; }
     </style>
 </head>
 <body>
 
-    <!-- زر تثبيت التطبيق PWA -->
-    <button id="btn-install-pwa" class="btn-install"><i class="bi bi-phone"></i> ثبّت المنظومة كتطبيق على جهازك</button>
+    <button id="btn-install-pwa" class="btn-install"><i class="bi bi-phone"></i> ثبّت المنظومة كتطبيق على جهازك الحين</button>
 
-    <!-- بطاقة الدخول الموحدة -->
     <div class="login-container">
         <h1>المنظومة الرقمية الموحدة</h1>
-        <p>مدرسة سالم الحسينان المتوسطة</p>
+        <p id="lbl-default-school-title">بوابة الدخول السحابية الذكية</p>
         
         <form onsubmit="window.login(event)">
-            <input type="text" id="id" placeholder="رقم المستخدم" required>
-            <input type="password" id="pass" placeholder="كلمة المرور" required>
-            <button type="submit" class="btn-primary"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول</button>
+            <input type="text" id="id" placeholder="رقم المستخدم الخاص بك" required>
+            <input type="password" id="pass" placeholder="كلمة المرور السرية" required>
+            <button type="submit" class="btn-primary"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول آمن</button>
         </form>
 
-        <!-- زر تشغيل العرض التوضيحي المدمج -->
-        <button class="btn-success" onclick="startIntegratedDemo()"><i class="bi bi-play-btn-fill"></i> شاهد العرض الحي للمنظومة</button>
+        <button class="btn-success" onclick="startIntegratedDemo()"><i class="bi bi-play-btn-fill"></i> شاهد العرض الحي التجريبي للمنظومة</button>
 
-        <a href="privacy.html" style="display:block; margin-top:14px; font-size:12px; color:var(--mid); text-decoration:none;">
-            <i class="bi bi-shield-lock"></i> سياسة الخصوصية
+        <a href="privacy.html" style="display:block; margin-top:18px; font-size:12px; color:var(--mid); text-decoration:none; font-weight:bold;">
+            <i class="bi bi-shield-lock"></i> سياسة الخصوصية والاستخدام الآمن
         </a>
     </div>
 
-    <!-- شاشة المحاكاة الحركية التفاعلية -->
     <div class="demo-section" id="demo-zone">
         <div class="screen-frame">
             <div class="cursor" id="fake-cursor" style="top: 220px; left: 300px;"></div>
             
             <div class="sim-sidebar">
-                <h3 style="color:var(--accent); font-size:13px; margin-bottom:20px;"><i class="bi bi-shield-check"></i> سالم الحسينان</h3>
-                <div id="sim-nav-1" style="padding:8px; background:var(--off); border-radius:6px; font-size:12px; margin-bottom:8px; font-weight:bold;"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
-                <div id="sim-nav-2" style="padding:8px; font-size:12px; opacity:0.5;"><i class="bi bi-file-earmark-pdf"></i> تقارير الغياب</div>
+                <h3 style="color:var(--accent); font-size:13px; margin-bottom:20px; font-weight:900;"><i class="bi bi-shield-check"></i> نظام سحابة المدارس</h3>
+                <div id="sim-nav-1" style="padding:8px; background:#1e293b; color:#fff; border-radius:6px; font-size:12px; margin-bottom:8px; font-weight:bold;"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
+                <div id="sim-nav-2" style="padding:8px; font-size:12px; opacity:0.5; color:#fff;"><i class="bi bi-file-earmark-pdf"></i> تقارير الغياب</div>
             </div>
 
             <div class="sim-main">
                 <div id="sim-content">
-                    <h2 style="font-size:18px; font-weight:700; margin-bottom:15px;">لوحة الإجراءات السريعة والمباشرة</h2>
-                    <div style="background:var(--line); padding:15px; border-radius:10px;">
+                    <h2 style="font-size:18px; font-weight:700; margin-bottom:15px; color:#fff;">لوحة الإجراءات السريعة والمباشرة</h2>
+                    <div style="background:#0f172a; padding:15px; border-radius:10px; border:1px solid #334155;">
                         <span style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:8px;">محرك بث غياب الحصة الحالي لأولياء الأمور:</span>
-                        <select style="padding:6px; width:120px; border-radius:6px; font-weight:bold;"><option>الصف 9/1</option></select>
-                        <button id="sim-whatsapp-btn" style="background:var(--success); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; margin-right:8px;">بث للواتساب</button>
+                        <select style="padding:6px; width:120px; border-radius:6px; font-weight:bold; background:#1e293b; color:#fff; border:1px solid #334155;"><option>الصف 9/1</option></select>
+                        <button id="sim-whatsapp-btn" style="background:var(--success); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; margin-right:8px; display:inline-block; width:auto; font-size:12px;">بث للواتساب</button>
                     </div>
                 </div>
 
                 <div class="sim-popup" id="sim-whatsapp-popup">
-                    <h3 style="color:var(--success); font-size:16px; margin-bottom:10px;"><i class="bi bi-check-circle-fill"></i> نجح محرك البث!</h3>
-                    <p style="font-size:12px; color:var(--mid); line-height:1.5;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
+                    <h3 style="color:#059669; font-size:16px; margin-bottom:10px; font-weight:900;"><i class="bi bi-check-circle-fill"></i> نجح محرك البث!</h3>
+                    <p style="font-size:12px; color:var(--text); line-height:1.5; font-weight:600;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
                 </div>
             </div>
         </div>
@@ -109,21 +115,23 @@
         <div class="subtitle-bar" id="sim-subtitle">جاري تجهيز بيئة العرض التفاعلي...</div>
     </div>
 
-    <!-- محرك العمليات السحابية والأمان -->
     <script type="module">
-// قراءة كود المدرسة من الرابط (?school=alanwar) — للروابط المخصصة
-const urlParams = new URLSearchParams(window.location.search);
-const schoolFromUrl = urlParams.get('school');
-if(schoolFromUrl) {
-    // عرض اسم المدرسة المتوقع كرسالة ترحيب بصرية فقط (لا تأثير على المنطق)
-    document.addEventListener('DOMContentLoaded', () => {
-        const hint = document.createElement('div');
-        hint.style.cssText = 'background:var(--ice);color:var(--sky);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;text-align:center;margin-bottom:14px;';
-        hint.textContent = `🏫 بوابة دخول: ${schoolFromUrl}`;
-        const card = document.querySelector('.login-card') || document.querySelector('form')?.parentElement;
-        if(card) card.insertBefore(hint, card.firstChild);
-    });
-}
+        // قراءة كود المدرسة من الرابط (?school=salem)
+        const urlParams = new URLSearchParams(window.location.search);
+        const schoolFromUrl = urlParams.get('school');
+        
+        if(schoolFromUrl) {
+            document.addEventListener('DOMContentLoaded', () => {
+                const hint = document.createElement('div');
+                hint.style.cssText = 'background:rgba(56, 189, 248, 0.1); color:#38bdf8; border:1px solid rgba(56, 189, 248, 0.2); padding:10px; border-radius:8px; font-size:13px; font-weight:700; text-align:center; margin-bottom:18px;';
+                hint.innerHTML = `<i class="bi bi-building-check"></i> تم كشف الرابط المخصص للمنشأة: <b>${schoolFromUrl}</b>`;
+                const container = document.querySelector('.login-container');
+                if(container) {
+                    container.insertBefore(hint, container.firstChild);
+                    document.getElementById('lbl-default-school-title').textContent = "منصة الجيل الذكي الموحدة للمدارس";
+                }
+            });
+        }
 
         import { db, auth } from './js/firebase-config.js';
         import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
@@ -138,26 +146,25 @@ if(schoolFromUrl) {
             const id = document.getElementById('id').value.trim();
             const pass = document.getElementById('pass').value.trim();
             const submitBtn = e.target.querySelector('button[type="submit"]');
+            
             submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ جاري التحقق...';
+            submitBtn.textContent = '⏳ جاري التحقق وتأمين الاتصال...';
 
             try {
-                // 🔐 التحقق من كلمة المرور يتم بالكامل على السيرفر الآن (Cloud Function)
-                // plainPass لا يُرسل أبداً للمتصفح بأي مرحلة
+                // 🔐 التحقق الآمن والمشفر عبر الـ Cloud Function لمنع انكشاف كلمات المرور
                 const result = await loginUserFn({ schoolId: schoolFromUrl || null, userId: id, password: pass });
                 const userData = result.data;
 
-                // 🔒 لو الرابط مخصص لمدرسة معينة (?school=xxx) — يجب أن يطابق schoolId المستخدم
+                // 🔒 منع محاولات تسجيل الدخول العشوائية من روابط المدارس الأخرى
                 if(schoolFromUrl && userData.schoolId !== schoolFromUrl) {
                     throw { code: 'school-mismatch' };
                 }
 
+                // تفويض الدخول الرسمي بالتوكن المشفر
                 await signInWithCustomToken(auth, userData.token);
                 localStorage.setItem('hs_custom_token', userData.token);
-                // 💾 احفظ الـ token لاستعادة الجلسة عند تحميل الصفحات الأخرى
-                localStorage.setItem('hs_custom_token', userData.token);
 
-                // فحص حالة المدرسة
+                // فحص رخصة المدرسة الفنية وصلاحية العقد الاستثماري للسيرفر
                 const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
                 if(!schoolSnap.exists()) throw { code: 'school-not-found' };
                 const schoolData = schoolSnap.data();
@@ -165,49 +172,52 @@ if(schoolFromUrl) {
                 if(schoolData.status === 'suspended') throw { code: 'school-suspended' };
                 if(schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) throw { code: 'subscription-ended' };
 
-                // حفظ الجلسة والتوجيه
+                // ربط الجلسة المتكاملة وتخزين البيانات الإدارية محلياً بالكاش
                 const role = String(userData.role || '').trim().toLowerCase();
                 localStorage.setItem('hs_user', JSON.stringify({
                     userId:     id,
                     name:       userData.name || '',
                     role:       role,
                     schoolId:   userData.schoolId,
-                    schoolName: schoolData.name || '',
+                    schoolName: schoolData.name || 'المنظومة الرقمية السحابية',
                     classId:    userData.classId || ''
                 }));
 
+                // نظام تحويل وتوجيه الرتب الذكي الموحد
                 const adminRoles = ['admin','assistant_manager','wing_supervisor'];
                 const dest = adminRoles.includes(role) ? 'admin.html'
-                           : role === 'social_worker' ? 'social.html'
-                           : role === 'guard' ? 'guard.html'
+                           : role === 'social_worker'  ? 'social.html'
+                           : role === 'guard'          ? 'guard.html'
                            : 'teacher.html';
+                           
                 window.location.replace(dest);
 
             } catch(err) {
                 const code = err.code || '';
                 const messages = {
-                    'functions/not-found':         '❌ رقم المستخدم غير مسجل في النظام',
-                    'functions/permission-denied': '❌ كلمة المرور غير صحيحة، أو الحساب موقوف',
-                    'functions/invalid-argument':  '⚠️ يرجى تعبئة جميع الحقول',
-                    'school-mismatch':   '❌ هذا الرابط مخصص لمدرسة أخرى\nرجاءً استخدم رابط مدرستك الصحيح',
-                    'school-not-found':  '❌ مدرستك غير مسجلة في النظام',
-                    'school-suspended':  '⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً\nللاستفسار تواصل مع المطور',
-                    'subscription-ended':'⚠️ انتهى اشتراك مدرستك\nللتجديد تواصل مع المطور'
+                    'functions/not-found':         '❌ رقم المستخدم غير مسجل بالسجلات المركزية للمنظومة',
+                    'functions/permission-denied': '❌ كلمة المرور غير صحيحة، أو تم تعطيل حسابك مؤقتاً',
+                    'functions/invalid-argument':  '⚠️ يرجى تعبئة الحقول المطلوبة بشكل سليم للولوج',
+                    'school-mismatch':   '❌ حسابك مسجل على منشأة أخرى! لا يمكن الدخول من رابط هذه المدرسة.',
+                    'school-not-found':  '❌ رخصة المنشأة والمدرسة المطلوبة غير مسجلة حالياً',
+                    'school-suspended':  '⚠️ الحساب السحابي للمدرسة موقوف إدارياً! تواصل مع الدعم الفني.',
+                    'subscription-ended':'⚠️ انتهت فترة الاشتراك السنوي للمدرسة! تواصل مع الدعم لتجديد الترخيص السحابي.'
                 };
-                alert(messages[code] || ('❌ خطأ غير متوقع: ' + (err.message || 'تحقق من اتصال الإنترنت')));
+                alert(messages[code] || ('❌ فشل الدخول: ' + (err.message || 'يرجى التحقق من جودة اتصالك بالإنترنت')));
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول';
+                submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول آمن';
             }
         };
 
-        // الـ PWA Install Prompt
+        // محرك الـ PWA لتهيئة بيئة الهواتف الذكية والتثبيت
         window.addEventListener('beforeinstallprompt', e => {
             e.preventDefault();
             const installBtn = document.getElementById('btn-install-pwa');
-            installBtn.style.display = 'flex';
+            if(installBtn) installBtn.style.display = 'flex';
             window.deferredPrompt = e;
         });
+        
         document.getElementById('btn-install-pwa').addEventListener('click', async () => {
             if(!window.deferredPrompt) return;
             window.deferredPrompt.prompt();
@@ -217,7 +227,6 @@ if(schoolFromUrl) {
         });
     </script>
 
-    <!-- محرك تشغيل العرض التفاعلي التلقائي -->
     <script>
         function startIntegratedDemo() {
             const demoZone = document.getElementById('demo-zone');
@@ -238,32 +247,32 @@ if(schoolFromUrl) {
             }, 2500);
 
             setTimeout(() => {
-                popup.style.display = 'block';
+                if(popup) popup.style.display = 'block';
                 subtitle.textContent = "بضغطة واحدة، يقوم النظام بسحب الغياب الفعلي وإشعار أولياء الأمور تلقائياً عبر الواتساب دون تكاليف SMS!";
             }, 5000);
 
             setTimeout(() => {
-                popup.style.display = 'none';
+                if(popup) popup.style.display = 'none';
                 cursor.style.top = '90px';
                 cursor.style.left = '650px';
                 subtitle.textContent = "الآن نتوجه بالماوس إلى موديول التقارير الإحصائية المعتمدة..";
             }, 8500);
 
             setTimeout(() => {
-                navReport.style.background = 'var(--off)';
-                navReport.style.opacity = '1';
+                if(navReport) {
+                    navReport.style.background = '#1e293b';
+                    navReport.style.opacity = '1';
+                }
                 subtitle.textContent = "يقوم النظام بتصدير كشوف الغياب التراكمي وتجهيز ملفات PDF المطابقة للمنطقة التعليمية فوراً.";
             }, 10500);
         }
     </script>
     <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('✅ تم تشغيل محرك السرعة PWA بنجاح', reg.scope))
-                .catch(err => console.error('❌ فشل تشغيل PWA', err));
-        });
-    }
-</script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.error('❌ PWA SW error:', err));
+            });
+        }
+    </script>
 </body>
 </html>
