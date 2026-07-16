@@ -19,7 +19,6 @@
   --navy:#0b2545; --sky:#1a78c2; --ice:#eaf4fd; --gold:#d4920a;
   --white:#fff; --off:#f8f9fc; --line:#e5e7eb; --text:#111827; --mid:#6b7280;
   --green:#16a34a; --red:#dc2626;
-  /* أسماء بديلة يعتمد عليها كل موديلات js/modules/*.js — لا تحذفها */
   --primary-color:var(--navy); --accent-color:var(--gold); --hover-color:var(--gold);
   --danger-color:var(--red); --success-color:var(--green); --soft:var(--mid);
 }
@@ -67,7 +66,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   .sidebar{transform:translateX(100%);transition:transform .25s}
   .sidebar.open{transform:translateX(0)}
   .main{margin-right:0}
-  .menu-toggle{display:none!important}
+  .menu-toggle{display:inline-block!important}
   .content{padding-bottom:84px}
 }
 .menu-toggle{display:none;background:transparent;border:none;font-size:22px;color:var(--navy);cursor:pointer}
@@ -265,7 +264,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
       <div class="more-group">
         <div class="more-group-title">الإدارة</div>
         <div class="more-list">
-          <div class="more-row" onclick="window.switchTab('tab-users')"><div class="more-icon"><i class="bi bi-people-fill"></i></div><span>إدارة المستخدمين</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-users')"><div class="more-icon"><i class="bi bi-people-fill"></i></div><span>إإدارة المستخدمين</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-myaccount')"><div class="more-icon"><i class="bi bi-person-gear"></i></div><span>حسابي</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.location.href='tv.html'"><div class="more-icon"><i class="bi bi-tv"></i></div><span>شاشة القيادة TV</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.location.href='guard.html'"><div class="more-icon"><i class="bi bi-shield-lock"></i></div><span>بوابة الحارس</span><i class="bi bi-chevron-left"></i></div>
@@ -286,7 +285,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
 
 <script type="module">
 import { db, getActiveSchoolId } from './js/firebase-config.js';
-import { collection, query, where, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, query, where, getDocs, updateDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // حماية الجلسة والصلاحيات
 const savedUser = localStorage.getItem('hs_user');
@@ -309,8 +308,8 @@ window.doLogout = function(){ localStorage.removeItem('hs_user'); localStorage.r
 
 // خريطة الموديلات
 const moduleMap = {
-    'tab-index':            { file: './js/modules/today.js',           init: 'initTodayModule' },
-    'tab-student':          { file: './js/modules/student.js',         init: 'initStudentModule' },
+    'tab-index':           { file: './js/modules/today.js',         init: 'initTodayModule' },
+    'tab-student':          { file: './js/modules/student.js',        init: 'initStudentModule' },
     'tab-date':             { file: './js/modules/date_search.js',     init: 'initDateSearchModule' },
     'tab-students-manage':  { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
     'tab-classes':          { file: './js/modules/classes.js',         init: 'initClassesModule' },
@@ -351,12 +350,80 @@ window.showToast = function(msg, type='success') {
     setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);}, 2500);
 };
 
+// ===== نظام الطوارئ السحابي الحي واللحظي داخل لوحة المدير والمسؤولين =====
+function listenToEmergencyAlertsLive() {
+    const schoolId = getActiveSchoolId();
+    if (!schoolId) return;
+
+    const q = query(
+        collection(db, 'emergency_alerts'),
+        where('schoolId', '==', schoolId),
+        where('status', '==', 'active')
+    );
+
+    onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+                const data = change.doc.data();
+                triggerEmergencyVisualUI(change.doc.id, data);
+            }
+        });
+    });
+}
+
+function triggerEmergencyVisualUI(docId, data) {
+    // منع تكرار نفس نافذة التنبيه إذا كانت معروضة بالفعل
+    if (document.getElementById(`emergency-overlay-${docId}`)) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = `emergency-overlay-${docId}`;
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:999999; direction:rtl; padding:20px;';
+    
+    overlay.innerHTML = `
+        <div style="background:#fff; border-top:10px solid #dc2626; border-radius:16px; padding:30px; max-width:500px; width:100%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.5); font-family:Cairo,sans-serif;">
+            <div style="font-size:60px; color:#dc2626; animation: blinker 1s linear infinite;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <h2 style="color:#111; font-weight:900; font-size:22px; margin-top:10px;">🚨 نداء طوارئ عاجل جداً</h2>
+            <p style="color:#444; font-weight:700; font-size:15px; margin-top:14px; line-height:1.6;">
+                أطلق الحارس المسؤول: <span style="color:#dc2626; font-weight:900;">[ ${data.senderName || 'حارس الأمن'} ]</span> بلاغ طوارئ فوري من بوابة المدرسة الخارجية الآن!
+            </p>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-top:15px; font-size:13px; font-weight:bold; color:#555;">
+                ⏰ وقت النداء: ${data.timeStr || '-'} | التاريخ: ${data.dateStr || '-'}
+            </div>
+            <div style="margin-top:24px; display:flex; gap:10px;">
+                <button onclick="window.dismissEmergencyAlertLive('${docId}')" style="flex:1; background:#16a34a; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer;"><i class="bi bi-check-circle-fill"></i> تم الاستجابة والاحتواء (إغلاق)</button>
+            </div>
+        </div>
+        <style>@keyframes blinker { 50% { opacity: 0; } }</style>
+    `;
+    document.body.appendChild(overlay);
+    
+    // تشغيل صوت إنذار صوتي لتنبيه الطاقم الإداري
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+    } catch(e) {}
+}
+
+window.dismissEmergencyAlertLive = async function(docId) {
+    try {
+        const docRef = doc(db, 'emergency_alerts', docId);
+        await updateDoc(docRef, { status: 'resolved', resolvedAt: serverTimestamp() });
+        document.getElementById(`emergency-overlay-${docId}`)?.remove();
+        window.showToast('✓ تم إغلاق بلاغ الطوارئ بنجاح وتوثيق الاستجابة.');
+    } catch(err) { window.showToast('تعذر إغلاق البلاغ: ' + err.message, 'error'); }
+};
+
 // ===== نظام الطباعة الرسمي المركزي =====
-// يُستخدم من كل الموديلات لتوليد تقارير رسمية بهوية وزارة التربية
-
 window.ManzoumaReport = {
-
-    // بيانات المدرسة من الجلسة
     getSchoolInfo() {
         const u = JSON.parse(localStorage.getItem('hs_user') || '{}');
         return {
@@ -366,7 +433,6 @@ window.ManzoumaReport = {
         };
     },
 
-    // ترويسة رسمية موحدة لكل التقارير
     buildHeader(title, subtitle = '') {
         const { schoolName } = this.getSchoolInfo();
         const today = new Date();
@@ -376,7 +442,7 @@ window.ManzoumaReport = {
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <div style="text-align:right; font-size:11px; color:#555; line-height:1.8;">
                     <div style="font-weight:900; font-size:13px; color:#0b2545;">دولة الكويت</div>
-                    <div>وزارة التربية</div>
+                    <div style="font-weight:700;">وزارة التربية</div>
                     <div>منطقة مبارك الكبير التعليمية</div>
                 </div>
                 <div style="text-align:center;">
@@ -396,7 +462,6 @@ window.ManzoumaReport = {
         </div>`;
     },
 
-    // تذييل رسمي
     buildFooter() {
         const { userName, role } = this.getSchoolInfo();
         const roleLabel = role === 'admin' ? 'مدير المدرسة' : role === 'assistant_manager' ? 'مساعد المدير' : 'المسؤول';
@@ -417,7 +482,6 @@ window.ManzoumaReport = {
         </div>`;
     },
 
-    // CSS موحد للطباعة
     getPrintCSS() {
         return `
         body { font-family: 'Cairo', Arial, sans-serif; direction: rtl; text-align: right; background: #fff; color: #000; }
@@ -432,7 +496,6 @@ window.ManzoumaReport = {
         @media print { body { margin: 0; } }`;
     },
 
-    // ===== دالة التصدير الرئيسية =====
     async exportPDF(contentHTML, filename, title, subtitle = '') {
         const printEl = document.createElement('div');
         printEl.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:794px;background:#fff;padding:30px;font-family:Cairo,Arial,sans-serif;direction:rtl;';
@@ -454,7 +517,6 @@ window.ManzoumaReport = {
             if (imgH <= pageImgH) {
                 pdf.addImage(canvas.toDataURL('image/png'), 'PNG', margin, y, imgW, imgH);
             } else {
-                // دعم طباعة متعددة الصفحات
                 let remaining = imgH;
                 let srcY = 0;
                 while (remaining > 0) {
@@ -480,7 +542,6 @@ window.ManzoumaReport = {
         }
     },
 
-    // ===== طباعة مباشرة (Browser Print) =====
     printDirect(contentHTML, title, subtitle = '') {
         const w = window.open('', '_blank', 'width=900,height=700');
         w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head>
@@ -506,7 +567,6 @@ window.ManzoumaReport = {
     }
 };
 
-// ===== توافق مع الكود القديم (attendance.js و teacher_perf.js يستدعيانها) =====
 window.exportAsManzoumaPDF = async function(containerId, filename) {
     const container = document.getElementById(containerId);
     if (!container) { showToast('⚠️ التبويب غير موجود', 'info'); return; }
@@ -528,7 +588,6 @@ window.switchTab = async function(tabId) {
     const bnBtn = document.querySelector(`.bn-item[data-bn-tab="${tabId}"]`);
     if(bnBtn) bnBtn.classList.add('active');
 
-    // إغلاق القائمة الجانبية على الموبايل
     document.getElementById('sidebar').classList.remove('open');
 
     if(loadedTabs.has(tabId)) return;
@@ -570,12 +629,12 @@ window.saveMyAccount = async function() {
     const newDept = document.getElementById('acc-dept').value.trim();
     const newPhone = document.getElementById('acc-phone').value.trim();
     const newPass = document.getElementById('acc-pass').value.trim();
-    if(!newName) { alert('الاسم مطلوب'); return; }
+    if(!newName) { window.showToast('الاسم مطلوب', 'error'); return; }
 
     try {
         const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
         const snap = await getDocs(q);
-        if(snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات'); return; }
+        if(snap.empty) { window.showToast('⚠️ تعذر إيجاد حسابك بقاعدة البيانات', 'error'); return; }
 
         const updateData = { name: newName, email: newEmail, department: newDept, phone: newPhone };
         if(newPass) updateData.plainPass = newPass;
@@ -587,16 +646,16 @@ window.saveMyAccount = async function() {
         document.getElementById('lbl-admin-name').textContent = `مرحباً، ${newName}`;
         document.getElementById('acc-pass').value = '';
 
-        alert('✅ تم حفظ بياناتك بنجاح.');
-    } catch(e) { alert('❌ خطأ في الحفظ: ' + e.message); }
+        window.showToast('✅ تم حفظ بياناتك بنجاح.');
+    } catch(e) { window.showToast('❌ خطأ في الحفظ: ' + e.message, 'error'); }
 };
 
-// تحميل التبويب الأول تلقائياً
+// تحميل التبويب الأول تلقائياً وتشغيل مستمع الطوارئ لايف
 window.switchTab('tab-index').finally(() => {
     document.getElementById('splash').classList.add('hide');
+    listenToEmergencyAlertsLive();
 });
 
-// تسجيل Service Worker للعمل كـ PWA كامل
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW registration failed:', e));
 }
