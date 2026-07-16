@@ -276,14 +276,14 @@ async function loadStudentHistory(studentName) {
 // ===== نقل الطالب لفصل جديد =====
 window.transferStudent = async function(docId) {
     const newClassInput = document.getElementById(`new-class-${docId}`).value.trim();
-    if (!newClassInput) return alert('⚠️ يرجى اختيار الفصل الجديد من القائمة');
+    if (!newClassInput) return window.showToast('⚠️ يرجى اختيار الفصل الجديد من القائمة');
 
     if (!confirm(`هل أنت متأكد من نقل الطالب إلى فصل ${newClassInput}؟`)) return;
 
     try {
         await updateDoc(doc(db, 'students', docId), { classId: newClassInput });
         document.getElementById(`class-display-${docId}`).textContent = newClassInput;
-        alert('✅ تم نقل الطالب بنجاح.');
+        window.showToast('✅ تم نقل الطالب بنجاح.');
 
         // إعادة تحميل قائمة الفصل الحالي (الطالب انتقل فخرج من القائمة)
         const currentClass = document.getElementById('st-select-class').value;
@@ -291,13 +291,13 @@ window.transferStudent = async function(docId) {
         document.getElementById('student-results-container').innerHTML = '';
 
     } catch (error) {
-        alert('❌ فشلت عملية النقل: ' + error.message);
+        window.showToast('❌ فشلت عملية النقل: ' + error.message);
     }
 };
 
 // ===== التواصل مع ولي الأمر =====
 window.contactParent = function(phone, studentName) {
-    if (!phone) return alert('⚠️ رقم هاتف ولي الأمر غير مسجل في النظام.');
+    if (!phone) return window.showToast('⚠️ رقم هاتف ولي الأمر غير مسجل في النظام.');
 
     const user = JSON.parse(localStorage.getItem('hs_user'));
     const msg = `مرحباً ولي أمر الطالب *${studentName}*،\nتتواصل معكم إدارة *${user?.schoolName || 'المدرسة'}* بخصوص مستوى الطالب وحضوره.\n\n_المنظومة الرقمية الشاملة_`;
