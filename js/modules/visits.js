@@ -253,11 +253,11 @@ window.handleRegisterTechVisitLive = async function(e) {
             date: getTodayISO(),
             createdAt: serverTimestamp()
         });
-        alert('✅ تم توثيق الزيارة وحفظ التقييم بنجاح.');
+        window.showToast('✅ تم توثيق الزيارة وحفظ التقييم بنجاح.');
         e.target.reset();
         document.getElementById('visit-criteria-area').innerHTML = '';
     } catch(err) {
-        alert('❌ خطأ: ' + err.message);
+        window.showToast('❌ خطأ: ' + err.message);
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-cloud-plus-fill"></i> توثيق الزيارة سحابياً';
@@ -307,5 +307,5 @@ window.showVisitDetails = function(data) {
         data.criteria.forEach((c,i) => { msg += `${i+1}. ${c.item}: ${c.rating}\n`; });
     }
     msg += `\nالملاحظات: ${data.notes||'-'}`;
-    alert(msg);
+    window.showToast(msg);
 };
