@@ -296,7 +296,7 @@ try {
     const roleClean = String(currentUser.role||'').trim().toLowerCase();
     const allowed = ['admin', 'assistant_manager', 'wing_supervisor', 'social_worker'];
     if(!allowed.includes(roleClean)) {
-        alert('🔒 الوصول مرفوض — هذه اللوحة للإدارة فقط');
+        window.showToast('🔒 الوصول مرفوض — هذه اللوحة للإدارة فقط');
         window.location.replace('index.html');
     }
     document.getElementById('lbl-admin-name').textContent = `مرحباً، ${currentUser.name||'المسؤول'}`;
