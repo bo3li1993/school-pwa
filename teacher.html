@@ -110,7 +110,6 @@ select:focus,input:focus{border-color:var(--accent);}
 
 <div class="content">
 
-  <!-- تسجيل الغياب -->
   <div id="tab-attendance">
     <div class="card">
       <h3>✏️ تسجيل حضور وغياب الفصل</h3>
@@ -148,7 +147,6 @@ select:focus,input:focus{border-color:var(--accent);}
     </div>
   </div>
 
-  <!-- سجلاتي -->
   <div id="tab-records" class="hidden">
     <div class="card">
       <h3>📋 سجلات الغياب المسجلة</h3>
@@ -160,7 +158,6 @@ select:focus,input:focus{border-color:var(--accent);}
     </div>
   </div>
 
-  <!-- الطلاب -->
   <div id="tab-students" class="hidden">
     <div class="card">
       <h3>👥 قائمة الطلاب</h3>
@@ -174,7 +171,6 @@ select:focus,input:focus{border-color:var(--accent);}
     </div>
   </div>
 
-  <!-- السلوك -->
   <div id="tab-behavior" class="hidden">
     <div class="card" style="border-top-color:var(--danger);">
       <h3>🛡️ رصد ومتابعة سلوك الطالب</h3>
@@ -206,7 +202,6 @@ select:focus,input:focus{border-color:var(--accent);}
     </div>
   </div>
 
-  <!-- حسابي -->
   <div id="tab-profile" class="hidden">
     <div class="card">
       <h3>⚙️ بياناتي وكلمة المرور</h3>
@@ -226,7 +221,6 @@ select:focus,input:focus{border-color:var(--accent);}
     </div>
   </div>
 
-  <!-- الرسائل -->
   <div id="tab-messages" class="hidden">
     <div class="card">
       <h3>💬 التواصل مع ولي الأمر</h3>
@@ -248,7 +242,6 @@ select:focus,input:focus{border-color:var(--accent);}
     </div>
   </div>
 
-  <!-- المزيد -->
   <div id="tab-more" class="hidden">
     <div class="card" style="padding:0;overflow:hidden;">
       <div onclick="window.switchTab('tab-students')" style="display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;border-bottom:1px solid var(--line);">
@@ -275,7 +268,7 @@ select:focus,input:focus{border-color:var(--accent);}
 </div>
 
 <script type="module">
-import { db, getActiveSchoolId, getTodayISO } from './js/firebase-config.js';
+import { db, getActiveSchoolId, getTodayISO, getSchoolClasses } from './js/firebase-config.js';
 import { collection, getDocs, addDoc, updateDoc, query, where, orderBy, limit, writeBatch, doc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // ===== حماية الجلسة =====
@@ -298,8 +291,15 @@ let currentUser = null;
         document.getElementById('lbl-teacher-name').textContent = currentUser.name || 'المعلم';
         document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'المنظومة الرقمية';
         document.getElementById('splash-school').textContent = currentUser.schoolName || 'المنظومة الرقمية';
+        
+        // إظهار زر لوحة المدير للأخصائي الاجتماعي أو الأدوار المشتركة تلقائياً
+        if(String(currentUser.role).trim().toLowerCase() === 'social_worker') {
+            const btnAdmin = document.getElementById('btn-admin');
+            if(btnAdmin) btnAdmin.style.display = 'inline-block';
+        }
+        
         loadMyProfile();
-        // تحميل الفصول ديناميكياً لكل dropdowns
+        // تحميل الفصول ديناميكياً لكل dropdowns بنظام توفير الفواتير الذكي
         loadClassesDropdown('sel-class', 'beh-class', 'msg-class', 'rec-class', 'view-class');
     } catch(e) { window.location.replace('index.html'); }
 })();
@@ -739,12 +739,15 @@ function showToast(msg, type='success') {
     setTimeout(() => { t.style.animation = 'toastOut .4s forwards'; setTimeout(()=>t.remove(), 400); }, 2500);
 }
 
-// ===== تحميل الفصول ديناميكياً من Firestore =====
+// ===== تدمير قنبلة الفواتير: تحميل الفصول ديناميكياً من المودول المُحسّن المركزي لفايربيس =====
 async function loadClassesDropdown(...selectIds) {
     try {
         const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
-        const classes = [...new Set(snap.docs.map(d=>d.data().classId).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+        if(!schoolId) return;
+        
+        // استدعاء الدالة المركزية والذكية التي تفحص كولكشن classes أولاً وتمنع آلاف القراءات غير الضرورية لـ students
+        const classes = await getSchoolClasses(db, schoolId);
+        
         const opts = '<option value="">-- اختر الفصل --</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
         selectIds.forEach(id => {
             const el = document.getElementById(id);
