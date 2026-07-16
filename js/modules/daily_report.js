@@ -36,7 +36,7 @@ window.setDrToday = function() {
 
 window.loadDailyReport = async function() {
     const dateVal = document.getElementById('dr-date-input').value;
-    if (!dateVal) { alert('⚠️ اختر التاريخ أولاً'); return; }
+    if (!dateVal) { window.showToast('⚠️ اختر التاريخ أولاً'); return; }
 
     // صيغة ISO مطابقة لما تحفظه attendance.js و teacher.html
     const isoDate = dateVal; // format: 2026-07-11
