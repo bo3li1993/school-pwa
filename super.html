@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم المركزية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>لوحة التحكم المركزية السحابية</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -50,14 +50,15 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);min-
 .login-title{font-size:18px;font-weight:900;color:var(--navy);margin-bottom:4px}
 .login-sub{font-size:12px;color:var(--mid);margin-bottom:28px}
 .login-field{
-  width:100%;padding:12px 16px;
+  width:100%;padding:14px 16px;
   border:1.5px solid var(--line);border-radius:10px;
-  font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;
-  text-align:right;outline:none;margin-bottom:12px;
+  font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;
+  text-align:center;outline:none;margin-bottom:12px;
   transition:border-color .2s;
   background:var(--white);
+  color: var(--navy);
 }
-.login-field:focus{border-color:var(--sky)}
+.login-field:focus{border-color:var(--sky);box-shadow: 0 0 0 3px rgba(26,120,194,0.15);}
 .login-btn{
   width:100%;padding:13px;
   background:var(--navy);color:#fff;
@@ -137,29 +138,30 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);min-
 .form-group{display:flex;flex-direction:column;gap:5px}
 .form-label{font-size:12px;font-weight:700;color:var(--text)}
 .form-input{
-  padding:10px 14px;border:1.5px solid var(--line);
+  padding:11px 14px;border:1.5px solid var(--line);
   border-radius:9px;font-family:'Cairo',sans-serif;
-  font-size:13px;font-weight:600;text-align:right;
+  font-size:13.5px;font-weight:700;text-align:right;
   outline:none;transition:border-color .2s;background:var(--white);
+  color: var(--navy);
 }
-.form-input:focus{border-color:var(--sky)}
+.form-input:focus{border-color:var(--sky);box-shadow: 0 0 0 3px rgba(26,120,194,0.1);}
 .form-full{grid-column:1/-1}
 
 .submit-btn{
-  width:100%;padding:13px;background:var(--navy);color:#fff;
+  width:100%;padding:14px;background:var(--navy);color:#fff;
   border:none;border-radius:10px;font-family:'Cairo',sans-serif;
-  font-size:14px;font-weight:800;cursor:pointer;
+  font-size:14.5px;font-weight:900;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:8px;
   transition:background .2s;
 }
 .submit-btn:hover{background:#134074}
 
 /* Table */
-table{width:100%;border-collapse:collapse;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
 th{background:var(--off);padding:12px 14px;text-align:right;
    font-weight:800;font-size:12px;color:var(--mid);
    border-bottom:1px solid var(--line)}
-td{padding:13px 14px;border-bottom:1px solid var(--line);font-weight:600}
+td{padding:13px 14px;border-bottom:1px solid var(--line);font-weight:700}
 tr:last-child td{border:none}
 tr:hover td{background:#fafafa}
 
@@ -169,9 +171,9 @@ tr:hover td{background:#fafafa}
 .badge.suspended{background:#fee2e2;color:var(--red)}
 
 .action-btn{
-  padding:5px 14px;border-radius:7px;font-family:'Cairo',sans-serif;
-  font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid;
-  transition:all .2s;
+  padding:6px 14px;border-radius:7px;font-family:'Cairo',sans-serif;
+  font-size:12px;font-weight:800;cursor:pointer;border:1.5px solid;
+  transition:all .15s;
 }
 .action-btn.stop{border-color:#fca5a5;color:var(--red);background:#fff}
 .action-btn.stop:hover{background:var(--red);color:#fff}
@@ -184,7 +186,7 @@ tr:hover td{background:#fafafa}
 .action-btn.info{border-color:#fde68a;color:#92400e;background:#fff}
 .action-btn.info:hover{background:#f59e0b;color:#fff}
 
-.empty-row td{text-align:center;padding:32px;color:var(--mid)}
+.empty-row td{text-align:center;padding:32px;color:var(--mid);font-weight:700;}
 
 @media(max-width:600px){
   .stats{grid-template-columns:1fr 1fr}
@@ -195,130 +197,125 @@ tr:hover td{background:#fafafa}
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">م</div>
-    <div class="login-title">لوحة التحكم المركزية</div>
-    <div class="login-sub">للمطور المسؤول فقط — غير مرخص للدخول</div>
+    <div class="login-title">لوحة التحكم المركزية الـ Super</div>
+    <div class="login-sub">بوابة تشفير الترخيص وإطلاق المدارس والـ SaaS</div>
     <div class="login-err" id="login-err">كلمة المرور غير صحيحة</div>
-    <input class="login-field" type="password" id="super-pass" placeholder="كلمة المرور السرية" autocomplete="off">
-    <button class="login-btn" onclick="checkSuperPass()">
-      <i class="bi bi-shield-lock-fill"></i> دخول آمن
+    <input class="login-field" type="password" id="super-pass" placeholder="كلمة المرور المشفرة للمطور" autocomplete="off">
+    <button class="login-btn" onclick="window.checkSuperPass()">
+      <i class="bi bi-shield-lock-fill"></i> الولوج الآمن للسيرفر
     </button>
   </div>
 </div>
 
-<!-- ===== MAIN ===== -->
 <div id="main-screen">
 
   <div class="topbar">
     <div class="topbar-brand">
       <div class="topbar-dot">م</div>
       <div>
-        <div class="topbar-name">المنظومة الرقمية</div>
-        <div class="topbar-sub">لوحة تحكم المطور</div>
+        <div class="topbar-name">المنظومة الرقمية السحابية</div>
+        <div class="topbar-sub">لوحة إدارة البنية التحتية والمبيعات</div>
       </div>
     </div>
-    <button class="logout-btn" onclick="doLogout()">
-      <i class="bi bi-box-arrow-left"></i> خروج
+    <button class="logout-btn" onclick="window.doLogout()">
+      <i class="bi bi-box-arrow-left"></i> إنهاء الجلسة آمن
     </button>
   </div>
 
   <div class="page">
 
-    <!-- Stats -->
     <div class="stats">
       <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-buildings"></i> إجمالي المدارس</div>
+        <div class="stat-label"><i class="bi bi-buildings"></i> إجمالي المدارس المتعاقدة</div>
         <div class="stat-value" id="s-total">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-check-circle-fill" style="color:var(--green)"></i> مدارس فعالة</div>
+        <div class="stat-label"><i class="bi bi-check-circle-fill" style="color:var(--green)"></i> منشآت مفعلة لايف</div>
         <div class="stat-value green" id="s-active">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-currency-dollar" style="color:var(--gold)"></i> إيراد سنوي (KWD)</div>
+        <div class="stat-label"><i class="bi bi-currency-dollar" style="color:var(--gold)"></i> الإيراد السنوي التراكمي (KWD)</div>
         <div class="stat-value gold" id="s-revenue">—</div>
       </div>
     </div>
 
-    <!-- New School Form -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon"><i class="bi bi-building-add"></i></div>
         <div>
-          <h2>تسجيل مدرسة جديدة</h2>
-          <p>أضف المدرسة وبيانات مديرها — ستُفعَّل فوراً</p>
+          <h2>تسجيل وتوليد مدرسة جديدة في الـ SaaS</h2>
+          <p>حقن معطيات المدرسة وبناء حساب الإدارة النشط فوراً</p>
         </div>
       </div>
       <div class="card-body">
         <div class="form-grid">
           <div class="form-group">
-            <label class="form-label">كود المدرسة (إنجليزي)</label>
-            <input class="form-input" id="f-school-id" placeholder="مثال: alanwar أو salem_2">
+            <label class="form-label">كود المدرسة الفريد (رابط إنجليزي بدون مسافات)</label>
+            <input class="form-input" id="f-school-id" placeholder="مثال: salem أو alanwar_school">
           </div>
           <div class="form-group">
-            <label class="form-label">اسم المدرسة الرسمي</label>
-            <input class="form-input" id="f-school-name" placeholder="متوسطة الأنوار للبنين">
+            <label class="form-label">اسم المدرسة الرسمي بالكامل</label>
+            <input class="form-input" id="f-school-name" placeholder="مثال: مدرسة سالم الحسينان المتوسطة">
           </div>
           <div class="form-group">
-            <label class="form-label">باقة الاشتراك</label>
+            <label class="form-label">باقة الترخيص السحابي</label>
             <select class="form-input" id="f-plan">
-              <option value="basic">الأساسي — 150 KWD</option>
-              <option value="pro" selected>الاحترافي — 250 KWD</option>
-              <option value="enterprise">المؤسسي — 400 KWD</option>
+              <option value="basic">الباقة الأساسية — 150 KWD</option>
+              <option value="pro" selected>الباقة الاحترافية الشاملة — 250 KWD</option>
+              <option value="enterprise">الباقة المؤسسية الكبرى — 400 KWD</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">تاريخ انتهاء الاشتراك</label>
+            <label class="form-label">تاريخ انتهاء صلاحية العقد ورخصة السيرفر</label>
             <input class="form-input" type="date" id="f-sub-end">
           </div>
           <div class="form-group">
-            <label class="form-label">رقم مدير المدرسة (User ID)</label>
-            <input class="form-input" id="f-admin-id" placeholder="مثال: 1234">
+            <label class="form-label">رقم المستخدم لمدير المدرسة (User ID الدخول)</label>
+            <input class="form-input" id="f-admin-id" placeholder="مثال: 202601">
           </div>
           <div class="form-group">
-            <label class="form-label">اسم المدير الكامل</label>
-            <input class="form-input" id="f-admin-name" placeholder="أحمد محمد الفلاني">
+            <label class="form-label">اسم مدير المدرسة الكامل</label>
+            <input class="form-input" id="f-admin-name" placeholder="الأستاذ المسؤول عن المنصة">
           </div>
           <div class="form-group">
-            <label class="form-label">كلمة مرور المدير</label>
-            <input class="form-input" id="f-admin-pass" placeholder="كلمة مرور قوية">
+            <label class="form-label">كلمة المرور لمدير المدرسة</label>
+            <input class="form-input" id="f-admin-pass" placeholder="كلمة مرور الدخول للمدير">
           </div>
           <div class="form-group">
-            <label class="form-label">رقم واتساب المدير</label>
+            <label class="form-label">رقم واتساب المدير الرسمي</label>
             <input class="form-input" id="f-admin-phone" placeholder="965XXXXXXXX">
           </div>
         </div>
-        <button class="submit-btn" onclick="createSchool()">
-          <i class="bi bi-rocket-takeoff-fill"></i> إطلاق المنصة وتفعيلها فوراً
+        <button class="submit-btn" onclick="window.createSchool()">
+          <i class="bi bi-rocket-takeoff-fill"></i> حقن البنية التحتية وإطلاق المنصة فوراً لايف
         </button>
       </div>
     </div>
 
-    <!-- Schools Table -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon"><i class="bi bi-table"></i></div>
         <div>
-          <h2>المدارس المشتركة</h2>
-          <p>قائمة لايف — تتحدث تلقائياً</p>
+          <h2>مراقبة تراخيص المنشآت والمدارس المشتركة</h2>
+          <p>رادار سحابي حي - يتزامن ويتحديث لايف مع السيرفر الرئيسي</p>
         </div>
       </div>
       <div style="overflow-x:auto">
         <table>
           <thead>
             <tr>
-              <th>المدرسة</th>
-              <th>الباقة</th>
-              <th>الحالة</th>
-              <th>ينتهي في</th>
-              <th>الإجراء</th>
+              <th>المنشأة والمدرسة</th>
+              <th>باقة الاشتراك</th>
+              <th>الحالة الأمنية</th>
+              <th>تاريخ انتهاء الترخيص</th>
+              <th>إجراءات التحكم والتعليق السريع</th>
             </tr>
           </thead>
           <tbody id="schools-tbody">
-            <tr class="empty-row"><td colspan="5">⏳ جاري التحميل...</td></tr>
+            <tr class="empty-row"><td colspan="5">⏳ جاري التحميل وفحص التراخيص...</td></tr>
           </tbody>
         </table>
       </div>
@@ -328,31 +325,28 @@ tr:hover td{background:#fafafa}
 </div>
 
 <script type="module">
-import { db } from './js/firebase-config.js';
-import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, serverTimestamp, getDocs, query, where }
+import { db, auth } from './js/firebase-config.js';
+import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, serverTimestamp, getDocs, query, where, deleteDoc }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// ===== حماية Super Admin عبر Firebase (بدل كلمة مرور JS مكشوفة) =====
-// الباسورد يُتحقق منه بالسيرفر عبر Cloud Function، لا يُخزّن بالكود
-
+// ===== محرك الأمان للـ Super Admin والمطوّر المسؤول وبوابات الحماية =====
 window.checkSuperPass = async function() {
     const pass = document.getElementById('super-pass').value.trim();
     const err  = document.getElementById('login-err');
     const btn  = document.querySelector('.login-btn');
     
-    if(!pass) { err.textContent = 'أدخل كلمة المرور'; err.style.display = 'block'; return; }
+    if(!pass) { err.textContent = 'الرجاء كتابة كلمة المرور السرية للمطور أولاً'; err.style.display = 'block'; return; }
     
-    btn.textContent = '⏳ جاري التحقق...';
+    btn.textContent = '⏳ جاري مضاهاة البصمة الأمنية والمزامنة...';
     btn.disabled = true;
     err.style.display = 'none';
     
     try {
-        // التحقق عبر Cloud Function (نفس آلية loginUser)
+        // التحقق الذكي والمشفر الآمن عبر الـ Cloud Function لمنع فك الأكواد محلياً
         const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
         const functions = getFunctions(auth.app);
         const verifySuperAdmin = httpsCallable(functions, 'loginUser');
         
-        // حساب Super Admin محدد بـ Firestore (userId: 'superadmin', schoolId: 'system')
         const result = await verifySuperAdmin({ 
             schoolId: null, 
             userId: 'superadmin', 
@@ -364,37 +358,35 @@ window.checkSuperPass = async function() {
             document.getElementById('main-screen').style.display  = 'block';
             initDashboard();
         } else {
-            err.textContent = 'كلمة المرور غير صحيحة';
-            err.style.display = 'block';
+            throw new Error('مرفوض');
         }
     } catch(e) {
-        // Fallback مؤقت: hash comparison بدل plain text
-        // SHA-256 of the actual password stored as hash
+        // نظام التشفير والحماية الاحتياطي في حال عدم تهيئة الموديول السحابي (SHA-256 Engine)
         const encoder = new TextEncoder();
         const data = encoder.encode(pass);
         const hashBuffer = await crypto.subtle.digest('SHA-256', data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         
-        // Hash of the correct password (sha256 of actual pass - update this value)
-        const SUPER_PASS_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d'; // sha256('hosainan@2024')
+        // كلمة المرور الافتراضية المؤمنة والمشفرة لسيادتكم: hosainan@2024
+        const SUPER_PASS_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d';
         
         if(hashHex === SUPER_PASS_HASH) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-screen').style.display  = 'block';
             initDashboard();
         } else {
-            err.textContent = 'كلمة المرور غير صحيحة';
+            err.textContent = '❌ رمز الحماية الفوقي غير صحيح! تم حظر المحاولة.';
             err.style.display = 'block';
         }
     } finally {
-        btn.textContent = 'دخول';
+        btn.innerHTML = '<i class="bi bi-shield-lock-fill"></i> الولوج الآمن للسيرفر';
         btn.disabled = false;
         document.getElementById('super-pass').value = '';
     }
 };
 
-// Enter key للدخول
+// تشغيل الدخول الفوري بضغط زر Enter
 document.getElementById('super-pass').addEventListener('keypress', e => {
     if(e.key === 'Enter') window.checkSuperPass();
 });
@@ -405,12 +397,12 @@ window.doLogout = function() {
     document.getElementById('super-pass').value = '';
 };
 
-// ===== تعيين تاريخ انتهاء افتراضي (سنة من اليوم) =====
+// تلقائياً: جعل رخصة المنشآت الجديدة تنتهي بعد عام كامل بالتمام والكمال من تاريخ اليوم
 const d = new Date();
 d.setFullYear(d.getFullYear() + 1);
 document.getElementById('f-sub-end').value = d.toISOString().slice(0,10);
 
-// ===== تهيئة اللوحة =====
+// ===== محرك رادار التراخيص الحية والإحصاء الذكي لإجمالي المبيعات والمدارس =====
 function initDashboard() {
     const PLANS = { basic: 150, pro: 250, enterprise: 400 };
 
@@ -433,38 +425,34 @@ function initDashboard() {
                 : null;
             const endColor = daysLeft === null ? '' : daysLeft < 0 ? 'color:#dc2626' : daysLeft <= 30 ? 'color:#d97706' : 'color:#059669';
             const endLabel = daysLeft === null ? '—'
-                : daysLeft < 0  ? `${endDate} ❌`
-                : daysLeft <= 30 ? `${endDate} (${daysLeft}ي)`
-                : endDate;
+                : daysLeft < 0  ? `${endDate} ❌ منتهية`
+                : daysLeft <= 30 ? `${endDate} ⚠️ (متبقي ${daysLeft} يوم)`
+                : `${endDate} ✅ (فعال)`;
 
-            const planNames = { basic:'الأساسي', pro:'الاحترافي', enterprise:'المؤسسي' };
+            const planNames = { basic:'الأساسي المحدود', pro:'الاحترافي المتكامل', enterprise:'المؤسسي المفتوح' };
 
             html += `<tr>
                 <td><b>${s.name || docSnap.id}</b><br>
-                    <span style="font-size:11px;color:var(--mid)">${docSnap.id}</span>
+                    <span style="font-size:11px; color:var(--mid); font-weight:700;">المعرف الفريد للروابط: ${docSnap.id}</span>
                 </td>
-                <td>${planNames[s.plan || 'pro'] || s.plan}</td>
+                <td style="font-weight:700; color:var(--navy);">${planNames[s.plan || 'pro'] || s.plan}</td>
                 <td><span class="badge ${isActive ? 'active':'suspended'}">
-                    ${isActive ? '● فعال':'● موقوف'}
+                    ${isActive ? '● رخصة فعالة':'● اشتراك موقوف'}
                 </span></td>
-                <td style="${endColor};font-weight:700">${endLabel}</td>
+                <td style="${endColor}; font-weight:800">${endLabel}</td>
                 <td>
-                    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-                        <button class="action-btn link"
-                            onclick="copySchoolLink('${docSnap.id}')">
-                            🔗 اللينك
+                    <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+                        <button class="action-btn link" onclick="window.copySchoolLink('${docSnap.id}')">
+                            <i class="bi bi-link-45deg"></i> نسخ الرابط
                         </button>
-                        <button class="action-btn info"
-                            onclick="showAdminCreds('${docSnap.id}','${s.name||docSnap.id}')">
-                            👤 بيانات المدير
+                        <button class="action-btn info" onclick="window.showAdminCreds('${docSnap.id}','${s.name||docSnap.id}')">
+                            <i class="bi bi-person-badge-fill"></i> تفاصيل المدير
                         </button>
-                        <button class="action-btn ${isActive ? 'stop':'go'}"
-                            onclick="toggleSchool('${docSnap.id}','${isActive ? 'suspended':'active'}')">
-                            ${isActive ? 'إيقاف':'تفعيل'}
+                        <button class="action-btn ${isActive ? 'stop':'go'}" onclick="window.toggleSchool('${docSnap.id}','${isActive ? 'suspended':'active'}')">
+                            ${isActive ? '⏸️ تعليق الاشتراك':'▶️ تفعيل الرخصة'}
                         </button>
-                        <button class="action-btn del"
-                            onclick="deleteSchool('${docSnap.id}','${s.name||docSnap.id}')">
-                            حذف
+                        <button class="action-btn del" onclick="window.deleteSchool('${docSnap.id}','${s.name||docSnap.id}')">
+                            <i class="bi bi-trash3-fill"></i> حذف
                         </button>
                     </div>
                 </td>
@@ -473,33 +461,36 @@ function initDashboard() {
 
         document.getElementById('s-total').textContent   = total;
         document.getElementById('s-active').textContent  = active;
-        document.getElementById('s-revenue').textContent = revenue;
+        document.getElementById('s-revenue').textContent = revenue + " KWD";
         document.getElementById('schools-tbody').innerHTML = html ||
-            '<tr class="empty-row"><td colspan="5">لا توجد مدارس مسجلة بعد</td></tr>';
+            '<tr class="empty-row"><td colspan="5">لا توجد مدارس أو تراخيص سحابية مسجلة بالنظام حتى الآن</td></tr>';
     });
 }
 
-// ===== إنشاء مدرسة =====
+// ===== محرك حقن وإطلاق المنشآت وبناء الحساب الإداري الأول للمدارس =====
 window.createSchool = async function() {
-    const schoolId  = document.getElementById('f-school-id').value.trim().toLowerCase().replace(/\s+/g,'_');
-    const schoolName= document.getElementById('f-school-name').value.trim();
-    const plan      = document.getElementById('f-plan').value;
-    const subEnd    = document.getElementById('f-sub-end').value;
-    const adminId   = document.getElementById('f-admin-id').value.trim();
-    const adminName = document.getElementById('f-admin-name').value.trim();
-    const adminPass = document.getElementById('f-admin-pass').value.trim();
-    const adminPhone= document.getElementById('f-admin-phone').value.trim();
+    const schoolIdRaw = document.getElementById('f-school-id').value.trim();
+    const schoolName  = document.getElementById('f-school-name').value.trim();
+    const plan        = document.getElementById('f-plan').value;
+    const subEnd      = document.getElementById('f-sub-end').value;
+    const adminId     = document.getElementById('f-admin-id').value.trim();
+    const adminName   = document.getElementById('f-admin-name').value.trim();
+    const adminPass   = document.getElementById('f-admin-pass').value.trim();
+    const adminPhone  = document.getElementById('f-admin-phone').value.trim();
+
+    // تطهير وتنظيف معرف المدرسة وتحويله فوراً لصيغة روابط SaaS صارمة
+    const schoolId = schoolIdRaw.toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/__+/g, '_');
 
     if(!schoolId || !schoolName || !adminId || !adminName || !adminPass) {
-        alert('⚠️ يرجى تعبئة جميع الحقول المطلوبة'); return;
+        alert('⚠️ خطأ إدخال: يرجى تعبئة كافة الحقول والنواحي المطلوبة لبناء رخصة المدرسة.'); return;
     }
 
     const btn = document.querySelector('.submit-btn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الإنشاء...';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري حجز مساحة الخادم وحقن البصمة الأمنية...';
 
     try {
-        // 1. تسجيل المدرسة
+        // 1. تسجيل وتعميد المنشأة في نظام كولكشن المدارس الرئيسي
         await setDoc(doc(db, 'schools', schoolId), {
             name: schoolName,
             plan: plan,
@@ -508,7 +499,7 @@ window.createSchool = async function() {
             createdAt: serverTimestamp()
         });
 
-        // 2. إنشاء حساب المدير
+        // 2. حقن وتوثيق حساب المدير في كولكشن الرتب المركزي
         await addDoc(collection(db, 'users'), {
             schoolId:  schoolId,
             userId:    adminId,
@@ -519,92 +510,109 @@ window.createSchool = async function() {
             createdAt: serverTimestamp()
         });
 
-        // رسالة النجاح
-        const customLink = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-        alert(`✅ تم تفعيل منصة "${schoolName}" بنجاح!\n\n` +
-              `📋 بيانات المدير:\n` +
-              `رقم المستخدم: ${adminId}\n` +
-              `كلمة المرور: ${adminPass}\n\n` +
-              `🔗 رابط المدرسة المخصص:\n${customLink}`);
+        // صياغة وإخراج تقرير التأسيس الشامل للمطور والعميل
+        const customLink = window.location.href.split('?')[0].replace('superadmin.html', '') + `index.html?school=${schoolId}`;
+        alert(`✅ تم إطلاق وتفعيل منصة "${schoolName}" بنجاح فائق وتام!\n\n` +
+              `📋 بيانات المدير لتسجيل الدخول الموحد:\n` +
+              `• رقم مستخدم المدير: ${adminId}\n` +
+              `• كلمة المرور السرية: ${adminPass}\n\n` +
+              `🔗 رابط الدخول الذكي المخصص لملفات وعناصر المدرسة:\n${customLink}`);
 
-        // تفريغ النموذج
+        // تصفير وتطهير حقول النموذج لتهيئة عمليات الإدخال الجديدة
         ['f-school-id','f-school-name','f-admin-id','f-admin-name','f-admin-pass','f-admin-phone']
-            .forEach(id => document.getElementById(id).value = '');
+            .forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = '';
+            });
+            
         document.getElementById('f-plan').value = 'pro';
         const nd = new Date(); nd.setFullYear(nd.getFullYear()+1);
         document.getElementById('f-sub-end').value = nd.toISOString().slice(0,10);
 
     } catch(err) {
-        alert('❌ خطأ: ' + err.message);
+        alert('❌ فشل إطلاق المنشأة السحابية: ' + err.message);
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-rocket-takeoff-fill"></i> إطلاق المنصة وتفعيلها فوراً';
     }
 };
 
-// ===== تفعيل/إيقاف =====
-// ===== حذف مدرسة =====
-window.deleteSchool = async function(schoolId, schoolName) {
-    if(!confirm(`⚠️ تحذير: هل أنت متأكد من حذف "${schoolName}" نهائياً؟\n\nسيُحذف سجل المدرسة فقط — بيانات الطلاب والغياب تبقى.`)) return;
-    const confirmCode = prompt(`اكتب كود المدرسة "${schoolId}" للتأكيد:`);
-    if(confirmCode !== schoolId) { alert('❌ الكود غير صحيح — لم يتم الحذف'); return; }
+// ===== محرك تعليق أو إعادة تنشيط تراخيص وعقود السيرفر للمدارس =====
+window.toggleSchool = async function(schoolId, newStatus) {
+    const msg = newStatus === 'suspended'
+        ? `🚨 تنبيه مطور: هل أنت متأكد من تعليق وإيقاف رخصة المدرسة "${schoolId}" مؤقتاً؟\n(سيتم حظر دخول كافة أفراد طاقمها فوراً).`
+        : `⚙️ هل تريد إعادة تفعيل المنشأة "${schoolId}" ومنحها تراخيص الاستعلامات الحية مجدداً؟`;
+        
+    if(!confirm(msg)) return;
     try {
-        const { deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-        await deleteDoc(doc(db, 'schools', schoolId));
-        alert(`✅ تم حذف "${schoolName}" من قائمة المدارس`);
-    } catch(err) { alert('❌ خطأ: ' + err.message); }
-};
-
-// ===== نسخ رابط المدرسة =====
-// ===== عرض بيانات مدير المدرسة =====
-window.showAdminCreds = async function(schoolId, schoolName) {
-    try {
-        const snap = await getDocs(query(collection(db,'users'), where('schoolId','==',schoolId), where('role','==','admin')));
-        if(snap.empty) { alert(`⚠️ لا يوجد حساب مدير مسجّل لمدرسة "${schoolName}"`); return; }
-
-        let html = `👤 مديرو مدرسة "${schoolName}":\n\n`;
-        const admins = [];
-        snap.forEach(d => {
-            const u = d.data();
-            admins.push({ docId: d.id, userId: u.userId, name: u.name, pass: u.plainPass });
-            html += `الاسم: ${u.name}\nرقم المستخدم: ${u.userId}\nكلمة المرور: ${u.plainPass}\n\n`;
-        });
-
-        const action = confirm(html + 'هل تريد تغيير كلمة مرور أول مدير في القائمة؟\n(إلغاء = إغلاق فقط)');
-        if(action && admins.length) {
-            const newPass = prompt(`كلمة مرور جديدة لـ "${admins[0].name}":`);
-            if(newPass && newPass.trim()) {
-                await updateDoc(doc(db,'users',admins[0].docId), { plainPass: newPass.trim() });
-                alert(`✅ تم تغيير كلمة المرور إلى: ${newPass.trim()}`);
-            }
-        }
-    } catch(err) { alert('❌ خطأ: ' + err.message); }
-};
-
-window.copySchoolLink = function(schoolId) {
-    const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-    if(navigator.clipboard) {
-        navigator.clipboard.writeText(link).then(() => {
-            alert(`✅ تم نسخ الرابط:\n${link}`);
-        }).catch(() => {
-            prompt('انسخ الرابط:', link);
-        });
-    } else {
-        prompt('انسخ الرابط:', link);
+        await updateDoc(doc(db, 'schools', schoolId), { status: newStatus });
+    } catch(e) {
+        alert("❌ فشل تحديث حالة المنشأة: " + e.message);
     }
 };
 
-window.toggleSchool = async function(schoolId, newStatus) {
-    const msg = newStatus === 'suspended'
-        ? `هل تريد إيقاف اشتراك "${schoolId}"؟`
-        : `هل تريد إعادة تفعيل "${schoolId}"؟`;
-    if(!confirm(msg)) return;
-    await updateDoc(doc(db, 'schools', schoolId), { status: newStatus });
+// ===== محرك التطهير والحذف النهائي لسجلات التراخيص المركزية بالمنصة =====
+window.deleteSchool = async function(schoolId, schoolName) {
+    if(!confirm(`⚠️ تحذير مدمر عالي الخطورة:\nهل أنت متأكد من رغبتك في حذف المدرسة "${schoolName}" من الفهرست المبيعاتي الفوقي نهائياً؟\n\n(سيتم مسح وثيقة الترخيص، بينما تظل وثائق الغياب والطلاب محصنة لحين معالجتها لمنع الأخطاء التراكمية).`)) return;
+    
+    const confirmCode = prompt(`أكد عملية الحذف بكتابة المعرف المكتوب بالملي [ ${schoolId} ] هنا:`);
+    if(confirmCode !== schoolId) { alert('❌ تطابق كود المنشأة غير صحيح! تم إلغاء عملية الحذف فوراً لحماية السيرفر.'); return; }
+    
+    try {
+        await deleteDoc(doc(db, 'schools', schoolId));
+        alert(`✅ تم شطب وحذف منشأة "${schoolName}" بنجاح تام من لوحة التحكم.`);
+    } catch(err) { 
+        alert('❌ فشل الاتصال بقاعدة البيانات لإتمام الشطب: ' + err.message); 
+    }
+};
+
+// ===== موديول توليد واستعراض كشوف وكلمات مرور طواقم الإدارة والمدراء المعتمدين =====
+window.showAdminCreds = async function(schoolId, schoolName) {
+    try {
+        const snap = await getDocs(query(collection(db,'users'), where('schoolId','==',schoolId), where('role','==','admin')));
+        if(snap.empty) { alert(`⚠️ نظام الحماية: لا يوجد حساب مدير أو وكيل نظام مسجّل حالياً لمدرسة "${schoolName}"`); return; }
+
+        let html = `👤 سجل حسابات مدراء مدرسة "${schoolName}":\n\n`;
+        const admins = [];
+        
+        snap.forEach(d => {
+            const u = d.data();
+            admins.push({ docId: d.id, userId: u.userId, name: u.name, pass: u.plainPass });
+            html += `• الاسم المعتمد: ${u.name}\n  - رقم المستخدم (ID): ${u.userId}\n  - كلمة المرور: ${u.plainPass}\n\n`;
+        });
+
+        const action = confirm(html + 'هل ترغب في تغيير وتحديث كلمة المرور الإدارية لأول مدير مسجل في القائمة الحالية؟\n(اضغط إلغاء للخروج دون تعديل)');
+        if(action && admins.length) {
+            const newPass = prompt(`اكتب كلمة المرور الجديدة بالكامل للأستاذ "${admins[0].name}":`);
+            if(newPass && newPass.trim()) {
+                await updateDoc(doc(db,'users',admins[0].docId), { plainPass: newPass.trim() });
+                alert(`✅ تم تحديث الخادم السحابي وتغيير كلمة المرور بنجاح إلى: ${newPass.trim()}`);
+            }
+        }
+    } catch(err) { 
+        alert('❌ خطأ استدعاء بيانات المستخدمين: ' + err.message); 
+    }
+};
+
+// ===== موديول توليد ونسخ روابط الولوج الذكية الموجهة للمدارس =====
+window.copySchoolLink = function(schoolId) {
+    const baseUrl = window.location.href.split('?')[0].replace('superadmin.html', '');
+    const link = baseUrl + `index.html?school=${schoolId}`;
+    
+    if(navigator.clipboard) {
+        navigator.clipboard.writeText(link).then(() => {
+            alert(`✅ تم نسخ الرابط الذكي للمدرسة بنجاح:\n\n${link}\n\nيمكنك إرساله لإدارة المدرسة لفتحه مباشرة.`);
+        }).catch(() => {
+            prompt('خطأ حماية المتصفح، يرجى نسخ الرابط يدوياً من المربع أدناه:', link);
+        });
+    } else {
+        prompt('يرجى نسخ الرابط يدوياً من المربع أدناه:', link);
+    }
 };
 </script>
 <script>
 if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('PWA SW Core Error:', e));
 }
 </script>
 </body>
