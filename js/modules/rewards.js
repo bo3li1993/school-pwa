@@ -124,7 +124,7 @@ window.handleGrantPointsLive = async function(e) {
         reason: document.getElementById('reward-reason').value.trim(),
         createdAt: serverTimestamp()
     });
-    alert('✓ تم إيداع النقاط بنجاح.');
+    window.showToast('✓ تم إيداع النقاط بنجاح.');
     document.getElementById('rewards-grant-form').reset();
     loadRewardsLeaderboardLive();
 };
