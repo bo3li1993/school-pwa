@@ -57,7 +57,7 @@ window.handleRegisterManagerVisitLive = async function(e) {
     e.preventDefault();
     const schoolId = getActiveSchoolId();
     const teacherName = document.getElementById('m-visit-teacher').value.trim();
-    if(!teacherName) { alert('⚠️ يرجى اختيار المعلم'); return; }
+    if(!teacherName) { window.showToast('⚠️ يرجى اختيار المعلم'); return; }
 
     await addDoc(collection(db, 'manager_visits'), {
         schoolId: schoolId,
@@ -66,7 +66,7 @@ window.handleRegisterManagerVisitLive = async function(e) {
         notes: document.getElementById('m-visit-notes').value.trim(),
         createdAt: serverTimestamp()
     });
-    alert('✓ تم توثيق الزيارة بنجاح.');
+    window.showToast('✓ تم توثيق الزيارة بنجاح.');
     document.getElementById('manager-visit-form').reset();
 };
 
