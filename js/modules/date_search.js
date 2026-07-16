@@ -60,7 +60,7 @@ window.fetchHistoricAttendanceByClassLive = async function() {
     const pdfBtn = document.getElementById('btn-historic-pdf');
     const schoolId = getActiveSchoolId(); // 🏢 البصمة الأمنية للمدرسة
 
-    if (!dateInput) { alert("⚠️ يرجى تحديد التاريخ أولاً للبدء!"); return; }
+    if (!dateInput) { window.showToast("⚠️ يرجى تحديد التاريخ أولاً للبدء!"); return; }
 
     const isoDate = dateInput; // صيغة ISO المطابقة لما يحفظه attendance.js
     lastSearchedDate = isoDate;
