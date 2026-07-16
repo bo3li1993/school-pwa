@@ -186,7 +186,7 @@ let currentGuardName = "حارس الأمن";
 
 function getUnifiedDateString() {
     const d = new Date();
-    return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+    return d.getFullYear() + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0');
 }
 
 function getUnifiedTimeString() {
@@ -194,7 +194,7 @@ function getUnifiedTimeString() {
     let ampm = hours >= 12 ? 'مساءً' : 'صباحاً';
     hours = hours % 12; hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;
-    return `${hours}:${minutes} ${ampm}`;
+    return String(hours).padStart(2,'0') + ':' + String(minutes).padStart(2,'0') + ' ' + ampm;
 }
 
 // ---
@@ -222,20 +222,7 @@ function startGuardLiveGatepassListener() {
 
             if (dateMatch) {
                 hasActiveRecords = true;
-                html += `<tr style="border-bottom: 2px solid #f1f5f9; background:#fffdf5;">
-                    <td><span style="background:var(--primary-color); color:#fff; padding:3px 8px; border-radius:5px;">${d.classId || '-'}</span></td>
-                    <td style="font-size:14px; font-weight:900; color:var(--primary-color);">👤 ${d.studentName}</td>
-                    <td style="font-weight:bold; color:var(--text);">${d.relative}</td>
-                    <td><span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">${d.relation}</span></td>
-                    <td><code>${d.relativeCivilId}</code></td>
-                    <td><a href="tel:${d.relativePhone}" style="color:#2563eb; font-weight:bold;">${d.relativePhone}</a></td>
-                    <td style="color:var(--hover-color); font-weight:bold;">${d.reason || '-'}</td>
-                    <td>
-                        <button onclick="window.confirmStudentExitLive('${docSnap.id}', '${d.studentName}', '${d.relativePhone || ''}')" style="background:var(--success-color); color:#fff; border:none; padding:8px 12px; font-weight:bold; border-radius:6px; cursor:pointer; font-size:12px;">
-                             غادر المدرسة رسميًا ✅
-                        </button>
-                    </td>
-                </tr>`;
+                html += `<tr style="border-bottom:2px solid #f1f5f9;background:#fffdf5;"><td><span style="background:var(--primary-color);color:#fff;padding:3px 8px;border-radius:5px;">${d.classId||'-'}</span></td><td style="font-size:14px;font-weight:900;color:var(--primary-color);">👤 ${d.studentName}</td><td style="font-weight:bold;color:var(--text);">${d.relative||'-'}</td><td>${d.relation||'-'}</td><td>${d.relativeCivilId||'-'}</td><td><a href="tel:${d.relativePhone}" style="color:#2563eb;font-weight:bold;">${d.relativePhone||''}</a></td><td style="color:var(--hover-color);font-weight:bold;">${d.reason||'-'}</td><td><button onclick="window.confirmStudentExitLive('${docSnap.id}','${d.studentName}','${d.relativePhone||''}')" style="background:var(--success-color);color:#fff;border:none;padding:8px 12px;font-weight:bold;border-radius:6px;cursor:pointer;font-size:12px;">غادر ✅</button></td></tr>`;
             }
         });
 
@@ -252,42 +239,33 @@ function startGuardLiveGatepassListener() {
 }
 
 // ===== بحث سريع بالاسم =====
-let searchDebounce = null;
+let _sd = null;
 window.guardQuickSearch = function(term) {
-    clearTimeout(searchDebounce);
-    const results = document.getElementById('guard-search-results');
-    if (!term || term.trim().length < 2) { results.innerHTML = ''; return; }
-    results.innerHTML = '<p style="color:#999; font-size:13px; padding:8px;">⏳ جاري البحث...</p>';
-    searchDebounce = setTimeout(async () => {
+    clearTimeout(_sd);
+    var r = document.getElementById('guard-search-results');
+    if (!r) return;
+    if (!term || term.trim().length < 2) { r.innerHTML = ''; return; }
+    _sd = setTimeout(async function() {
         try {
-            const schoolId = getActiveSchoolId();
-            const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
-            const matches = [];
-            snap.forEach(d => {
-                const name = d.data().name || '';
-                if (name.includes(term.trim())) matches.push(d.data());
+            var sid = getActiveSchoolId();
+            var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',sid)));
+            var m = [];
+            snap.forEach(function(d){ if((d.data().name||'').includes(term.trim())) m.push(d.data()); });
+            if (!m.length) { r.innerHTML = '<p style="color:#dc2626;font-size:13px;padding:8px;font-weight:700;">لم يوجد طالب</p>'; return; }
+            var h = '<div style="font-size:12px;color:#666;margin-bottom:6px;">' + m.length + ' نتيجة</div>';
+            m.forEach(function(s) {
+                var p = (s.parentPhone||'').replace(/\D/g,'');
+                h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#f8fafc;border-radius:8px;margin-bottom:6px;border-right:3px solid var(--sky);">';
+                h += '<div><b>' + (s.name||'-') + '</b> <span style="font-size:12px;color:#666;">' + (s.classId||'-') + '</span></div>';
+                h += '<div style="display:flex;gap:6px;">';
+                if (p) {
+                    h += '<a href="tel:' + (s.parentPhone||'') + '" style="background:#059669;color:#fff;padding:5px 10px;border-radius:6px;font-weight:700;text-decoration:none;font-size:12px;">اتصال</a>';
+                    h += '<a href="https://wa.me/965' + p + '" target="_blank" style="background:#25d366;color:#fff;padding:5px 10px;border-radius:6px;font-weight:700;text-decoration:none;font-size:12px;">واتساب</a>';
+                }
+                h += '</div></div>';
             });
-            if (!matches.length) {
-                results.innerHTML = '<p style="color:#dc2626; font-size:13px; padding:8px; font-weight:700;">⚠️ لم يُعثر على طالب بهذا الاسم</p>';
-                return;
-            }
-            let html = `<div style="font-size:12px; font-weight:700; color:#666; margin-bottom:6px;">${matches.length} نتيجة:</div>`;
-            matches.forEach(s => {
-                html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border-radius:8px; margin-bottom:6px; border-right:3px solid var(--sky);">
-                    <div>
-                        <span style="font-weight:900; font-size:14px;">👤 ${s.name}</span>
-                        <span style="margin-right:10px; font-size:12px; color:#666;">الفصل: ${s.classId || '-'}</span>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        ${s.parentPhone ? `<a href="tel:${s.parentPhone}" style="background:#059669; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; text-decoration:none; font-size:12px; font-family:'Cairo',sans-serif;">📞 اتصال</a>` : ''}
-                        ${s.parentPhone ? `<a href="https://wa.me/965${s.parentPhone.replace(/\D/g,'')}?text=${encodeURIComponent('السلام عليكم، هل بإمكانكم التواصل مع المدرسة؟')}" target="_blank" style="background:#25d366; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; text-decoration:none; font-size:12px; font-family:'Cairo',sans-serif;">واتساب</a>` : ''}
-                    </div>
-                </div>`;
-            });
-            results.innerHTML = html;
-        } catch(e) {
-            results.innerHTML = `<p style="color:red; font-size:13px;">خطأ: ${e.message}</p>';
-        }
+            r.innerHTML = h;
+        } catch(e) { r.innerHTML = '<p style="color:red;font-size:13px;">' + e.message + '</p>'; }
     }, 350);
 };
 
@@ -295,7 +273,7 @@ window.guardQuickSearch = function(term) {
 function showToast(msg, type='success') {
     document.querySelectorAll('.toast').forEach(t=>t.remove());
     const t = document.createElement('div');
-    t.className = `toast ${type}`;
+    t.className = 'toast ' + type;
     t.textContent = msg;
     document.body.appendChild(t);
     setTimeout(()=>{t.style.animation='toastOut .4s forwards';setTimeout(()=>t.remove(),400);},2500);
@@ -303,20 +281,20 @@ function showToast(msg, type='success') {
 
 // ✅ دالة إثبات خروج الطالب الفعلي وتغيير حالته على السيستم المركزي واشعار واتساب
 window.confirmStudentExitLive = async function(docId, studentName, parentPhone) {
-    if(!confirm(`هل تأكدت من هوية ولي الأمر وغادر الطالب [ ${studentName} ] المدرسة الآن؟`)) return;
+    if(!confirm('هل تأكدت من هوية ولي الأمر وغادر الطالب ' + studentName + ' المدرسة الآن؟')) return;
     try {
         const docRef = doc(db, 'gatepass', docId);
         await updateDoc(docRef, { 
             status: 'exited',
             exitTimeStr: getUnifiedTimeString()
         });
-        showToast(`✓ تم إثبات خروج الطالب [ ${studentName} ] بنجاح.`);
+        showToast('تم إثبات خروج الطالب ' + studentName + ' بنجاح.');
         
         // WhatsApp التلقائي لولي الأمر لإغلاق حلقة الأمان اللحظية
         if(parentPhone && parentPhone.trim()) {
-            const msg = encodeURIComponent(`تنبيه أمني رسمي: غادر ابنكم/الطالب ${studentName} مبنى المدرسة الآن برفقة المستلم المعتمد بتاريخ ${getUnifiedDateString()} الساعة ${getUnifiedTimeString()}. شكراً لكم.`);
+            const msg = encodeURIComponent('تنبيه: غادر الطالب ' + studentName + ' المدرسة بتاريخ ' + getUnifiedDateString());
             const phone = parentPhone.replace(/\D/g,'');
-            const waLink = `https://wa.me/965${phone}?text=${msg}`;
+            const waLink = 'https://wa.me/965' + phone + '?text=' + msg;
             if(confirm('هل تريد فتح محادثة WhatsApp لإشعار ولي الأمر الفوري بالمغادرة؟')) window.open(waLink, '_blank');
         }
     } catch(err) { showToast('خطأ في تحديث البيانات: ' + err.message, 'error'); }
@@ -345,7 +323,7 @@ window.saveNewVisitorLogLive = async function(e) {
             guardName: currentGuardName, 
             createdAt: serverTimestamp()
         });
-        showToast(`✓ تم حفظ وأرشفة بيانات الزائر [ ${name} ] بنجاح.`);
+        showToast('تم حفظ بيانات الزائر ' + name + ' بنجاح.');
         document.getElementById('guard-visitor-form').reset();
     } catch(err) { showToast("خطأ أثناء الأرشفة: " + err.message, "error"); }
 };
@@ -406,7 +384,7 @@ document.addEventListener("DOMContentLoaded", function() {
     currentGuardId = user.userId;
     currentGuardName = user.name || "حارس الأمن";
     
-    document.getElementById('lbl-guard-title').innerHTML = `<i class="bi bi-shield-lock-fill"></i> بوابة الأمن: أ. ${currentGuardName}`;
+    document.getElementById('lbl-guard-title').innerHTML = '<i class="bi bi-shield-lock-fill"></i> بوابة الأمن: أ. ' + currentGuardName;
     const schoolEl = document.getElementById('lbl-guard-school');
     if(schoolEl) schoolEl.textContent = user.schoolName || 'المنظومة الرقمية';
     document.getElementById('guard-profile-name').value = currentGuardName;
