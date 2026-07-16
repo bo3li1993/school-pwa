@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>بوابة المعلم - المنظومة الرقمية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>بوابة المعلم - المنظومة الرقمية الموحدة</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -45,6 +45,7 @@ select:focus,input:focus{border-color:var(--accent);}
 .summary-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
 .summary-item{background:#f8f9fa;border-radius:8px;padding:10px;text-align:center;}
 .summary-item .num{font-size:22px;font-weight:900;}
+.summary-item .lbl">الانجاز</div></div>
 .summary-item .lbl{font-size:11px;color:#666;margin-top:2px;}
 .hidden{display:none!important;}
 .spinner{text-align:center;padding:40px;color:#999;font-weight:700;}
@@ -65,6 +66,9 @@ select:focus,input:focus{border-color:var(--accent);}
 .bn-item i{font-size:22px;width:40px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:10px;transition:background .15s,color .15s}
 .bn-item.active{color:var(--sky)}
 .bn-item.active i{background:var(--ice);color:var(--sky)}
+
+/* الإعلانات واللوحات الديناميكية */
+.announcement-banner { background: #fff; border-right: 5px solid var(--gold); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--line); border-right: 5px solid var(--gold); position: relative; overflow: hidden;}
 
 /* Toast notification بدل alert */
 @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
@@ -109,6 +113,8 @@ select:focus,input:focus{border-color:var(--accent);}
 </div>
 
 <div class="content">
+
+  <div id="teacher-announcements-zone"></div>
 
   <div id="tab-attendance">
     <div class="card">
@@ -280,7 +286,6 @@ let currentUser = null;
         currentUser = JSON.parse(saved);
         const allowed = ['teacher', 'social_worker'];
         if(!currentUser || !allowed.includes(String(currentUser.role||'').trim().toLowerCase())) {
-            // المدير يُوجَّه للوحة المدير
             if(['admin','assistant_manager','wing_supervisor'].includes(String(currentUser?.role||'').toLowerCase())) {
                 window.location.replace('admin.html');
             } else {
@@ -292,15 +297,17 @@ let currentUser = null;
         document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'المنظومة الرقمية';
         document.getElementById('splash-school').textContent = currentUser.schoolName || 'المنظومة الرقمية';
         
-        // إظهار زر لوحة المدير للأخصائي الاجتماعي أو الأدوار المشتركة تلقائياً
         if(String(currentUser.role).trim().toLowerCase() === 'social_worker') {
             const btnAdmin = document.getElementById('btn-admin');
             if(btnAdmin) btnAdmin.style.display = 'inline-block';
         }
         
         loadMyProfile();
-        // تحميل الفصول ديناميكياً لكل dropdowns بنظام توفير الفواتير الذكي
         loadClassesDropdown('sel-class', 'beh-class', 'msg-class', 'rec-class', 'view-class');
+        
+        // 📡 تشغيل رادار استدعاء وبث الإعلانات المدرسية لايف فور التأكد من الهوية
+        listenToSchoolAnnouncementsLive();
+
     } catch(e) { window.location.replace('index.html'); }
 })();
 document.getElementById('splash').classList.add('hide');
@@ -319,6 +326,53 @@ window.switchTab = function(tabId, btn) {
         if(moreBtn) moreBtn.classList.add('active');
     }
 };
+
+// ===== 📡 محرك استماع وبث الإعلانات المدرسية لايف وبصورة فائقة السرعة =====
+let unsubscribeAnnouncements = null;
+function listenToSchoolAnnouncementsLive() {
+    const schoolId = getActiveSchoolId();
+    if (!schoolId) return;
+
+    if (unsubscribeAnnouncements) unsubscribeAnnouncements();
+
+    const q = query(collection(db, 'announcements'), where('schoolId', '==', schoolId));
+
+    unsubscribeAnnouncements = onSnapshot(q, (snapshot) => {
+        const zone = document.getElementById('teacher-announcements-zone');
+        if (!zone) return;
+
+        if (snapshot.empty) {
+            zone.innerHTML = '';
+            return;
+        }
+
+        const list = [];
+        snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+        // فرز محلي توفيراً للفهارس المركبة
+        list.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+        // عرض أول إعلانين فقط لمنع ملء واجهة المعلم، مع إتاحة سحب الباقي ديناميكياً
+        const latestAnnouncements = list.slice(0, 2);
+
+        zone.innerHTML = latestAnnouncements.map(ann => `
+            <div class="announcement-banner">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+                    <div style="display:flex; gap:8px; align-items:center; color:var(--gold); font-weight:900; font-size:13.5px;">
+                        <i class="bi bi-megaphone-fill"></i>
+                        <span>إعلان إداري عاجل للعامة</span>
+                    </div>
+                    <span style="font-size:10px; color:var(--mid); font-weight:700;">⏰ ${ann.dateStr || ''}</span>
+                </div>
+                <h4 style="font-size:14.5px; font-weight:900; color:var(--navy); margin-top:4px; line-height:1.4;">${ann.title}</h4>
+                <p style="font-size:13px; color:#374151; font-weight:600; line-height:1.5; white-space:pre-wrap; margin-top:2px;">${ann.content}</p>
+                ${ann.imageUrl ? `<img src="${ann.imageUrl}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px; margin-top:8px; border:1px solid var(--line);">` : ''}
+                <div style="font-size:10.5px; color:var(--mid); font-weight:700; margin-top:4px; text-align:left; border-top:1px dashed var(--line); padding-top:6px;">
+                    🎯 الناشر: ${ann.publisherName || 'الإدارة العليا'}
+                </div>
+            </div>
+        `).join('');
+    }, (err) => console.error("Error linking announcements to teacher page:", err));
+}
 
 // ===== تسجيل الغياب =====
 let studentStatuses = {};
@@ -354,7 +408,6 @@ window.onClassChange = async function(classId) {
             return;
         }
 
-        // تهيئة الحالات — كلهم حاضر افتراضياً
         allStudentsLoaded.forEach(n => studentStatuses[n] = 'present');
 
         renderStudentsList();
@@ -414,7 +467,6 @@ window.saveAttendance = async function() {
     const schoolId = getActiveSchoolId();
     const todayISO = getTodayISO();
 
-    // منع التكرار
     try {
         const dupQ = query(collection(db,'attendance'),
             where('schoolId','==',schoolId), where('classId','==',classId),
@@ -446,7 +498,6 @@ window.saveAttendance = async function() {
         });
         await batch.commit();
 
-        // notifications_queue للغائبين
         const absentList = allStudentsLoaded.filter(n => studentStatuses[n] === 'absent');
         for(const name of absentList) {
             await addDoc(collection(db,'notifications_queue'), {
@@ -459,11 +510,9 @@ window.saveAttendance = async function() {
 
         showToast(`✅ تم حفظ الحضور — ${allStudentsLoaded.length} طالب | ${absentList.length} غائب`);
 
-        // إشعار واتساب تلقائي للغائبين
         if (absentList.length > 0) {
             const wantWA = confirm(`👥 يوجد ${absentList.length} طالب غائب\nهل تريد إرسال إشعارات واتساب لأولياء الأمور؟`);
             if (wantWA) {
-                // جلب أرقام أولياء الأمور
                 const q = query(collection(db,'students'),
                     where('schoolId','==',schoolId), where('classId','==',classId));
                 const snap = await getDocs(q);
@@ -482,7 +531,7 @@ window.saveAttendance = async function() {
                         const cleanPhone = phone.replace(/\D/g,'');
                         window.open(`https://wa.me/965${cleanPhone}?text=${msg}`, '_blank');
                         sentCount++;
-                        await new Promise(r => setTimeout(r, 800)); // تأخير بين كل رسالة
+                        await new Promise(r => setTimeout(r, 800)); 
                     }
                 }
                 if (sentCount > 0) showToast(`✅ تم فتح ${sentCount} محادثة واتساب`);
@@ -739,13 +788,12 @@ function showToast(msg, type='success') {
     setTimeout(() => { t.style.animation = 'toastOut .4s forwards'; setTimeout(()=>t.remove(), 400); }, 2500);
 }
 
-// ===== تدمير قنبلة الفواتير: تحميل الفصول ديناميكياً من المودول المُحسّن المركزي لفايربيس =====
+// ===== تحميل الفصول ديناميكياً =====
 async function loadClassesDropdown(...selectIds) {
     try {
         const schoolId = getActiveSchoolId();
         if(!schoolId) return;
         
-        // استدعاء الدالة المركزية والذكية التي تفحص كولكشن classes أولاً وتمنع آلاف القراءات غير الضرورية لـ students
         const classes = await getSchoolClasses(db, schoolId);
         
         const opts = '<option value="">-- اختر الفصل --</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
@@ -756,7 +804,7 @@ async function loadClassesDropdown(...selectIds) {
     } catch(e) {
         selectIds.forEach(id => {
             const el = document.getElementById(id);
-            if(el) el.innerHTML = '<option value="">⚠️ خطأ بتحميل الفصول</option>';
+            if(el) el.innerHTML = '<option value="">⚠️ خطأ بتحديد الفصول</option>';
         });
     }
 }
