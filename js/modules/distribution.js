@@ -94,7 +94,7 @@ window.handleRegisterDistributionLive = async function(e) {
     const room = document.getElementById('dist-room-id').value.trim();
     const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية للـ SaaS
 
-    if(!cId || !tName) { alert('⚠️ يرجى اختيار الفصل والمعلم'); return; }
+    if(!cId || !tName) { window.showToast('⚠️ يرجى اختيار الفصل والمعلم'); return; }
     
     try {
         await addDoc(collection(db, 'class_distribution'), { 
@@ -104,9 +104,9 @@ window.handleRegisterDistributionLive = async function(e) {
             roomLocation: room, 
             createdAt: serverTimestamp() 
         });
-        alert(`✓ تم بنجاح بث ونشر خطة توزيع الفصل: ${cId}\nالمعلم المكلف بالاحتياط: أ. ${tName}`);
+        window.showToast(`✓ تم بنجاح بث ونشر خطة توزيع الفصل: ${cId}\nالمعلم المكلف بالاحتياط: أ. ${tName}`);
         document.getElementById('class-dist-reg-form').reset();
     } catch(err) { 
-        alert('خطأ سحابي: ' + err.message); 
+        window.showToast('خطأ سحابي: ' + err.message, 'error'); 
     }
 };
