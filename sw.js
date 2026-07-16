@@ -1,4 +1,32 @@
-// اسم الكاش الديناميكي المعتمد على تاريخ اليوم تلقائياً لضمان التحديث الفوري d/m/y
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
+
+// تهيئة Firebase داخل الـ Service Worker لاستقبال إشعارات الدفع الخلفية
+firebase.initializeApp({
+    apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
+    authDomain: "hosainan-school.firebaseapp.com",
+    projectId: "hosainan-school",
+    messagingSenderId: "264264994076",
+    appId: "1:264264994076:web:1a87730b7d3c684bdf3ed9"
+});
+
+const messaging = firebase.messaging();
+
+// معالجة واستقبال رسائل الدفع الفورية عندما يكون التطبيق في الخلفية أو مغلقاً
+messaging.onBackgroundMessage(function(payload) {
+    const notificationTitle = payload.notification.title || "تنبيه جديد — المنظومة الرقمية";
+    const notificationOptions = {
+        body: payload.notification.body || "",
+        icon: '/school-pwa/logo.png',
+        badge: '/school-pwa/favicon.ico',
+        vibrate: [200, 100, 200],
+        data: payload.data
+    };
+
+    return self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// إعدادات نظام الكاش والعمل بدون اتصال (PWA Offline Support)
 const CACHE_NAME = `hosainan-school-${new Date().toISOString().slice(0,10)}`;
 
 const ASSETS_TO_CACHE = [
@@ -39,7 +67,7 @@ self.addEventListener('activate', event => {
 });
 
 // 3. محرك الجلب: "الشبكة أولاً" لضمان ظهور أي تحديث فوراً عند توفر الإنترنت،
-//    وفقط عند انقطاع الشبكة (أو فشل الجلب) نرجع لآخر نسخة محفوظة بالكاش (دعم العمل بدون نت)
+// وفقط عند انقطاع الشبكة (أو فشل الجلب) نرجع لآخر نسخة محفوظة بالكاش (دعم العمل بدون نت)
 self.addEventListener('fetch', event => {
     // نتخطى طلبات السيرفر الحي لفايربيس والتوثيق لضمان دقة البيانات الحية دائمًا
     if (event.request.url.includes('firestore') || event.request.url.includes('identitytoolkit') || event.request.url.includes('googleapis')) return;
