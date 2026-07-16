@@ -25,7 +25,6 @@
             --line:   #e5e7eb;
             --text:   #111827;
             --mid:    #6b7280;
-            --green:  #059669;
             --red:    #dc2626;
             
             --bg-dark: #0f172a;
@@ -39,8 +38,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; justify-content: center; }
 
-        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 35px 30px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4); text-align: center; margin-bottom: 20px; }
-        h1 { font-size: 24px; font-weight: 900; margin-bottom: 8px; color: #fff; }
+        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 35px 30px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4); text-align: center; margin-bottom: 20px; position: relative; }
+        h1 { font-size: 24px; font-weight: 900; margin-bottom: 8px; color: #fff; line-height: 1.4; }
         p { font-size: 14px; color: #94a3b8; margin-bottom: 25px; font-weight: 600; }
 
         input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 14px; text-align: center; font-weight: 700; outline: none; }
@@ -52,7 +51,10 @@
         .btn-primary:hover { background: #1462a0; }
         .btn-success { background: rgba(37, 211, 102, 0.15); color: #25d366; border: 1px solid rgba(37, 211, 102, 0.3); margin-top: 5px; }
         .btn-success:hover { background: rgba(37, 211, 102, 0.25); }
-        .btn-install { background: var(--green); color: #fff; max-width: 420px; margin-bottom: 15px; display: none; font-weight: 900; }
+        .btn-install { background: var(--green); color: #fff; max-width: 420px; margin-bottom: 15px; display: none; font-weight: 900; border-radius: 8px; padding: 14px; width: 100%; }
+
+        /* شارة الحماية والربط المخصص للمدارس */
+        .school-hint-badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 18px; display: none; animation: fadeIn 0.4s ease; }
 
         /* نافذة المحاكاة الذكية المدمجة */
         .demo-section { margin-top: 20px; width: 100%; max-width: 800px; display: none; }
@@ -62,6 +64,8 @@
         .sim-main { margin-right: 200px; padding: 25px; height: 100%; position: relative; color: #fff; }
         .sim-popup { display: none; position: absolute; top: 25%; left: 15%; background: white; color: black; padding: 20px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); width: 300px; text-align: center; }
         .subtitle-bar { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; color: #fbbf24; font-weight: 700; width: 100%; max-width: 800px; font-size: 13.5px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -69,10 +73,12 @@
     <button id="btn-install-pwa" class="btn-install"><i class="bi bi-phone"></i> ثبّت المنظومة كتطبيق على جهازك الحين</button>
 
     <div class="login-container">
-        <h1>المنظومة الرقمية الموحدة</h1>
+        <div id="school-link-badge" class="school-hint-badge"></div>
+
+        <h1 id="lbl-main-title">المنظومة الرقمية الموحدة</h1>
         <p id="lbl-default-school-title">بوابة الدخول السحابية الذكية</p>
         
-        <form onsubmit="window.login(event)">
+        <form id="form-login" onsubmit="window.login(event)">
             <input type="text" id="id" placeholder="رقم المستخدم الخاص بك" required>
             <input type="password" id="pass" placeholder="كلمة المرور السرية" required>
             <button type="submit" class="btn-primary"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول آمن</button>
@@ -107,7 +113,7 @@
 
                 <div class="sim-popup" id="sim-whatsapp-popup">
                     <h3 style="color:#059669; font-size:16px; margin-bottom:10px; font-weight:900;"><i class="bi bi-check-circle-fill"></i> نجح محرك البث!</h3>
-                    <p style="font-size:12px; color:var(--text); line-height:1.5; font-weight:600;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
+                    <p style="font-size:12px; color:#111827; line-height:1.5; font-weight:600;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
                 </div>
             </div>
         </div>
@@ -116,27 +122,65 @@
     </div>
 
     <script type="module">
-        // قراءة كود المدرسة من الرابط (?school=salem)
-        const urlParams = new URLSearchParams(window.location.search);
-        const schoolFromUrl = urlParams.get('school');
-        
-        if(schoolFromUrl) {
-            document.addEventListener('DOMContentLoaded', () => {
-                const hint = document.createElement('div');
-                hint.style.cssText = 'background:rgba(56, 189, 248, 0.1); color:#38bdf8; border:1px solid rgba(56, 189, 248, 0.2); padding:10px; border-radius:8px; font-size:13px; font-weight:700; text-align:center; margin-bottom:18px;';
-                hint.innerHTML = `<i class="bi bi-building-check"></i> تم كشف الرابط المخصص للمنشأة: <b>${schoolFromUrl}</b>`;
-                const container = document.querySelector('.login-container');
-                if(container) {
-                    container.insertBefore(hint, container.firstChild);
-                    document.getElementById('lbl-default-school-title').textContent = "منصة الجيل الذكي الموحدة للمدارس";
-                }
-            });
-        }
-
         import { db, auth } from './js/firebase-config.js';
         import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
         import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
         import { signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+        // قراءة كود المدرسة من الرابط للروابط الذكية المخصصة (?school=salem)
+        const urlParams = new URLSearchParams(window.location.search);
+        const schoolFromUrl = urlParams.get('school')?.trim().toLowerCase();
+
+        // 📡 محرك التحقق المسبق وبناء هوية المدرسة الحية فور تحميل الصفحة
+        async function checkPreBrandingAndStatus() {
+            if (!schoolFromUrl) return;
+
+            try {
+                const schoolSnap = await getDoc(doc(db, 'schools', schoolFromUrl));
+                if (schoolSnap.exists()) {
+                    const schoolData = schoolSnap.data();
+                    
+                    // فحص الرخص الأمنية وحالة العقد الاستثماري فوراً
+                    if (schoolData.status === 'suspended') {
+                        showLockdownScreen('⚠️ الحساب السحابي للمدرسة موقوف إدارياً! يرجى مراجعة الدعم الفني لتجديد الخدمة.');
+                        return;
+                    }
+                    if (schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) {
+                        showLockdownScreen('⚠️ انتهت فترة الترخيص السحابي للمدرسة! يرجى مراجعة إدارة الدعم الفني للتجديد.');
+                        return;
+                    }
+
+                    // حقن وتبديل اسم وعنوان الواجهة باسم المدرسة المعتمد رسمياً
+                    document.getElementById('lbl-main-title').textContent = schoolData.name;
+                    document.getElementById('lbl-default-school-title').textContent = "بوابة الدخول الذكية والآمنة للمنشأة";
+                    
+                    const badge = document.getElementById('school-link-badge');
+                    badge.innerHTML = `<i class="bi bi-building-check"></i> اتصال سحابي آمن ومشفر بملفات: <b>${schoolData.name}</b>`;
+                    badge.style.display = 'block';
+                } else {
+                    console.warn("School ID from slug not found in central registry.");
+                }
+            } catch (e) {
+                console.error("Core engine branding check error:", e);
+            }
+        }
+
+        function showLockdownScreen(message) {
+            const container = document.querySelector('.login-container');
+            if (container) {
+                container.innerHTML = `
+                    <div style="font-size:50px; color:var(--red); margin-bottom:15px;"><i class="bi bi-shield-slash-fill"></i></div>
+                    <h2 style="font-size:18px; font-weight:900; color:#fff; margin-bottom:12px;">🚫 تم تعليق صلاحيات الوصول</h2>
+                    <p style="color:#94a3b8; font-size:13.5px; font-weight:700; line-height:1.6;">${message}</p>
+                    <div style="background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.2); padding:10px; border-radius:8px; font-size:11px; font-weight:bold; color:#ef4444; margin-top:15px;">
+                        المنظومة الرقمية الموحدة — الأمن السحابي لربط البيانات
+                    </div>
+                `;
+            }
+        }
+
+        // انطلاق فحص الهوية الفوري
+        checkPreBrandingAndStatus();
 
         const functions = getFunctions(auth.app);
         const loginUserFn = httpsCallable(functions, 'loginUser');
@@ -148,7 +192,7 @@
             const submitBtn = e.target.querySelector('button[type="submit"]');
             
             submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ جاري التحقق وتأمين الاتصال...';
+            submitBtn.innerHTML = '⏳ جاري مضاهاة البيانات وتأمين الاتصال...';
 
             try {
                 // 🔐 التحقق الآمن والمشفر عبر الـ Cloud Function لمنع انكشاف كلمات المرور
@@ -156,7 +200,7 @@
                 const userData = result.data;
 
                 // 🔒 منع محاولات تسجيل الدخول العشوائية من روابط المدارس الأخرى
-                if(schoolFromUrl && userData.schoolId !== schoolFromUrl) {
+                if (schoolFromUrl && userData.schoolId !== schoolFromUrl) {
                     throw { code: 'school-mismatch' };
                 }
 
@@ -164,13 +208,13 @@
                 await signInWithCustomToken(auth, userData.token);
                 localStorage.setItem('hs_custom_token', userData.token);
 
-                // فحص رخصة المدرسة الفنية وصلاحية العقد الاستثماري للسيرفر
+                // فحص نهائي للرخصة الفنية وصلاحية العقد الاستثماري للسيرفر
                 const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
-                if(!schoolSnap.exists()) throw { code: 'school-not-found' };
+                if (!schoolSnap.exists()) throw { code: 'school-not-found' };
                 const schoolData = schoolSnap.data();
 
-                if(schoolData.status === 'suspended') throw { code: 'school-suspended' };
-                if(schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) throw { code: 'subscription-ended' };
+                if (schoolData.status === 'suspended') throw { code: 'school-suspended' };
+                if (schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) throw { code: 'subscription-ended' };
 
                 // ربط الجلسة المتكاملة وتخزين البيانات الإدارية محلياً بالكاش
                 const role = String(userData.role || '').trim().toLowerCase();
@@ -198,19 +242,19 @@
                     'functions/not-found':         '❌ رقم المستخدم غير مسجل بالسجلات المركزية للمنظومة',
                     'functions/permission-denied': '❌ كلمة المرور غير صحيحة، أو تم تعطيل حسابك مؤقتاً',
                     'functions/invalid-argument':  '⚠️ يرجى تعبئة الحقول المطلوبة بشكل سليم للولوج',
-                    'school-mismatch':   '❌ حسابك مسجل على منشأة أخرى! لا يمكن الدخول من رابط هذه المدرسة.',
-                    'school-not-found':  '❌ رخصة المنشأة والمدرسة المطلوبة غير مسجلة حالياً',
+                    'school-mismatch':   '❌ حسابك غير تابع لهذه المدرسة! لا يمكن الدخول من رابط هذا الملف الدراسي.',
+                    'school-not-found':  '❌ رخصة المنشأة والمدرسة المطلوبة غير مسجلة حاليأ بالسيرفر',
                     'school-suspended':  '⚠️ الحساب السحابي للمدرسة موقوف إدارياً! تواصل مع الدعم الفني.',
                     'subscription-ended':'⚠️ انتهت فترة الاشتراك السنوي للمدرسة! تواصل مع الدعم لتجديد الترخيص السحابي.'
                 };
-                alert(messages[code] || ('❌ فشل الدخول: ' + (err.message || 'يرجى التحقق من جودة اتصالك بالإنترنت')));
+                alert(messages[code] || ('❌ فشل الدخول: ' + (err.message || 'يرجى التحقق من جودة اتصالك بالإنترنت والملفات')));
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول آمن';
             }
         };
 
-        // محرك الـ PWA لتهيئة بيئة الهواتف الذكية والتثبيت
+        // محرك الـ PWA لتهيئة بيئة الهواتف الذكية والتثبيت المباشر
         window.addEventListener('beforeinstallprompt', e => {
             e.preventDefault();
             const installBtn = document.getElementById('btn-install-pwa');
@@ -228,6 +272,7 @@
     </script>
 
     <script>
+        // موديول تشغيل المحاكاة التفاعلية الحية للعرض
         function startIntegratedDemo() {
             const demoZone = document.getElementById('demo-zone');
             demoZone.style.display = 'block';
