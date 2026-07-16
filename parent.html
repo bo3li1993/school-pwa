@@ -13,7 +13,7 @@
 <title>بوابة ولي الأمر الإلكترونية - مدرسة سالم الحسينان</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
 :root {
   --navy:  #0b2545;
   --sky:   #1a78c2;
@@ -26,8 +26,8 @@
   --mid:   #6b7280;
   --green: #059669;
   --red:   #dc2626; 
-    --primary-color: var(--navy); --accent-color: var(--gold);
-    --success-color: var(--green); --danger-color: #e74c3c; --bg-light: #f4f6f9;
+  --primary-color: var(--navy); --accent-color: var(--gold);
+  --success-color: var(--green); --danger-color: #e74c3c; --bg-light: #f4f6f9;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family: 'Cairo', sans-serif; }
 body { background: var(--bg-light); color: #333; padding: 15px; }
@@ -112,10 +112,10 @@ button:hover { background:var(--accent-color); }
 </div>
 
 <script type="module">
-import { db } from './js/firebase-config.js';
+import { db, requestNotificationPermission } from './js/firebase-config.js';
 import { collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-// 🔔 استدعاء مكتبة قوقل الرسمية لإدارة بث واستقبال الإشعارات السحابية للـ PWA
-import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
+// 🔔 استدعاء مكتبة قوقل الرسمية لإدارة بث واستقبل الإشعارات السحابية للـ PWA
+import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
 
 let activeStudent = null;
 let chatUnsubscribe = null; // دالة إلغاء الاستماع عند الخروج
@@ -239,7 +239,7 @@ async function showParentDashboard() {
     loadStudentAttendanceLive();
     startParentChatListenerLive(); // ⚡ تحويل الشات لبث حي حقيقي لايف
     
-    // 🚀 تفعيل وتشغيل محرك طلب إذن الإشعارات وربط الـ Token الخاص بولي الأمر
+    // 🚀 تفعيل وتشغيل محرك طلب إذن الإشعارات وربط الـ Token الخاص بولي الأمر عبر الدالة الموحدة
     initParentPushNotificationsEngine();
 }
 
@@ -248,52 +248,54 @@ async function initParentPushNotificationsEngine() {
     if(!statusBadge) return;
 
     try {
-        if (!('Notification' in window)) {
-            statusBadge.innerHTML = `<span style="color:#ffcc00;">⚠️ متصفحك الحالي لا يدعم ميزة الإشعارات التلقائية.</span>`;
-            return;
-        }
-
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-            const messaging = getMessaging();
-            const currentToken = await getToken(messaging, { vapidKey: 'YOUR_VAPID_KEY' });
+        // استدعاء الدالة المركزية الموحدة من التكوين العام لإصدار التوكن وربطه بملف المستخدم
+        const currentToken = await requestNotificationPermission(db, activeStudent.schoolId, 'parent_' + (activeStudent.parentPhone || activeStudent.studentNumber));
+        
+        if (currentToken) {
+            // 🏢 بالإضافة للدالة المركزية، نضمن حفظ التوكن في fcm_tokens للتوافق التام مع كشوف وتوزيعات أولياء الأمور لديك
+            const tokenQ = query(
+                collection(db, 'fcm_tokens'), 
+                where('token', '==', currentToken), 
+                where('schoolId', '==', activeStudent.schoolId),
+                where('studentName', '==', activeStudent.name.trim())
+            );
+            const tokenSnap = await getDocs(tokenQ);
             
-            if (currentToken) {
-                // 🏢 فحص وحفظ التوكن مع ربطه بـ schoolId لضمان عزل داتا المنشآت
-                const tokenQ = query(
-                    collection(db, 'fcm_tokens'), 
-                    where('token', '==', currentToken), 
-                    where('schoolId', '==', activeStudent.schoolId),
-                    where('studentName', '==', activeStudent.name.trim())
-                );
-                const tokenSnap = await getDocs(tokenQ);
-                
-                if(tokenSnap.empty) {
-                    await addDoc(collection(db, 'fcm_tokens'), {
-                        schoolId: activeStudent.schoolId, // 🔑 الحماية الأمنية للـ SaaS
-                        studentName: activeStudent.name.trim(),
-                        classId: activeStudent.classId,
-                        token: currentToken,
-                        deviceType: navigator.userAgent.includes('Mobi') ? 'Mobile' : 'Desktop',
-                        createdAt: serverTimestamp()
-                    });
-                }
-                statusBadge.innerHTML = `<span style="color:var(--green);"><i class="bi bi-bell-fill"></i> 🔔 نظام الإشعارات السحابية نشط ومربوط بتليفونك بنجاح.</span>`;
-                
-                onMessage(messaging, (payload) => {
-                    const n = document.createElement('div');
-                    n.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0b2545;color:#fff;padding:14px 22px;border-radius:12px;font-family:Cairo,sans-serif;font-size:14px;font-weight:700;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.3);';
-                    n.innerHTML='🚨 ' + payload.notification.title + '<br><small>' + payload.notification.body + '</small>';
-                    document.body.appendChild(n);
-                    setTimeout(()=>n.remove(),5000);
-                    loadStudentAttendanceLive(); // إنعاش كشف الغياب فوراً
+            if(tokenSnap.empty) {
+                await addDoc(collection(db, 'fcm_tokens'), {
+                    schoolId: activeStudent.schoolId, // 🔑 الحماية الأمنية للـ SaaS
+                    studentName: activeStudent.name.trim(),
+                    classId: activeStudent.classId,
+                    token: currentToken,
+                    deviceType: navigator.userAgent.includes('Mobi') ? 'Mobile' : 'Desktop',
+                    createdAt: serverTimestamp()
                 });
-
-            } else {
-                statusBadge.innerHTML = `<span style="color:#e74c3c;">⚠️ فشل في توليد رمز الإشعارات السحابي للجهاز.</span>`;
             }
+
+            // تحديث إضافي فوري لمستند الـ user المرتبط برقم الهاتف إن وجد لضمان دقة معالجة الـ Cloud Function
+            if (activeStudent.parentPhone) {
+                const usersQ = query(collection(db, 'users'), where('schoolId', '==', activeStudent.schoolId), where('phone', '==', activeStudent.parentPhone));
+                const usersSnap = await getDocs(usersQ);
+                if (!usersSnap.empty) {
+                    const { updateDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+                    await updateDoc(usersSnap.docs[0].ref, { fcmToken: currentToken });
+                }
+            }
+
+            statusBadge.innerHTML = `<span style="color:var(--green);"><i class="bi bi-bell-fill"></i> 🔔 نظام الإشعارات السحابية نشط ومربوط بتليفونك بنجاح.</span>`;
+            
+            const messaging = getMessaging();
+            onMessage(messaging, (payload) => {
+                const n = document.createElement('div');
+                n.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0b2545;color:#fff;padding:14px 22px;border-radius:12px;font-family:Cairo,sans-serif;font-size:14px;font-weight:700;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.3);';
+                n.innerHTML='🚨 ' + payload.notification.title + '<br><small>' + payload.notification.body + '</small>';
+                document.body.appendChild(n);
+                setTimeout(()=>n.remove(),5000);
+                loadStudentAttendanceLive(); // إنعاش كشف الغياب فوراً عند استقبال الإشعار لايف
+            });
+
         } else {
-            statusBadge.innerHTML = `<span style="color:#95a5a6;"><i class="bi bi-bell-slash"></i> تم حظر الإشعارات. يرجى تفعيلها من إعدادات المتصفح لتلقي الغياب.</span>`;
+            statusBadge.innerHTML = `<span style="color:#e74c3c;">⚠️ لم يتم تفعيل توكن الإشعارات السحابي للجهاز أو تم رفض الإذن.</span>`;
         }
     } catch (err) {
         statusBadge.innerHTML = `<span style="color:#95a5a6;"><i class="bi bi-info-circle"></i> بانتظار ربط مفتاح الـ VAPID لتنشيط البث السحابي المباشر.</span>`;
@@ -316,7 +318,7 @@ async function loadStudentAttendanceLive() {
 
         snap.forEach(doc => {
             const d = doc.data();
-            const periodLabel = d.period || 'غير محددة';
+            const periodLabel = d.period || 'غير مححدد';
             const isAbsent = d.status === 'absent';
             if(isAbsent) absentCount++;
 
