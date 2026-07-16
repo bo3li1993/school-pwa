@@ -369,7 +369,7 @@ window.checkSuperPass = async function() {
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         
         // كلمة المرور الافتراضية المؤمنة والمشفرة لسيادتكم: hosainan@2024
-        const SUPER_PASS_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d';
+const SUPER_PASS_HASH = '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92';
         
         if(hashHex === SUPER_PASS_HASH) {
             document.getElementById('login-screen').style.display = 'none';
