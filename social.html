@@ -26,8 +26,8 @@
   --mid:   #6b7280;
   --green: #059669;
   --red:   #dc2626;
-    --primary-color: var(--navy); --hover-color: var(--gold); --bg-light: #f4f6f9;
-    --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
+  --primary-color: var(--navy); --hover-color: var(--gold); --bg-light: #f4f6f9;
+  --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; flex-direction: column; min-height: 100vh; direction: rtl; }
@@ -402,7 +402,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 </div>
 
 <script type="module">
-import { db } from './js/firebase-config.js';
+import { db, getSchoolClasses } from './js/firebase-config.js';
 import { collection, addDoc, doc, updateDoc, onSnapshot, getDocs, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentWorkerId = "";
@@ -530,7 +530,6 @@ window.saveBehaviorLogLive = async function(e) {
 
     try {
         // 🔗 موحّد مع نفس كولكشن "behavior" المستخدم بصفحة المدير والمعلم
-        // (كان سابقاً بكولكشن منفصل "behavior_logs" وهذا كان يخفي الحالات عن باقي الأدوار)
         await addDoc(collection(db, 'behavior'), {
             schoolId: schoolId, // 🔑 فصل البيانات للسيرفر
             classId, studentName, name: studentName,
@@ -568,7 +567,7 @@ window.searchStudentFullProfileLive = async function() {
     // أ) جلب الغياب المسجل من موديول المعلمين للمدرسة الحالية
     try {
         const qAtt = query(
-            collection(db, 'attendance'), // مواءمة مع جدول غياب المعلم
+            collection(db, 'attendance'), 
             where('schoolId', '==', schoolId),
             where('studentName', '==', sName.trim())
         );
@@ -754,12 +753,15 @@ window.loadHistoricalArchiveLive = function() {
     startSocialCentralListeners(); 
 };
 
-// تحميل الفصول ديناميكياً لصفحة الأخصائي
+// تدمير قنبلة الفواتير: تحميل الفصول ديناميكياً لصفحة الأخصائي عبر الدالة الموحدة الموفرة للتكاليف
 async function loadSocialClassDropdowns() {
     try {
         const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
-        const classes = [...new Set(snap.docs.map(d=>d.data().classId).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+        if(!schoolId) return;
+
+        // استدعاء الموديول المركزي لتجنب قراءة كامل مستندات الطلاب
+        const classes = await getSchoolClasses(db, schoolId);
+
         const opts = '<option value="">-- اختر الفصل --</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
         ['pass-class','beh-class','txt-profile-search-class'].forEach(id => {
             const el = document.getElementById(id);
@@ -772,7 +774,6 @@ async function loadSocialClassDropdowns() {
         });
     }
 }
-
 
 // Toast (بدل alert)
 function showToast(msg, type='success') {
@@ -817,7 +818,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     startSocialCentralListeners();
     
-    // تحميل الفصول ديناميكياً من Firestore بدل الثابتة
+    // تحميل الفصول ديناميكياً من نظام الكاش والفهرسة المحسن
     loadSocialClassDropdowns();
     
     // التغذية التلقائية للمساقط عند أول تشغيل
