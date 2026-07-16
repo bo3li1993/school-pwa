@@ -133,6 +133,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-calendar-week"></i> كشف يومي شامل</div>
   <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-triangle"></i> الغياب المتكرر</div>
   <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-file-earmark-pdf"></i> التقارير الأسبوعية</div>
+  <div class="menu-item" data-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-bar-chart-line-fill"></i> التقارير الإحصائية الشهرية</div>
   <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
   <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
   <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
@@ -179,6 +180,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
     <div id="tab-daily-report" class="tab-content"></div>
     <div id="tab-repeat" class="tab-content"></div>
     <div id="tab-reports" class="tab-content"></div>
+    <div id="tab-monthly" class="tab-content"></div>
     <div id="tab-behavior" class="tab-content"></div>
     <div id="tab-gatepass" class="tab-content"></div>
     <div id="tab-clinic" class="tab-content"></div>
@@ -233,6 +235,7 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
           <div class="more-row" onclick="window.switchTab('tab-daily-report')"><div class="more-icon"><i class="bi bi-calendar-week"></i></div><span>كشف يومي شامل</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-repeat')"><div class="more-icon"><i class="bi bi-exclamation-triangle"></i></div><span>الغياب المتكرر</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-reports')"><div class="more-icon"><i class="bi bi-file-earmark-pdf"></i></div><span>التقارير الأسبوعية</span><i class="bi bi-chevron-left"></i></div>
+          <div class="more-row" onclick="window.switchTab('tab-monthly')"><div class="more-icon"><i class="bi bi-bar-chart-line-fill"></i></div><span>التقارير الإحصائية الشهرية</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-behavior')"><div class="more-icon"><i class="bi bi-shield-exclamation"></i></div><span>السلوك</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-gatepass')"><div class="more-icon"><i class="bi bi-door-open"></i></div><span>الاستئذان</span><i class="bi bi-chevron-left"></i></div>
           <div class="more-row" onclick="window.switchTab('tab-clinic')"><div class="more-icon"><i class="bi bi-heart-pulse"></i></div><span>العيادة</span><i class="bi bi-chevron-left"></i></div>
@@ -315,6 +318,7 @@ const moduleMap = {
     'tab-daily-report':     { file: './js/modules/daily_report.js',    init: 'initDailyReportModule' },
     'tab-repeat':           { file: './js/modules/repeat.js',          init: 'initRepeatModule' },
     'tab-reports':          { file: './js/modules/reports.js',         init: 'initReportsModule' },
+    'tab-monthly':          { file: './js/modules/monthly.js',         init: 'initMonthlyModule' },
     'tab-behavior':         { file: './js/modules/behavior.js',        init: 'initBehaviorModule' },
     'tab-gatepass':         { file: './js/modules/gatepass.js',        init: 'initGatepassModule' },
     'tab-clinic':           { file: './js/modules/clinic.js',          init: 'initClinicModule' },
