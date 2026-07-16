@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شاشة القيادة الحية - المنظومة الرقمية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>شاشة القيادة الحية والتعاميم - المنظومة الرقمية</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -30,10 +30,10 @@
         
         body { 
             font-family: 'Cairo', sans-serif; 
-            background: #0f172a; /* لون داكن احترافي للشاشات */
+            background: #0f172a; /* لون داكن احترافي للشاشات وعرض التباين */
             color: #fff; 
             margin: 0; 
-            padding: 40px; 
+            padding: 30px; 
             display: flex; 
             flex-direction: column; 
             height: 100vh; 
@@ -47,68 +47,83 @@
             justify-content: space-between; 
             align-items: center; 
             border-bottom: 2px solid #1e293b; 
-            padding-bottom: 20px; 
-            margin-bottom: 50px; 
+            padding-bottom: 15px; 
+            margin-bottom: 25px; 
         }
         .header h1 { 
             margin: 0; 
-            font-size: 42px; 
+            font-size: 36px; 
             font-weight: 900; 
             color: #f1f5f9; 
             display: flex; 
             align-items: center; 
             gap: 15px; 
         }
-        .header h1 i { color: #3b82f6; }
+        .header h1 i { color: #38bdf8; }
         .school-badge {
             background: #1e293b;
-            padding: 8px 20px;
+            padding: 6px 20px;
             border-radius: 30px;
-            font-size: 20px;
+            font-size: 18px;
             color: #38bdf8;
             border: 1px solid #334155;
+            font-weight: bold;
         }
         .clock { 
-            font-size: 36px; 
+            font-size: 32px; 
             font-weight: 900; 
             color: #fbbf24; 
-            background: rgba(0,0,0,0.3);
-            padding: 10px 25px;
+            background: rgba(0,0,0,0.4);
+            padding: 8px 25px;
             border-radius: 12px;
             letter-spacing: 2px;
+            border: 1px solid #1e293b;
         }
 
-        /* الكروت الإحصائية */
+        /* حاوية الكروت المركزية المشتركة */
         .cards-container { 
             display: flex; 
-            gap: 50px; 
+            gap: 24px; 
             justify-content: center; 
             align-items: stretch; 
             flex: 1; 
+            min-height: 0; /* منع خروج العناصر */
         }
         .stat-card { 
             background: #1e293b; 
-            border-radius: 24px; 
-            padding: 60px 40px; 
+            border-radius: 20px; 
+            padding: 30px 20px; 
             text-align: center; 
             flex: 1; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
             border: 2px solid #334155; 
             display: flex;
             flex-direction: column;
             justify-content: center;
+            transition: all 0.3s ease;
         }
-        .stat-card.absent { border-top: 15px solid #e74c3c; }
-        .stat-card.late { border-top: 15px solid #f59e0b; }
+        .stat-card.absent { border-top: 12px solid #e74c3c; }
+        .stat-card.late { border-top: 12px solid #f59e0b; }
+        
+        /* كارت الإعلانات الديناميكي الفاخر */
+        .stat-card.announcements-hub { 
+            flex: 1.8; 
+            border-top: 12px solid #38bdf8; 
+            text-align: right; 
+            justify-content: flex-start; 
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #1e293b, #111827);
+        }
         
         .stat-card h2 { 
-            font-size: 48px; 
-            margin: 0 0 20px 0; 
+            font-size: 28px; 
+            margin: 0 0 15px 0; 
             color: #cbd5e1; 
-            font-weight: 700;
+            font-weight: 800;
         }
         .stat-card .number { 
-            font-size: 180px; 
+            font-size: 130px; 
             font-weight: 900; 
             margin: 0; 
             line-height: 1; 
@@ -117,54 +132,115 @@
         .stat-card.absent .number { color: #e74c3c; }
         .stat-card.late .number { color: #f59e0b; }
 
+        /* مظهر محتوى الإعلان الدوار */
+        .carousel-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 0;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .ann-title-view {
+            font-size: 22px;
+            font-weight: 900;
+            color: #fbbf24;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        .ann-body-view {
+            font-size: 16px;
+            color: #e2e8f0;
+            line-height: 1.6;
+            font-weight: 600;
+            white-space: pre-wrap;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+        }
+        .ann-img-view {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid #475569;
+        }
+        .ann-footer-view {
+            margin-top: auto;
+            border-top: 1px dashed #334155;
+            padding-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+
         /* زر الخروج من الشاشة */
         .btn-exit {
             position: absolute;
-            bottom: 30px;
-            left: 40px;
+            bottom: 20px;
+            left: 24px;
             background: #334155;
             color: #fff;
             border: none;
-            padding: 12px 25px;
+            padding: 10px 20px;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             font-family: 'Cairo';
             transition: 0.3s;
+            z-index: 99;
         }
         .btn-exit:hover { background: #475569; }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.03); opacity: 0.9; }
+            50% { transform: scale(1.02); opacity: 0.95; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1><i class="bi bi-display"></i> شاشة القيادة المباشرة <span id="school-name-display" class="school-badge">جاري التحميل...</span></h1>
+        <h1><i class="bi bi-display"></i> شاشة القيادة والتعاميم الحية <span id="school-name-display" class="school-badge">جاري التحميل...</span></h1>
         <div class="clock" id="live-clock">00:00:00</div>
     </div>
 
     <div class="cards-container">
+        
         <div class="stat-card absent">
             <h2>إجمالي الغياب اليوم</h2>
             <div class="number" id="live-absent">0</div>
         </div>
+
         <div class="stat-card late">
             <h2>إجمالي التأخير اليوم</h2>
             <div class="number" id="live-late">0</div>
         </div>
+
+        <div class="stat-card announcements-hub" id="tv-announcements-box">
+            <h2><i class="bi bi-megaphone" style="color: #38bdf8;"></i> تعاميم وأخبار الإدارة</h2>
+            <div id="carousel-anchor" style="width: 100%; flex: 1; display: flex; flex-direction: column;">
+                <div style="text-align: center; padding: 40px; color: #94a3b8; font-weight: 700;">⏳ جاري فحص رادار الأخبار الفورية...</div>
+            </div>
+        </div>
+
     </div>
 
-    <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; margin:20px 30px; text-align:center;">
-        <div style="font-size:14px; color:rgba(255,255,255,0.6); margin-bottom:12px; font-weight:800; letter-spacing:1px;">
-            🛑 الفصول التي لم تسجّل الغياب اليوم
+    <div style="background:rgba(30, 41, 59, 0.7); border:1px solid rgba(255,255,255,0.05); border-radius:16px; padding:15px; margin:20px 0 0 0; text-align:center;">
+        <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:8px; font-weight:800; letter-spacing:1px;">
+            🛑 متابعة الرصد اليومي للحصص الحالية (الفصول المتأخرة عن تسجيل الغياب)
         </div>
         <div id="tv-missing" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
-            <span style="color:rgba(255,255,255,0.3); font-size:14px;">جاري الفحص واستدعاء دليل الفصول...</span>
+            <span style="color:rgba(255,255,255,0.3); font-size:13px;">جاري المزامنة واستدعاء دليل الفصول النشطة...</span>
         </div>
     </div>
 
@@ -182,11 +258,9 @@
         const schoolId = user?.schoolId;
 
         if (!schoolId) {
-            window.showToast('❌ خطأ: لم يتم التعرف على هوية المدرسة.');
             window.location.replace('index.html');
         }
 
-        // عرض اسم المدرسة في الشاشة العلوية
         document.getElementById('school-name-display').textContent = user.schoolName || 'المنظومة الرقمية';
 
         // 2. تشغيل الساعة الحية للشاشة
@@ -195,10 +269,12 @@
             document.getElementById('live-clock').textContent = now.toLocaleTimeString('ar-KW', { hour12: false });
         }, 1000);
 
-        // قائمة الفصول العامة للمدرسة (يتم جلبها ديناميكياً بدون قنبلة فواتير)
         let ALL_CLASSES = [];
+        let announcementsList = [];
+        let carouselIndex = 0;
+        let carouselTimer = null;
 
-        // 3. المحرك الموحد الموفر للفواتير: مستمع حي واحد للأرقام والفصول المتأخرة معاً
+        // 3. المحرك الموحد الموفر للفواتير لعدادات الطلاب والغياب
         function startLiveTVDashboard() {
             const todayISO = getTodayISO();
 
@@ -221,14 +297,12 @@
                     if(data.classId) recordedClasses.add(data.classId);
                 });
 
-                // تحديث الأرقام الكبيرة في الشاشة فوراً لايف
                 const absentEl = document.getElementById('live-absent');
                 const lateEl = document.getElementById('live-late');
                 
                 if (absentEl) absentEl.textContent = absentCount;
                 if (lateEl) lateEl.textContent = lateCount;
 
-                // رصد وتحديث الفصول المتأخرة عن التسجيل لحظياً بدون أي getDocs إضافية ومكلفة
                 renderMissingClasses(recordedClasses);
 
             }, (error) => {
@@ -236,37 +310,102 @@
             });
         }
 
-        // 4. دالة معالجة وعرض الفصول المتأخرة بناءً على الدلائل المحملة
+        // 4. مستمع جدار التعاميم والأخبار لايف الدوار بالـ TV
+        function listenToAnnouncementsLive() {
+            const q = query(collection(db, 'announcements'), where('schoolId', '==', schoolId));
+
+            onSnapshot(q, (snapshot) => {
+                announcementsList = [];
+                snapshot.forEach(doc => {
+                    announcementsList.push(doc.data());
+                });
+
+                // ترتيب محلي من الأحدث للأقدم لتجنب طلب فهارس مركبة معقدة
+                announcementsList.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+                carouselIndex = 0;
+                runCarouselRotation();
+            });
+        }
+
+        // 5. موديول تشغيل وإدارة دورة عرض الإعلانات تلقائياً
+        function runCarouselRotation() {
+            if (carouselTimer) clearInterval(carouselTimer);
+            
+            const anchor = document.getElementById('carousel-anchor');
+            if (!anchor) return;
+
+            if (announcementsList.length === 0) {
+                anchor.innerHTML = `
+                    <div style="text-align:center; padding:50px 20px; color:#64748b; font-weight:700;">
+                        <i class="bi bi-info-circle" style="font-size:36px; display:block; margin-bottom:10px; color:#475569;"></i>
+                        لا توجد تعاميم أو أخبار إدارية منشورة على الشاشة حالياً.
+                    </div>`;
+                return;
+            }
+
+            // دالة حقن الإعلان النشط الحالي في الواجهة مع الفيد إن
+            const paintAnnouncement = () => {
+                const ann = announcementsList[carouselIndex];
+                if (!ann) return;
+
+                anchor.innerHTML = `
+                    <div class="carousel-wrapper">
+                        <div>
+                            <div class="ann-title-view">${ann.title}</div>
+                            <div class="ann-body-view">${ann.content}</div>
+                            ${ann.imageUrl ? `<img src="${ann.imageUrl}" class="ann-img-view">` : ''}
+                        </div>
+                        <div class="ann-footer-view">
+                            <span><i class="bi bi-person-badge"></i> أصدره: ${ann.publisherName || 'الإدارة'}</span>
+                            <span><i class="bi bi-calendar-event"></i> ${ann.dateStr || ''}</span>
+                        </div>
+                    </div>
+                `;
+
+                // التمرير البرمجي للإعلان القادم في الدورة
+                carouselIndex = (carouselIndex + 1) % announcementsList.length;
+            };
+
+            // تشغيل اللقطة الأولى فوراً
+            paintAnnouncement();
+
+            // ضبط التدوير الأوتوماتيكي للشاشة كل 8 ثوانٍ بالتمام والكمال
+            if (announcementsList.length > 1) {
+                carouselTimer = setInterval(paintAnnouncement, 8000);
+            }
+        }
+
+        // 6. دالة تصفية وعرض الفصول المتأخرة بناءً على الدلائل المحملة
         function renderMissingClasses(recordedClassesSet) {
             const el = document.getElementById('tv-missing');
             if(!el) return;
             
             if(ALL_CLASSES.length === 0) {
-                el.innerHTML = '<span style="color:rgba(255,255,255,0.3); font-size:14px;">⏳ جاري مزامنة دليل الفصول مع قاعدة البيانات...</span>';
+                el.innerHTML = '<span style="color:rgba(255,255,255,0.3); font-size:13px;">⏳ جاري مزامنة دليل الفصول مع قاعدة البيانات...</span>';
                 return;
             }
 
             const missing = ALL_CLASSES.filter(c => !recordedClassesSet.has(c));
 
             if(missing.length === 0) {
-                el.innerHTML = '<span style="color:#10b981; font-weight:900; font-size:20px; animation: pulse 2s infinite; display:flex; align-items:center; gap:8px;"><i class="bi bi-check-circle-fill"></i> ممتاز! جميع الفصول رصدت الحضور والغياب اليوم بالكامل</span>';
+                el.innerHTML = '<span style="color:#10b981; font-weight:900; font-size:18px; animation: pulse 2s infinite; display:flex; align-items:center; gap:8px;"><i class="bi bi-check-circle-fill"></i> ممتاز! جميع الفصول رصدت وأتمت كشوف الغياب اليوم بالكامل</span>';
             } else {
                 el.innerHTML = missing.map(c =>
-                    `<span style="background:#ef4444; color:#fff; padding:8px 18px; border-radius:10px; font-weight:900; font-size:18px; margin:4px; box-shadow:0 4px 12px rgba(239,68,68,0.25); display:inline-block; animation: pulse 2.5s infinite;">${c}</span>`
+                    `<span style="background:#ef4444; color:#fff; padding:6px 14px; border-radius:8px; font-weight:900; font-size:15px; margin:2px; box-shadow:0 4px 10px rgba(239,68,68,0.2); display:inline-block; animation: pulse 2.5s infinite;">${c}</span>`
                 ).join('');
             }
         }
 
-        // 5. الانطلاق الذكي وتجهيز الهيكل عند أول فتح للشاشة
+        // 7. انطلاق شاشة العرض
         (async function initTVPage() {
             try {
-                // استدعاء دالة جلب الفصول المركزية الموفرة لقراءات الـ Documents
                 ALL_CLASSES = await getSchoolClasses(db, schoolId);
             } catch(e) {
                 console.error("⚠️ فشل جلب دليل الفصول الموفر للتكلفة:", e);
             }
-            // تشغيل المستمع اللحظي الموحد للأمن المالي والسرعة اللامتناهية
             startLiveTVDashboard();
+            listenToAnnouncementsLive();
         })();
     </script>
     <script>
