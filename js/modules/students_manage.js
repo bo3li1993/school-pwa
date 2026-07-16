@@ -100,7 +100,7 @@ window.handleStudentClassChange = async function(classId) {
 
 window.triggerStudentProfileFetch = function() {
     const sName = document.getElementById('prof-student-select').value;
-    if(!sName || !localStudentsMap[sName]) { alert('⚠️ يرجى اختيار الطالب!'); return; }
+    if(!sName || !localStudentsMap[sName]) { window.showToast('⚠️ يرجى اختيار الطالب!'); return; }
     document.getElementById('btn-student-reset').style.display = 'inline-block';
     window.loadStudentFullProfile(localStudentsMap[sName]);
 };
