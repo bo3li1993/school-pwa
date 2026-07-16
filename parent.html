@@ -281,7 +281,11 @@ async function initParentPushNotificationsEngine() {
                 statusBadge.innerHTML = `<span style="color:var(--green);"><i class="bi bi-bell-fill"></i> 🔔 نظام الإشعارات السحابية نشط ومربوط بتليفونك بنجاح.</span>`;
                 
                 onMessage(messaging, (payload) => {
-                    alert(`🚨 تنبيه رسمي من المدرسة:\n${payload.notification.title}\n${payload.notification.body}`);
+                    const n = document.createElement('div');
+                    n.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0b2545;color:#fff;padding:14px 22px;border-radius:12px;font-family:Cairo,sans-serif;font-size:14px;font-weight:700;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.3);';
+                    n.innerHTML='🚨 ' + payload.notification.title + '<br><small>' + payload.notification.body + '</small>';
+                    document.body.appendChild(n);
+                    setTimeout(()=>n.remove(),5000);
                     loadStudentAttendanceLive(); // إنعاش كشف الغياب فوراً
                 });
 
@@ -390,7 +394,7 @@ window.sendParentMessageLive = async function(e) {
             createdAt: serverTimestamp()
         });
         input.value = '';
-    } catch(err) { alert('تعذر إرسال الرسالة: ' + err.message); }
+    } catch(err) { const eEl=document.createElement('div'); eEl.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#dc2626;color:#fff;padding:10px 20px;border-radius:10px;font-family:Cairo,sans-serif;font-weight:700;'; eEl.textContent='❌ تعذر الإرسال: '+err.message; document.body.appendChild(eEl); setTimeout(()=>eEl.remove(),3000); }
 };
 
 if('serviceWorker' in navigator) {
