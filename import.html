@@ -9,20 +9,20 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
 
 :root {
-  --navy:  #0b2545;
-  --sky:   #1a78c2;
-  --ice:   #eaf4fd;
-  --gold:  #d4920a;
-  --white: #ffffff;
-  --off:   #f8f9fc;
-  --line:  #e5e7eb;
-  --text:  #111827;
-  --mid:   #6b7280;
-  --green: #059669;
-  --red:   #dc2626;
+  --navy:   #0b2545;
+  --sky:    #1a78c2;
+  --ice:    #eaf4fd;
+  --gold:   #d4920a;
+  --white:  #ffffff;
+  --off:    #f8f9fc;
+  --line:   #e5e7eb;
+  --text:   #111827;
+  --mid:    #6b7280;
+  --green:  #059669;
+  --red:    #dc2626;
 }
 
         .topbar{background:var(--navy);padding:16px 20px;display:flex;align-items:center;gap:12px;}
@@ -42,7 +42,7 @@
         
         /* تنسيق جدول العينة */
         .sample-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; text-align: center; }
-        .sample-table th { background: #e2e8f0; color: var(--line); padding: 8px; font-weight: 700; }
+        .sample-table th { background: #e2e8f0; color: var(--navy); padding: 8px; font-weight: 700; }
         .sample-table td { border: 1px solid #e2e8f0; padding: 8px; background: #fff; }
         
         .alert-warning { background: #fffbeb; border: 1px solid #fef3c7; color: #b45309; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 600; margin-top: 10px; }
@@ -63,12 +63,10 @@
     <h1>رفع بيانات الطلاب جماعياً</h1>
 </div>
 
-
 <div class="import-card">
     <h2><i class="bi bi-file-earmark-excel"></i> تهيئة ورفع كشف طلاب المدرسة دفعة واحدة</h2>
     <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">يرجى اتباع الدليل أدناه بدقة لضمان توزيع الفصول والطلاب في النظام بشكل سليم وفوري.</p>
 
-    <!-- 📋 دليل إعداد الملف للمدرسة -->
     <div class="guide-box">
         <h4><i class="bi bi-info-circle-fill"></i> خطوات تجهيز ملف الكشف (Excel / CSV):</h4>
         <ol>
@@ -110,7 +108,6 @@
         </div>
     </div>
 
-    <!-- 📁 منطقة إسقاط واختيار الملف -->
     <div class="upload-zone" onclick="document.getElementById('csv-file-input').click()">
         <i class="bi bi-cloud-arrow-up"></i>
         <span style="font-weight: 600; display: block; margin-bottom: 5px;">اضغط هنا لاختيار ملف الكشف الجاهز</span>
@@ -148,7 +145,7 @@
         reader.readAsText(file, 'UTF-8');
     };
 
-    // محرك الضخ السحابي للمنظومة
+    // محرك الضخ السحابي المحسن للمنظومة
     window.startBulkImport = async () => {
         if (fileLinesData.length === 0) return;
         
@@ -156,33 +153,39 @@
         btn.disabled = true;
         btn.innerHTML = "⏳ جاري تهيئة قاعدة البيانات وضخ الفصول...";
 
-        const batch = writeBatch(db);
         const user = JSON.parse(localStorage.getItem('hs_user'));
         const schoolId = user?.schoolId;
 
         if(!schoolId) {
-            alert("❌ خطأ: لم يتم العثور على معرف المدرسة في الجلسة!");
+            showImportToast("❌ خطأ: لم يتم العثور على معرف المدرسة في الجلسة!", 'error');
             btn.disabled = false;
+            btn.innerHTML = "ابدأ المعالجة وضخ البيانات للسيرفر";
             return;
         }
 
         let importedCount = 0;
+        const classesSet = new Set();
+        let batch = writeBatch(db);
+        let batchOperationCount = 0;
 
         try {
-            // معالجة البيانات ضخاً (مع تخطي سطر العناوين إن وجد)
+            // معالجة البيانات ضخاً وثنائياً على دفعات آمنة من الفواتير والحدود الحجمية لقاعدة البيانات
             for (let i = 0; i < fileLinesData.length; i++) {
                 const line = fileLinesData[i].trim();
                 if (!line) continue;
 
                 const columns = line.split(',');
-                if (columns.length < 2) continue; // تخطي السطور الفارغة أو التالفة
+                if (columns.length < 2) continue; // تخطي السطور التالفة
 
                 const studentName = columns[0].trim();
                 const classId = columns[1].trim();
                 const parentPhone = columns[2] ? columns[2].trim() : '';
 
                 // تجنب رفع سطر العناوين التوضيحي لو نسيه المستخدم
-                if (studentName.includes("الاسم") || studentName.includes("name")) continue;
+                if (studentName.includes("الاسم") || studentName.includes("name") || !studentName || !classId) continue;
+
+                // تجميع أسماء الفصول المكتشفة ديناميكياً لتحديث الفهرس
+                classesSet.add(classId);
 
                 const studentRef = doc(collection(db, 'students'));
                 batch.set(studentRef, {
@@ -192,26 +195,39 @@
                     schoolId: schoolId,
                     status: 'active'
                 });
+
                 importedCount++;
+                batchOperationCount++;
+
+                // ⚡ ترحيل الباتش تلقائياً كل 400 عملية لمنع الاصطدام بحدود فايربيس القصوى (500)
+                if (batchOperationCount >= 400) {
+                    await batch.commit();
+                    batch = writeBatch(db);
+                    batchOperationCount = 0;
+                }
             }
 
-            await batch.commit();
-            
-            // ===== Step 4: تحديث كولكشن classes بعد رفع الطلاب مباشرة =====
-            // هذا يمنع الحاجة لمسح كل الطلاب لجلب أسماء الفصول (يحل قنبلة الفواتير)
-            const classesBatch = writeBatch(db);
-            classesSet.forEach(classId => {
-                const classRef = doc(db, 'classes', `${schoolId}_${classId}`);
-                classesBatch.set(classRef, {
-                    schoolId: schoolId,
-                    classId: classId,
-                    updatedAt: new Date().toISOString()
-                }, { merge: true });
-            });
-            await classesBatch.commit();
+            // الالتزام بآخر دفعة متبقية من سجلات الطلاب
+            if (batchOperationCount > 0) {
+                await batch.commit();
+            }
 
-            showImportToast(`✅ تم رفع ${importedCount} طالب بنجاح — ${classesSet.size} فصل مُحدَّث`);
-            setTimeout(() => window.location.reload(), 2000);
+            // ===== تحديث كولكشن classes لمنع تكرار قراءات كامل وثائق الطلاب وهدم ميزانية فايربيس =====
+            if (classesSet.size > 0) {
+                const classesBatch = writeBatch(db);
+                classesSet.forEach(classId => {
+                    const classRef = doc(db, 'classes', `${schoolId}_${classId}`);
+                    classesBatch.set(classRef, {
+                        schoolId: schoolId,
+                        classId: classId,
+                        updatedAt: new Date().toISOString()
+                    }, { merge: true });
+                });
+                await classesBatch.commit();
+            }
+
+            showImportToast(`✅ تم رفع ${importedCount} طالب بنجاح وتحديث فهرسة [ ${classesSet.size} ] فصل بنجاح موحد.`);
+            setTimeout(() => window.location.replace('admin.html'), 2000);
 
         } catch (error) {
             showImportToast("❌ فشل الرفع: " + error.message, 'error');
