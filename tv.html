@@ -134,6 +134,11 @@
             transition: 0.3s;
         }
         .btn-exit:hover { background: #475569; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+        }
     </style>
 </head>
 <body>
@@ -155,19 +160,19 @@
     </div>
 
     <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:20px; margin:20px 30px; text-align:center;">
-        <div style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; font-weight:700; letter-spacing:1px;">
-            🔴 الفصول التي لم تسجّل الغياب اليوم
+        <div style="font-size:14px; color:rgba(255,255,255,0.6); margin-bottom:12px; font-weight:800; letter-spacing:1px;">
+            🛑 الفصول التي لم تسجّل الغياب اليوم
         </div>
-        <div id="tv-missing" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
-            <span style="color:rgba(255,255,255,0.3); font-size:13px;">جاري التحميل...</span>
+        <div id="tv-missing" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+            <span style="color:rgba(255,255,255,0.3); font-size:14px;">جاري الفحص واستدعاء دليل الفصول...</span>
         </div>
     </div>
 
     <button class="btn-exit" onclick="window.location.replace('admin.html')"><i class="bi bi-box-arrow-right"></i> إغلاق الشاشة</button>
 
     <script type="module">
-        import { db, getActiveSchoolId, getTodayISO } from './js/firebase-config.js';
-        import { collection, query, where, onSnapshot, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { db, getActiveSchoolId, getTodayISO, getSchoolClasses } from './js/firebase-config.js';
+        import { collection, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         // 1. الحماية السريعة وجلب بيانات الجلسة
         const saved = localStorage.getItem('hs_user');
@@ -190,85 +195,84 @@
             document.getElementById('live-clock').textContent = now.toLocaleTimeString('ar-KW', { hour12: false });
         }, 1000);
 
-        // 3. حساب تاريخ اليوم بصيغة ISO (عشان يطابق الداتابيز)
-        const d = new Date();
-        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-        const todayISO = d.toISOString().split('T')[0];
+        // قائمة الفصول العامة للمدرسة (يتم جلبها ديناميكياً بدون قنبلة فواتير)
+        let ALL_CLASSES = [];
 
-        // 4. الفلترة الصارمة والمُحسنة (لحل مشكلة البطء نهائياً)
-        const liveQuery = query(
-            collection(db, 'attendance'),
-            where('schoolId', '==', schoolId),
-            where('date', '==', todayISO)
-        );
+        // 3. المحرك الموحد الموفر للفواتير: مستمع حي واحد للأرقام والفصول المتأخرة معاً
+        function startLiveTVDashboard() {
+            const todayISO = getTodayISO();
 
-        // 5. محرك الرادار الحي لسماع التغييرات بدون استنزاف للسيرفر
-        onSnapshot(liveQuery, (snapshot) => {
-            let absentCount = 0;
-            let lateCount = 0;
-            
-            snapshot.forEach(doc => {
-                const status = doc.data().status;
-                if(status === 'absent') absentCount++;
-                if(status === 'late') lateCount++;
+            const liveQuery = query(
+                collection(db, 'attendance'),
+                where('schoolId', '==', schoolId),
+                where('date', '==', todayISO)
+            );
+
+            onSnapshot(liveQuery, (snapshot) => {
+                let absentCount = 0;
+                let lateCount = 0;
+                const recordedClasses = new Set();
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const status = data.status;
+                    if(status === 'absent') absentCount++;
+                    if(status === 'late') lateCount++;
+                    if(data.classId) recordedClasses.add(data.classId);
+                });
+
+                // تحديث الأرقام الكبيرة في الشاشة فوراً لايف
+                const absentEl = document.getElementById('live-absent');
+                const lateEl = document.getElementById('live-late');
+                
+                if (absentEl) absentEl.textContent = absentCount;
+                if (lateEl) lateEl.textContent = lateCount;
+
+                // رصد وتحديث الفصول المتأخرة عن التسجيل لحظياً بدون أي getDocs إضافية ومكلفة
+                renderMissingClasses(recordedClasses);
+
+            }, (error) => {
+                console.error("❌ خطأ في موديول الرادار الحي للشاشة:", error);
             });
-
-            // تحديث الأرقام الكبيرة في الشاشة
-            const absentEl = document.getElementById('live-absent');
-            const lateEl = document.getElementById('live-late');
-            
-            if (absentEl) absentEl.textContent = absentCount;
-            if (lateEl) lateEl.textContent = lateCount;
-        }, (error) => {
-            console.error("❌ خطأ في جلب البيانات الحية:", error);
-            alert("حدث خطأ في جلب البيانات من السيرفر. تأكد من إعدادات الـ Indexes في فايربيس.");
-        });
-    
-// ===== رادار الفصول =====
-// ALL_CLASSES تُجلب ديناميكياً من Firestore
-
-let ALL_CLASSES = [];
-
-// جلب الفصول مرة واحدة عند التحميل
-async function loadTVClasses() {
-    try {
-        const schoolId = getActiveSchoolId();
-        if(!schoolId) return;
-        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
-        ALL_CLASSES = [...new Set(snap.docs.map(d=>d.data().classId).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-    } catch(e) { console.warn('TV classes load error:', e); }
-}
-loadTVClasses();
-
-async function updateMissingClasses() {
-    try {
-        const schoolId = getActiveSchoolId();
-        const todayISO = getTodayISO();
-        if(!schoolId || !ALL_CLASSES.length) return;
-        const snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',todayISO)));
-        const recorded = new Set();
-        snap.forEach(d => recorded.add(d.data().classId));
-        const missing = ALL_CLASSES.filter(c => !recorded.has(c));
-        const el = document.getElementById('tv-missing');
-        if(!el) return;
-        if(missing.length === 0) {
-            el.innerHTML = '<span style="color:#10b981;font-weight:900;font-size:18px;">✅ جميع الفصول سجّلت الغياب</span>';
-        } else {
-            el.innerHTML = missing.map(c =>
-                `<span style="background:#ef4444;color:#fff;padding:6px 14px;border-radius:8px;font-weight:900;font-size:16px;margin:3px;">${c}</span>`
-            ).join('');
         }
-    } catch(e) { console.warn('Missing classes error:', e); }
-}
 
-// تشغيل فوري عند التحميل + تحديث كل دقيقة
-updateMissingClasses();
-setInterval(updateMissingClasses, 60000);
-</script>
-<script>
-if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
-}
-</script>
+        // 4. دالة معالجة وعرض الفصول المتأخرة بناءً على الدلائل المحملة
+        function renderMissingClasses(recordedClassesSet) {
+            const el = document.getElementById('tv-missing');
+            if(!el) return;
+            
+            if(ALL_CLASSES.length === 0) {
+                el.innerHTML = '<span style="color:rgba(255,255,255,0.3); font-size:14px;">⏳ جاري مزامنة دليل الفصول مع قاعدة البيانات...</span>';
+                return;
+            }
+
+            const missing = ALL_CLASSES.filter(c => !recordedClassesSet.has(c));
+
+            if(missing.length === 0) {
+                el.innerHTML = '<span style="color:#10b981; font-weight:900; font-size:20px; animation: pulse 2s infinite; display:flex; align-items:center; gap:8px;"><i class="bi bi-check-circle-fill"></i> ممتاز! جميع الفصول رصدت الحضور والغياب اليوم بالكامل</span>';
+            } else {
+                el.innerHTML = missing.map(c =>
+                    `<span style="background:#ef4444; color:#fff; padding:8px 18px; border-radius:10px; font-weight:900; font-size:18px; margin:4px; box-shadow:0 4px 12px rgba(239,68,68,0.25); display:inline-block; animation: pulse 2.5s infinite;">${c}</span>`
+                ).join('');
+            }
+        }
+
+        // 5. الانطلاق الذكي وتجهيز الهيكل عند أول فتح للشاشة
+        (async function initTVPage() {
+            try {
+                // استدعاء دالة جلب الفصول المركزية الموفرة لقراءات الـ Documents
+                ALL_CLASSES = await getSchoolClasses(db, schoolId);
+            } catch(e) {
+                console.error("⚠️ فشل جلب دليل الفصول الموفر للتكلفة:", e);
+            }
+            // تشغيل المستمع اللحظي الموحد للأمن المالي والسرعة اللامتناهية
+            startLiveTVDashboard();
+        })();
+    </script>
+    <script>
+        if('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+        }
+    </script>
 </body>
 </html>
