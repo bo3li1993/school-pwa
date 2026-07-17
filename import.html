@@ -106,17 +106,24 @@
             <li>هذه الطريقة بعمودين منفصلين (الصف والشعبة) <b>تمنع تلقائياً</b> مشكلة تحويل Excel للرقم "6/1" إلى تاريخ خاطئ — كل عمود يبقى رقماً بسيطاً آمناً.</li>
             <li>اضغط على <b>File -> Save As</b> في برنامج Excel واختبر صيغة الحفظ لتكون: <b style="color: #1e3a8a;">CSV UTF-8 (Comma delimited) (*.csv)</b>.</li>
         </ol>
-        
-        <div class="alert-warning">
-            <i class="bi bi-exclamation-triangle-fill"></i> تنبيه هام: تأكد أن ترميز الملف أثناء الحفظ هو <b>UTF-8</b> لضمان ظهور الأسماء باللغة العربية بشكل صحيح داخل المنظومة الرقمية بعد الرفع.
+
+        <div class="alert-warning" style="background:#f0fdf4; border-color:#bbf7d0; color:#166534;">
+            <i class="bi bi-download"></i> <b>الأسهل:</b> حمّل القالب الجاهز الفاضي، عبّه، وارفعه مباشرة بدون أي تحويل صيغ.
         </div>
+    </div>
+
+    <div style="text-align:center; margin-bottom:20px;">
+        <a href="./قالب_رفع_الطلاب.xlsx" download
+            style="display:inline-flex; align-items:center; gap:8px; background:var(--green); color:#fff; padding:14px 28px; border-radius:10px; font-weight:900; text-decoration:none; font-size:15px;">
+            <i class="bi bi-file-earmark-arrow-down-fill"></i> تحميل قالب الإكسل الفاضي
+        </a>
     </div>
 
     <div class="upload-zone" onclick="document.getElementById('csv-file-input').click()">
         <i class="bi bi-cloud-arrow-up"></i>
-        <span style="font-weight: 600; display: block; margin-bottom: 5px;">اضغط هنا لاختيار ملف الكشف الجاهز</span>
-        <span style="font-size: 12px; color: #94a3b8;">الصيغة المدعومة فقط: .CSV (بترميز UTF-8)</span>
-        <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleFileSelect(event)">
+        <span style="font-weight: 600; display: block; margin-bottom: 5px;">اضغط هنا لاختيار الملف بعد التعبئة</span>
+        <span style="font-size: 12px; color: #94a3b8;">يدعم: ملف Excel (.xlsx) مباشرة، أو CSV بترميز UTF-8</span>
+        <input type="file" id="csv-file-input" accept=".csv,.xlsx,.xls" style="display: none;" onchange="handleFileSelect(event)">
         <div id="file-info" style="margin-top: 15px; font-weight: bold; color: #059669; display: none;"></div>
     </div>
 
@@ -127,13 +134,14 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script type="module">
     import { db } from './js/firebase-config.js';
     import { collection, writeBatch, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
     let fileLinesData = [];
 
-    // التحقق من اختيار الملف وتجهيز الزر
+    // التحقق من اختيار الملف وتجهيز الزر — يدعم Excel و CSV
     window.handleFileSelect = function(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -142,11 +150,30 @@
         document.getElementById('file-info').innerHTML = `<i class="bi bi-file-earmark-check"></i> تم اختيار: ${file.name} (${Math.round(file.size/1024)} KB)`;
         document.getElementById('process-btn').disabled = false;
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            fileLinesData = e.target.result.split('\n');
-        };
-        reader.readAsText(file, 'UTF-8');
+        const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+
+        if (isExcel) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[firstSheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+                // تحويل صفوف Excel لنفس صيغة CSV النصية (اسم,صف,شعبة,هاتف)
+                fileLinesData = rows
+                    .map(row => row.map(cell => String(cell).trim()).join(','))
+                    .filter(line => line.replace(/,/g, '').trim() !== '');
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fileLinesData = e.target.result.split('\n');
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
     };
 
     // محرك الضخ السحابي المحسن للمنظومة
@@ -190,7 +217,9 @@
                 const classId = gradeNum && sectionNum ? `${gradeNum}/${sectionNum}` : '';
 
                 // تجنب رفع سطر العناوين التوضيحي لو نسيه المستخدم
-                if (studentName.includes("الاسم") || studentName.includes("name") || !studentName || !classId) continue;
+                const isHeaderRow = studentName.includes("الاسم") || studentName.includes("اسم الطالب") || studentName.toLowerCase().includes("name");
+                const isValidNumbers = /^\d+$/.test(gradeNum) && /^\d+$/.test(sectionNum);
+                if (isHeaderRow || !studentName || !isValidNumbers) continue;
 
                 // تجميع أسماء الفصول المكتشفة ديناميكياً لتحديث الفهرس
                 classesSet.add(classId);
