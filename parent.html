@@ -64,17 +64,56 @@ button:hover { background:var(--accent-color); }
   </div>
 </div>
 
-<!-- 🔒 شاشة تسجيل الدخول الموحدة برقم الطالب الفريد -->
+<!-- 🔒 شاشة تسجيل الدخول والتسجيل الجديد -->
 <div id="parent-login-screen" class="container" style="max-width:400px; margin:50px auto 0 auto;">
     <div class="card" style="border-top-color:var(--primary-color); text-align:center;">
         <div style="font-size:45px; color:var(--accent-color); margin-bottom:10px;"><i class="bi bi-person-hearts"></i></div>
         <h2 style="justify-content:center; margin-bottom:4px; font-size:18px; font-weight:900;">بوابة ولي الأمر الذكية</h2>
-        <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:20px;">مدرسة سالم الحسينان المتوسطة للبنين</p>
-        
-        <form onsubmit="window.handleParentLoginLive(event)">
-            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">أدخل رقم الطالب المعتمد بالسجل</label>
-            <input type="text" id="parent-student-id" placeholder="رقم الطالب المعتمد" required>
-            <button type="submit"><i class="bi bi-box-arrow-in-right"></i> دخول واستعراض ملف الطالب</button>
+        <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:16px;">مدرسة سالم الحسينان المتوسطة للبنين</p>
+
+        <!-- تبويبات التبديل -->
+        <div style="display:flex; gap:6px; margin-bottom:18px; background:var(--off); padding:5px; border-radius:10px;">
+            <button type="button" id="tab-btn-login" onclick="window.switchParentTab('login')"
+                style="flex:1; background:var(--primary-color); color:#fff; padding:9px; border-radius:8px; font-weight:700; font-size:13px;">
+                <i class="bi bi-box-arrow-in-right"></i> تسجيل الدخول
+            </button>
+            <button type="button" id="tab-btn-register" onclick="window.switchParentTab('register')"
+                style="flex:1; background:transparent; color:var(--mid); padding:9px; border-radius:8px; font-weight:700; font-size:13px;">
+                <i class="bi bi-person-plus-fill"></i> تسجيل جديد
+            </button>
+        </div>
+
+        <!-- ===== نموذج تسجيل الدخول (رقم مدني + كلمة مرور) ===== -->
+        <form id="form-parent-login" onsubmit="window.handleParentLoginLive(event)">
+            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">الرقم المدني</label>
+            <input type="text" id="login-civil-id" placeholder="أدخل الرقم المدني" required>
+            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">كلمة المرور</label>
+            <input type="password" id="login-password" placeholder="كلمة المرور" required>
+            <button type="submit"><i class="bi bi-box-arrow-in-right"></i> دخول</button>
+        </form>
+
+        <!-- ===== نموذج التسجيل الجديد (صف + شعبة + اسم الابن) ===== -->
+        <form id="form-parent-register" class="hidden" onsubmit="window.handleParentRegister(event)">
+            <p style="font-size:11.5px; color:var(--mid); font-weight:700; margin-bottom:12px; text-align:right; background:var(--ice); padding:8px 10px; border-radius:8px;">
+                <i class="bi bi-info-circle-fill"></i> اختر فصل ابنك ثم اسمه، وأنشئ كلمة مرور خاصة بك.
+            </p>
+            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">فصل الابن (الصف والشعبة)</label>
+            <select id="reg-class-select" onchange="window.onRegisterClassChange(this.value)" required>
+                <option value="">⏳ جاري تحميل الفصول...</option>
+            </select>
+            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">اسم الابن</label>
+            <select id="reg-student-select" disabled required>
+                <option value="">-- اختر الفصل أولاً --</option>
+            </select>
+            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">الرقم المدني لولي الأمر</label>
+            <input type="text" id="reg-civil-id" placeholder="الرقم المدني" required>
+            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">رقم هاتف ولي الأمر</label>
+            <input type="tel" id="reg-phone" placeholder="رقم الهاتف" required>
+            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">كلمة مرور جديدة</label>
+            <input type="password" id="reg-password" placeholder="6 أحرف على الأقل" required minlength="6">
+            <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--primary-color);">تأكيد كلمة المرور</label>
+            <input type="password" id="reg-password-confirm" placeholder="أعد كتابة كلمة المرور" required minlength="6">
+            <button type="submit" style="background:var(--green);"><i class="bi bi-check-circle-fill"></i> إنشاء الحساب والدخول</button>
         </form>
     </div>
 </div>
@@ -89,7 +128,7 @@ button:hover { background:var(--accent-color); }
         <!-- مؤشر تنبيه حالة تفعيل الإشعارات السحابية للجوال -->
         <div id="push-status-badge-area" style="margin-top:8px; font-size:11px; font-weight:bold;"></div>
         
-        <button onclick="localStorage.removeItem('hs_parent'); location.reload();" style="width:auto; padding:4px 12px; font-size:11px; background:rgba(255,255,255,0.15); border:1px solid #fff; margin-top:12px; border-radius:4px;">تسجيل خروج آمن</button>
+        <button onclick="localStorage.removeItem('hs_parent'); localStorage.removeItem('hs_custom_token'); location.reload();" style="width:auto; padding:4px 12px; font-size:11px; background:rgba(255,255,255,0.15); border:1px solid #fff; margin-top:12px; border-radius:4px;">تسجيل خروج آمن</button>
     </div>
 
     <!-- 🔴 رادار عرض الغياب التفصيلي بالحصة -->
@@ -112,103 +151,221 @@ button:hover { background:var(--accent-color); }
 </div>
 
 <script type="module">
-import { db, requestNotificationPermission } from './js/firebase-config.js';
-import { collection, getDocs, addDoc, query, where, onSnapshot, serverTimestamp, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, auth, requestNotificationPermission, getSchoolClasses } from './js/firebase-config.js';
+import { collection, getDocs, addDoc, updateDoc, query, where, onSnapshot, serverTimestamp, doc, getDoc, writeBatch } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 // 🔔 استدعاء مكتبة قوقل الرسمية لإدارة بث واستقبل الإشعارات السحابية للـ PWA
 import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
 
 let activeStudent = null;
 let chatUnsubscribe = null; // دالة إلغاء الاستماع عند الخروج
 
+// قراءة كود المدرسة من رابط مخصص (?school=xxx) لتسريع وتدقيق البحث
+const urlParams = new URLSearchParams(window.location.search);
+const schoolFromUrl = urlParams.get('school');
+
 document.addEventListener("DOMContentLoaded", function() {
     const saved = localStorage.getItem('hs_parent');
     if(saved) {
         activeStudent = JSON.parse(saved);
         showParentDashboard();
+    } else if (schoolFromUrl) {
+        loadRegisterClasses();
     }
     document.getElementById('splash').classList.add('hide');
 });
 
-// قراءة كود المدرسة من رابط مخصص (?school=xxx) لتسريع وتدقيق البحث
-const urlParams = new URLSearchParams(window.location.search);
-const schoolFromUrl = urlParams.get('school');
+// ===== أدوات مساعدة =====
 
-window.handleParentLoginLive = async function(e) {
+function showParentError(msg) {
+    const errEl = document.getElementById('parent-err') || document.createElement('p');
+    errEl.id = 'parent-err';
+    errEl.style.cssText = 'color:#dc2626;font-weight:700;text-align:center;margin-top:8px;font-size:13px;';
+    errEl.textContent = msg;
+    const activeForm = document.querySelector('#form-parent-login:not(.hidden), #form-parent-register:not(.hidden)');
+    (activeForm || document.getElementById('parent-login-screen')).appendChild(errEl);
+}
+
+window.switchParentTab = function(tab) {
+    const loginForm = document.getElementById('form-parent-login');
+    const registerForm = document.getElementById('form-parent-register');
+    const loginBtn = document.getElementById('tab-btn-login');
+    const registerBtn = document.getElementById('tab-btn-register');
+
+    document.getElementById('parent-err')?.remove();
+
+    if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        loginBtn.style.background = 'var(--primary-color)'; loginBtn.style.color = '#fff';
+        registerBtn.style.background = 'transparent'; registerBtn.style.color = 'var(--mid)';
+    } else {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        registerBtn.style.background = 'var(--primary-color)'; registerBtn.style.color = '#fff';
+        loginBtn.style.background = 'transparent'; loginBtn.style.color = 'var(--mid)';
+        if (!window._regClassesLoaded) loadRegisterClasses();
+    }
+};
+
+// ===== تحميل الفصول لنموذج التسجيل الجديد =====
+async function loadRegisterClasses() {
+    const sel = document.getElementById('reg-class-select');
+    if (!schoolFromUrl) {
+        sel.innerHTML = '<option value="">⚠️ يرجى استخدام رابط مدرستك الخاص للتسجيل</option>';
+        return;
+    }
+    try {
+        const classes = await getSchoolClasses(db, schoolFromUrl);
+        sel.innerHTML = classes.length
+            ? '<option value="">-- اختر الفصل --</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('')
+            : '<option value="">⚠️ لا توجد فصول مسجّلة</option>';
+        window._regClassesLoaded = true;
+    } catch (e) {
+        sel.innerHTML = '<option value="">❌ خطأ بتحميل الفصول</option>';
+    }
+}
+
+window.onRegisterClassChange = async function(classId) {
+    const sel = document.getElementById('reg-student-select');
+    if (!classId) {
+        sel.innerHTML = '<option value="">-- اختر الفصل أولاً --</option>';
+        sel.disabled = true;
+        return;
+    }
+    sel.innerHTML = '<option value="">⏳ جاري التحميل...</option>';
+    sel.disabled = true;
+    try {
+        const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolFromUrl), where('classId', '==', classId)));
+        const students = [];
+        snap.forEach(d => students.push({ id: d.id, ...d.data() }));
+        students.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+
+        window._regStudentsMap = {};
+        students.forEach(s => { window._regStudentsMap[s.id] = s; });
+
+        sel.innerHTML = students.length
+            ? '<option value="">-- اختر اسم الابن --</option>' + students.map(s => `<option value="${s.id}">${s.name}</option>`).join('')
+            : '<option value="">⚠️ لا يوجد طلاب بهذا الفصل</option>';
+        sel.disabled = students.length === 0;
+    } catch (e) {
+        sel.innerHTML = '<option value="">❌ خطأ بالتحميل</option>';
+    }
+};
+
+// ===== تسجيل حساب جديد لولي الأمر (عبر Cloud Function) =====
+window.handleParentRegister = async function(e) {
     e.preventDefault();
-    const studentId = document.getElementById('parent-student-id').value.trim();
-    if(!studentId) return;
+    document.getElementById('parent-err')?.remove();
+
+    const studentDocId = document.getElementById('reg-student-select').value;
+    const civilId = document.getElementById('reg-civil-id').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const passwordConfirm = document.getElementById('reg-password-confirm').value;
+
+    if (!studentDocId) { showParentError('⚠️ يرجى اختيار اسم الابن'); return; }
+    if (!/^\d{5,15}$/.test(civilId)) { showParentError('⚠️ الرقم المدني غير صحيح'); return; }
+    if (password.length < 6) { showParentError('⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل'); return; }
+    if (password !== passwordConfirm) { showParentError('⚠️ كلمتا المرور غير متطابقتين'); return; }
+
+    const submitBtn = document.querySelector('#form-parent-register button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ جاري إنشاء الحساب...';
 
     try {
-        // البحث بحقل studentNumber فقط (قد يتكرر بين مدارس مختلفة)
-        const q = query(collection(db, 'students'), where('studentNumber', '==', studentId));
-        const snap = await getDocs(q);
-        let candidates = [];
-        snap.forEach(doc => candidates.push(doc.data()));
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const functions = getFunctions(auth.app);
+        const registerFn = httpsCallable(functions, 'registerParent');
 
-        // لو الرابط مخصص لمدرسة، نفلتر عليها مباشرة
-        let found = null;
-        if(schoolFromUrl) {
-            found = candidates.find(d => d.schoolId === schoolFromUrl) || null;
-        } else if(candidates.length === 1) {
-            found = candidates[0];
-        } else if(candidates.length > 1) {
-            // رسالة بدل alert
-            const errEl = document.getElementById('parent-err') || document.createElement('p');
-            errEl.id = 'parent-err';
-            errEl.style.cssText = 'color:#dc2626;font-weight:700;text-align:center;margin-top:8px;';
-            errEl.textContent = '⚠️ رقم مكرر — استخدم رابط مدرستك الخاص';
-            document.querySelector('#parent-login-screen form')?.appendChild(errEl);
+        const result = await registerFn({ schoolId: schoolFromUrl, civilId, phone, password });
+        await signInWithCustomToken(auth, result.data.token);
+        localStorage.setItem('hs_custom_token', result.data.token);
+
+        // بعد تسجيل الدخول، تحديث بيانات الطالب المختار (وإخوته) بالرقم المدني ورقم الهاتف
+        const student = window._regStudentsMap[studentDocId];
+        const batch = writeBatch(db);
+        batch.update(doc(db, 'students', studentDocId), { civilId, parentPhone: phone });
+
+        if (phone) {
+            const siblingsSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolFromUrl), where('parentPhone', '==', phone)));
+            siblingsSnap.forEach(d => {
+                if (d.id !== studentDocId) batch.update(doc(db, 'students', d.id), { civilId });
+            });
+        }
+        await batch.commit();
+
+        activeStudent = { ...student, civilId, parentPhone: phone, schoolId: schoolFromUrl };
+        localStorage.setItem('hs_parent', JSON.stringify(activeStudent));
+        showParentDashboard();
+
+    } catch (err) {
+        const msg = err.message.includes('already-exists') ? 'هذا الرقم المدني مسجّل مسبقاً — استخدم تسجيل الدخول'
+                  : err.message.includes('invalid-argument') ? 'يرجى التحقق من البيانات المدخلة'
+                  : err.message;
+        showParentError('❌ ' + msg);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'إنشاء الحساب والدخول';
+    }
+};
+
+// ===== تسجيل الدخول (رقم مدني + كلمة مرور — عبر Cloud Function) =====
+window.handleParentLoginLive = async function(e) {
+    e.preventDefault();
+    document.getElementById('parent-err')?.remove();
+
+    const civilId = document.getElementById('login-civil-id').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!civilId || !password) return;
+
+    const submitBtn = document.querySelector('#form-parent-login button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ جاري التحقق...';
+
+    try {
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const functions = getFunctions(auth.app);
+        const loginFn = httpsCallable(functions, 'loginParent');
+
+        const result = await loginFn({ schoolId: schoolFromUrl || null, civilId, password });
+        const matchedSchoolId = result.data.schoolId;
+
+        await signInWithCustomToken(auth, result.data.token);
+        localStorage.setItem('hs_custom_token', result.data.token);
+
+        // جلب كل الأبناء المرتبطين بنفس الرقم المدني (الآن مسموح لأن التوكن يحمل نفس schoolId)
+        const childrenSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', matchedSchoolId), where('civilId', '==', civilId)));
+        let siblings = [];
+        childrenSnap.forEach(d => siblings.push({ id: d.id, ...d.data(), schoolId: matchedSchoolId }));
+
+        if (!siblings.length) {
+            showParentError('⚠️ لا يوجد طلاب مرتبطين بهذا الحساب — راجع الإدارة');
+            submitBtn.disabled = false; submitBtn.textContent = 'دخول';
             return;
         }
 
-        if(found) {
-            // ===== Step 5: جلب الأشقاء =====
-            let siblings = [found];
-            if(found.parentPhone) {
-                try {
-                    const sibQ = query(collection(db,'students'),
-                        where('schoolId','==',found.schoolId),
-                        where('parentPhone','==',found.parentPhone));
-                    const sibSnap = await getDocs(sibQ);
-                    if(!sibSnap.empty) {
-                        siblings = [];
-                        sibSnap.forEach(d => siblings.push({...d.data(), docId: d.id}));
-                    }
-                } catch(e) { siblings = [found]; }
-            }
-
-            if(siblings.length > 1) {
-                // عرض قائمة الأشقاء
-                window._siblingsList = siblings;
-                var listEl = document.getElementById('parent-login-screen');
-                var lHtml = '<div style="padding:24px;max-width:400px;margin:0 auto;direction:rtl;font-family:Cairo,sans-serif;">';
-                lHtml += '<h3 style="text-align:center;color:#0b2545;margin-bottom:16px;">اختر الطالب</h3>';
-                for(var si=0; si<siblings.length; si++) {
-                    var sib = siblings[si];
-                    lHtml += '<div onclick="window.selectSibling(' + si + ')" style="padding:14px;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;margin-bottom:8px;">';
-                    lHtml += '<b>' + sib.name + '</b> — الفصل: ' + sib.classId;
-                    lHtml += '</div>';
-                }
-                lHtml += '<button onclick="window.location.reload()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-family:Cairo,sans-serif;margin-top:6px;">رجوع</button></div>';
-                listEl.innerHTML = lHtml;
-            } else {
-                activeStudent = found;
-                localStorage.setItem('hs_parent', JSON.stringify(found));
-                showParentDashboard();
-            }
+        if (siblings.length > 1) {
+            window._siblingsList = siblings;
+            const listEl = document.getElementById('parent-login-screen');
+            let lHtml = '<div style="padding:24px;max-width:400px;margin:0 auto;direction:rtl;font-family:Cairo,sans-serif;">';
+            lHtml += '<h3 style="text-align:center;color:#0b2545;margin-bottom:16px;">اختر الطالب</h3>';
+            siblings.forEach((sib, si) => {
+                lHtml += `<div onclick="window.selectSibling(${si})" style="padding:14px;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;margin-bottom:8px;"><b>${sib.name}</b> — الفصل: ${sib.classId}</div>`;
+            });
+            lHtml += '<button onclick="window.location.reload()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-family:Cairo,sans-serif;margin-top:6px;">رجوع</button></div>';
+            listEl.innerHTML = lHtml;
         } else {
-            const errEl = document.getElementById('parent-err') || document.createElement('p');
-            errEl.id = 'parent-err';
-            errEl.style.cssText = 'color:#dc2626;font-weight:700;text-align:center;margin-top:8px;';
-            errEl.textContent = '⚠️ لم يتم العثور على الطالب — راجع الإدارة';
-            document.querySelector('#parent-login-screen form')?.appendChild(errEl);
+            activeStudent = siblings[0];
+            localStorage.setItem('hs_parent', JSON.stringify(activeStudent));
+            showParentDashboard();
         }
-    } catch(err) {
-        const errEl = document.getElementById('parent-err') || document.createElement('p');
-        errEl.id = 'parent-err';
-        errEl.style.cssText = 'color:#dc2626;font-weight:700;text-align:center;margin-top:8px;';
-        errEl.textContent = '❌ خطأ في الاتصال: ' + err.message;
-        document.querySelector('#parent-login-screen form')?.appendChild(errEl);
+    } catch (err) {
+        const msg = err.message.includes('unauthenticated') ? 'الرقم المدني أو كلمة المرور غير صحيحة'
+                  : err.message.includes('failed-precondition') ? 'يرجى استخدام رابط مدرستك الخاص لتسجيل الدخول'
+                  : 'خطأ في الاتصال: ' + err.message;
+        showParentError('❌ ' + msg);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'دخول';
     }
 };
 
