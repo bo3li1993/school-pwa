@@ -409,3 +409,45 @@ exports.loginParent = onCall({ cors: true, region: 'us-central1' }, async (reque
     const token = await admin.auth().createCustomToken(accountId, { role: 'parent', schoolId: matchedSchoolId, civilId });
     return { token, schoolId: matchedSchoolId, civilId };
 });
+
+// ============================================================
+// FUNCTION 8: getRegistrationClasses — جلب قائمة الفصول (بدون حاجة لتسجيل دخول)
+// يُستخدم فقط بصفحة تسجيل ولي الأمر الجديد، يرجع أسماء الفصول فقط (بيانات غير حساسة)
+// ============================================================
+exports.getRegistrationClasses = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    const { schoolId } = request.data;
+    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId مطلوب');
+
+    // نجرب classes collection أولاً (أخف وأسرع)
+    const classesSnap = await db.collection('classes').where('schoolId', '==', schoolId).get();
+    if (!classesSnap.empty) {
+        const classes = [...new Set(classesSnap.docs.map(d => d.data().classId).filter(Boolean))];
+        return { classes: classes.sort((a, b) => a.localeCompare(b)) };
+    }
+
+    // fallback: مسح students لاستخراج الفصول
+    const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
+    const classes = [...new Set(studentsSnap.docs.map(d => d.data().classId).filter(Boolean))];
+    return { classes: classes.sort((a, b) => a.localeCompare(b)) };
+});
+
+// ============================================================
+// FUNCTION 9: getRegistrationStudents — جلب أسماء طلاب فصل معيّن (بدون تسجيل دخول)
+// يرجع فقط id + name (بدون هاتف أو رقم مدني، حماية للخصوصية)
+// ============================================================
+exports.getRegistrationStudents = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    const { schoolId, classId } = request.data;
+    if (!schoolId || !classId) throw new HttpsError('invalid-argument', 'schoolId و classId مطلوبان');
+
+    const snap = await db.collection('students')
+        .where('schoolId', '==', schoolId)
+        .where('classId', '==', classId)
+        .get();
+
+    const students = snap.docs
+        .map(d => ({ id: d.id, name: d.data().name || '' }))
+        .filter(s => s.name)
+        .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+    return { students };
+});
