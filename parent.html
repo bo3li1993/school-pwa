@@ -208,15 +208,21 @@ window.switchParentTab = function(tab) {
     }
 };
 
-// ===== تحميل الفصول لنموذج التسجيل الجديد =====
+// ===== تحميل الفصول لنموذج التسجيل الجديد (عبر Cloud Function — تعمل قبل تسجيل الدخول) =====
 async function loadRegisterClasses() {
     const sel = document.getElementById('reg-class-select');
     if (!schoolFromUrl) {
         sel.innerHTML = '<option value="">⚠️ يرجى استخدام رابط مدرستك الخاص للتسجيل</option>';
         return;
     }
+    sel.innerHTML = '<option value="">⏳ جاري تحميل الفصول...</option>';
     try {
-        const classes = await getSchoolClasses(db, schoolFromUrl);
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const functions = getFunctions(auth.app);
+        const getClassesFn = httpsCallable(functions, 'getRegistrationClasses');
+        const result = await getClassesFn({ schoolId: schoolFromUrl });
+        const classes = result.data.classes || [];
+
         sel.innerHTML = classes.length
             ? '<option value="">-- اختر الفصل --</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('')
             : '<option value="">⚠️ لا توجد فصول مسجّلة</option>';
@@ -236,10 +242,11 @@ window.onRegisterClassChange = async function(classId) {
     sel.innerHTML = '<option value="">⏳ جاري التحميل...</option>';
     sel.disabled = true;
     try {
-        const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolFromUrl), where('classId', '==', classId)));
-        const students = [];
-        snap.forEach(d => students.push({ id: d.id, ...d.data() }));
-        students.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const functions = getFunctions(auth.app);
+        const getStudentsFn = httpsCallable(functions, 'getRegistrationStudents');
+        const result = await getStudentsFn({ schoolId: schoolFromUrl, classId });
+        const students = result.data.students || [];
 
         window._regStudentsMap = {};
         students.forEach(s => { window._regStudentsMap[s.id] = s; });
@@ -283,7 +290,6 @@ window.handleParentRegister = async function(e) {
         localStorage.setItem('hs_custom_token', result.data.token);
 
         // بعد تسجيل الدخول، تحديث بيانات الطالب المختار (وإخوته) بالرقم المدني ورقم الهاتف
-        const student = window._regStudentsMap[studentDocId];
         const batch = writeBatch(db);
         batch.update(doc(db, 'students', studentDocId), { civilId, parentPhone: phone });
 
@@ -295,7 +301,11 @@ window.handleParentRegister = async function(e) {
         }
         await batch.commit();
 
-        activeStudent = { ...student, civilId, parentPhone: phone, schoolId: schoolFromUrl };
+        // جلب بيانات الطالب الكاملة الآن بعد المصادقة (متاح لأن التوكن يحمل نفس schoolId)
+        const fullStudentSnap = await getDoc(doc(db, 'students', studentDocId));
+        const fullStudent = { id: studentDocId, ...fullStudentSnap.data() };
+
+        activeStudent = { ...fullStudent, civilId, parentPhone: phone, schoolId: schoolFromUrl };
         localStorage.setItem('hs_parent', JSON.stringify(activeStudent));
         showParentDashboard();
 
