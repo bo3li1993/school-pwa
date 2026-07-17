@@ -366,7 +366,8 @@ tr:hover td{background:#fafafa}
 </div>
 
 <script type="module">
-import { db } from './js/firebase-config.js';
+import { db, auth } from './js/firebase-config.js';
+import { signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, serverTimestamp, getDocs, query, where }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
@@ -385,17 +386,17 @@ window.checkSuperPass = async function() {
     err.style.display = 'none';
 
     try {
-        const hashHex = await sha256(pass);
+        // تسجيل دخول حقيقي عبر Cloud Function loginUser — يمنح Custom Token
+        // بصلاحية role:'superadmin' يسمح بالقراءة/الكتابة على Firestore حسب الـ Rules
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const functions = getFunctions(auth.app);
+        const doLogin = httpsCallable(functions, 'loginUser');
 
-        // جلب الـ hash الحالي من Firestore (يُحدَّث عند تغيير كلمة المرور)
-        const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
-        let currentHash = DEFAULT_HASH;
-        try {
-            const configSnap = await getDocs(query(collection(db, 'system_config'), where('key','==','super_pass_hash')));
-            if (!configSnap.empty) currentHash = configSnap.docs[0].data().value;
-        } catch(e) { /* استخدم الافتراضي لو فشل الاتصال */ }
+        const result = await doLogin({ schoolId: null, userId: 'superadmin', password: pass });
 
-        if (hashHex === currentHash) {
+        if (result.data && result.data.token) {
+            await signInWithCustomToken(auth, result.data.token);
+            localStorage.setItem('hs_custom_token', result.data.token);
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-screen').style.display  = 'block';
             initDashboard();
@@ -404,7 +405,7 @@ window.checkSuperPass = async function() {
             err.style.display = 'block';
         }
     } catch(e) {
-        err.textContent = '❌ خطأ تقني: ' + e.message;
+        err.textContent = '❌ ' + (e.message.includes('unauthenticated') ? 'كلمة المرور غير صحيحة' : 'خطأ تقني: ' + e.message);
         err.style.display = 'block';
     } finally {
         btn.textContent = 'دخول';
@@ -457,34 +458,16 @@ window.submitChangePassword = async function() {
     }
 
     try {
-        const hashCurrentInput = await sha256(current);
-        const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
-        let storedHash = DEFAULT_HASH;
-        let configDocRef = null;
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const functions = getFunctions(auth.app);
+        const changePass = httpsCallable(functions, 'changeSuperPassword');
 
-        const configSnap = await getDocs(query(collection(db, 'system_config'), where('key','==','super_pass_hash')));
-        if (!configSnap.empty) {
-            storedHash = configSnap.docs[0].data().value;
-            configDocRef = configSnap.docs[0].ref;
-        }
-
-        if (hashCurrentInput !== storedHash) {
-            errEl.textContent = '❌ كلمة المرور الحالية غير صحيحة';
-            errEl.style.display = 'block';
-            return;
-        }
-
-        const newHash = await sha256(newPass);
-        if (configDocRef) {
-            await updateDoc(configDocRef, { value: newHash, updatedAt: serverTimestamp() });
-        } else {
-            await addDoc(collection(db, 'system_config'), { key: 'super_pass_hash', value: newHash, updatedAt: serverTimestamp() });
-        }
+        await changePass({ currentPassword: current, newPassword: newPass });
 
         window.closeChangePassModal();
         alert('✅ تم تغيير كلمة المرور بنجاح. احفظها في مكان آمن.');
     } catch(e) {
-        errEl.textContent = '❌ خطأ: ' + e.message;
+        errEl.textContent = '❌ ' + (e.message.includes('unauthenticated') ? 'كلمة المرور الحالية غير صحيحة' : 'خطأ: ' + e.message);
         errEl.style.display = 'block';
     }
 };
