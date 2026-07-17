@@ -345,3 +345,67 @@ exports.changeSuperPassword = onCall({ cors: true, region: 'us-central1' }, asyn
 
     return { success: true };
 });
+
+// ============================================================
+// FUNCTION 6: registerParent — تسجيل حساب ولي أمر جديد
+// يُنشئ حساب بالرقم المدني ويُصدر Custom Token لتسجيل الدخول الفوري
+// ============================================================
+exports.registerParent = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    const { schoolId, civilId, phone, password } = request.data;
+    if (!schoolId || !civilId || !phone || !password) {
+        throw new HttpsError('invalid-argument', 'جميع الحقول مطلوبة');
+    }
+    if (!/^\d{5,15}$/.test(civilId)) throw new HttpsError('invalid-argument', 'الرقم المدني غير صحيح');
+    if (password.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور قصيرة جداً');
+
+    const accountId = `${schoolId}_${civilId}`;
+    const accountRef = db.collection('parent_accounts').doc(accountId);
+    const existing = await accountRef.get();
+    if (existing.exists) throw new HttpsError('already-exists', 'هذا الرقم المدني مسجّل مسبقاً');
+
+    const crypto = require('crypto');
+    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+
+    await accountRef.set({
+        civilId, schoolId, phone, passwordHash,
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    const token = await admin.auth().createCustomToken(accountId, { role: 'parent', schoolId, civilId });
+    return { token, schoolId, civilId };
+});
+
+// ============================================================
+// FUNCTION 7: loginParent — تسجيل دخول ولي الأمر بالرقم المدني
+// ============================================================
+exports.loginParent = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    const { schoolId, civilId, password } = request.data;
+    if (!civilId || !password) throw new HttpsError('invalid-argument', 'الرقم المدني وكلمة المرور مطلوبان');
+
+    const crypto = require('crypto');
+    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+
+    let accountData = null;
+    let matchedSchoolId = schoolId;
+
+    if (schoolId) {
+        const accSnap = await db.collection('parent_accounts').doc(`${schoolId}_${civilId}`).get();
+        if (accSnap.exists) accountData = accSnap.data();
+    } else {
+        const q = await db.collection('parent_accounts').where('civilId', '==', civilId).get();
+        if (q.size === 1) {
+            accountData = q.docs[0].data();
+            matchedSchoolId = accountData.schoolId;
+        } else if (q.size > 1) {
+            throw new HttpsError('failed-precondition', 'يرجى استخدام رابط مدرستك الخاص لتسجيل الدخول');
+        }
+    }
+
+    if (!accountData || accountData.passwordHash !== passwordHash) {
+        throw new HttpsError('unauthenticated', 'الرقم المدني أو كلمة المرور غير صحيحة');
+    }
+
+    const accountId = `${matchedSchoolId}_${civilId}`;
+    const token = await admin.auth().createCustomToken(accountId, { role: 'parent', schoolId: matchedSchoolId, civilId });
+    return { token, schoolId: matchedSchoolId, civilId };
+});
