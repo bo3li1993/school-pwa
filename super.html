@@ -220,9 +220,47 @@ tr:hover td{background:#fafafa}
         <div class="topbar-sub">لوحة تحكم المطور</div>
       </div>
     </div>
-    <button class="logout-btn" onclick="doLogout()">
-      <i class="bi bi-box-arrow-left"></i> خروج
-    </button>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button class="logout-btn" onclick="window.openChangePassModal()" style="background:var(--ice); color:var(--sky); border-color:var(--sky);">
+        <i class="bi bi-key-fill"></i> تغيير كلمة المرور
+      </button>
+      <button class="logout-btn" onclick="doLogout()">
+        <i class="bi bi-box-arrow-left"></i> خروج
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal تغيير كلمة المرور -->
+  <div id="change-pass-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:16px; padding:28px; max-width:400px; width:90%; direction:rtl; font-family:'Cairo',sans-serif;">
+      <h3 style="color:var(--navy); font-weight:900; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+        <i class="bi bi-shield-lock-fill" style="color:var(--sky);"></i> تغيير كلمة المرور السرية
+      </h3>
+      <p style="font-size:12px; color:var(--mid); margin-bottom:18px;">بعد التغيير، احفظ الكلمة الجديدة في مكان آمن — لا يمكن استرجاعها إن نُسيت.</p>
+
+      <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">كلمة المرور الحالية</label>
+      <input type="password" id="cp-current" placeholder="أدخل كلمة المرور الحالية"
+        style="width:100%; padding:11px; border:1.5px solid var(--line); border-radius:8px; margin-bottom:12px; font-family:'Cairo',sans-serif; box-sizing:border-box;">
+
+      <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">كلمة المرور الجديدة</label>
+      <input type="password" id="cp-new" placeholder="6 أحرف على الأقل"
+        style="width:100%; padding:11px; border:1.5px solid var(--line); border-radius:8px; margin-bottom:12px; font-family:'Cairo',sans-serif; box-sizing:border-box;">
+
+      <label style="font-weight:700; font-size:13px; display:block; margin-bottom:5px;">تأكيد كلمة المرور الجديدة</label>
+      <input type="password" id="cp-confirm" placeholder="أعد كتابة كلمة المرور الجديدة"
+        style="width:100%; padding:11px; border:1.5px solid var(--line); border-radius:8px; margin-bottom:6px; font-family:'Cairo',sans-serif; box-sizing:border-box;">
+
+      <p id="cp-error" style="color:var(--red); font-size:12px; font-weight:700; display:none; margin-bottom:10px;"></p>
+
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button onclick="window.submitChangePassword()" style="flex:1; background:var(--sky); color:#fff; border:none; padding:11px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif;">
+          <i class="bi bi-check-circle-fill"></i> حفظ التغيير
+        </button>
+        <button onclick="window.closeChangePassModal()" style="background:#fff; color:var(--mid); border:1.5px solid var(--line); padding:11px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif;">
+          إلغاء
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="page">
@@ -339,58 +377,115 @@ window.checkSuperPass = async function() {
     const pass = document.getElementById('super-pass').value.trim();
     const err  = document.getElementById('login-err');
     const btn  = document.querySelector('.login-btn');
-    
+
     if(!pass) { err.textContent = 'أدخل كلمة المرور'; err.style.display = 'block'; return; }
-    
+
     btn.textContent = '⏳ جاري التحقق...';
     btn.disabled = true;
     err.style.display = 'none';
-    
+
     try {
-        // التحقق عبر Cloud Function (نفس آلية loginUser)
-        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const functions = getFunctions(auth.app);
-        const verifySuperAdmin = httpsCallable(functions, 'loginUser');
-        
-        // حساب Super Admin محدد بـ Firestore (userId: 'superadmin', schoolId: 'system')
-        const result = await verifySuperAdmin({ 
-            schoolId: null, 
-            userId: 'superadmin', 
-            password: pass 
-        });
-        
-        if(result.data && result.data.role === 'superadmin') {
+        const hashHex = await sha256(pass);
+
+        // جلب الـ hash الحالي من Firestore (يُحدَّث عند تغيير كلمة المرور)
+        const DEFAULT_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d';
+        let currentHash = DEFAULT_HASH;
+        try {
+            const configSnap = await getDocs(query(collection(db, 'system_config'), where('key','==','super_pass_hash')));
+            if (!configSnap.empty) currentHash = configSnap.docs[0].data().value;
+        } catch(e) { /* استخدم الافتراضي لو فشل الاتصال */ }
+
+        if (hashHex === currentHash) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-screen').style.display  = 'block';
             initDashboard();
         } else {
-            err.textContent = 'كلمة المرور غير صحيحة';
+            err.textContent = '❌ كلمة المرور غير صحيحة';
             err.style.display = 'block';
         }
     } catch(e) {
-        // Fallback مؤقت: hash comparison بدل plain text
-        // SHA-256 of the actual password stored as hash
-        const encoder = new TextEncoder();
-        const data = encoder.encode(pass);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        
-        // Hash of the correct password (sha256 of actual pass - update this value)
-        const SUPER_PASS_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d'; // sha256('hosainan@2024')
-        
-        if(hashHex === SUPER_PASS_HASH) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-screen').style.display  = 'block';
-            initDashboard();
-        } else {
-            err.textContent = 'كلمة المرور غير صحيحة';
-            err.style.display = 'block';
-        }
+        err.textContent = '❌ خطأ تقني: ' + e.message;
+        err.style.display = 'block';
     } finally {
         btn.textContent = 'دخول';
         btn.disabled = false;
         document.getElementById('super-pass').value = '';
+    }
+};
+
+async function sha256(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ===== نافذة تغيير كلمة المرور =====
+window.openChangePassModal = function() {
+    document.getElementById('change-pass-modal').style.display = 'flex';
+    document.getElementById('cp-current').value = '';
+    document.getElementById('cp-new').value = '';
+    document.getElementById('cp-confirm').value = '';
+    document.getElementById('cp-error').style.display = 'none';
+};
+
+window.closeChangePassModal = function() {
+    document.getElementById('change-pass-modal').style.display = 'none';
+};
+
+window.submitChangePassword = async function() {
+    const current = document.getElementById('cp-current').value;
+    const newPass = document.getElementById('cp-new').value;
+    const confirmPass = document.getElementById('cp-confirm').value;
+    const errEl = document.getElementById('cp-error');
+    errEl.style.display = 'none';
+
+    if (!current || !newPass || !confirmPass) {
+        errEl.textContent = '⚠️ يرجى تعبئة كل الحقول';
+        errEl.style.display = 'block';
+        return;
+    }
+    if (newPass.length < 6) {
+        errEl.textContent = '⚠️ كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل';
+        errEl.style.display = 'block';
+        return;
+    }
+    if (newPass !== confirmPass) {
+        errEl.textContent = '⚠️ كلمة المرور الجديدة وتأكيدها غير متطابقين';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        const hashCurrentInput = await sha256(current);
+        const DEFAULT_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d';
+        let storedHash = DEFAULT_HASH;
+        let configDocRef = null;
+
+        const configSnap = await getDocs(query(collection(db, 'system_config'), where('key','==','super_pass_hash')));
+        if (!configSnap.empty) {
+            storedHash = configSnap.docs[0].data().value;
+            configDocRef = configSnap.docs[0].ref;
+        }
+
+        if (hashCurrentInput !== storedHash) {
+            errEl.textContent = '❌ كلمة المرور الحالية غير صحيحة';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        const newHash = await sha256(newPass);
+        if (configDocRef) {
+            await updateDoc(configDocRef, { value: newHash, updatedAt: serverTimestamp() });
+        } else {
+            await addDoc(collection(db, 'system_config'), { key: 'super_pass_hash', value: newHash, updatedAt: serverTimestamp() });
+        }
+
+        window.closeChangePassModal();
+        alert('✅ تم تغيير كلمة المرور بنجاح. احفظها في مكان آمن.');
+    } catch(e) {
+        errEl.textContent = '❌ خطأ: ' + e.message;
+        errEl.style.display = 'block';
     }
 };
 
