@@ -17,7 +17,11 @@ exports.loginUser = onCall({ cors: true, region: 'us-central1' }, async (request
     if (userId === 'superadmin') {
         const crypto = require('crypto');
         const hash = crypto.createHash('sha256').update(password).digest('hex');
-        const SUPER_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d';
+
+        const configSnap = await db.collection('system_config').where('key', '==', 'super_pass_hash').limit(1).get();
+        const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
+        const SUPER_HASH = configSnap.empty ? DEFAULT_HASH : configSnap.docs[0].data().value;
+
         if (hash !== SUPER_HASH) throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
         const token = await admin.auth().createCustomToken('superadmin', { role: 'superadmin', schoolId: 'system' });
         return { token, role: 'superadmin', schoolId: 'system', name: 'حسين', userId: 'superadmin' };
@@ -308,4 +312,36 @@ exports.generateReportNow = onCall({ cors: true, region: 'us-central1' }, async 
     });
 
     return { success: true, reportId: ref.id, stats: { totalAbsences: absSnap.size, totalLate: lateSnap.size } };
+});
+
+// ============================================================
+// FUNCTION 5: changeSuperPassword — تغيير كلمة مرور السوبر أدمن بأمان
+// يتحقق من الكلمة الحالية server-side قبل الحفظ بـ Firestore
+// ============================================================
+exports.changeSuperPassword = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    const { currentPassword, newPassword } = request.data;
+    if (!currentPassword || !newPassword) throw new HttpsError('invalid-argument', 'الحقول مطلوبة');
+    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور الجديدة قصيرة جداً');
+
+    const crypto = require('crypto');
+    const currentHash = crypto.createHash('sha256').update(currentPassword).digest('hex');
+
+    // جلب الـ hash الحالي المخزّن (من system_config أو الافتراضي)
+    const configSnap = await db.collection('system_config').where('key', '==', 'super_pass_hash').limit(1).get();
+    const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
+    const storedHash = configSnap.empty ? DEFAULT_HASH : configSnap.docs[0].data().value;
+
+    if (currentHash !== storedHash) throw new HttpsError('unauthenticated', 'كلمة المرور الحالية غير صحيحة');
+
+    const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
+
+    if (configSnap.empty) {
+        await db.collection('system_config').add({
+            key: 'super_pass_hash', value: newHash, updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+    } else {
+        await configSnap.docs[0].ref.update({ value: newHash, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+    }
+
+    return { success: true };
 });
