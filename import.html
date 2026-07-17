@@ -71,36 +71,40 @@
         <h4><i class="bi bi-info-circle-fill"></i> خطوات تجهيز ملف الكشف (Excel / CSV):</h4>
         <ol>
             <li>قم بتصدير كشف الطلاب العام من نظام <b>(سجل الطالب)</b> التابع لوزارة التربية بصيغة Excel.</li>
-            <li>افتح الملف وقم بترتيب الأعمدة من اليمين إلى اليسار بحيث تحتوي على <b>3 أعمدة أساسية فقط</b> ويفضل مسح سطر العناوين العلوي:
+            <li>افتح الملف وقم بترتيب الأعمدة من اليمين إلى اليسار بحيث تحتوي على <b>4 أعمدة أساسية فقط</b> ويفضل مسح سطر العناوين العلوي:
                 <table class="sample-table">
                     <thead>
                         <tr>
                             <th>العمود الأول (A)</th>
                             <th>العمود الثاني (B)</th>
                             <th>العمود الثالث (C)</th>
+                            <th>العمود الرابع (D)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td style="color: #2563eb; font-weight: bold;">اسم الطالب بالكامل</td>
-                            <td style="color: #059669; font-weight: bold;">الفصل (مثال: 9/1)</td>
+                            <td style="color: #059669; font-weight: bold;">رقم الصف (مثال: 9)</td>
+                            <td style="color: #7c3aed; font-weight: bold;">رقم الشعبة (مثال: 1)</td>
                             <td style="color: #d97706; font-weight: bold;">رقم هاتف ولي الأمر (بدون مفتاح)</td>
                         </tr>
                         <tr>
                             <td>أحمد محمد عبد الله</td>
-                            <td>9/1</td>
+                            <td>9</td>
+                            <td>1</td>
                             <td>99008877</td>
                         </tr>
                         <tr>
                             <td>خالد وليد ناصر</td>
-                            <td>9/2</td>
+                            <td>9</td>
+                            <td>2</td>
                             <td>66554433</td>
                         </tr>
                     </tbody>
                 </table>
             </li>
-            <li>تأكد من عدم وجود رموز خاصة في خانة الفصل (استخدم الشرطة المائلة <b>/</b> فقط لتحديد الصف مثل 6/1، 7/3).</li>
-            <li>اضغط على <b>File -> Save As</b> في برنامج Excel واختبر صيغة الحفظ لتكون: <b style="color: #1e3a8a;">CSV (Comma delimited) (*.csv)</b>.</li>
+            <li>هذه الطريقة بعمودين منفصلين (الصف والشعبة) <b>تمنع تلقائياً</b> مشكلة تحويل Excel للرقم "6/1" إلى تاريخ خاطئ — كل عمود يبقى رقماً بسيطاً آمناً.</li>
+            <li>اضغط على <b>File -> Save As</b> في برنامج Excel واختبر صيغة الحفظ لتكون: <b style="color: #1e3a8a;">CSV UTF-8 (Comma delimited) (*.csv)</b>.</li>
         </ol>
         
         <div class="alert-warning">
@@ -175,11 +179,15 @@
                 if (!line) continue;
 
                 const columns = line.split(',');
-                if (columns.length < 2) continue; // تخطي السطور التالفة
+                if (columns.length < 3) continue; // تخطي السطور التالفة (يجب 4 أعمدة على الأقل: اسم، صف، شعبة)
 
                 const studentName = columns[0].trim();
-                const classId = columns[1].trim();
-                const parentPhone = columns[2] ? columns[2].trim() : '';
+                const gradeNum = columns[1].trim();
+                const sectionNum = columns[2].trim();
+                const parentPhone = columns[3] ? columns[3].trim() : '';
+
+                // بناء الفصل تلقائياً من رقمي الصف والشعبة المنفصلين (يمنع مشكلة تحويل Excel للتاريخ)
+                const classId = gradeNum && sectionNum ? `${gradeNum}/${sectionNum}` : '';
 
                 // تجنب رفع سطر العناوين التوضيحي لو نسيه المستخدم
                 if (studentName.includes("الاسم") || studentName.includes("name") || !studentName || !classId) continue;
@@ -216,7 +224,8 @@
             if (classesSet.size > 0) {
                 const classesBatch = writeBatch(db);
                 classesSet.forEach(classId => {
-                    const classRef = doc(db, 'classes', `${schoolId}_${classId}`);
+                    const safeClassId = classId.replace(/\//g, '-');
+                    const classRef = doc(db, 'classes', `${schoolId}_${safeClassId}`);
                     classesBatch.set(classRef, {
                         schoolId: schoolId,
                         classId: classId,
