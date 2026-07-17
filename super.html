@@ -388,7 +388,7 @@ window.checkSuperPass = async function() {
         const hashHex = await sha256(pass);
 
         // جلب الـ hash الحالي من Firestore (يُحدَّث عند تغيير كلمة المرور)
-        const DEFAULT_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d';
+        const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
         let currentHash = DEFAULT_HASH;
         try {
             const configSnap = await getDocs(query(collection(db, 'system_config'), where('key','==','super_pass_hash')));
@@ -458,7 +458,7 @@ window.submitChangePassword = async function() {
 
     try {
         const hashCurrentInput = await sha256(current);
-        const DEFAULT_HASH = 'a240e940c31c8c56cdc10f3b81c85d5c0476ebe7af2a06d00ee6e7fd41b24d2d';
+        const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
         let storedHash = DEFAULT_HASH;
         let configDocRef = null;
 
