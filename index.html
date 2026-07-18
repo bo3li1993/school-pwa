@@ -230,8 +230,9 @@
                 // نظام تحويل وتوجيه الرتب الذكي الموحد
                 const adminRoles = ['admin','assistant_manager','wing_supervisor'];
                 const dest = adminRoles.includes(role) ? 'admin.html'
-                           : role === 'social_worker'  ? 'social.html'
-                           : role === 'guard'          ? 'guard.html'
+                           : role === 'social_worker'    ? 'social.html'
+                           : role === 'guard'            ? 'guard.html'
+                           : role === 'department_head'  ? 'department_head.html'
                            : 'teacher.html';
                            
                 window.location.replace(dest);
