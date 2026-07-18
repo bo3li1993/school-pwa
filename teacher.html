@@ -216,7 +216,19 @@ select:focus,input:focus{border-color:var(--accent);}
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">البريد الإلكتروني</label>
       <input type="email" id="prof-email" placeholder="example@email.com">
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">القسم / التخصص</label>
-      <input type="text" id="prof-dept" placeholder="مثال: رياضيات، علوم، إنجليزي...">
+      <select id="prof-dept">
+        <option value="">-- اختر القسم --</option>
+        <option value="لغة عربية">لغة عربية</option>
+        <option value="لغة إنجليزية">لغة إنجليزية</option>
+        <option value="رياضيات">رياضيات</option>
+        <option value="علوم">علوم</option>
+        <option value="اجتماعيات">اجتماعيات</option>
+        <option value="تربية إسلامية">تربية إسلامية</option>
+        <option value="تربية فنية">تربية فنية</option>
+        <option value="تربية بدنية">تربية بدنية</option>
+        <option value="حاسب آلي">حاسب آلي</option>
+        <option value="مهارات حياتية">مهارات حياتية</option>
+      </select>
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">رقم الهاتف</label>
       <input type="tel" id="prof-phone" placeholder="مثال: 99887766">
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">كلمة مرور جديدة (اتركها فاضية لو ما تبي تغييرها)</label>
