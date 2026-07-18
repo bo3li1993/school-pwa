@@ -128,12 +128,69 @@ button:hover { background:var(--accent-color); }
         <!-- مؤشر تنبيه حالة تفعيل الإشعارات السحابية للجوال -->
         <div id="push-status-badge-area" style="margin-top:8px; font-size:11px; font-weight:bold;"></div>
         
-        <button onclick="localStorage.removeItem('hs_parent'); localStorage.removeItem('hs_custom_token'); location.reload();" style="width:auto; padding:4px 12px; font-size:11px; background:rgba(255,255,255,0.15); border:1px solid #fff; margin-top:12px; border-radius:4px;">تسجيل خروج آمن</button>
+        <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
+            <button onclick="window.openParentSettings()" style="width:auto; padding:4px 12px; font-size:11px; background:rgba(255,255,255,0.15); border:1px solid #fff; border-radius:4px;"><i class="bi bi-gear-fill"></i> الإعدادات</button>
+            <button onclick="localStorage.removeItem('hs_parent'); localStorage.removeItem('hs_custom_token'); location.reload();" style="width:auto; padding:4px 12px; font-size:11px; background:rgba(255,255,255,0.15); border:1px solid #fff; border-radius:4px;">تسجيل خروج آمن</button>
+        </div>
+    </div>
+
+    <!-- Modal الإعدادات: تعديل البيانات وكلمة المرور -->
+    <div id="parent-settings-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:24px; max-width:420px; width:100%; direction:rtl; max-height:90vh; overflow-y:auto;">
+            <h3 style="color:var(--primary-color); font-weight:900; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                <i class="bi bi-gear-fill"></i> إعدادات الحساب
+            </h3>
+
+            <div style="display:flex; gap:6px; margin-bottom:16px; background:var(--off); padding:5px; border-radius:10px;">
+                <button type="button" id="settings-tab-data" onclick="window.switchSettingsTab('data')"
+                    style="flex:1; background:var(--primary-color); color:#fff; padding:8px; border-radius:8px; font-weight:700; font-size:12.5px; border:none; cursor:pointer;">
+                    البيانات الشخصية
+                </button>
+                <button type="button" id="settings-tab-pass" onclick="window.switchSettingsTab('pass')"
+                    style="flex:1; background:transparent; color:var(--mid); padding:8px; border-radius:8px; font-weight:700; font-size:12.5px; border:none; cursor:pointer;">
+                    تغيير كلمة المرور
+                </button>
+            </div>
+
+            <!-- تعديل البيانات -->
+            <div id="settings-panel-data">
+                <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px;">رقم الهاتف</label>
+                <input type="tel" id="settings-phone" placeholder="رقم الهاتف">
+                <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px;">الرقم المدني (لا يمكن تغييره)</label>
+                <input type="text" id="settings-civil-id" disabled style="background:#f3f4f6; color:#999;">
+                <button onclick="window.saveParentData()" style="background:var(--green);"><i class="bi bi-check-circle-fill"></i> حفظ التعديلات</button>
+            </div>
+
+            <!-- تغيير كلمة المرور -->
+            <div id="settings-panel-pass" class="hidden">
+                <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px;">كلمة المرور الحالية</label>
+                <input type="password" id="settings-current-pass" placeholder="كلمة المرور الحالية">
+                <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px;">كلمة المرور الجديدة</label>
+                <input type="password" id="settings-new-pass" placeholder="6 أحرف على الأقل" minlength="6">
+                <label style="display:block; text-align:right; font-weight:700; font-size:13px; margin-bottom:6px;">تأكيد كلمة المرور الجديدة</label>
+                <input type="password" id="settings-confirm-pass" placeholder="أعد كتابة كلمة المرور" minlength="6">
+                <button onclick="window.changeParentPassword()" style="background:var(--sky);"><i class="bi bi-shield-lock-fill"></i> تغيير كلمة المرور</button>
+            </div>
+
+            <p id="settings-msg" style="text-align:center; font-weight:700; font-size:13px; margin-top:10px; display:none;"></p>
+
+            <button onclick="window.closeParentSettings()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; font-family:'Cairo',sans-serif; margin-top:10px; color:#666;">إغلاق</button>
+        </div>
     </div>
 
     <!-- 🔴 رادار عرض الغياب التفصيلي بالحصة -->
     <div class="card" style="border-top-color:var(--danger-color);">
-        <h2><i class="bi bi-calendar-x-fill" style="color:var(--danger-color);"></i> رصد وتفصيل غياب الحصص اليومي</h2>
+        <h2><i class="bi bi-calendar-x-fill" style="color:var(--danger-color);"></i> ملخص الانتظام الدراسي</h2>
+        <div id="parent-attendance-summary" style="display:flex; gap:10px; margin-bottom:12px;">
+            <div style="flex:1; text-align:center; background:#fef2f2; padding:10px; border-radius:8px;">
+                <div id="sum-absent-count" style="font-size:22px; font-weight:900; color:var(--danger-color);">—</div>
+                <div style="font-size:11px; color:#666; font-weight:700;">يوم غياب</div>
+            </div>
+            <div style="flex:1; text-align:center; background:#fffbeb; padding:10px; border-radius:8px;">
+                <div id="sum-late-count" style="font-size:22px; font-weight:900; color:var(--accent-color);">—</div>
+                <div style="font-size:11px; color:#666; font-weight:700;">يوم تأخير</div>
+            </div>
+        </div>
         <div id="parent-attendance-area" style="font-size:13px; font-weight:bold; margin-top:8px; display:flex; flex-direction:column; gap:8px;">
             ⏳ جاري مراجعة كشوف رصد المعلمين السحابية...
         </div>
@@ -379,6 +436,90 @@ window.handleParentLoginLive = async function(e) {
     }
 };
 
+// ===== إعدادات الحساب: تعديل البيانات وكلمة المرور =====
+window.openParentSettings = function() {
+    document.getElementById('parent-settings-modal').style.display = 'flex';
+    document.getElementById('settings-phone').value = activeStudent.parentPhone || '';
+    document.getElementById('settings-civil-id').value = activeStudent.civilId || '';
+    document.getElementById('settings-msg').style.display = 'none';
+    window.switchSettingsTab('data');
+};
+
+window.closeParentSettings = function() {
+    document.getElementById('parent-settings-modal').style.display = 'none';
+};
+
+window.switchSettingsTab = function(tab) {
+    const dataPanel = document.getElementById('settings-panel-data');
+    const passPanel = document.getElementById('settings-panel-pass');
+    const dataTab = document.getElementById('settings-tab-data');
+    const passTab = document.getElementById('settings-tab-pass');
+    document.getElementById('settings-msg').style.display = 'none';
+
+    if (tab === 'data') {
+        dataPanel.classList.remove('hidden'); passPanel.classList.add('hidden');
+        dataTab.style.background = 'var(--primary-color)'; dataTab.style.color = '#fff';
+        passTab.style.background = 'transparent'; passTab.style.color = 'var(--mid)';
+    } else {
+        passPanel.classList.remove('hidden'); dataPanel.classList.add('hidden');
+        passTab.style.background = 'var(--primary-color)'; passTab.style.color = '#fff';
+        dataTab.style.background = 'transparent'; dataTab.style.color = 'var(--mid)';
+    }
+};
+
+function showSettingsMsg(msg, isError) {
+    const el = document.getElementById('settings-msg');
+    el.textContent = msg;
+    el.style.color = isError ? '#dc2626' : '#059669';
+    el.style.display = 'block';
+}
+
+window.saveParentData = async function() {
+    const newPhone = document.getElementById('settings-phone').value.trim();
+    if (!newPhone) { showSettingsMsg('⚠️ يرجى إدخال رقم الهاتف', true); return; }
+
+    try {
+        // تحديث الطالب الحالي وكل إخوته بنفس الرقم المدني
+        const civilId = activeStudent.civilId;
+        const siblingsSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', activeStudent.schoolId), where('civilId', '==', civilId)));
+        const batch = writeBatch(db);
+        siblingsSnap.forEach(d => batch.update(doc(db, 'students', d.id), { parentPhone: newPhone }));
+        await batch.commit();
+
+        activeStudent.parentPhone = newPhone;
+        localStorage.setItem('hs_parent', JSON.stringify(activeStudent));
+        showSettingsMsg('✅ تم حفظ التعديلات بنجاح', false);
+    } catch (e) {
+        showSettingsMsg('❌ خطأ: ' + e.message, true);
+    }
+};
+
+window.changeParentPassword = async function() {
+    const currentPass = document.getElementById('settings-current-pass').value;
+    const newPass = document.getElementById('settings-new-pass').value;
+    const confirmPass = document.getElementById('settings-confirm-pass').value;
+
+    if (!currentPass || !newPass || !confirmPass) { showSettingsMsg('⚠️ يرجى تعبئة كل الحقول', true); return; }
+    if (newPass.length < 6) { showSettingsMsg('⚠️ كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل', true); return; }
+    if (newPass !== confirmPass) { showSettingsMsg('⚠️ كلمتا المرور غير متطابقتين', true); return; }
+
+    try {
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const functions = getFunctions(auth.app);
+        const changePassFn = httpsCallable(functions, 'changeParentPassword');
+
+        await changePassFn({ schoolId: activeStudent.schoolId, civilId: activeStudent.civilId, currentPassword: currentPass, newPassword: newPass });
+
+        showSettingsMsg('✅ تم تغيير كلمة المرور بنجاح', false);
+        document.getElementById('settings-current-pass').value = '';
+        document.getElementById('settings-new-pass').value = '';
+        document.getElementById('settings-confirm-pass').value = '';
+    } catch (e) {
+        const msg = e.message.includes('unauthenticated') ? 'كلمة المرور الحالية غير صحيحة' : e.message;
+        showSettingsMsg('❌ ' + msg, true);
+    }
+};
+
 window.selectSibling = function(index) {
     const student = window._siblingsList?.[index];
     if(!student) return;
@@ -482,25 +623,39 @@ async function loadStudentAttendanceLive() {
         
         let html = '';
         let absentCount = 0;
+        let lateCount = 0;
+        const exceptionRecords = [];
 
         snap.forEach(doc => {
             const d = doc.data();
-            const periodLabel = d.period || 'غير مححدد';
-            const isAbsent = d.status === 'absent';
-            if(isAbsent) absentCount++;
+            if (d.status === 'absent') absentCount++;
+            else if (d.status === 'late') lateCount++;
+            else return; // نتجاهل سجلات "حضور" العادية تماماً — لا داعي لعرضها
 
+            exceptionRecords.push(d);
+        });
+
+        // ترتيب الأحدث أولاً
+        exceptionRecords.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+        exceptionRecords.forEach(d => {
+            const periodLabel = d.period || 'غير محدد';
+            const isAbsent = d.status === 'absent';
             html += `
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee; background:#fff; border-radius:6px;">
-                    <span style="color:#555; font-weight:700;"><i class="bi bi-calendar3"></i> تاريخ الرصد: ${d.date}</span>
+                    <span style="color:#555; font-weight:700;"><i class="bi bi-calendar3"></i> ${d.date}</span>
                     <span style="color:var(--accent-color); font-weight:800;"><i class="bi bi-clock-history"></i> الحصة: ${periodLabel}</span>
-                    <span class="badge ${isAbsent ? 'danger' : 'success'}">${isAbsent ? '🔴 غائب' : '🟢 حضور'}</span>
+                    <span class="badge ${isAbsent ? 'danger' : 'success'}">${isAbsent ? '🔴 غائب' : '🟡 متأخر'}</span>
                 </div>`;
         });
 
-        if (absentCount === 0 && html !== '') {
-            area.innerHTML = `<div style="background:#e8f8f5; color:green; padding:15px; border-radius:8px; font-weight:bold;"><i class="bi bi-shield-check"></i> الطالب ملتزم ومواظب بالكامل ولم يسجل له أي سجل غياب بالحصص اليومية.</div>` + html;
+        document.getElementById('sum-absent-count').textContent = absentCount;
+        document.getElementById('sum-late-count').textContent = lateCount;
+
+        if (absentCount === 0 && lateCount === 0) {
+            area.innerHTML = `<div style="background:#e8f8f5; color:green; padding:15px; border-radius:8px; font-weight:bold;"><i class="bi bi-shield-check"></i> الطالب ملتزم ومواظب بالكامل، لا توجد أي حالة غياب أو تأخير مسجّلة.</div>`;
         } else {
-            area.innerHTML = html || `<p style="text-align:center; color:#999; padding:15px;">💡 لا توجد سجلات حضور أو غياب تراكمية مرفوعة لهذا الطالب حالياً.</p>`;
+            area.innerHTML = html;
         }
     } catch(e) { area.innerHTML = "❌ تعذر سحب كشف رصد الغياب حالياً."; }
 }
