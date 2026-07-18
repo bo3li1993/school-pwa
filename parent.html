@@ -196,10 +196,24 @@ button:hover { background:var(--accent-color); }
         </div>
     </div>
 
-    <!-- ✉️ نظام المراسلة والدردشة الحية واللحظية مع الأخصائي (onSnapshot) -->
+    <!-- ✉️ نظام المراسلة والدردشة الحية واللحظية مع الأقسام -->
     <div class="card" style="border-top-color:var(--success-color);">
         <h2><i class="bi bi-chat-left-text-fill" style="color:var(--success-color);"></i> صندوق المراسلة والردود مع إدارة المدرسة</h2>
         <div class="chat-box" id="parent-chat-bubbles"></div>
+        <label style="display:block; text-align:right; font-weight:700; font-size:12px; margin-bottom:5px; color:var(--mid);">إرسال الرسالة إلى:</label>
+        <select id="parent-msg-department" style="margin-bottom:8px;">
+            <option value="">الإدارة العامة</option>
+            <option value="لغة عربية">قسم اللغة العربية</option>
+            <option value="لغة إنجليزية">قسم اللغة الإنجليزية</option>
+            <option value="رياضيات">قسم الرياضيات</option>
+            <option value="علوم">قسم العلوم</option>
+            <option value="اجتماعيات">قسم الاجتماعيات</option>
+            <option value="تربية إسلامية">قسم التربية الإسلامية</option>
+            <option value="تربية فنية">قسم التربية الفنية</option>
+            <option value="تربية بدنية">قسم التربية البدنية</option>
+            <option value="حاسب آلي">قسم الحاسب الآلي</option>
+            <option value="مهارات حياتية">قسم المهارات الحياتية</option>
+        </select>
         <form onsubmit="window.sendParentMessageLive(event)" style="display:flex; gap:8px;">
             <input type="text" id="parent-msg-input" placeholder="اكتب رسالتك أو عذرك الطبي هنا..." style="margin-bottom:0;" required>
             <button type="submit" style="width:70px; background:var(--success-color);"><i class="bi bi-send-fill"></i></button>
@@ -705,7 +719,9 @@ function startParentChatListenerLive() {
 window.sendParentMessageLive = async function(e) {
     e.preventDefault();
     const input = document.getElementById('parent-msg-input');
+    const deptSelect = document.getElementById('parent-msg-department');
     const msg = input.value.trim();
+    const department = deptSelect ? deptSelect.value : '';
     if(!msg || !activeStudent) return;
 
     try {
@@ -713,8 +729,10 @@ window.sendParentMessageLive = async function(e) {
             schoolId: activeStudent.schoolId, // 🔑 عزل وبصمة المنشأة للـ SaaS
             studentName: activeStudent.name,
             classId: activeStudent.classId,
+            department: department,
             message: msg,
             senderRole: 'parent',
+            replied: false,
             createdAt: serverTimestamp()
         });
         input.value = '';
