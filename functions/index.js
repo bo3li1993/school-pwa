@@ -451,3 +451,32 @@ exports.getRegistrationStudents = onCall({ cors: true, region: 'us-central1' }, 
 
     return { students };
 });
+
+// ============================================================
+// FUNCTION 10: changeParentPassword — تغيير كلمة مرور ولي الأمر بأمان
+// يتحقق من الكلمة الحالية server-side قبل الحفظ بـ Firestore
+// ============================================================
+exports.changeParentPassword = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    const { schoolId, civilId, currentPassword, newPassword } = request.data;
+    if (!schoolId || !civilId || !currentPassword || !newPassword) {
+        throw new HttpsError('invalid-argument', 'جميع الحقول مطلوبة');
+    }
+    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور الجديدة قصيرة جداً');
+
+    const crypto = require('crypto');
+    const currentHash = crypto.createHash('sha256').update(currentPassword).digest('hex');
+
+    const accountId = `${schoolId}_${civilId}`;
+    const accountRef = db.collection('parent_accounts').doc(accountId);
+    const accountSnap = await accountRef.get();
+
+    if (!accountSnap.exists) throw new HttpsError('not-found', 'الحساب غير موجود');
+    if (accountSnap.data().passwordHash !== currentHash) {
+        throw new HttpsError('unauthenticated', 'كلمة المرور الحالية غير صحيحة');
+    }
+
+    const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
+    await accountRef.update({ passwordHash: newHash, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+
+    return { success: true };
+});
