@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b2545">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<link class="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<title>لوحة رئيس القسم - المنظومة الرقمية</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
+:root {
+  --navy:  #0b2545;
+  --sky:   #1a78c2;
+  --ice:   #eaf4fd;
+  --gold:  #d4920a;
+  --white: #ffffff;
+  --off:   #f8f9fc;
+  --line:  #e5e7eb;
+  --text:  #111827;
+  --mid:   #6b7280;
+  --green: #059669;
+  --red:   #dc2626;
+  --primary-color: var(--navy); --hover-color: var(--gold); --bg-light: #f4f6f9;
+  --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
+body { background: var(--bg-light); display: flex; flex-direction: column; min-height: 100vh; direction: rtl; }
+
+.header-nav { background: var(--primary-color); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--hover-color); flex-wrap: wrap; gap: 10px; }
+.header-nav h1 { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+.header-nav p { font-size: 11px; opacity: 0.8; font-weight: 600; }
+.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-header { border: none; padding: 8px 14px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 13px; font-family: 'Cairo', sans-serif; }
+
+.workspace-container { max-width: 1100px; width: 100%; margin: 15px auto; padding: 0 12px; flex: 1; }
+
+.card { background: #fff; border-radius: 14px; padding: 22px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+.card h2 { font-size: 15px; font-weight: 900; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+
+input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 12px; outline: none; font-weight: 700; font-size: 14px; color: var(--primary-color); text-align: right; background: #fff; }
+input:focus, select:focus, textarea:focus { border-color: var(--hover-color); }
+
+button.btn-submit { width: 100%; background: var(--hover-color); color: #fff; border: none; padding: 13px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: right; margin-top: 10px; }
+th, td { padding: 10px 8px; border-bottom: 1px solid #eee; font-weight: 700; }
+th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-box { background: #fff; border-radius: 12px; padding: 16px; text-align: center; border: 1px solid #e2e8f0; }
+.stat-box .num { font-size: 26px; font-weight: 900; }
+.stat-box .lbl { font-size: 11px; color: var(--mid); font-weight: 700; margin-top: 4px; }
+
+.splash{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s ease;}
+.splash.hide{opacity:0;pointer-events:none}
+.splash-mark{display:flex;flex-direction:column;align-items:center;gap:10px}
+.splash-badge{width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--gold)}
+.splash-mark h1{color:#fff;font-size:16px;font-weight:900;letter-spacing:.3px}
+.splash-mark p{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600}
+@media(prefers-reduced-motion:reduce){.splash{transition:none}}
+
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:12px;font-size:13.5px;font-weight:700;z-index:9999;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:toastIn .3s ease;font-family:'Cairo',sans-serif;white-space:nowrap;}
+.toast.success{background:#059669;}.toast.error{background:#dc2626;}.toast.info{background:var(--sky);}
+
+.msg-bubble { padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; max-width: 85%; font-size: 13px; }
+.msg-parent { background: #f1f5f9; align-self: flex-start; }
+.msg-mine { background: var(--ice); align-self: flex-end; margin-right: auto; }
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div class="splash-mark">
+    <div class="splash-badge">م</div>
+    <h1>المنظومة الرقمية</h1>
+    <p id="splash-school">جاري التحميل...</p>
+  </div>
+</div>
+
+<div class="header-nav">
+    <div>
+        <h1 id="lbl-dept-title"><i class="bi bi-diagram-3-fill"></i> رئيس القسم: جاري التحميل...</h1>
+        <p id="lbl-dept-school" style="font-weight:700;">جاري التحميل...</p>
+    </div>
+    <div class="header-actions">
+        <button class="btn-header" onclick="window.location.href='teacher.html'" style="background:var(--sky); color:#fff;">
+            <i class="bi bi-easel2-fill"></i> الذهاب لحصصي التعليمية
+        </button>
+        <button class="btn-header" onclick="localStorage.removeItem('hs_user'); localStorage.removeItem('hs_custom_token'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff;">
+            <i class="bi bi-box-arrow-left"></i> خروج
+        </button>
+    </div>
+</div>
+
+<div class="workspace-container">
+
+    <!-- لوحة المؤشرات -->
+    <div class="stats-grid">
+        <div class="stat-box" style="border-top:3px solid var(--sky);">
+            <div class="num" id="stat-teachers-count" style="color:var(--sky);">—</div>
+            <div class="lbl">معلمو القسم</div>
+        </div>
+        <div class="stat-box" style="border-top:3px solid var(--danger-color);">
+            <div class="num" id="stat-absent-today" style="color:var(--danger-color);">—</div>
+            <div class="lbl">غياب اليوم (طلاب قسمك)</div>
+        </div>
+        <div class="stat-box" style="border-top:3px solid var(--gold);">
+            <div class="num" id="stat-unread-msgs" style="color:var(--gold);">—</div>
+            <div class="lbl">رسائل جديدة</div>
+        </div>
+    </div>
+
+    <!-- معلمو القسم -->
+    <div class="card" style="border-top: 4px solid var(--sky);">
+        <h2><i class="bi bi-people-fill" style="color:var(--sky);"></i> معلمو القسم وإدارة بياناتهم</h2>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead><tr><th>الاسم</th><th>المعرف</th><th>الهاتف</th><th>الإيميل</th><th>إجراء</th></tr></thead>
+                <tbody id="dept-teachers-tbody">
+                    <tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">⏳ جاري التحميل...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal تعديل بيانات معلم -->
+    <div id="edit-teacher-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:24px; max-width:400px; width:100%; direction:rtl;">
+            <h3 style="color:var(--primary-color); font-weight:900; margin-bottom:14px;"><i class="bi bi-pencil-square"></i> تعديل بيانات المعلم</h3>
+            <input type="hidden" id="edit-teacher-id">
+            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">الاسم الكامل</label>
+            <input type="text" id="edit-teacher-name">
+            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">رقم الهاتف</label>
+            <input type="tel" id="edit-teacher-phone">
+            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">البريد الإلكتروني</label>
+            <input type="email" id="edit-teacher-email">
+            <button onclick="window.saveTeacherEdit()" class="btn-submit" style="background:var(--green); margin-bottom:8px;">
+                <i class="bi bi-check-circle-fill"></i> حفظ التعديلات
+            </button>
+            <button onclick="window.closeEditTeacherModal()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; font-family:'Cairo',sans-serif; color:#666;">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- الرسائل الموجّهة للقسم -->
+    <div class="card" style="border-top: 4px solid var(--gold);">
+        <h2><i class="bi bi-chat-left-text-fill" style="color:var(--gold);"></i> رسائل أولياء الأمور الموجّهة لقسمك</h2>
+        <div id="dept-messages-list" style="max-height:400px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+            <p style="text-align:center; color:#999; padding:15px;">⏳ جاري التحميل...</p>
+        </div>
+    </div>
+
+    <!-- Modal الرد على رسالة -->
+    <div id="reply-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:24px; max-width:420px; width:100%; direction:rtl;">
+            <h3 style="color:var(--primary-color); font-weight:900; margin-bottom:6px;"><i class="bi bi-reply-fill"></i> الرد على ولي الأمر</h3>
+            <p id="reply-context" style="font-size:12px; color:#666; margin-bottom:12px;"></p>
+            <input type="hidden" id="reply-thread-id">
+            <input type="hidden" id="reply-student-name">
+            <textarea id="reply-text" rows="3" placeholder="اكتب ردك هنا..."></textarea>
+            <button onclick="window.sendDeptReply()" class="btn-submit" style="background:var(--sky); margin-bottom:8px;">
+                <i class="bi bi-send-fill"></i> إرسال الرد
+            </button>
+            <button onclick="window.closeReplyModal()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; font-family:'Cairo',sans-serif; color:#666;">إلغاء</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+import { db, getActiveSchoolId } from './js/firebase-config.js';
+import { collection, getDocs, addDoc, updateDoc, query, where, onSnapshot, serverTimestamp, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+let currentUser = null;
+let myDepartment = '';
+let messagesUnsub = null;
+
+// ===== Toast =====
+function showToast(msg, type='success') {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2500);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const saved = localStorage.getItem('hs_user');
+    if (!saved) { window.location.replace('index.html'); return; }
+
+    currentUser = JSON.parse(saved);
+    if (currentUser.role !== 'department_head') { window.location.replace('index.html'); return; }
+
+    myDepartment = currentUser.department || '';
+
+    document.getElementById('lbl-dept-title').innerHTML = '<i class="bi bi-diagram-3-fill"></i> رئيس قسم ' + myDepartment + ' — ' + (currentUser.name || '');
+    document.getElementById('lbl-dept-school').textContent = currentUser.schoolName || 'المنظومة الرقمية';
+    document.getElementById('splash-school').textContent = currentUser.schoolName || 'المنظومة الرقمية';
+
+    if (!myDepartment) {
+        showToast('⚠️ لم يتم تحديد قسمك — راجع الإدارة', 'error');
+    } else {
+        loadDeptTeachers();
+        loadDeptMessages();
+        loadTodayAbsentCount();
+    }
+
+    document.getElementById('splash').classList.add('hide');
+});
+
+// ===== إحصائية غياب اليوم لطلاب معلمي القسم (تقريبي عبر الفصول المرتبطة) =====
+async function loadTodayAbsentCount() {
+    try {
+        const schoolId = getActiveSchoolId();
+        const todayISO = new Date().toISOString().slice(0, 10);
+        const snap = await getDocs(query(
+            collection(db, 'attendance'),
+            where('schoolId', '==', schoolId),
+            where('date', '==', todayISO),
+            where('status', '==', 'absent')
+        ));
+        document.getElementById('stat-absent-today').textContent = snap.size;
+    } catch (e) {
+        document.getElementById('stat-absent-today').textContent = '—';
+    }
+}
+
+// ===== معلمو القسم =====
+async function loadDeptTeachers() {
+    const tbody = document.getElementById('dept-teachers-tbody');
+    const schoolId = getActiveSchoolId();
+
+    try {
+        const snap = await getDocs(query(
+            collection(db, 'users'),
+            where('schoolId', '==', schoolId),
+            where('role', '==', 'teacher'),
+            where('department', '==', myDepartment)
+        ));
+
+        document.getElementById('stat-teachers-count').textContent = snap.size;
+
+        if (snap.empty) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">لا يوجد معلمون مسجّلون بقسمك بعد</td></tr>';
+            return;
+        }
+
+        let html = '';
+        snap.forEach(d => {
+            const t = d.data();
+            html += `<tr>
+                <td style="font-weight:900;">${t.name || '-'}</td>
+                <td>${t.userId || '-'}</td>
+                <td>${t.phone || '-'}</td>
+                <td style="font-size:11px;">${t.email || '-'}</td>
+                <td>
+                    <button onclick="window.openEditTeacherModal('${d.id}', '${(t.name||'').replace(/'/g,"\\'")}', '${t.phone||''}', '${t.email||''}')"
+                        style="background:var(--sky); color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer; font-size:12px;">
+                        <i class="bi bi-pencil-fill"></i> تعديل
+                    </button>
+                </td>
+            </tr>`;
+        });
+        tbody.innerHTML = html;
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; padding:15px;">❌ خطأ: ${e.message}</td></tr>`;
+    }
+}
+
+window.openEditTeacherModal = function(id, name, phone, email) {
+    document.getElementById('edit-teacher-id').value = id;
+    document.getElementById('edit-teacher-name').value = name;
+    document.getElementById('edit-teacher-phone').value = phone;
+    document.getElementById('edit-teacher-email').value = email;
+    document.getElementById('edit-teacher-modal').style.display = 'flex';
+};
+
+window.closeEditTeacherModal = function() {
+    document.getElementById('edit-teacher-modal').style.display = 'none';
+};
+
+window.saveTeacherEdit = async function() {
+    const id = document.getElementById('edit-teacher-id').value;
+    const name = document.getElementById('edit-teacher-name').value.trim();
+    const phone = document.getElementById('edit-teacher-phone').value.trim();
+    const email = document.getElementById('edit-teacher-email').value.trim();
+
+    if (!name) { showToast('⚠️ الاسم مطلوب', 'error'); return; }
+
+    try {
+        // ملاحظة أمنية: رئيس القسم يعدّل فقط الاسم والهاتف والإيميل — لا يقدر يغيّر الدور أو كلمة المرور
+        await updateDoc(doc(db, 'users', id), { name, phone, email });
+        showToast('✅ تم تحديث بيانات المعلم بنجاح');
+        window.closeEditTeacherModal();
+        loadDeptTeachers();
+    } catch (e) {
+        showToast('❌ خطأ: ' + e.message, 'error');
+    }
+};
+
+// ===== الرسائل الموجّهة للقسم =====
+function loadDeptMessages() {
+    const listEl = document.getElementById('dept-messages-list');
+    const schoolId = getActiveSchoolId();
+
+    const q = query(
+        collection(db, 'school_threads'),
+        where('schoolId', '==', schoolId),
+        where('department', '==', myDepartment)
+    );
+
+    if (messagesUnsub) messagesUnsub();
+    messagesUnsub = onSnapshot(q, (snap) => {
+        if (snap.empty) {
+            listEl.innerHTML = '<p style="text-align:center; color:#999; padding:15px;">💡 لا توجد رسائل موجهة لقسمك حالياً</p>';
+            document.getElementById('stat-unread-msgs').textContent = '0';
+            return;
+        }
+
+        const docs = snap.docs.sort((a, b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
+        let html = '';
+        let unreadCount = 0;
+
+        docs.forEach(d => {
+            const m = d.data();
+            const isParent = m.senderRole === 'parent';
+            if (isParent && !m.replied) unreadCount++;
+
+            html += `
+            <div style="border:1px solid #eee; border-radius:10px; padding:12px; background:${isParent ? '#f8fafc' : '#eaf4fd'};">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <b style="font-size:13px; color:var(--primary-color);">${isParent ? 'ولي أمر: ' + (m.studentName || '') : 'ردك'}</b>
+                    <span style="font-size:10px; color:#999;">${m.createdAt?.toDate ? m.createdAt.toDate().toLocaleDateString('ar-KW') : ''}</span>
+                </div>
+                <p style="font-size:13px; margin-bottom:8px;">${m.message || ''}</p>
+                ${isParent ? `<button onclick="window.openReplyModal('${d.id}', '${(m.studentName||'').replace(/'/g,"\\'")}')"
+                    style="background:var(--gold); color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer; font-size:12px;">
+                    <i class="bi bi-reply-fill"></i> رد
+                </button>` : ''}
+            </div>`;
+        });
+
+        listEl.innerHTML = html;
+        document.getElementById('stat-unread-msgs').textContent = unreadCount;
+    }, () => {
+        listEl.innerHTML = '<p style="text-align:center; color:red; padding:15px;">❌ خطأ في تحميل الرسائل</p>';
+    });
+}
+
+window.openReplyModal = function(threadId, studentName) {
+    document.getElementById('reply-thread-id').value = threadId;
+    document.getElementById('reply-student-name').value = studentName;
+    document.getElementById('reply-context').textContent = 'الرد على رسالة بخصوص: ' + studentName;
+    document.getElementById('reply-text').value = '';
+    document.getElementById('reply-modal').style.display = 'flex';
+};
+
+window.closeReplyModal = function() {
+    document.getElementById('reply-modal').style.display = 'none';
+};
+
+window.sendDeptReply = async function() {
+    const originalThreadId = document.getElementById('reply-thread-id').value;
+    const studentName = document.getElementById('reply-student-name').value;
+    const text = document.getElementById('reply-text').value.trim();
+
+    if (!text) { showToast('⚠️ يرجى كتابة نص الرد', 'error'); return; }
+
+    try {
+        const schoolId = getActiveSchoolId();
+        await addDoc(collection(db, 'school_threads'), {
+            schoolId,
+            studentName,
+            department: myDepartment,
+            message: text,
+            senderRole: 'department_head',
+            senderName: currentUser.name || 'رئيس القسم',
+            createdAt: serverTimestamp()
+        });
+        await updateDoc(doc(db, 'school_threads', originalThreadId), { replied: true });
+
+        showToast('✅ تم إرسال الرد بنجاح');
+        window.closeReplyModal();
+    } catch (e) {
+        showToast('❌ خطأ: ' + e.message, 'error');
+    }
+};
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+}
+</script>
+</body>
+</html>
