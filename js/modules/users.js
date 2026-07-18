@@ -22,13 +22,30 @@ export async function initUsersModule() {
                 </div>
                 <div>
                     <label style="font-weight:700; font-size:13px;">الصلاحية</label>
-                    <select id="reg-user-role" required>
+                    <select id="reg-user-role" required onchange="window.toggleDepartmentField(this.value)">
                         <option value="teacher">معلم</option>
                         <option value="admin">مسؤول إداري (مدير)</option>
                         <option value="assistant_manager">مساعد مدير</option>
                         <option value="wing_supervisor">مشرف جناح</option>
                         <option value="social_worker">أخصائي اجتماعي</option>
+                        <option value="department_head">رئيس قسم</option>
                         <option value="guard">حارس</option>
+                    </select>
+                </div>
+                <div id="dept-field-wrapper" style="display:none;">
+                    <label style="font-weight:700; font-size:13px;">القسم</label>
+                    <select id="reg-user-department">
+                        <option value="">-- اختر القسم --</option>
+                        <option value="لغة عربية">لغة عربية</option>
+                        <option value="لغة إنجليزية">لغة إنجليزية</option>
+                        <option value="رياضيات">رياضيات</option>
+                        <option value="علوم">علوم</option>
+                        <option value="اجتماعيات">اجتماعيات</option>
+                        <option value="تربية إسلامية">تربية إسلامية</option>
+                        <option value="تربية فنية">تربية فنية</option>
+                        <option value="تربية بدنية">تربية بدنية</option>
+                        <option value="حاسب آلي">حاسب آلي</option>
+                        <option value="مهارات حياتية">مهارات حياتية</option>
                     </select>
                 </div>
                 <div>
@@ -59,6 +76,12 @@ export async function initUsersModule() {
     loadSystemUsersDirectoryLive();
 }
 
+window.toggleDepartmentField = function(role) {
+    const wrapper = document.getElementById('dept-field-wrapper');
+    if (!wrapper) return;
+    wrapper.style.display = (role === 'department_head' || role === 'teacher') ? 'block' : 'none';
+};
+
 window.handleCreateNewUserLive = async function (e) {
     e.preventDefault();
 
@@ -66,6 +89,7 @@ window.handleCreateNewUserLive = async function (e) {
     const userId = document.getElementById('reg-user-id').value.trim();
     const name = document.getElementById('reg-user-name').value.trim();
     const role = document.getElementById('reg-user-role').value;
+    const department = document.getElementById('reg-user-department')?.value.trim() || '';
     const plainPass = document.getElementById('reg-user-pass').value.trim();
 
     if (!schoolId) {
@@ -74,6 +98,10 @@ window.handleCreateNewUserLive = async function (e) {
     }
     if (!userId || !name || !plainPass) {
         window.showToast('⚠️ الرجاء تعبئة جميع الحقول.');
+        return;
+    }
+    if (role === 'department_head' && !department) {
+        window.showToast('⚠️ يرجى اختيار القسم لرئيس القسم.');
         return;
     }
 
@@ -101,6 +129,7 @@ window.handleCreateNewUserLive = async function (e) {
             userId: userId,
             name: name,
             role: role,
+            department: department,
             plainPass: plainPass,
             status: 'active',
             createdAt: serverTimestamp()
@@ -143,6 +172,7 @@ async function loadSystemUsersDirectoryLive() {
                 : u.role === 'assistant_manager' ? 'مساعد مدير'
                 : u.role === 'wing_supervisor' ? 'مشرف جناح'
                 : u.role === 'social_worker' ? 'أخصائي اجتماعي'
+                : u.role === 'department_head' ? `رئيس قسم${u.department ? ' - ' + u.department : ''}`
                 : u.role === 'guard' ? 'حارس'
                 : 'معلم';
             const statusLabel = u.status === 'suspended' ? '⏸ موقوف' : '✅ فعّال';
