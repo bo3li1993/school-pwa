@@ -1,6 +1,14 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// 🔐 تشفير كلمة المرور محلياً بالمتصفح قبل الإرسال
+async function sha256Hash(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export async function initUsersModule() {
     const container = document.getElementById('tab-users');
     if (!container) return;
@@ -63,7 +71,7 @@ export async function initUsersModule() {
             <table>
                 <thead>
                     <tr style="background:#f4f6f9;">
-                        <th>المعرف</th><th>الاسم الرسمي</th><th>الصلاحية</th><th>الحالة</th>
+                        <th>المعرف</th><th>الاسم الرسمي</th><th>الصلاحية</th><th>الحالة</th><th>الأمان</th><th>إجراء</th>
                     </tr>
                 </thead>
                 <tbody id="system-users-tbody">
@@ -124,13 +132,16 @@ window.handleCreateNewUserLive = async function (e) {
             return;
         }
 
+        // 🔐 تشفير كلمة المرور بـ SHA-256 قبل الحفظ (بدل تخزينها نصاً صريحاً)
+        const passHash = await sha256Hash(plainPass);
+
         await addDoc(collection(db, 'users'), {
             schoolId: schoolId,
             userId: userId,
             name: name,
             role: role,
             department: department,
-            plainPass: plainPass,
+            passHash: passHash,
             status: 'active',
             createdAt: serverTimestamp()
         });
@@ -176,6 +187,7 @@ async function loadSystemUsersDirectoryLive() {
                 : u.role === 'guard' ? 'حارس'
                 : 'معلم';
             const statusLabel = u.status === 'suspended' ? '⏸ موقوف' : '✅ فعّال';
+            const securityBadge = u.passHash ? '<span style="color:var(--success-color); font-size:11px;">🔒 مشفّرة</span>' : '<span style="color:var(--danger-color); font-size:11px;">⚠️ قديمة</span>';
 
             html += `
                 <tr style="border-bottom:1px solid #eee;">
@@ -183,11 +195,42 @@ async function loadSystemUsersDirectoryLive() {
                     <td>${u.name || '-'}</td>
                     <td>${roleLabel}</td>
                     <td>${statusLabel}</td>
+                    <td>${securityBadge}</td>
+                    <td>
+                        <button onclick="window.openResetPasswordModal('${docSnap.id}', '${(u.name||'').replace(/'/g,"\\'")}')"
+                            style="background:var(--sky); color:#fff; border:none; padding:5px 10px; border-radius:6px; font-weight:700; cursor:pointer; font-size:11px;">
+                            <i class="bi bi-key-fill"></i> إعادة تعيين
+                        </button>
+                    </td>
                 </tr>`;
         });
 
         tbody.innerHTML = html;
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red; padding:15px; font-weight:bold;">❌ تعذر جلب الحسابات: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:15px; font-weight:bold;">❌ تعذر جلب الحسابات: ${e.message}</td></tr>`;
     }
 }
+
+// ===== إعادة تعيين كلمة مرور موظف (Admin فقط، عبر Cloud Function آمنة) =====
+window.openResetPasswordModal = function(userDocId, userName) {
+    const newPass = prompt(`أدخل كلمة المرور الجديدة للموظف: ${userName}`);
+    if (!newPass) return;
+    if (newPass.length < 4) { window.showToast('⚠️ كلمة المرور قصيرة جداً (4 أحرف على الأقل)', 'info'); return; }
+
+    window.executeResetPassword(userDocId, newPass, userName);
+};
+
+window.executeResetPassword = async function(userDocId, newPass, userName) {
+    try {
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const { auth } = await import('../firebase-config.js');
+        const functions = getFunctions(auth.app);
+        const resetFn = httpsCallable(functions, 'resetUserPassword');
+
+        await resetFn({ userDocId, newPassword: newPass });
+        window.showToast(`✅ تم تحديث كلمة مرور ${userName} بنجاح`);
+        loadSystemUsersDirectoryLive();
+    } catch (e) {
+        window.showToast('❌ خطأ: ' + e.message, 'error');
+    }
+};
