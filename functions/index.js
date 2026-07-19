@@ -7,11 +7,56 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // ============================================================
+// أدوات مساعدة: حد محاولات الدخول الفاشلة (Rate Limiting)
+// 5 محاولات فاشلة → قفل 15 دقيقة
+// ============================================================
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MINUTES = 15;
+
+async function checkRateLimit(identifier) {
+    const ref = db.collection('login_attempts').doc(identifier);
+    const snap = await ref.get();
+    if (!snap.exists) return { locked: false };
+
+    const data = snap.data();
+    const lastAttempt = data.lastAttempt?.toDate ? data.lastAttempt.toDate() : new Date(0);
+    const minutesSince = (Date.now() - lastAttempt.getTime()) / 60000;
+
+    if (data.count >= MAX_ATTEMPTS && minutesSince < LOCKOUT_MINUTES) {
+        const remaining = Math.ceil(LOCKOUT_MINUTES - minutesSince);
+        return { locked: true, remaining };
+    }
+    return { locked: false };
+}
+
+async function recordFailedAttempt(identifier) {
+    const ref = db.collection('login_attempts').doc(identifier);
+    const snap = await ref.get();
+    const minutesSince = snap.exists && snap.data().lastAttempt?.toDate
+        ? (Date.now() - snap.data().lastAttempt.toDate().getTime()) / 60000 : 999;
+
+    // لو مرّ وقت أطول من فترة القفل، نبدأ العد من جديد
+    const newCount = (snap.exists && minutesSince < LOCKOUT_MINUTES) ? (snap.data().count || 0) + 1 : 1;
+
+    await ref.set({ count: newCount, lastAttempt: admin.firestore.FieldValue.serverTimestamp() });
+}
+
+async function resetAttempts(identifier) {
+    await db.collection('login_attempts').doc(identifier).delete().catch(() => {});
+}
+
+// ============================================================
 // FUNCTION 1: loginUser — مصادقة المستخدمين (موجودة ومفعّلة)
 // ============================================================
 exports.loginUser = onCall({ cors: true, region: 'us-central1' }, async (request) => {
     const { schoolId, userId, password } = request.data;
     if (!userId || !password) throw new HttpsError('invalid-argument', 'userId و password مطلوبان');
+
+    const rateLimitKey = `user_${userId}`;
+    const rateCheck = await checkRateLimit(rateLimitKey);
+    if (rateCheck.locked) {
+        throw new HttpsError('resource-exhausted', `محاولات كثيرة فاشلة — يرجى المحاولة بعد ${rateCheck.remaining} دقيقة`);
+    }
 
     // Super Admin
     if (userId === 'superadmin') {
@@ -22,7 +67,11 @@ exports.loginUser = onCall({ cors: true, region: 'us-central1' }, async (request
         const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
         const SUPER_HASH = configSnap.empty ? DEFAULT_HASH : configSnap.docs[0].data().value;
 
-        if (hash !== SUPER_HASH) throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
+        if (hash !== SUPER_HASH) {
+            await recordFailedAttempt(rateLimitKey);
+            throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
+        }
+        await resetAttempts(rateLimitKey);
         const token = await admin.auth().createCustomToken('superadmin', { role: 'superadmin', schoolId: 'system' });
         return { token, role: 'superadmin', schoolId: 'system', name: 'حسين', userId: 'superadmin' };
     }
@@ -32,11 +81,25 @@ exports.loginUser = onCall({ cors: true, region: 'us-central1' }, async (request
     if (schoolId) usersQuery = usersQuery.where('schoolId', '==', schoolId);
     const snap = await usersQuery.limit(1).get();
 
-    if (snap.empty) throw new HttpsError('not-found', 'المستخدم غير موجود');
+    if (snap.empty) {
+        await recordFailedAttempt(rateLimitKey);
+        throw new HttpsError('not-found', 'المستخدم غير موجود');
+    }
 
     const user = snap.docs[0].data();
-    if (user.plainPass !== password) throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
+    const crypto = require('crypto');
+    const providedHash = crypto.createHash('sha256').update(password).digest('hex');
+
+    // ندعم النظامين: passHash الجديد الآمن (SHA-256)، أو plainPass القديم الموروث (توافقاً خلفياً للحسابات غير المُحدَّثة بعد)
+    const isValid = user.passHash ? (providedHash === user.passHash) : (user.plainPass === password);
+
+    if (!isValid) {
+        await recordFailedAttempt(rateLimitKey);
+        throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
+    }
     if (user.status === 'suspended') throw new HttpsError('permission-denied', 'الحساب موقوف');
+
+    await resetAttempts(rateLimitKey);
 
     const schoolSnap = await db.collection('schools').doc(user.schoolId).get();
     const schoolData = schoolSnap.exists ? schoolSnap.data() : {};
@@ -382,6 +445,12 @@ exports.loginParent = onCall({ cors: true, region: 'us-central1' }, async (reque
     const { schoolId, civilId, password } = request.data;
     if (!civilId || !password) throw new HttpsError('invalid-argument', 'الرقم المدني وكلمة المرور مطلوبان');
 
+    const rateLimitKey = `parent_${civilId}`;
+    const rateCheck = await checkRateLimit(rateLimitKey);
+    if (rateCheck.locked) {
+        throw new HttpsError('resource-exhausted', `محاولات كثيرة فاشلة — يرجى المحاولة بعد ${rateCheck.remaining} دقيقة`);
+    }
+
     const crypto = require('crypto');
     const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
 
@@ -402,8 +471,11 @@ exports.loginParent = onCall({ cors: true, region: 'us-central1' }, async (reque
     }
 
     if (!accountData || accountData.passwordHash !== passwordHash) {
+        await recordFailedAttempt(rateLimitKey);
         throw new HttpsError('unauthenticated', 'الرقم المدني أو كلمة المرور غير صحيحة');
     }
+
+    await resetAttempts(rateLimitKey);
 
     const accountId = `${matchedSchoolId}_${civilId}`;
     const token = await admin.auth().createCustomToken(accountId, { role: 'parent', schoolId: matchedSchoolId, civilId });
@@ -477,6 +549,147 @@ exports.changeParentPassword = onCall({ cors: true, region: 'us-central1' }, asy
 
     const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
     await accountRef.update({ passwordHash: newHash, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+
+    return { success: true };
+});
+// ============================================================
+// FUNCTION 11: promoteStudents — الترحيل السنوي الشامل
+// يرفع كل طالب صفاً واحداً (نفس الشعبة)، يؤرشف صف 9 كخريجين،
+// ويسم كل السجلات الحالية بالسنة الدراسية قبل الترحيل
+// ============================================================
+exports.promoteStudents = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
+        throw new HttpsError('permission-denied', 'هذا الإجراء يتطلب صلاحية مدير');
+    }
+
+    const { schoolId, academicYearLabel } = request.data;
+    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId مطلوب');
+    if (request.auth.token.schoolId !== schoolId) {
+        throw new HttpsError('permission-denied', 'لا يمكنك ترحيل مدرسة أخرى');
+    }
+
+    const now = new Date();
+    const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+    const yearLabel = academicYearLabel || `${startYear}-${startYear + 1}`;
+
+    // ===== الخطوة 1: تسمية كل السجلات غير الموسومة بعد بالسنة الدراسية =====
+    const recordCollections = ['attendance', 'behavior', 'gatepass', 'clinic'];
+    const taggedCounts = {};
+
+    for (const colName of recordCollections) {
+        const snap = await db.collection(colName).where('schoolId', '==', schoolId).get();
+        let batch = db.batch();
+        let opCount = 0;
+        let taggedTotal = 0;
+
+        for (const docSnap of snap.docs) {
+            const data = docSnap.data();
+            if (!data.academicYear) {
+                batch.update(docSnap.ref, { academicYear: yearLabel });
+                opCount++;
+                taggedTotal++;
+                if (opCount >= 450) {
+                    await batch.commit();
+                    batch = db.batch();
+                    opCount = 0;
+                }
+            }
+        }
+        if (opCount > 0) await batch.commit();
+        taggedCounts[colName] = taggedTotal;
+    }
+
+    // ===== الخطوة 2: ترحيل الطلاب =====
+    const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
+    let promoted = 0, graduated = 0, skipped = 0;
+    let batch2 = db.batch();
+    let opCount2 = 0;
+    const newClassesSet = new Set();
+
+    for (const docSnap of studentsSnap.docs) {
+        const data = docSnap.data();
+        const classId = data.classId || '';
+        const parts = classId.split('/');
+
+        if (parts.length !== 2) { skipped++; continue; }
+        const grade = parseInt(parts[0]);
+        const section = parts[1];
+        if (isNaN(grade)) { skipped++; continue; }
+
+        if (grade >= 9) {
+            const graduateRef = db.collection('graduates').doc();
+            batch2.set(graduateRef, {
+                ...data,
+                originalId: docSnap.id,
+                graduatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                academicYearGraduated: yearLabel
+            });
+            batch2.delete(docSnap.ref);
+            graduated++;
+        } else {
+            const newClassId = `${grade + 1}/${section}`;
+            batch2.update(docSnap.ref, { classId: newClassId });
+            newClassesSet.add(newClassId);
+            promoted++;
+        }
+
+        opCount2++;
+        if (opCount2 >= 450) {
+            await batch2.commit();
+            batch2 = db.batch();
+            opCount2 = 0;
+        }
+    }
+    if (opCount2 > 0) await batch2.commit();
+
+    // ===== الخطوة 3: تحديث كولكشن classes بالفصول الجديدة =====
+    if (newClassesSet.size > 0) {
+        const batch3 = db.batch();
+        newClassesSet.forEach(c => {
+            const ref = db.collection('classes').doc(`${schoolId}_${c.replace('/', '-')}`);
+            batch3.set(ref, { schoolId, classId: c, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        });
+        await batch3.commit();
+    }
+
+    // ===== الخطوة 4: حفظ سجل الترحيل نفسه =====
+    await db.collection('promotion_logs').add({
+        schoolId, yearLabel, promoted, graduated, skipped,
+        taggedCounts, performedBy: request.auth.token.userId || 'admin',
+        performedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    return { success: true, promoted, graduated, skipped, taggedCounts, yearLabel };
+});
+
+// ============================================================
+// FUNCTION 12: resetUserPassword — إعادة تعيين كلمة مرور موظف (Admin فقط)
+// يستخدم SHA-256 hash بدل النص الصريح — يحل ثغرة plainPass تدريجياً
+// ============================================================
+exports.resetUserPassword = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
+        throw new HttpsError('permission-denied', 'هذا الإجراء يتطلب صلاحية مدير');
+    }
+
+    const { userDocId, newPassword } = request.data;
+    if (!userDocId || !newPassword) throw new HttpsError('invalid-argument', 'الحقول مطلوبة');
+    if (newPassword.length < 4) throw new HttpsError('invalid-argument', 'كلمة المرور قصيرة جداً');
+
+    const userRef = db.collection('users').doc(userDocId);
+    const userSnap = await userRef.get();
+    if (!userSnap.exists) throw new HttpsError('not-found', 'المستخدم غير موجود');
+    if (userSnap.data().schoolId !== request.auth.token.schoolId) {
+        throw new HttpsError('permission-denied', 'لا يمكنك تعديل موظف بمدرسة أخرى');
+    }
+
+    const crypto = require('crypto');
+    const passHash = crypto.createHash('sha256').update(newPassword).digest('hex');
+
+    // نحذف plainPass القديم (لو موجود) ونحفظ passHash الآمن بدلاً منه
+    await userRef.update({
+        passHash,
+        plainPass: admin.firestore.FieldValue.delete()
+    });
 
     return { success: true };
 });
