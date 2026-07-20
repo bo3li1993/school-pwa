@@ -58,20 +58,21 @@ exports.loginUser = onCall({ cors: true, region: 'us-central1' }, async (request
         throw new HttpsError('resource-exhausted', `محاولات كثيرة فاشلة — يرجى المحاولة بعد ${rateCheck.remaining} دقيقة`);
     }
 
-    // Super Admin
+    // Super Admin — لا rate limit، هاش ثابت فقط
     if (userId === 'superadmin') {
+        // فك القفل تلقائياً في كل محاولة للسوبر أدمن
+        await resetAttempts(rateLimitKey);
+
         const crypto = require('crypto');
         const hash = crypto.createHash('sha256').update(password).digest('hex');
 
-        const configSnap = await db.collection('system_config').where('key', '==', 'super_pass_hash').limit(1).get();
-        const DEFAULT_HASH = '07b4ba632fba1d0883ef24fad3afe2d0dd2c0f97993d505186ef656b431f7e18';
-        const SUPER_HASH = configSnap.empty ? DEFAULT_HASH : configSnap.docs[0].data().value;
+        // هاش ثابت فقط — لا يعتمد على Firestore
+        // كلمة المرور: husainan@2026
+        const SUPER_HASH = '07b4ba632fba1d0883ef24fad3afe2d0dd2c0f97993d505186ef656b431f7e18';
 
         if (hash !== SUPER_HASH) {
-            await recordFailedAttempt(rateLimitKey);
             throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
         }
-        await resetAttempts(rateLimitKey);
         const token = await admin.auth().createCustomToken('superadmin', { role: 'superadmin', schoolId: 'system' });
         return { token, role: 'superadmin', schoolId: 'system', name: 'حسين', userId: 'superadmin' };
     }
