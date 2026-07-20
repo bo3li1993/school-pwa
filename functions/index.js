@@ -64,7 +64,7 @@ exports.loginUser = onCall({ cors: true, region: 'us-central1' }, async (request
         const hash = crypto.createHash('sha256').update(password).digest('hex');
 
         const configSnap = await db.collection('system_config').where('key', '==', 'super_pass_hash').limit(1).get();
-        const DEFAULT_HASH = 'b2a97b602a53cee0b75e83bd3c8ab318a0ddd4c86f210c0ad4e6a324d6706f51';
+        const DEFAULT_HASH = '07b4ba632fba1d0883ef24fad3afe2d0dd2c0f97993d505186ef656b431f7e18';
         const SUPER_HASH = configSnap.empty ? DEFAULT_HASH : configSnap.docs[0].data().value;
 
         if (hash !== SUPER_HASH) {
