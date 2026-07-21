@@ -154,8 +154,10 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
   <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
   <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-gift"></i> الحوافز والتميز</div>
 
-  <div class="menu-group-title">الإدارة</div>
+  <div class="menu-group-title">الإدارة والأمان</div>
   <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people-fill"></i> إدارة المستخدمين</div>
+  <div class="menu-item" data-tab="tab-audit" onclick="window.switchTab('tab-audit')"><i class="bi bi-journal-text"></i> سجل العمليات</div>
+  <div class="menu-item" data-tab="tab-backup" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-down-fill"></i> النسخ الاحتياطي</div>
   <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-gear"></i> حسابي</div>
   <div class="menu-item" onclick="window.location.href='tv.html'"><i class="bi bi-tv"></i> شاشة القيادة TV</div>
   <div class="menu-item" onclick="window.location.href='guard.html'"><i class="bi bi-shield-lock"></i> بوابة الحارس</div>
@@ -201,6 +203,8 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);disp
     <div id="tab-rewards" class="tab-content"></div>
     <div id="tab-users" class="tab-content"></div>
 
+    <div id="tab-audit" class="tab-content"></div>
+    <div id="tab-backup" class="tab-content"></div>
     <div id="tab-myaccount" class="tab-content">
       <div class="card" style="max-width:520px;">
         <h2><i class="bi bi-person-gear"></i> بياناتي الشخصية</h2>
@@ -345,6 +349,8 @@ const moduleMap = {
     'tab-honors':           { file: './js/modules/honors.js',          init: 'initHonorsModule' },
     'tab-rewards':          { file: './js/modules/rewards.js',         init: 'initRewardsModule' },
     'tab-users':            { file: './js/modules/users.js',           init: 'initUsersModule' },
+    'tab-audit':            { file: './js/modules/audit.js',           init: 'initAuditModule' },
+    'tab-backup':           { file: './js/modules/backup_manager.js',  init: 'initBackupModule' },
 };
 
 const loadedTabs = new Set();
