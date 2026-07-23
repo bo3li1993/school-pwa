@@ -32,6 +32,7 @@ const CACHE_NAME = `hosainan-school-${new Date().toISOString().slice(0,10)}`;
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
+  './home.html',
     './admin.html',
     './teacher.html',
     './parent.html',
