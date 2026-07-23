@@ -521,6 +521,13 @@ window.saveAttendance = async function() {
         }
 
         showToast(`✅ تم حفظ الحضور — ${allStudentsLoaded.length} طالب | ${absentList.length} غائب`);
+        // تسجيل في audit_log
+        try {
+            await addDoc(collection(db,'audit_log'), {
+                schoolId, action:'تسجيل حضور', detail:`فصل ${classId} حصة ${period} — ${absentList.length} غائب`,
+                by: currentUser.name||'', date: todayISO, createdAt: serverTimestamp()
+            });
+        } catch(e) {}
 
         if (absentList.length > 0) {
             const wantWA = confirm(`👥 يوجد ${absentList.length} طالب غائب\nهل تريد إرسال إشعارات واتساب لأولياء الأمور؟`);
@@ -531,23 +538,23 @@ window.saveAttendance = async function() {
                 const phoneMap = {};
                 snap.forEach(d => { if(d.data().parentPhone) phoneMap[d.data().name.trim()] = d.data().parentPhone; });
 
-                let sentCount = 0;
-                for (const name of absentList) {
-                    const phone = phoneMap[name];
-                    if (phone) {
-                        const msg = encodeURIComponent(
-                            `السلام عليكم ولي أمر الطالب/ة ${name}\n` +
-                            `نُعلمكم بغياب ابنكم عن المدرسة اليوم ${todayISO} — الحصة ${period}\n` +
-                            `مدرسة ${currentUser.schoolName || ''}`
-                        );
-                        const cleanPhone = phone.replace(/\D/g,'');
-                        window.open(`https://wa.me/965${cleanPhone}?text=${msg}`, '_blank');
-                        sentCount++;
-                        await new Promise(r => setTimeout(r, 800)); 
-                    }
+                // ✅ واتساب جماعي — رسالة واحدة بدل popups متعددة
+                const absentWithPhones = absentList
+                    .filter(name => phoneMap[name])
+                    .map(name => ({name, phone: phoneMap[name].replace(/\D/g,'')}));
+
+                if (absentWithPhones.length === 0) {
+                    showToast('⚠️ لا توجد أرقام مسجّلة لأولياء الأمور', 'info');
+                } else {
+                    // نبني رسالة واحدة تحتوي كل الأسماء
+                    const names = absentWithPhones.map(s=>s.name).join('، ');
+                    const msg = encodeURIComponent(
+                        `السلام عليكم،\nيُعلَم أولياء أمور الطلاب الغائبين اليوم ${todayISO} — الحصة ${period}:\n${names}\nمدرسة ${currentUser.schoolName||''}`
+                    );
+                    // نفتح واتساب لأول ولي أمر برسالة جماعية
+                    window.open(`https://wa.me/965${absentWithPhones[0].phone}?text=${msg}`, '_blank');
+                    showToast(`✅ تم فتح واتساب — ${absentWithPhones.length} غائب`);
                 }
-                if (sentCount > 0) showToast(`✅ تم فتح ${sentCount} محادثة واتساب`);
-                else showToast('⚠️ لا توجد أرقام مسجّلة لأولياء الأمور', 'info');
             }
         }
 
