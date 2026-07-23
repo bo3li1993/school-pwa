@@ -152,6 +152,17 @@ window.handleRegisterGatepassLive = async function(e) {
         createdAt: serverTimestamp()
     });
     window.showToast('✓ تم حفظ واعتماد التصريح!');
+        // إبلاغ تلقائي عبر واتساب
+        const studentSel = document.getElementById('gate-student-select');
+        const classSel   = document.getElementById('gate-class-select');
+        const reasonSel  = document.getElementById('gate-reason');
+        const now = new Date().toLocaleTimeString('ar-KW',{hour:'2-digit',minute:'2-digit'});
+        window.sendGatepassWhatsApp(
+            studentSel?.value||'',
+            classSel?.value||'',
+            reasonSel?.value||'',
+            now
+        );
     document.getElementById('gatepass-reg-form').reset();
     document.getElementById('gate-reason-other').style.display = 'none';
     loadGatepassLogsLive();
@@ -184,4 +195,28 @@ window.printGatepassDirect = function() {
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
     const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     window.ManzoumaReport.printDirect(contentHTML, 'سجل تصاريح الاستئذان');
+};
+
+// ===== واتساب — إبلاغ ولي الأمر بالاستئذان =====
+window.sendGatepassWhatsApp = async function(studentName, classId, reason, time) {
+    try {
+        const schoolId = getActiveSchoolId();
+        const snap = await getDocs(query(
+            collection(db,'students'),
+            where('schoolId','==',schoolId),
+            where('name','==',studentName),
+            where('classId','==',classId)
+        ));
+        if(snap.empty) { window.showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
+        const phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
+        if(!phone) { window.showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
+
+        const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+        const msg = encodeURIComponent(
+            `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
+            `نُعلمكم بأن ابنكم غادر المدرسة بتاريخ ${today} الساعة ${time||'—'}.\n` +
+            `السبب: ${reason||'—'}`
+        );
+        window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
+    } catch(e) { window.showToast('❌ '+e.message,'error'); }
 };
