@@ -159,6 +159,14 @@ window.handleRegisterClinicLive = async function(e) {
             createdAt: serverTimestamp()
         });
         window.showToast('✓ تم تسجيل البيانات الصحية للطالب بنجاح.');
+        // خيار إبلاغ ولي الأمر
+        const sName = document.getElementById('clinic-student-select')?.value||'';
+        const cId   = document.getElementById('clinic-class-select')?.value||'';
+        const comp  = document.getElementById('clinic-complaint')?.value||'';
+        const res   = document.getElementById('clinic-result')?.value||'';
+        if(sName && confirm('هل تريد إبلاغ ولي الأمر عبر واتساب؟')) {
+            window.sendClinicWhatsApp(sName, cId, comp, res);
+        };
         document.getElementById('clinic-reg-form').reset();
         document.getElementById('clinic-student-select').innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
         document.getElementById('clinic-student-select').disabled = true;
@@ -202,4 +210,30 @@ window.printClinicDirect = function() {
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
     const contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الشكوى</th><th>العلاج</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     window.ManzoumaReport.printDirect(contentHTML, 'سجل العيادة المدرسية');
+};
+
+// ===== واتساب — إبلاغ ولي الأمر بالعيادة =====
+window.sendClinicWhatsApp = async function(studentName, classId, complaint, result) {
+    try {
+        const schoolId = getActiveSchoolId();
+        const snap = await getDocs(query(
+            collection(db,'students'),
+            where('schoolId','==',schoolId),
+            where('name','==',studentName),
+            where('classId','==',classId)
+        ));
+        if(snap.empty) { window.showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
+        const phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
+        if(!phone) { window.showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
+
+        const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+        const msg = encodeURIComponent(
+            `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
+            `راجع ابنكم العيادة المدرسية اليوم ${today}.\n` +
+            `الشكوى: ${complaint||'—'}\n` +
+            `النتيجة: ${result||'—'}\n` +
+            `يرجى التواصل معنا إذا احتجتم مزيداً من المعلومات.`
+        );
+        window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
+    } catch(e) { window.showToast('❌ '+e.message,'error'); }
 };
