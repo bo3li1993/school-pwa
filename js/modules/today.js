@@ -90,8 +90,8 @@ export async function initTodayModule() {
         // سحب كل البيانات بالتوازي
         const [attSnap, behavSnap, gateSnap, totalSnap, visitsSnap] = await Promise.all([
             getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('date', '==', todayISO))),
-            getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('dateStr', '==', new Date().toLocaleDateString('ar-KW')))),
-            getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('dateStr', '==', new Date().toLocaleDateString('ar-KW')))),
+            getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('dateStr', '==', getTodayISO()))),
+            getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('dateStr', '==', getTodayISO()))),
             getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'visits'), where('schoolId', '==', schoolId)))
         ]);
@@ -186,7 +186,7 @@ window.triggerWhatsAppBroadcast = async function() {
         studSnap.forEach(doc => {
             const data = doc.data();
             if (absentNames.has(data.name) && data.parentPhone) {
-                const msg = `السلام عليكم ولي أمر الطالب ${data.name}،\nنُعلمكم بغياب ابنكم اليوم ${d.toLocaleDateString('ar-KW')} عن المدرسة.\nالرجاء التواصل معنا.\nإدارة ${JSON.parse(localStorage.getItem('hs_user') || '{}').schoolName || 'المدرسة'}`;
+                const msg = `السلام عليكم ولي أمر الطالب ${data.name}،\nنُعلمكم بغياب ابنكم اليوم ${d.toLocaleDateString('ar-KW', {year:'numeric',month:'long',day:'numeric'})} عن المدرسة.\nالرجاء التواصل معنا.\nإدارة ${JSON.parse(localStorage.getItem('hs_user') || '{}').schoolName || 'المدرسة'}`;
                 const phone = data.parentPhone.replace(/^0/, '965').replace(/[^0-9]/g, '');
                 window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
                 sent++;
