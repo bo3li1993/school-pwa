@@ -18,7 +18,7 @@ export async function logAudit(action, details = {}) {
             action,
             details,
             timestamp: serverTimestamp(),
-            dateStr: new Date().toLocaleDateString('ar-KW'),
+            dateStr: getTodayISO(),
             timeStr: new Date().toLocaleTimeString('ar-KW', { hour: '2-digit', minute: '2-digit' })
         });
     } catch (e) {
