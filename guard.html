@@ -195,6 +195,26 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
         </form>
     </div>
 
+    
+    <div class="card" style="border-top: 4px solid var(--navy);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h2 style="margin:0"><i class="bi bi-journal-text"></i> سجل الزوار اليوم (لايف)</h2>
+            <span id="visitor-count-badge" style="background:var(--sky);color:#fff;padding:3px 12px;border-radius:10px;font-size:12px;font-weight:800;">0 زيارة</span>
+        </div>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr style="background:#f1f5f9;">
+                        <th>الاسم</th><th>الرقم المدني</th><th>الهاتف</th><th>السبب</th><th>وقت الدخول</th><th>وقت الخروج</th><th>إجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="visitors-today-tbody">
+                    <tr><td colspan="7" style="text-align:center;padding:16px;color:#999;">⏳ جاري التحميل...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="card" style="border-top: 4px solid var(--sky);">
         <h2><i class="bi bi-gear-fill"></i> إعدادات الحساب وتغيير كلمة المرور للحارس</h2>
         <form id="guard-profile-form" onsubmit="window.updateGuardProfileLive(event)">
@@ -241,6 +261,56 @@ function getUnifiedTimeString() {
     minutes = minutes < 10 ? '0' + minutes : minutes;
     return String(hours).padStart(2,'0') + ':' + String(minutes).padStart(2,'0') + ' ' + ampm;
 }
+
+
+// ══ سجل الزوار اليوم (لايف) ══
+function startVisitorsTodayListener() {
+    const tbody = document.getElementById('visitors-today-tbody');
+    const badge = document.getElementById('visitor-count-badge');
+    const schoolId = getActiveSchoolId();
+
+    const q = query(
+        collection(db, 'visitors_logs'),
+        where('schoolId', '==', schoolId),
+        where('dateStr', '==', getUnifiedDateString())
+    );
+
+    onSnapshot(q, (snap) => {
+        if(badge) badge.textContent = snap.size + ' زيارة';
+        if(snap.empty) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:16px;color:#999;">لا يوجد زوار اليوم بعد</td></tr>';
+            return;
+        }
+        const docs = [...snap.docs].sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
+        tbody.innerHTML = docs.map(d => {
+            const v = d.data();
+            const hasExit = v.exitTime;
+            return `<tr>
+                <td style="font-weight:800">${v.visitorName||'—'}</td>
+                <td style="font-size:12px">${v.civilId||'—'}</td>
+                <td><a href="tel:${v.phone}" style="color:var(--sky);font-weight:700">${v.phone||'—'}</a></td>
+                <td style="font-size:12px">${v.reason||'—'}</td>
+                <td style="color:var(--green);font-weight:700;font-size:12px">${v.timeStr||'—'}</td>
+                <td style="color:${hasExit?'var(--mid)':'var(--gold)'};font-weight:700;font-size:12px">${v.exitTime||'لم يغادر'}</td>
+                <td>${!hasExit ? `<button onclick="recordVisitorExit('${d.id}')"
+                    style="background:var(--navy);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">
+                    خروج ✓</button>` : '<span style="color:var(--green);font-size:11px;font-weight:700">✅ غادر</span>'}</td>
+            </tr>`;
+        }).join('');
+    });
+}
+
+// ══ تسجيل خروج الزائر ══
+window.recordVisitorExit = async function(docId) {
+    if(!confirm('هل تأكدت من مغادرة الزائر؟')) return;
+    try {
+        await updateDoc(doc(db,'visitors_logs',docId), {
+            exitTime: getUnifiedTimeString(),
+            exitedAt: serverTimestamp()
+        });
+        showToast('✅ تم تسجيل مغادرة الزائر');
+    } catch(e) { showToast('❌ '+e.message,'error'); }
+};
 
 // ---
 function startGuardLiveGatepassListener() {
@@ -458,6 +528,7 @@ document.addEventListener("DOMContentLoaded", function() {
     })();
     
     startGuardLiveGatepassListener();
+    startVisitorsTodayListener();
     document.getElementById('splash-school').textContent = user.schoolName || 'المنظومة الرقمية';
     document.getElementById('splash').classList.add('hide');
 });
