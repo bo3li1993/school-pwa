@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المنظومة الرقمية — نظام إدارة المدارس السحابي</title>
+<meta name="description" content="منصة SaaS متكاملة لإدارة المدارس الحكومية في الكويت — غياب، سلوك، زيارات، تقارير، وأكثر">
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0b2545;
+  --sky:  #1a78c2;
+  --ice:  #eaf4fd;
+  --gold: #d4920a;
+  --off:  #f8f9fc;
+  --line: #e5e7eb;
+  --text: #111827;
+  --mid:  #6b7280;
+  --green:#16a34a;
+  --red:  #dc2626;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Cairo',sans-serif; background:var(--off); color:var(--text); direction:rtl; }
+
+/* ══ NAV ══ */
+.nav {
+  background:var(--navy); padding:0 32px; height:64px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100;
+  border-bottom:3px solid var(--gold);
+}
+.nav-brand { display:flex; align-items:center; gap:10px; color:#fff; text-decoration:none; }
+.nav-logo {
+  width:38px; height:38px; background:var(--gold); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:900; color:#fff; flex-shrink:0;
+}
+.nav-brand h1 { font-size:17px; font-weight:900; }
+.nav-links { display:flex; align-items:center; gap:6px; }
+.nav-link { color:rgba(255,255,255,.7); text-decoration:none; padding:8px 14px; border-radius:8px; font-size:14px; font-weight:700; transition:.2s; }
+.nav-link:hover { color:#fff; background:rgba(255,255,255,.08); }
+.nav-cta {
+  background:var(--gold); color:#fff; padding:9px 22px; border-radius:8px;
+  text-decoration:none; font-size:14px; font-weight:900;
+  transition:.2s; border:none; cursor:pointer; font-family:'Cairo',sans-serif;
+  display:inline-flex; align-items:center; gap:7px;
+}
+.nav-cta:hover { background:#b57a08; }
+.nav-mobile-menu { display:none; background:none; border:none; color:#fff; font-size:24px; cursor:pointer; }
+
+/* ══ HERO ══ */
+.hero {
+  background:linear-gradient(160deg, var(--navy) 0%, #0d2e5a 60%, #0b2545 100%);
+  padding:90px 32px 80px; text-align:center; position:relative; overflow:hidden;
+}
+.hero::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 0%, rgba(26,120,194,.15) 0%, transparent 70%);
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:7px;
+  background:rgba(212,146,10,.15); border:1px solid rgba(212,146,10,.35);
+  color:var(--gold); padding:7px 18px; border-radius:20px;
+  font-size:13px; font-weight:800; margin-bottom:28px;
+}
+.hero h2 {
+  font-size:clamp(28px,5vw,52px); font-weight:900; color:#fff;
+  line-height:1.25; margin-bottom:20px; position:relative;
+}
+.hero h2 span { color:var(--gold); }
+.hero p {
+  font-size:17px; color:rgba(255,255,255,.7); max-width:580px;
+  margin:0 auto 40px; line-height:1.7; font-weight:600; position:relative;
+}
+.hero-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; position:relative; }
+.btn-hero-primary {
+  background:var(--gold); color:#fff; padding:14px 32px; border-radius:10px;
+  font-size:15px; font-weight:900; text-decoration:none;
+  display:inline-flex; align-items:center; gap:9px;
+  transition:.2s; box-shadow:0 4px 20px rgba(212,146,10,.4);
+}
+.btn-hero-primary:hover { background:#b57a08; transform:translateY(-2px); }
+.btn-hero-outline {
+  background:transparent; color:#fff; padding:14px 28px; border-radius:10px;
+  font-size:15px; font-weight:700; text-decoration:none;
+  border:1.5px solid rgba(255,255,255,.35);
+  display:inline-flex; align-items:center; gap:9px; transition:.2s;
+}
+.btn-hero-outline:hover { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.6); }
+
+.hero-stats {
+  display:flex; gap:48px; justify-content:center; flex-wrap:wrap;
+  margin-top:64px; padding-top:40px;
+  border-top:1px solid rgba(255,255,255,.1);
+  position:relative;
+}
+.hero-stat { text-align:center; }
+.hero-stat .num { font-size:36px; font-weight:900; color:#fff; line-height:1; }
+.hero-stat .num span { color:var(--gold); }
+.hero-stat .lbl { font-size:13px; color:rgba(255,255,255,.55); font-weight:700; margin-top:5px; }
+
+/* ══ SECTIONS ══ */
+.section { padding:80px 32px; }
+.section.alt { background:#fff; }
+.section-header { text-align:center; margin-bottom:56px; }
+.section-tag {
+  display:inline-block; background:var(--ice); color:var(--sky);
+  padding:5px 16px; border-radius:20px; font-size:12px; font-weight:800;
+  margin-bottom:14px; border:1px solid rgba(26,120,194,.2);
+}
+.section-header h2 { font-size:clamp(22px,3.5vw,36px); font-weight:900; color:var(--navy); margin-bottom:12px; }
+.section-header p { font-size:15px; color:var(--mid); max-width:520px; margin:0 auto; line-height:1.7; font-weight:600; }
+
+/* ══ FEATURES GRID ══ */
+.features-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:20px; max-width:1100px; margin:0 auto;
+}
+.feat-card {
+  background:#fff; border:1px solid var(--line); border-radius:16px;
+  padding:26px; transition:.25s; position:relative; overflow:hidden;
+}
+.feat-card::before {
+  content:''; position:absolute; top:0; right:0; left:0; height:3px;
+  background:linear-gradient(90deg, var(--sky), var(--navy));
+  opacity:0; transition:.25s;
+}
+.feat-card:hover { box-shadow:0 8px 32px rgba(11,37,69,.1); transform:translateY(-3px); }
+.feat-card:hover::before { opacity:1; }
+.feat-icon {
+  width:46px; height:46px; border-radius:12px; background:var(--ice);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; color:var(--sky); margin-bottom:16px; flex-shrink:0;
+}
+.feat-card h3 { font-size:15px; font-weight:900; color:var(--navy); margin-bottom:8px; }
+.feat-card p { font-size:13px; color:var(--mid); line-height:1.65; font-weight:600; }
+
+/* ══ ALL FEATURES LIST ══ */
+.all-features { max-width:1000px; margin:0 auto; }
+.feat-cols { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.feat-item {
+  display:flex; align-items:center; gap:10px;
+  background:var(--off); border:1px solid var(--line);
+  border-radius:10px; padding:12px 14px;
+  font-size:13px; font-weight:700; color:var(--text);
+  transition:.15s;
+}
+.feat-item:hover { background:var(--ice); border-color:rgba(26,120,194,.3); color:var(--navy); }
+.feat-item i { color:var(--sky); font-size:15px; flex-shrink:0; }
+
+/* ══ ROLES ══ */
+.roles-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px; max-width:1000px; margin:0 auto;
+}
+.role-card {
+  background:#fff; border:1px solid var(--line); border-radius:14px;
+  padding:22px 18px; text-align:center; transition:.2s;
+}
+.role-card:hover { box-shadow:0 6px 24px rgba(11,37,69,.08); border-color:rgba(26,120,194,.25); }
+.role-icon { font-size:32px; margin-bottom:12px; }
+.role-card h3 { font-size:14px; font-weight:900; color:var(--navy); margin-bottom:6px; }
+.role-card p { font-size:12px; color:var(--mid); font-weight:600; line-height:1.5; }
+
+/* ══ PRICING ══ */
+.pricing-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:20px; max-width:880px; margin:0 auto;
+}
+.price-card {
+  background:#fff; border:1.5px solid var(--line); border-radius:18px;
+  padding:32px 26px; text-align:center; position:relative; transition:.2s;
+}
+.price-card.featured {
+  border-color:var(--sky); box-shadow:0 0 0 3px rgba(26,120,194,.1);
+  transform:scale(1.03);
+}
+.price-badge {
+  position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+  background:var(--sky); color:#fff; padding:5px 18px; border-radius:20px;
+  font-size:12px; font-weight:900; white-space:nowrap;
+}
+.price-name { font-size:15px; font-weight:900; color:var(--mid); margin-bottom:16px; }
+.price-amount { font-size:48px; font-weight:900; color:var(--navy); line-height:1; }
+.price-amount sup { font-size:18px; font-weight:700; vertical-align:top; margin-top:10px; display:inline-block; }
+.price-period { font-size:13px; color:var(--mid); font-weight:600; margin:8px 0 24px; }
+.price-divider { height:1px; background:var(--line); margin-bottom:22px; }
+.price-features { list-style:none; text-align:right; margin-bottom:28px; }
+.price-features li {
+  display:flex; align-items:center; gap:9px;
+  font-size:13px; font-weight:700; color:var(--text);
+  padding:7px 0; border-bottom:1px solid var(--line);
+}
+.price-features li:last-child { border-bottom:none; }
+.price-features li i { color:var(--green); font-size:14px; flex-shrink:0; }
+.price-features li.no i { color:#ccc; }
+.price-features li.no { color:var(--mid); }
+.price-btn {
+  width:100%; padding:12px; border-radius:10px; border:none;
+  font-family:'Cairo',sans-serif; font-size:14px; font-weight:900;
+  cursor:pointer; transition:.2s; text-decoration:none; display:block;
+}
+.price-btn.primary { background:var(--sky); color:#fff; }
+.price-btn.primary:hover { background:#1462a0; }
+.price-btn.outline { background:transparent; border:1.5px solid var(--line); color:var(--navy); }
+.price-btn.outline:hover { border-color:var(--sky); color:var(--sky); }
+
+/* ══ CTA ══ */
+.cta-section {
+  background:linear-gradient(135deg, var(--navy) 0%, #0d2e5a 100%);
+  padding:80px 32px; text-align:center;
+}
+.cta-section h2 { font-size:clamp(22px,3.5vw,38px); font-weight:900; color:#fff; margin-bottom:14px; }
+.cta-section p { font-size:16px; color:rgba(255,255,255,.7); margin-bottom:36px; font-weight:600; }
+
+/* ══ FOOTER ══ */
+footer {
+  background:var(--navy); border-top:1px solid rgba(255,255,255,.08);
+  padding:32px; text-align:center;
+  color:rgba(255,255,255,.45); font-size:13px; font-weight:600;
+}
+footer a { color:rgba(255,255,255,.6); text-decoration:none; margin:0 10px; }
+footer a:hover { color:#fff; }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 900px) {
+  .pricing-grid { grid-template-columns:1fr; max-width:420px; }
+  .price-card.featured { transform:none; }
+  .feat-cols { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width: 768px) {
+  .nav { padding:0 16px; }
+  .nav-links { display:none; }
+  .nav-mobile-menu { display:block; }
+  .nav.mobile-open .nav-links {
+    display:flex; flex-direction:column; position:fixed;
+    top:64px; right:0; left:0; background:var(--navy);
+    padding:16px; gap:4px; border-bottom:3px solid var(--gold);
+    z-index:99;
+  }
+  .hero { padding:60px 18px 56px; }
+  .hero-stats { gap:28px; }
+  .hero-stat .num { font-size:28px; }
+  .section { padding:56px 18px; }
+  .feat-cols { grid-template-columns:1fr 1fr; }
+  .roles-grid { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width: 480px) {
+  .feat-cols { grid-template-columns:1fr; }
+  .roles-grid { grid-template-columns:1fr 1fr; }
+  .hero-btns { flex-direction:column; align-items:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="nav" id="mainNav">
+  <a href="home.html" class="nav-brand">
+    <div class="nav-logo">م</div>
+    <h1>المنظومة الرقمية</h1>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="#features" class="nav-link">المميزات</a>
+    <a href="#roles" class="nav-link">الأدوار</a>
+    <a href="#pricing" class="nav-link">الأسعار</a>
+    <a href="index.html" class="nav-cta"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول</a>
+  </div>
+  <button class="nav-mobile-menu" onclick="document.getElementById('mainNav').classList.toggle('mobile-open')">
+    <i class="bi bi-list"></i>
+  </button>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-badge"><i class="bi bi-cloud-check-fill"></i> منصة سحابية مُعتمدة للمدارس الكويتية</div>
+  <h2>إدارة مدرستك بالكامل<br>من <span>مكان واحد</span></h2>
+  <p>نظام رقمي متكامل يربط المدير والمعلم وولي الأمر والحارس — غياب، سلوك، تقارير، وإشعارات فورية على واتساب.</p>
+  <div class="hero-btns">
+    <a href="index.html" class="btn-hero-primary"><i class="bi bi-rocket-takeoff-fill"></i> ابدأ الآن</a>
+    <a href="#features" class="btn-hero-outline"><i class="bi bi-play-circle"></i> اكتشف المميزات</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">+<span>28</span></div><div class="lbl">وحدة وظيفية</div></div>
+    <div class="hero-stat"><div class="num"><span>6</span></div><div class="lbl">أدوار مستخدمين</div></div>
+    <div class="hero-stat"><div class="num"><span>100%</span></div><div class="lbl">سحابي — بدون تثبيت</div></div>
+    <div class="hero-stat"><div class="num"><span>PWA</span></div><div class="lbl">يعمل كتطبيق جوال</div></div>
+  </div>
+</section>
+
+<!-- ══ MAIN FEATURES ══ -->
+<section class="section alt" id="features">
+  <div class="section-header">
+    <div class="section-tag">المميزات الرئيسية</div>
+    <h2>كل ما تحتاجه إدارة المدرسة</h2>
+    <p>منظومة متكاملة تغطي كل جوانب العمل اليومي من الغياب حتى التقارير الرسمية</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon"><i class="bi bi-clipboard-check-fill"></i></div>
+      <h3>نظام الغياب الذكي</h3>
+      <p>تسجيل الحضور والغياب لكل حصة مع إشعارات واتساب فورية لأولياء الأمور وتقارير يومية وشهرية تلقائية.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="bi bi-graph-up-arrow"></i></div>
+      <h3>لوحة المؤشرات الحية</h3>
+      <p>داشبورد يومي يعرض نسب الحضور والغياب المتكرر والسلوك والاستئذان — كل شيء في شاشة واحدة.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="bi bi-shield-exclamation"></i></div>
+      <h3>السجل السلوكي</h3>
+      <p>توثيق الحوادث السلوكية بالتفصيل مع الإجراءات المتخذة وتتبع مسار كل طالب عبر الزمن.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="bi bi-file-earmark-pdf-fill"></i></div>
+      <h3>تقارير PDF رسمية</h3>
+      <p>تصدير تقارير بتصميم احترافي مطابق لمعايير وزارة التربية الكويتية بضغطة زر واحدة.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="bi bi-person-hearts"></i></div>
+      <h3>بوابة ولي الأمر</h3>
+      <p>تطبيق مستقل لأولياء الأمور لمتابعة غياب أبنائهم وإرسال الأعذار والتواصل مع الإدارة.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><i class="bi bi-display-fill"></i></div>
+      <h3>شاشة القيادة TV</h3>
+      <p>عرض حي لإحصائيات اليوم على شاشة مكتب المدير مع التعاميم والأخبار والفصول غير المسجّلة.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ALL FEATURES ══ -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-tag">كل الوحدات</div>
+    <h2>28 وحدة وظيفية متكاملة</h2>
+    <p>من إدارة الطلاب حتى الزيارات الفنية — المنظومة تغطي كل احتياجات مدرستك</p>
+  </div>
+  <div class="all-features">
+    <div class="feat-cols">
+      <div class="feat-item"><i class="bi bi-graph-up"></i>المؤشرات اليومية</div>
+      <div class="feat-item"><i class="bi bi-people"></i>إدارة الطلاب</div>
+      <div class="feat-item"><i class="bi bi-clipboard-check"></i>الغياب اليومي</div>
+      <div class="feat-item"><i class="bi bi-calendar-week"></i>كشف يومي شامل</div>
+      <div class="feat-item"><i class="bi bi-exclamation-triangle"></i>الغياب المتكرر</div>
+      <div class="feat-item"><i class="bi bi-bar-chart-line-fill"></i>التقارير الشهرية</div>
+      <div class="feat-item"><i class="bi bi-shield-exclamation"></i>السجل السلوكي</div>
+      <div class="feat-item"><i class="bi bi-door-open"></i>الاستئذان</div>
+      <div class="feat-item"><i class="bi bi-heart-pulse"></i>العيادة المدرسية</div>
+      <div class="feat-item"><i class="bi bi-person-badge"></i>دليل المعلمين</div>
+      <div class="feat-item"><i class="bi bi-star"></i>كفاءة الأداء</div>
+      <div class="feat-item"><i class="bi bi-clipboard-data"></i>الزيارات الفنية</div>
+      <div class="feat-item"><i class="bi bi-person-check"></i>زيارات المدير</div>
+      <div class="feat-item"><i class="bi bi-arrow-repeat"></i>جولة الجناح</div>
+      <div class="feat-item"><i class="bi bi-shuffle"></i>توزيع الاحتياط</div>
+      <div class="feat-item"><i class="bi bi-megaphone"></i>الإعلانات والأخبار</div>
+      <div class="feat-item"><i class="bi bi-envelope"></i>صندوق المراسلات</div>
+      <div class="feat-item"><i class="bi bi-trophy"></i>لوحة الشرف</div>
+      <div class="feat-item"><i class="bi bi-gift"></i>الحوافز والتميز</div>
+      <div class="feat-item"><i class="bi bi-person-gear"></i>إدارة المستخدمين</div>
+      <div class="feat-item"><i class="bi bi-journal-text"></i>سجل العمليات</div>
+      <div class="feat-item"><i class="bi bi-cloud-arrow-down-fill"></i>النسخ الاحتياطي</div>
+      <div class="feat-item"><i class="bi bi-grid-3x3"></i>الفصول والتوزيع</div>
+      <div class="feat-item"><i class="bi bi-arrow-up-circle-fill"></i>الترحيل السنوي</div>
+      <div class="feat-item"><i class="bi bi-archive-fill"></i>الأرشيف</div>
+      <div class="feat-item"><i class="bi bi-person"></i>ملف الطالب</div>
+      <div class="feat-item"><i class="bi bi-calendar3"></i>بحث بتاريخ</div>
+      <div class="feat-item"><i class="bi bi-shield-lock"></i>بوابة الحارس</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ROLES ══ -->
+<section class="section alt" id="roles">
+  <div class="section-header">
+    <div class="section-tag">الأدوار والصلاحيات</div>
+    <h2>نظام أدوار متعدد المستويات</h2>
+    <p>كل مستخدم يرى فقط ما يخصه — أمان كامل وخصوصية تامة</p>
+  </div>
+  <div class="roles-grid">
+    <div class="role-card">
+      <div class="role-icon">👨‍💼</div>
+      <h3>المدير</h3>
+      <p>صلاحيات كاملة — كل التقارير والإحصائيات وإدارة المستخدمين</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon">🏫</div>
+      <h3>مساعد المدير</h3>
+      <p>نفس صلاحيات المدير مع قيود على الإعدادات الحساسة</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon">👨‍🏫</div>
+      <h3>المعلم</h3>
+      <p>تسجيل الغياب والسلوك ومتابعة فصوله فقط</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon">📋</div>
+      <h3>رئيس القسم</h3>
+      <p>متابعة أداء المعلمين وإحصائيات القسم</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon">🛡️</div>
+      <h3>الحارس</h3>
+      <p>تسجيل الزوار وتصاريح الخروج وبلاغات الطوارئ</p>
+    </div>
+    <div class="role-card">
+      <div class="role-icon">👨‍👩‍👦</div>
+      <h3>ولي الأمر</h3>
+      <p>متابعة ابنه فقط — الغياب والسلوك والتواصل مع الإدارة</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRICING ══ -->
+<section class="section" id="pricing">
+  <div class="section-header">
+    <div class="section-tag">الأسعار</div>
+    <h2>باقات مناسبة لكل مدرسة</h2>
+    <p>اشتراك سنوي — بدون رسوم إضافية أو تكاليف خفية</p>
+  </div>
+  <div class="pricing-grid">
+
+    <!-- أساسي -->
+    <div class="price-card">
+      <div class="price-name">الأساسي</div>
+      <div class="price-amount"><sup>KWD</sup>150</div>
+      <div class="price-period">سنوياً</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li><i class="bi bi-check-circle-fill"></i>الغياب اليومي</li>
+        <li><i class="bi bi-check-circle-fill"></i>تقارير PDF</li>
+        <li><i class="bi bi-check-circle-fill"></i>إشعارات واتساب</li>
+        <li><i class="bi bi-check-circle-fill"></i>بوابة المعلم</li>
+        <li class="no"><i class="bi bi-x-circle-fill"></i>الزيارات الفنية</li>
+        <li class="no"><i class="bi bi-x-circle-fill"></i>بوابة ولي الأمر</li>
+        <li class="no"><i class="bi bi-x-circle-fill"></i>النسخ الاحتياطي</li>
+      </ul>
+      <a href="index.html" class="price-btn outline">ابدأ الآن</a>
+    </div>
+
+    <!-- احترافي -->
+    <div class="price-card featured">
+      <div class="price-badge">الأكثر طلباً</div>
+      <div class="price-name">الاحترافي</div>
+      <div class="price-amount"><sup>KWD</sup>250</div>
+      <div class="price-period">سنوياً</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li><i class="bi bi-check-circle-fill"></i>كل مميزات الأساسي</li>
+        <li><i class="bi bi-check-circle-fill"></i>الزيارات الفنية</li>
+        <li><i class="bi bi-check-circle-fill"></i>بوابة ولي الأمر</li>
+        <li><i class="bi bi-check-circle-fill"></i>شاشة القيادة TV</li>
+        <li><i class="bi bi-check-circle-fill"></i>السجل السلوكي</li>
+        <li><i class="bi bi-check-circle-fill"></i>كفاءة أداء المعلمين</li>
+        <li class="no"><i class="bi bi-x-circle-fill"></i>النسخ الاحتياطي السحابي</li>
+      </ul>
+      <a href="index.html" class="price-btn primary">ابدأ الآن</a>
+    </div>
+
+    <!-- مؤسسي -->
+    <div class="price-card">
+      <div class="price-name">المؤسسي</div>
+      <div class="price-amount"><sup>KWD</sup>400</div>
+      <div class="price-period">سنوياً</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li><i class="bi bi-check-circle-fill"></i>كل المميزات</li>
+        <li><i class="bi bi-check-circle-fill"></i>النسخ الاحتياطي السحابي</li>
+        <li><i class="bi bi-check-circle-fill"></i>سجل العمليات الكامل</li>
+        <li><i class="bi bi-check-circle-fill"></i>دعم فني أولوية</li>
+        <li><i class="bi bi-check-circle-fill"></i>تقارير مخصصة</li>
+        <li><i class="bi bi-check-circle-fill"></i>نسخة احتياطية يومية</li>
+        <li><i class="bi bi-check-circle-fill"></i>إعداد مخصص للمدرسة</li>
+      </ul>
+      <a href="index.html" class="price-btn outline">ابدأ الآن</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta-section">
+  <h2>جاهز تبدأ مع مدرستك؟</h2>
+  <p>انضم للمدارس التي تدير شؤونها رقمياً — ابدأ اليوم بدون تعقيد</p>
+  <a href="index.html" class="btn-hero-primary" style="display:inline-flex;">
+    <i class="bi bi-rocket-takeoff-fill"></i> ادخل على المنظومة
+  </a>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div style="margin-bottom:12px;">
+    <a href="home.html">الرئيسية</a>
+    <a href="#features">المميزات</a>
+    <a href="#pricing">الأسعار</a>
+    <a href="privacy.html">سياسة الخصوصية</a>
+    <a href="index.html">تسجيل الدخول</a>
+  </div>
+  <div>المنظومة الرقمية © 2026 — نظام إدارة المدارس السحابي | الكويت</div>
+</footer>
+
+<script>
+// Smooth scroll للروابط الداخلية
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('mainNav').classList.remove('mobile-open');
+  });
+});
+
+// إغلاق القائمة عند الضغط خارجها
+document.addEventListener('click', e => {
+  const nav = document.getElementById('mainNav');
+  if (!nav.contains(e.target)) nav.classList.remove('mobile-open');
+});
+</script>
+</body>
+</html>
