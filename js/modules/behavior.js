@@ -274,3 +274,30 @@ window.printBehaviorDirect = function() {
     const contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الإجراء</th><th>المتابعة</th><th>المحيل</th><th>الملاحظات</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     window.ManzoumaReport.printDirect(contentHTML, 'سجل الإجراءات السلوكية');
 };
+
+// ===== واتساب — إبلاغ ولي الأمر بالسلوك =====
+window.sendBehaviorWhatsApp = async function(studentName, classId, behaviorType, action) {
+    try {
+        const schoolId = getActiveSchoolId();
+        // جلب رقم ولي الأمر
+        const snap = await getDocs(query(
+            collection(db,'students'),
+            where('schoolId','==',schoolId),
+            where('name','==',studentName),
+            where('classId','==',classId)
+        ));
+        if(snap.empty) { window.showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
+        const student = snap.docs[0].data();
+        const phone = (student.parentPhone||'').replace(/\D/g,'');
+        if(!phone) { window.showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
+
+        const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+        const msg = encodeURIComponent(
+            `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
+            `نُعلمكم بأنه تم تسجيل حادثة ${behaviorType} بتاريخ ${today}.\n` +
+            `الإجراء المتخذ: ${action||'—'}\n` +
+            `يرجى التواصل مع الإدارة للمزيد.`
+        );
+        window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
+    } catch(e) { window.showToast('❌ '+e.message,'error'); }
+};
