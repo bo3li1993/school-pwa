@@ -85,6 +85,19 @@ select:focus,input:focus{border-color:var(--accent);}
 .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);
   background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:6px;height:40px;margin-bottom:8px;}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ══ Dark Mode ══ */
+body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
+body.dark-mode .header-nav { background:#0f1928 !important; }
+body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .workspace-container > * { background:#1e2535; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535 !important; color:#e2e8f0 !important; border-color:#2a3650 !important;
+}
+body.dark-mode table th { background:#0f1928 !important; }
+body.dark-mode .bottom-nav { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !important; }
+
 </style>
 </head>
 <body>
@@ -848,6 +861,10 @@ window.goToAdmin = function() { window.location.replace('admin.html'); };
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
 }
+</script>
+
+<script>
+if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
 </script>
 </body>
 </html>
