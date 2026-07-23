@@ -133,7 +133,7 @@ window.createFullBackup = async function() {
         lastBackupData = backupData;
 
         // حفظ metadata بـ Firestore
-        const dateStr = new Date().toLocaleDateString('ar-KW');
+        const dateStr = getTodayISO();
         await addDoc(collection(db, 'backups'), {
             schoolId,
             createdAt: serverTimestamp(),
