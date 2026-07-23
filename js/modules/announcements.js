@@ -127,7 +127,7 @@ window.handlePublishAnnouncement = async function(event) {
             content: contentEl.value.trim(),
             imageUrl: window.currentAnnouncementBase64Image || "",
             publisherName: userSession.name || "إدارة المدرسة",
-            dateStr: new Date().toLocaleDateString('ar-KW'),
+            dateStr: getTodayISO(),
             timeStr: new Date().toLocaleTimeString('ar-KW', { hour12: true, hour: '2-digit', minute: '2-digit' }),
             createdAt: new Date().toISOString()
         });
