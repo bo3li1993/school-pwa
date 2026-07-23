@@ -145,9 +145,14 @@ export async function initVisitsModule() {
         </div>
 
         <div class="card" style="border-top:4px solid var(--navy); background:#fff; padding:22px; border-radius:14px; border:1px solid var(--line); margin-top:18px;">
-            <h2 style="color:var(--navy); font-size:16px; font-weight:900;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <h2 style="color:var(--navy); font-size:16px; font-weight:900;margin:0">
                 <i class="bi bi-archive-fill"></i> أرشيف الزيارات الفنية
             </h2>
+            <button onclick="window.printVisitsPDF()" style="background:var(--red);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+                <i class="bi bi-file-earmark-pdf-fill"></i> تصدير PDF
+            </button>
+        </div>
             <div style="overflow-x:auto; margin-top:12px;">
                 <table style="width:100%; border-collapse:collapse; font-size:13px;">
                     <thead>
@@ -299,13 +304,57 @@ async function loadTechVisitsLive() {
 }
 
 window.showVisitDetails = function(data) {
-    let msg = `📋 تفاصيل زيارة: ${data.teacherName}\n`;
-    msg += `القسم: ${data.subject} | الموجه: ${data.visitorName}\n`;
-    msg += `التاريخ: ${data.date}\n\n`;
-    if (data.criteria && data.criteria.length) {
-        msg += `البنود (${data.criteria.length}):\n`;
-        data.criteria.forEach((c,i) => { msg += `${i+1}. ${c.item}: ${c.rating}\n`; });
+    // نبني modal ديناميكي
+    const existing = document.getElementById('visit-detail-modal');
+    if(existing) existing.remove();
+
+    const ratingColor = {'ممتاز':'#059669','جيد جداً':'#1a78c2','جيد':'#d4920a','مقبول':'#f59e0b','ضعيف':'#dc2626'};
+    const criteriaHTML = data.criteria?.map((c,i)=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
+            <span style="color:#374151;font-weight:600">${i+1}. ${c.item}</span>
+            <span style="font-weight:800;color:${ratingColor[c.rating]||'#6b7280'}">${c.rating}</span>
+        </div>`).join('') || '';
+
+    const modal = document.createElement('div');
+    modal.id = 'visit-detail-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    modal.innerHTML = `
+        <div style="background:#fff;border-radius:16px;padding:24px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">📋 تفاصيل الزيارة الفنية</h3>
+                <button onclick="document.getElementById('visit-detail-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>
+            </div>
+            <div style="background:#f8f9fc;border-radius:10px;padding:14px;margin-bottom:14px;font-size:13px;line-height:2">
+                <div>👤 <b>المعلم:</b> ${data.teacherName||'—'}</div>
+                <div>📚 <b>القسم:</b> ${data.subject||'—'}</div>
+                <div>🧑‍💼 <b>الموجه:</b> ${data.visitorName||'—'}</div>
+                <div>📅 <b>التاريخ:</b> ${data.date||'—'}</div>
+                <div>⭐ <b>التقييم العام:</b> <span style="color:${ratingColor[data.overallRating]||'#6b7280'};font-weight:800">${data.overallRating||'—'}</span></div>
+            </div>
+            <div style="margin-bottom:14px">
+                <div style="font-weight:800;font-size:13px;color:#0b2545;margin-bottom:8px">📊 بنود التقييم (${data.criteria?.length||0})</div>
+                ${criteriaHTML}
+            </div>
+            ${data.notes?`<div style="background:#eaf4fd;border-radius:8px;padding:12px;font-size:13px;color:#0b2545"><b>💬 الملاحظات:</b><br>${data.notes}</div>`:''}
+            <button onclick="document.getElementById('visit-detail-modal').remove()" style="width:100%;margin-top:16px;padding:11px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer">إغلاق</button>
+        </div>`;
+    modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
+    document.body.appendChild(modal);
+};
+
+window.printVisitsPDF = async function() {
+    const tbody = document.getElementById('tech-visits-tbody');
+    if(!tbody?.innerHTML.trim() || tbody.innerHTML.includes('لا توجد زيارات')) {
+        window.showToast('⚠️ لا توجد بيانات للتصدير','warning'); return;
     }
-    msg += `\nالملاحظات: ${data.notes||'-'}`;
-    window.showToast(msg);
+    const contentHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#0b2545;color:#fff">
+            <th style="padding:8px">المعلم</th><th style="padding:8px">القسم</th>
+            <th style="padding:8px">الموجه</th><th style="padding:8px">التقييم</th><th style="padding:8px">التاريخ</th>
+        </tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    if(window.ManzoumaReport?.exportPDF) {
+        await window.ManzoumaReport.exportPDF(contentHTML, 'سجل_الزيارات_الفنية', 'سجل الزيارات الفنية', '');
+    } else {
+        window.showToast('⚠️ يجب فتح هذا الموديل من لوحة الإدارة','info');
+    }
 };
