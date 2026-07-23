@@ -85,7 +85,7 @@ export async function requestNotificationPermission(db, schoolId, userId) {
 
         // جلب التوكن الفريد للجهاز من خوادم جوجل
         const token = await getToken(messaging, {
-            vapidKey: 'YOUR_VAPID_KEY_HERE' // ⚠️ استبدل هذا التوكن بمفتاح الـ VAPID الخاص بك من لوحة تحكم فايربيس لاحقاً لتفعيل الميزة
+            vapidKey: 'BFN-D_Bbs7e12_OK7Em0RikolvNwRcgTBr45IZIZ2mQOMZh7-hCtvSVbjT6xUZCAYpwBZtp1yWvEUHKsY1luiB0'
         });
 
         if (token) {
