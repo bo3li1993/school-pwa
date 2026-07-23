@@ -33,6 +33,7 @@ const ASSETS_TO_CACHE = [
     './',
     './index.html',
   './home.html',
+  './nurse.html',
     './admin.html',
     './teacher.html',
     './parent.html',
