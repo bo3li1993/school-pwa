@@ -85,6 +85,19 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
   .bottom-nav{display:flex}
   .workspace-container{padding-bottom:80px}
 }
+
+/* ══ Dark Mode ══ */
+body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
+body.dark-mode .header-nav { background:#0f1928 !important; }
+body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .workspace-container > * { background:#1e2535; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535 !important; color:#e2e8f0 !important; border-color:#2a3650 !important;
+}
+body.dark-mode table th { background:#0f1928 !important; }
+body.dark-mode .bottom-nav { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !important; }
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 </head>
@@ -842,6 +855,10 @@ document.addEventListener("DOMContentLoaded", function() {
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
 }
+</script>
+
+<script>
+if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
 </script>
 </body>
 </html>
