@@ -592,7 +592,7 @@ window.createSchool = async function() {
             schoolId:  schoolId,
             userId:    adminId,
             name:      adminName,
-            plainPass: adminPass,
+            plainPass: adminPass, // ⚠️ Super Admin فقط — يُنشأ أوّل مرة ثم يُغيَّر بـ resetUserPassword
             phone:     adminPhone,
             role:      'admin',
             createdAt: serverTimestamp()
