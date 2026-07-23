@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل المستخدم — المنظومة الرقمية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root {
+  --navy:#0b2545; --sky:#1a78c2; --ice:#eaf4fd; --gold:#d4920a;
+  --white:#fff; --off:#f8f9fc; --line:#e5e7eb; --text:#111827; --mid:#6b7280;
+  --green:#059669; --red:#dc2626;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);direction:rtl}
+
+/* NAV */
+.nav{background:var(--navy);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;border-bottom:4px solid var(--gold)}
+.nav-logo{display:flex;align-items:center;gap:12px;color:#fff}
+.nav-logo span{font-size:20px;font-weight:900}
+.nav-badge{background:var(--gold);padding:4px 16px;border-radius:20px;font-size:12px;font-weight:800;color:#fff}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--navy),#0d2e5a);padding:60px 32px;text-align:center}
+.hero h1{font-size:clamp(24px,4vw,42px);font-weight:900;color:#fff;margin-bottom:12px}
+.hero p{font-size:16px;color:rgba(255,255,255,.7);max-width:500px;margin:0 auto 32px;line-height:1.7;font-weight:600}
+.hero-cards{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;max-width:800px;margin:0 auto}
+.hero-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:20px;text-align:center;min-width:130px;flex:1;max-width:180px}
+.hero-card .icon{font-size:28px;margin-bottom:8px}
+.hero-card .label{font-size:13px;color:rgba(255,255,255,.8);font-weight:700}
+
+/* CONTENT */
+.container{max-width:900px;margin:0 auto;padding:32px 20px}
+.section{margin-bottom:48px}
+.section-title{font-size:22px;font-weight:900;color:var(--navy);margin-bottom:20px;display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--ice);padding-bottom:12px}
+
+/* ROLE CARDS */
+.roles-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.role-card{background:var(--white);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.role-header{padding:16px 20px;display:flex;align-items:center;gap:12px}
+.role-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.role-name{font-size:15px;font-weight:900;color:var(--navy)}
+.role-sub{font-size:12px;color:var(--mid);font-weight:600}
+.role-steps{padding:16px 20px;border-top:1px solid var(--line)}
+.step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+.step:last-child{margin-bottom:0}
+.step-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;flex-shrink:0;margin-top:2px}
+.step-text{font-size:13px;font-weight:600;color:var(--text);line-height:1.6}
+
+/* FAQ */
+.faq-item{background:var(--white);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.faq-q{padding:16px 20px;font-size:14px;font-weight:800;color:var(--navy);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .2s}
+.faq-q:hover{background:var(--ice)}
+.faq-a{padding:0 20px 16px;font-size:13px;font-weight:600;color:var(--mid);line-height:1.7;display:none}
+.faq-a.show{display:block}
+
+/* TIPS */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.tip-card{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;gap:12px;align-items:flex-start}
+.tip-icon{font-size:24px;flex-shrink:0}
+.tip-title{font-size:13px;font-weight:900;color:var(--navy);margin-bottom:4px}
+.tip-text{font-size:12px;color:var(--mid);font-weight:600;line-height:1.6}
+
+/* FOOTER */
+footer{background:var(--navy);padding:24px 32px;text-align:center;color:rgba(255,255,255,.5);font-size:13px;font-weight:600}
+
+@media(max-width:768px){
+  .nav{padding:14px 16px}
+  .hero{padding:40px 16px}
+  .container{padding:20px 14px}
+  .hero-cards{gap:10px}
+  .hero-card{min-width:110px;padding:14px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div style="width:36px;height:36px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900">م</div>
+    <span>المنظومة الرقمية</span>
+  </div>
+  <span class="nav-badge">دليل المستخدم</span>
+</nav>
+
+<div class="hero">
+  <h1>كيف تستخدم المنظومة الرقمية؟</h1>
+  <p>دليل شامل لجميع مستخدمي النظام — من المدير حتى ولي الأمر</p>
+  <div class="hero-cards">
+    <div class="hero-card"><div class="icon">👨‍💼</div><div class="label">المدير</div></div>
+    <div class="hero-card"><div class="icon">👨‍🏫</div><div class="label">المعلم</div></div>
+    <div class="hero-card"><div class="icon">📋</div><div class="label">رئيس القسم</div></div>
+    <div class="hero-card"><div class="icon">🛡️</div><div class="label">الحارس</div></div>
+    <div class="hero-card"><div class="icon">👨‍👩‍👦</div><div class="label">ولي الأمر</div></div>
+    <div class="hero-card"><div class="icon">🏥</div><div class="label">الممرض</div></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- الأدوار -->
+  <div class="section">
+    <div class="section-title"><i class="bi bi-people-fill" style="color:var(--sky)"></i> دليل كل دور</div>
+    <div class="roles-grid">
+
+      <div class="role-card">
+        <div class="role-header">
+          <div class="role-icon" style="background:#eaf4fd">👨‍💼</div>
+          <div><div class="role-name">المدير / مساعد المدير</div><div class="role-sub">صلاحيات كاملة</div></div>
+        </div>
+        <div class="role-steps">
+          <div class="step"><div class="step-num" style="background:var(--sky)">1</div><div class="step-text">افتح رابط مدرستك واضغط <b>دخول</b> وأدخل رقمك وكلمة مرورك</div></div>
+          <div class="step"><div class="step-num" style="background:var(--sky)">2</div><div class="step-text">في الصفحة الرئيسية ترى <b>المؤشرات اليومية</b> — غياب، سلوك، استئذان</div></div>
+          <div class="step"><div class="step-num" style="background:var(--sky)">3</div><div class="step-text">من القائمة الجانبية افتح أي قسم تريده (الغياب، التقارير، الطلاب...)</div></div>
+          <div class="step"><div class="step-num" style="background:var(--sky)">4</div><div class="step-text">اضغط على أي تقرير لتصديره <b>PDF</b> أو <b>Excel</b></div></div>
+          <div class="step"><div class="step-num" style="background:var(--sky)">5</div><div class="step-text">من <b>إدارة المستخدمين</b> أضف وعدّل حسابات المعلمين</div></div>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="role-header">
+          <div class="role-icon" style="background:#f0fdf4">👨‍🏫</div>
+          <div><div class="role-name">المعلم</div><div class="role-sub">تسجيل الغياب والسلوك</div></div>
+        </div>
+        <div class="role-steps">
+          <div class="step"><div class="step-num" style="background:var(--green)">1</div><div class="step-text">افتح رابط المدرسة وسجّل دخولك برقمك وكلمة المرور</div></div>
+          <div class="step"><div class="step-num" style="background:var(--green)">2</div><div class="step-text">اختر <b>الغياب</b> — حدد الفصل والحصة ثم اضغط على الغائبين</div></div>
+          <div class="step"><div class="step-num" style="background:var(--green)">3</div><div class="step-text">اضغط <b>إرسال واتساب</b> لإبلاغ أولياء الأمور تلقائياً</div></div>
+          <div class="step"><div class="step-num" style="background:var(--green)">4</div><div class="step-text">سجّل السلوك الإيجابي أو السلبي من تبويب <b>السلوك</b></div></div>
+          <div class="step"><div class="step-num" style="background:var(--green)">5</div><div class="step-text">من <b>حسابي</b> غيّر اسمك أو كلمة مرورك</div></div>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="role-header">
+          <div class="role-icon" style="background:#fdf4ff">📋</div>
+          <div><div class="role-name">رئيس القسم</div><div class="role-sub">متابعة المعلمين</div></div>
+        </div>
+        <div class="role-steps">
+          <div class="step"><div class="step-num" style="background:#7e22ce">1</div><div class="step-text">سجّل دخولك — ترى قائمة <b>معلمي قسمك</b> مباشرة</div></div>
+          <div class="step"><div class="step-num" style="background:#7e22ce">2</div><div class="step-text">اضغط <b>تصدير PDF</b> للحصول على قائمة المعلمين رسمياً</div></div>
+          <div class="step"><div class="step-num" style="background:#7e22ce">3</div><div class="step-text">من تبويب <b>الإحصائيات</b> تابع غياب طلاب قسمك</div></div>
+          <div class="step"><div class="step-num" style="background:#7e22ce">4</div><div class="step-text">أرسل <b>رسائل واتساب</b> لأولياء الأمور مباشرة</div></div>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="role-header">
+          <div class="role-icon" style="background:#fef3c7">🛡️</div>
+          <div><div class="role-name">الحارس</div><div class="role-sub">بوابة الأمن</div></div>
+        </div>
+        <div class="role-steps">
+          <div class="step"><div class="step-num" style="background:var(--gold)">1</div><div class="step-text">سجّل دخولك — الصفحة الرئيسية للطوارئ والزوار</div></div>
+          <div class="step"><div class="step-num" style="background:var(--gold)">2</div><div class="step-text">لتسجيل زائر: أدخل اسمه ورقمه المدني وسبب الزيارة</div></div>
+          <div class="step"><div class="step-num" style="background:var(--gold)">3</div><div class="step-text">عند المغادرة اضغط <b>خروج ✓</b> بجانب اسم الزائر</div></div>
+          <div class="step"><div class="step-num" style="background:var(--gold)">4</div><div class="step-text">لطوارئ: اضغط <b>زر الطوارئ</b> لإبلاغ الإدارة فوراً</div></div>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="role-header">
+          <div class="role-icon" style="background:#ecfdf5">👨‍👩‍👦</div>
+          <div><div class="role-name">ولي الأمر</div><div class="role-sub">متابعة الابن</div></div>
+        </div>
+        <div class="role-steps">
+          <div class="step"><div class="step-num" style="background:var(--green)">1</div><div class="step-text">افتح رابط المدرسة — اضغط <b>تسجيل جديد</b> إذا أول مرة</div></div>
+          <div class="step"><div class="step-num" style="background:var(--green)">2</div><div class="step-text">أدخل رقمك المدني وحدد اسم ابنك من قائمة الفصل</div></div>
+          <div class="step"><div class="step-num" style="background:var(--green)">3</div><div class="step-text">في الصفحة الرئيسية ترى <b>غيابات ابنك</b> وسجله السلوكي</div></div>
+          <div class="step"><div class="step-num" style="background:var(--green)">4</div><div class="step-text">من <b>الرسائل</b> تواصل مع المدير أو المعلم مباشرة</div></div>
+          <div class="step"><div class="step-num" style="background:var(--green)">5</div><div class="step-text">فعّل الإشعارات لتصلك تنبيهات غياب ابنك فوراً</div></div>
+        </div>
+      </div>
+
+      <div class="role-card">
+        <div class="role-header">
+          <div class="role-icon" style="background:#e0f7fa">🏥</div>
+          <div><div class="role-name">الممرض</div><div class="role-sub">العيادة المدرسية</div></div>
+        </div>
+        <div class="role-steps">
+          <div class="step"><div class="step-num" style="background:#0891b2">1</div><div class="step-text">سجّل دخولك — ترى إحصائيات العيادة مباشرة</div></div>
+          <div class="step"><div class="step-num" style="background:#0891b2">2</div><div class="step-text">اختر <b>تسجيل</b> ثم حدد الفصل والطالب والشكوى</div></div>
+          <div class="step"><div class="step-num" style="background:#0891b2">3</div><div class="step-text">اختر النتيجة: داخل العيادة / رجع الفصل / أُرسل للبيت</div></div>
+          <div class="step"><div class="step-num" style="background:#0891b2">4</div><div class="step-text">من تبويب <b>اليوم</b> حدّث حالة أي طالب بضغطة واحدة</div></div>
+          <div class="step"><div class="step-num" style="background:#0891b2">5</div><div class="step-text">من <b>الأرشيف</b> ابحث في سجلات أي تاريخ سابق</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- نصائح مهمة -->
+  <div class="section">
+    <div class="section-title"><i class="bi bi-lightbulb-fill" style="color:var(--gold)"></i> نصائح مهمة</div>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">📱</div>
+        <div><div class="tip-title">ثبّت التطبيق على جوالك</div><div class="tip-text">افتح الموقع من المتصفح واضغط "أضف إلى الشاشة الرئيسية" — يعمل مثل التطبيق بدون تثبيت</div></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🔔</div>
+        <div><div class="tip-title">فعّل الإشعارات</div><div class="tip-text">اسمح بالإشعارات عند الطلب لتصلك تنبيهات الغياب والسلوك فوراً على جوالك</div></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">💾</div>
+        <div><div class="tip-title">يعمل بدون إنترنت</div><div class="tip-text">النظام يحفظ نسخة محلية — تقدر تشوف البيانات المحفوظة حتى بدون نت</div></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🔐</div>
+        <div><div class="tip-title">حافظ على كلمة مرورك</div><div class="tip-text">لا تشاركها مع أحد. لو نسيتها تواصل مع مدير المدرسة لإعادة تعيينها</div></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📊</div>
+        <div><div class="tip-title">التقارير بضغطة واحدة</div><div class="tip-text">من أي جدول اضغط زر PDF أو Excel لتصدير البيانات جاهزة للطباعة أو الأرشفة</div></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">💬</div>
+        <div><div class="tip-title">واتساب مباشر</div><div class="tip-text">أزرار واتساب في كل صفحة تفتح محادثة مع ولي الأمر مباشرة بدون نسخ الرقم يدوياً</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- أسئلة شائعة -->
+  <div class="section">
+    <div class="section-title"><i class="bi bi-question-circle-fill" style="color:var(--sky)"></i> أسئلة شائعة</div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">كيف أُغيّر كلمة مرور المعلم؟ <i class="bi bi-chevron-down"></i></div>
+      <div class="faq-a">من لوحة الإدارة → إدارة المستخدمين → ابحث عن المعلم → اضغط تعديل → أدخل كلمة المرور الجديدة. أو المعلم يغيرها بنفسه من تبويب "حسابي".</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">لماذا لا أستطيع الدخول؟ <i class="bi bi-chevron-down"></i></div>
+      <div class="faq-a">تأكد من رقم مستخدمك وكلمة المرور. لو حاولت 5 مرات خطأ يُغلق الحساب 15 دقيقة تلقائياً. تواصل مع المدير إذا استمرت المشكلة.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">كيف أُضيف طالباً جديداً؟ <i class="bi bi-chevron-down"></i></div>
+      <div class="faq-a">من لوحة الإدارة → إدارة الطلاب → أضف طالب. أو من "رفع كشف" لرفع ملف Excel بالطلاب دفعة واحدة.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">هل يعمل النظام على الجوال؟ <i class="bi bi-chevron-down"></i></div>
+      <div class="faq-a">نعم! النظام مصمم بالكامل للجوال والتابلت واللابتوب. ثبّته كتطبيق من متصفح Chrome أو Safari لتجربة أفضل.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">كيف أُصدّر تقرير الغياب الشهري؟ <i class="bi bi-chevron-down"></i></div>
+      <div class="faq-a">من لوحة الإدارة → التقارير الشهرية → اختر الشهر → اضغط "توليد التقرير" ثم "تصدير PDF". التقرير يُولَّد تلقائياً أول كل شهر أيضاً.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">كيف يُفعَّل ولي الأمر؟ <i class="bi bi-chevron-down"></i></div>
+      <div class="faq-a">ولي الأمر يفتح رابط المدرسة ويضغط "تسجيل جديد" — يُدخل رقمه المدني ويختار اسم ابنه من القائمة ويضع كلمة مرور. بعدها يدخل عادي.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">ما الفرق بين الباقات؟ <i class="bi bi-chevron-down"></i></div>
+      <div class="faq-a">الأساسي (150 KWD): غياب + تقارير + واتساب. الاحترافي (250 KWD): + زيارات فنية + بوابة ولي الأمر + شاشة TV. المؤسسي (400 KWD): كل شيء + نسخ احتياطي + سجل عمليات.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  المنظومة الرقمية © 2026 — دليل المستخدم | للدعم الفني تواصل مع مدير المدرسة
+</footer>
+
+<script>
+function toggleFaq(el) {
+  const ans = el.nextElementSibling;
+  const icon = el.querySelector('i');
+  ans.classList.toggle('show');
+  icon.className = ans.classList.contains('show') ? 'bi bi-chevron-up' : 'bi bi-chevron-down';
+}
+</script>
+</body>
+</html>
