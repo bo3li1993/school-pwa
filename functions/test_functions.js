@@ -6,9 +6,15 @@
 const admin = require('firebase-admin');
 const crypto = require('crypto');
 
+// ضبط معرف المشروع والمحاكي المحترفي تلقائياً للتجربة المحلية
+process.env.GCP_PROJECT = process.env.GCP_PROJECT || 'hosainan-school';
+process.env.FIRESTORE_EMULATOR_HOST = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080';
+
 // 1. تهيئة بيئة الاختبار
 if (!admin.apps.length) {
-    admin.initializeApp();
+    admin.initializeApp({
+        projectId: 'hosainan-school'
+    });
 }
 const db = admin.firestore();
 
@@ -46,7 +52,7 @@ async function runAutomatedTests() {
         }
 
         // --------------------------------------------------------
-        // TEST 2: اختبار نظام حظر التخمين (Rate Limiting)
+        // TEST 2: اختبار نظام قفل المحاولات الفاشلة (Rate Limiting)
         // --------------------------------------------------------
         logInfo('اختبار 2: نظام قفل المحاولات الفاشلة (Rate Limiting)...');
         const rateLimitKey = 'user_test_dummy';
@@ -99,8 +105,8 @@ async function runAutomatedTests() {
             schoolId: testSchoolId,
             classId: '8/1',
             name: 'طالب اختبار أوتوماتيكي',
-            parentPhone: '99887766', // بيانات حساسة
-            civilId: '30000000000'     // بيانات حساسة
+            parentPhone: '99887766',
+            civilId: '30000000000'
         });
 
         const classStudents = await db.collection('students')
@@ -108,7 +114,6 @@ async function runAutomatedTests() {
             .where('classId', '==', '8/1')
             .get();
 
-        // محاكاة تنقية البيانات التي تقوم بها الدالة `getRegistrationStudents`
         const sanitizedStudents = classStudents.docs.map(d => ({
             id: d.id,
             name: d.data().name || ''
@@ -131,10 +136,8 @@ async function runAutomatedTests() {
         await grade8StudentRef.set({ schoolId: testSchoolId, classId: '8/1', name: 'طالب ص8' });
         await grade9StudentRef.set({ schoolId: testSchoolId, classId: '9/2', name: 'طالب ص9' });
 
-        // محاكاة الترفيع
-        // ص8 -> ص9
         await grade8StudentRef.update({ classId: '9/1' });
-        // ص9 -> خريج
+
         const gradDoc = db.collection('graduates').doc('test_student_g9');
         await gradDoc.set({
             schoolId: testSchoolId,
@@ -157,7 +160,7 @@ async function runAutomatedTests() {
         // --------------------------------------------------------
         // تنظيف بيئة الاختبار
         // --------------------------------------------------------
-        logInfo('تنظيف بيانات الاختبار من قاعدة البيانات...');
+        logInfo('تنظيف بيانات الاختبار...');
         await parentRef.delete();
         await mockStudentRef.delete();
         await grade8StudentRef.delete();
@@ -165,11 +168,11 @@ async function runAutomatedTests() {
         logSuccess('تم تنظيف قاعدة البيانات بنجاح');
 
     } catch (error) {
-        logFail('حدث خطأ أثناء تنفيذ سكريبت الاختبارات:', error);
+        logFail('حدث خطأ أثناء تنفيذ سكريبت الاختبارات:', error.message || error);
     }
 
     console.log('\n==================================================');
-    console.log('🏁 انتهت جميع الاختبارات الأوتوماتيكية بنجاح');
+    console.log('🏁 اكتملت حزمة الاختبارات الأوتوماتيكية');
     console.log('==================================================\n');
 }
 
