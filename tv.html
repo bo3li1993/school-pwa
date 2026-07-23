@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>شاشة القيادة الحية والتعاميم - المنظومة الرقمية</title>
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0b2545">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -26,7 +27,7 @@
   --red:   #dc2626;
 }
 
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        
         
         body { 
             font-family: 'Cairo', sans-serif; 
@@ -206,6 +207,28 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+/* ═══ TV Responsive ═══ */
+@media (max-width: 768px) {
+  body { padding: 15px; flex-direction: column; }
+  .header h1 { font-size: 18px; }
+  .header { margin-bottom: 12px; padding-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .clock { font-size: 20px; padding: 6px 14px; }
+  .school-badge { font-size: 13px; padding: 4px 12px; }
+  .cards-container { flex-direction: column; gap: 14px; height: auto; flex: none; }
+  .stat-card { padding: 18px; }
+  .stat-card .number { font-size: 72px; }
+  .stat-card h2 { font-size: 18px; }
+  .btn-exit { position: relative; bottom: auto; left: auto; width: 100%; margin-top: 14px; }
+}
+@media (max-width: 480px) {
+  .stat-card .number { font-size: 56px; }
+  body { padding: 10px; }
+}
+</style>
+
 </head>
 <body>
 
@@ -258,6 +281,12 @@
         const schoolId = user?.schoolId;
 
         if (!schoolId) {
+            window.location.replace('index.html');
+        }
+
+        // ✅ فحص صلاحيات TV - يُسمح فقط للإدارة
+        const tvAllowed = ['admin', 'assistant_manager', 'wing_supervisor'];
+        if (!tvAllowed.includes(user?.role)) {
             window.location.replace('index.html');
         }
 
