@@ -88,6 +88,19 @@ body { background:var(--off); }
   .stats-row { grid-template-columns:repeat(2,1fr); }
   .record-card { flex-direction:column; }
 }
+
+/* ══ Dark Mode ══ */
+body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
+body.dark-mode .header-nav { background:#0f1928 !important; }
+body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .workspace-container > * { background:#1e2535; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535 !important; color:#e2e8f0 !important; border-color:#2a3650 !important;
+}
+body.dark-mode table th { background:#0f1928 !important; }
+body.dark-mode .bottom-nav { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !important; }
+
 </style>
 </head>
 <body>
@@ -106,6 +119,9 @@ body { background:var(--off); }
     <p id="lbl-nurse-school">المنظومة الرقمية</p>
   </div>
   <div class="header-actions">
+    <button onclick="document.body.classList.toggle('dark-mode');localStorage.setItem('hs_dark_mode',document.body.classList.contains('dark-mode')?'1':'0')"
+    style="background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:15px"
+    title="الوضع الليلي">🌙</button>
     <button class="btn-header" onclick="doLogout()" style="background:var(--red);color:#fff;">
       <i class="bi bi-box-arrow-left"></i> خروج
     </button>
