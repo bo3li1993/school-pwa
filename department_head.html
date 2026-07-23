@@ -73,6 +73,19 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 .msg-bubble { padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; max-width: 85%; font-size: 13px; }
 .msg-parent { background: #f1f5f9; align-self: flex-start; }
 .msg-mine { background: var(--ice); align-self: flex-end; margin-right: auto; }
+
+/* ══ Dark Mode ══ */
+body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
+body.dark-mode .header-nav { background:#0f1928 !important; }
+body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .workspace-container > * { background:#1e2535; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535 !important; color:#e2e8f0 !important; border-color:#2a3650 !important;
+}
+body.dark-mode table th { background:#0f1928 !important; }
+body.dark-mode .bottom-nav { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !important; }
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 
@@ -485,7 +498,11 @@ window.exportTeachersPDF = async function() {
             <thead><tr><th>#</th><th>الاسم</th><th>رقم المعلم</th><th>الهاتف</th><th>الإيميل</th></tr></thead>
             <tbody>${rows}</tbody>
         </table>
-        </body></html>`);
+        
+<script>
+if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
+</script>
+</body></html>`);
         win.document.close();
         setTimeout(()=>win.print(), 600);
     } catch(e) { showToast('❌ '+e.message,'error'); }
@@ -519,5 +536,9 @@ window.switchDeptView = function(viewId) {
 };
 </script>
 
+
+<script>
+if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
+</script>
 </body>
 </html>
