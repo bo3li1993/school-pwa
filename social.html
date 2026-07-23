@@ -404,17 +404,13 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 </div>
 
 <script type="module">
-import { db, getSchoolClasses } from './js/firebase-config.js';
+import { db, getActiveSchoolId, getTodayISO, getSchoolClasses } from './js/firebase-config.js';
 import { collection, addDoc, doc, updateDoc, onSnapshot, getDocs, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentWorkerId = "";
 let currentWorkerName = "الأخصائي الاجتماعي";
 
-// دالة مساعدة لجلب معرف المدرسة لضمان فصل الحسابات
-const getActiveSchoolId = () => {
-    const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    return user.schoolId || 'default';
-};
+// getActiveSchoolId مستوردة من firebase-config.js
 
 function getUnifiedDateString() {
     const d = new Date();
