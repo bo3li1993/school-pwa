@@ -407,9 +407,20 @@ window.updateGuardProfileLive = async function(e) {
 
         const userDocRef = snap.docs[0].ref;
         let updatedData = { name: newName, email: newEmail, phone: newPhone };
-        if (newPass) updatedData.plainPass = newPass;
-
+        // كلمة المرور تُغيَّر عبر Cloud Function
         await updateDoc(userDocRef, updatedData);
+
+        // ✅ تغيير كلمة المرور عبر Cloud Function (مشفّر آمن)
+        if (newPass) {
+            try {
+                const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+                const fns = getFunctions(auth.app);
+                const resetFn = httpsCallable(fns, 'resetUserPassword');
+                await resetFn({ userDocId: snap.docs[0].id, newPassword: newPass });
+            } catch(passErr) {
+                showToast('⚠️ تم حفظ البيانات لكن تعذر تغيير كلمة المرور: ' + passErr.message, 'warning');
+            }
+        }
         
         const localData = JSON.parse(localStorage.getItem('hs_user') || '{}');
         localData.name = newName;
