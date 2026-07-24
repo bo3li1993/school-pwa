@@ -78,7 +78,11 @@ export async function initGatepassModule() {
         // تهيئة الفصول
         const classSelect = document.getElementById('gate-class-select');
         const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+        // جلب الطلاب والتصاريح بالتوازي
+    const [stuSnap] = await Promise.all([
+        getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)))
+    ]);
+    const snap = stuSnap;
         
         let classesSet = new Set();
         snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
