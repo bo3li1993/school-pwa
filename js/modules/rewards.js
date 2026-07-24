@@ -1,6 +1,19 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// ══ Cache الطلاب ══
+let _rewardStudentsCache = null;
+let _rewardSchoolCache   = null;
+
+async function getCachedStudents(schoolId) {
+    if(_rewardStudentsCache && _rewardSchoolCache === schoolId) return _rewardStudentsCache;
+    const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+    _rewardStudentsCache = snap;
+    _rewardSchoolCache   = schoolId;
+    return snap;
+}
+
+
 export async function initRewardsModule() {
     const container = document.getElementById('tab-rewards');
     if (!container) return;
@@ -65,7 +78,7 @@ export async function initRewardsModule() {
         // 🏢 تحميل الفصول المتاحة للمدرسة الحالية
         const classSelect = document.getElementById('reward-class-select');
         const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+        const snap = await getCachedStudents(schoolId);
         
         let classesSet = new Set();
         snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
