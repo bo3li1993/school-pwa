@@ -1,5 +1,5 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
-import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, query, where, limit } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initMonthlyModule() {
     const container = document.getElementById('tab-monthly');
