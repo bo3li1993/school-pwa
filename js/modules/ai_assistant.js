@@ -238,65 +238,68 @@ window.sendAiMessage = async function() {
 
 // ══ بناء سياق البيانات ══
 async function buildDataContext(schoolId, question) {
-    const today = getTodayISO();
-    const d = new Date();
-    const weekAgo = new Date(d); weekAgo.setDate(d.getDate()-7);
-    const weekISO = weekAgo.toISOString().slice(0,10);
+    const today    = getTodayISO();
+    const d        = new Date();
+    const weekAgo  = new Date(d); weekAgo.setDate(d.getDate()-7);
     const monthAgo = new Date(d); monthAgo.setMonth(d.getMonth()-1);
+    const weekISO  = weekAgo.toISOString().slice(0,10);
     const monthISO = monthAgo.toISOString().slice(0,10);
-
-    const q = question.toLowerCase();
-    let context = `التاريخ: ${today}\n`;
+    const q        = question.toLowerCase();
+    let context    = `التاريخ: ${today}\n`;
 
     try {
-        // غياب اليوم دائماً
-        const todayAbs = await getDocs(query(collection(db,'attendance'),
-            where('schoolId','==',schoolId), where('date','==',today), where('status','==','absent'), limit(200)));
-        context += `غياب اليوم: ${todayAbs.size} طالب\n`;
+        // ══ جلب كل البيانات المحتملة بالتوازي ══
+        const needsWeek    = q.includes('أسبوع') || q.includes('اسبوع');
+        const needsMonth   = q.includes('شهر');
+        const needsBeh     = q.includes('سلوك') || q.includes('حادث') || q.includes('مخالف');
+        const needsTop     = q.includes('أكثر') || q.includes('اكثر') || q.includes('من غاب') || q.includes('متكرر');
+        const needsTotal   = q.includes('طلاب') || q.includes('عدد') || q.includes('إجمالي');
+        const needsGate    = q.includes('استئذان') || q.includes('خرج');
+        const needsClinic  = q.includes('عيادة') || q.includes('مريض');
 
-        // توزيع بالفصل
+        const queries = [
+            getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',today), where('status','==','absent'), limit(200))),
+            needsWeek  ? getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','>=',weekISO), where('status','==','absent'), limit(200))) : null,
+            needsMonth ? getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','>=',monthISO), where('status','==','absent'), limit(200))) : null,
+            needsBeh   ? getDocs(query(collection(db,'behavior'),   where('schoolId','==',schoolId), where('date','==',today))) : null,
+            needsTop   ? getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('status','==','absent'), limit(200))) : null,
+            needsTotal ? getDocs(query(collection(db,'students'),   where('schoolId','==',schoolId))) : null,
+            needsGate  ? getDocs(query(collection(db,'gatepass'),   where('schoolId','==',schoolId), where('dateStr','==',today))) : null,
+            needsClinic? getDocs(query(collection(db,'clinic'),     where('schoolId','==',schoolId), where('date','==',today))) : null,
+        ];
+
+        const results = await Promise.all(queries.map(q2 => q2 || Promise.resolve(null)));
+        const [todayAbs, weekSnap, monthSnap, behSnap, allAbs, stuSnap, gateSnap, clinicSnap] = results;
+
+        // غياب اليوم
+        context += `غياب اليوم: ${todayAbs.size} طالب\n`;
         if(todayAbs.size > 0) {
             const byClass = {};
-            todayAbs.forEach(d => {
-                const c = d.data().classId||'—';
-                byClass[c] = (byClass[c]||0)+1;
-            });
+            todayAbs.forEach(doc => { const c=doc.data().classId||'—'; byClass[c]=(byClass[c]||0)+1; });
             const sorted = Object.entries(byClass).sort((a,b)=>b[1]-a[1]).slice(0,5);
             context += `أكثر الفصول غياباً اليوم: ${sorted.map(([c,n])=>`${c}(${n})`).join('، ')}\n`;
         }
 
-        // أسبوع أو شهر
-        if(q.includes('أسبوع') || q.includes('اسبوع')) {
-            const weekSnap = await getDocs(query(collection(db,'attendance'),
-                where('schoolId','==',schoolId), where('date','>=',weekISO), where('status','==','absent'), limit(200)));
-            context += `غياب الأسبوع الماضي: ${weekSnap.size}\n`;
-
-            const byClass = {};
-            weekSnap.forEach(d => { const c=d.data().classId||'—'; byClass[c]=(byClass[c]||0)+1; });
-            const top = Object.entries(byClass).sort((a,b)=>b[1]-a[1])[0];
-            if(top) context += `أكثر فصل غياباً هذا الأسبوع: ${top[0]} (${top[1]} غياب)\n`;
+        // أسبوع
+        if(weekSnap) {
+            context += `غياب الأسبوع: ${weekSnap.size}\n`;
+            const byC = {};
+            weekSnap.forEach(doc => { const c=doc.data().classId||'—'; byC[c]=(byC[c]||0)+1; });
+            const top = Object.entries(byC).sort((a,b)=>b[1]-a[1])[0];
+            if(top) context += `أكثر فصل غياباً الأسبوع: ${top[0]} (${top[1]})\n`;
         }
 
-        if(q.includes('شهر')) {
-            const monthSnap = await getDocs(query(collection(db,'attendance'),
-                where('schoolId','==',schoolId), where('date','>=',monthISO), where('status','==','absent'), limit(200)));
-            context += `غياب هذا الشهر: ${monthSnap.size}\n`;
-        }
+        // شهر
+        if(monthSnap) context += `غياب هذا الشهر: ${monthSnap.size}\n`;
 
         // سلوك
-        if(q.includes('سلوك') || q.includes('حادث') || q.includes('مخالف')) {
-            const behSnap = await getDocs(query(collection(db,'behavior'),
-                where('schoolId','==',schoolId), where('date','==',today)));
-            context += `حوادث سلوكية اليوم: ${behSnap.size}\n`;
-        }
+        if(behSnap) context += `حوادث سلوكية اليوم: ${behSnap.size}\n`;
 
-        // أكثر طالب غياباً
-        if(q.includes('أكثر') || q.includes('اكثر') || q.includes('من غاب') || q.includes('متكرر')) {
-            const allAbs = await getDocs(query(collection(db,'attendance'),
-                where('schoolId','==',schoolId), where('status','==','absent'), limit(200)));
+        // أكثر الطلاب غياباً
+        if(allAbs) {
             const byStudent = {};
-            allAbs.forEach(d => {
-                const name = d.data().studentName||'—';
+            allAbs.forEach(doc => {
+                const name = doc.data().studentName||'—';
                 byStudent[name] = (byStudent[name]||0)+1;
             });
             const top5 = Object.entries(byStudent).sort((a,b)=>b[1]-a[1]).slice(0,5);
@@ -304,24 +307,13 @@ async function buildDataContext(schoolId, question) {
         }
 
         // إجمالي الطلاب
-        if(q.includes('طلاب') || q.includes('عدد') || q.includes('إجمالي')) {
-            const stuSnap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
-            context += `إجمالي الطلاب: ${stuSnap.size}\n`;
-        }
+        if(stuSnap) context += `إجمالي الطلاب: ${stuSnap.size}\n`;
 
         // استئذان
-        if(q.includes('استئذان') || q.includes('خرج') || q.includes('تصريح')) {
-            const gateSnap = await getDocs(query(collection(db,'gatepass'),
-                where('schoolId','==',schoolId), where('dateStr','==',today)));
-            context += `استئذان اليوم: ${gateSnap.size}\n`;
-        }
+        if(gateSnap) context += `استئذان اليوم: ${gateSnap.size}\n`;
 
         // عيادة
-        if(q.includes('عيادة') || q.includes('مريض') || q.includes('صحة')) {
-            const clinicSnap = await getDocs(query(collection(db,'clinic'),
-                where('schoolId','==',schoolId), where('date','==',today)));
-            context += `مراجعات العيادة اليوم: ${clinicSnap.size}\n`;
-        }
+        if(clinicSnap) context += `مراجعات العيادة اليوم: ${clinicSnap.size}\n`;
 
     } catch(e) { context += '(تعذر جلب بعض البيانات)\n'; }
 
