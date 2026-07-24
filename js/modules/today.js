@@ -63,20 +63,20 @@ export async function initTodayModule() {
 
     <!-- KPIs -->
     <div class="dash-kpi-grid">
-        <div class="dash-kpi" style="border-color:#dc2626">
+        <div class="dash-kpi" style="border-color:#dc2626;cursor:pointer" onclick="window.showKpiDetail('absent')">
             <div class="lbl">غياب اليوم</div>
             <div class="num" id="kpi-absent" style="color:#dc2626">—</div>
             <div class="sub" id="kpi-absent-trend"></div>
         </div>
-        <div class="dash-kpi" style="border-color:#d97706">
+        <div class="dash-kpi" style="border-color:#d97706;cursor:pointer" onclick="window.showKpiDetail('late')">
             <div class="lbl">تأخير اليوم</div>
             <div class="num" id="kpi-late" style="color:#d97706">—</div>
         </div>
-        <div class="dash-kpi" style="border-color:#7c3aed">
+        <div class="dash-kpi" style="border-color:#7c3aed;cursor:pointer" onclick="window.showKpiDetail('behavior')">
             <div class="lbl">حوادث سلوكية</div>
             <div class="num" id="kpi-behavior" style="color:#7c3aed">—</div>
         </div>
-        <div class="dash-kpi" style="border-color:#0891b2">
+        <div class="dash-kpi" style="border-color:#0891b2;cursor:pointer" onclick="window.showKpiDetail('gatepass')">
             <div class="lbl">استئذان اليوم</div>
             <div class="num" id="kpi-gatepass" style="color:#0891b2">—</div>
         </div>
@@ -84,7 +84,7 @@ export async function initTodayModule() {
             <div class="lbl">إجمالي الطلاب</div>
             <div class="num" id="kpi-total" style="color:#16a34a">—</div>
         </div>
-        <div class="dash-kpi" style="border-color:#d4920a">
+        <div class="dash-kpi" style="border-color:#d4920a;cursor:pointer" onclick="window.showKpiDetail('clinic')">
             <div class="lbl">عيادة اليوم</div>
             <div class="num" id="kpi-clinic" style="color:#d4920a">—</div>
         </div>
@@ -398,4 +398,78 @@ window.sendAbsenceAlert = function(name, cls, count, phone) {
         `يرجى مراجعة الإدارة.`
     );
     window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
+};
+
+// ══ تفاصيل KPI بالنقر ══
+window.showKpiDetail = async function(type) {
+    const schoolId = getActiveSchoolId();
+    const todayISO = getTodayISO();
+    const cfg = {
+        absent:   { title:'غياب اليوم',         col:'attendance', color:'#dc2626', field:'status', val:'absent' },
+        late:     { title:'تأخير اليوم',         col:'attendance', color:'#d97706', field:'status', val:'late'   },
+        behavior: { title:'حوادث سلوكية اليوم',  col:'behavior',   color:'#7c3aed' },
+        gatepass: { title:'استئذان اليوم',        col:'gatepass',   color:'#0891b2' },
+        clinic:   { title:'مراجعات العيادة اليوم',col:'clinic',     color:'#d4920a' },
+    };
+    const c = cfg[type];
+    document.getElementById('kpi-modal')?.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'kpi-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    modal.innerHTML = `
+        <div style="background:#fff;border-radius:16px;padding:22px;max-width:460px;width:100%;max-height:80vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">
+                    <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c.color};margin-left:6px"></span>
+                    ${c.title}
+                </h3>
+                <button onclick="document.getElementById('kpi-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#6b7280">✕</button>
+            </div>
+            <div id="kpi-detail-body" style="text-align:center;padding:20px;color:#aaa;font-weight:700">⏳ جاري التحميل...</div>
+        </div>`;
+    modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
+    document.body.appendChild(modal);
+
+    try {
+        let q;
+        const dateField = type==='gatepass' ? 'dateStr' : 'date';
+        if(type==='absent' || type==='late') {
+            q = query(collection(db,c.col), where('schoolId','==',schoolId), where(dateField,'==',todayISO), where('status','==',c.val));
+        } else {
+            q = query(collection(db,c.col), where('schoolId','==',schoolId), where(dateField,'==',todayISO));
+        }
+
+        const snap = await getDocs(q);
+        const body = document.getElementById('kpi-detail-body');
+
+        if(snap.empty) {
+            body.innerHTML = '<div style="padding:24px;color:#aaa">✅ لا توجد سجلات اليوم</div>';
+            return;
+        }
+
+        const rows = [];
+        snap.forEach(d => {
+            const data = d.data();
+            const name   = data.studentName || data.name || '—';
+            const detail = type==='behavior' ? (data.behaviorType||data.type||'—')
+                         : type==='gatepass'  ? (data.reason||'—')
+                         : type==='clinic'    ? (data.complaint||'—')
+                         : (data.classId||'—');
+            rows.push(`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:13px">
+                <span style="font-weight:700">${name}</span>
+                <span style="color:${c.color};font-weight:700">${detail}</span>
+            </div>`);
+        });
+
+        body.innerHTML = `
+            <div style="font-size:11px;color:#aaa;font-weight:700;display:flex;justify-content:space-between;padding-bottom:6px;border-bottom:2px solid #f0f0f0;margin-bottom:4px">
+                <span>الاسم</span><span>التفصيل</span>
+            </div>
+            ${rows.join('')}
+            <div style="text-align:center;margin-top:10px;font-size:12px;color:#aaa;font-weight:700">إجمالي: ${rows.length}</div>`;
+
+    } catch(e) {
+        document.getElementById('kpi-detail-body').innerHTML = '❌ ' + e.message;
+    }
 };
