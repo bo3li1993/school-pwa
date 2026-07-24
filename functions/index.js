@@ -694,3 +694,32 @@ exports.resetUserPassword = onCall({ cors: true, region: 'us-central1' }, async 
 
     return { success: true };
 });
+// ============================================================
+// FUNCTION 13: saveFcmToken — حفظ توكن الإشعارات لولي الأمر
+// ============================================================
+exports.saveFcmToken = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    const { schoolId, civilId, fcmToken } = request.data;
+    if (!schoolId || !civilId || !fcmToken) {
+        throw new HttpsError('invalid-argument', 'البيانات ناقصة');
+    }
+
+    try {
+        // نبحث عن ولي الأمر بالرقم المدني
+        const snap = await db.collection('users')
+            .where('schoolId', '==', schoolId)
+            .where('civilId', '==', civilId)
+            .where('role', '==', 'parent')
+            .limit(1).get();
+
+        if (snap.empty) throw new HttpsError('not-found', 'ولي الأمر غير موجود');
+
+        await snap.docs[0].ref.update({
+            fcmToken,
+            fcmUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        return { success: true };
+    } catch(e) {
+        throw new HttpsError('internal', e.message);
+    }
+});
