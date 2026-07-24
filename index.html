@@ -584,5 +584,12 @@ if('serviceWorker' in navigator) {
     });
 }
 </script>
+
+<style>
+body.dark-mode { filter: brightness(0.92); }
+</style>
+<script>
+if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
+</script>
 </body>
 </html>
