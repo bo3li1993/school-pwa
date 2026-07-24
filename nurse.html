@@ -543,6 +543,36 @@ window.saveProfile = async function() {
   } catch(e){ showToast('❌ '+e.message,'error'); }
 };
 
+
+// ══ واتساب ولي الأمر من العيادة ══
+window.sendClinicWhatsApp = async function(studentName, classId, complaint, result) {
+    try {
+        const { collection, query, where, getDocs } =
+            await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const { db, getActiveSchoolId } = await import('./js/firebase-config.js');
+
+        const snap = await getDocs(query(collection(db,'students'),
+            where('schoolId','==',getActiveSchoolId()),
+            where('name','==',studentName),
+            where('classId','==',classId)));
+
+        if(snap.empty){ showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
+        const phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
+        if(!phone){ showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
+
+        const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+        const schoolName = JSON.parse(localStorage.getItem('hs_user')||'{}').schoolName || 'المدرسة';
+        const msg = encodeURIComponent(
+            `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
+            `نُعلمكم بأن ابنكم راجع عيادة ${schoolName} اليوم ${today}.\n` +
+            `الشكوى: ${complaint||'—'}\n` +
+            `النتيجة: ${result||'—'}\n` +
+            `للاستفسار تواصلوا مع إدارة المدرسة.`
+        );
+        window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
+    } catch(e){ showToast('❌ '+e.message,'error'); }
+};
+
 window.doLogout=function(){
   localStorage.removeItem('hs_user');
   localStorage.removeItem('hs_custom_token');
