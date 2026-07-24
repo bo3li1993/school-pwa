@@ -1,8 +1,11 @@
 // المنظومة الرقمية — Service Worker v2.2
 // Cache First للملفات الثابتة + Network First للبيانات
 
-const CACHE_NAME = 'manzoma-v2.2';
-const STATIC_CACHE = 'manzoma-static-v2.2';
+
+
+// ══ Service Worker v2.3 — iOS Compatible ══
+const CACHE_NAME   = 'manzoma-v2.3';
+const STATIC_CACHE = 'manzoma-static-v2.3';
 
 const STATIC_ASSETS = [
   './index.html',
