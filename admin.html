@@ -1231,6 +1231,10 @@ window.saveMyAccount = async function() {
 window.switchTab('tab-index').finally(() => {
     document.getElementById('splash').classList.add('hide');
     listenToEmergencyAlertsLive();
+    // ══ تحميل المساعد الذكي ══
+    import('./js/modules/ai_assistant.js')
+        .then(m => { if(m.initAiAssistant) m.initAiAssistant(); })
+        .catch(e => console.warn('AI Assistant:', e));
 });
 
 if('serviceWorker' in navigator) {
