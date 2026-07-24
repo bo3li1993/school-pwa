@@ -1,3 +1,10 @@
+
+// ══ onSnapshot cleanup ══
+let _annUnsubs = [];
+window._cleanupAnnouncements = function() {
+    _annUnsubs.forEach(fn => { try { fn(); } catch(e) {} });
+    _annUnsubs = [];
+};
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, query, where, addDoc, deleteDoc, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
