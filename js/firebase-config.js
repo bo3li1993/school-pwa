@@ -106,3 +106,28 @@ export async function requestNotificationPermission(db, schoolId, userId) {
         return null;
     }
 }
+// ══════════════════════════════════════════════════
+// safeStorage — متوافق مع iOS Private Mode
+// يجرب localStorage ثم sessionStorage كـ fallback
+// ══════════════════════════════════════════════════
+export const safeStorage = {
+    get(key) {
+        try { return localStorage.getItem(key); }
+        catch(e) { try { return sessionStorage.getItem(key); } catch(_) { return null; } }
+    },
+    set(key, val) {
+        try { localStorage.setItem(key, val); }
+        catch(e) { try { sessionStorage.setItem(key, val); } catch(_) {} }
+    },
+    remove(key) {
+        try { localStorage.removeItem(key); }
+        catch(e) { try { sessionStorage.removeItem(key); } catch(_) {} }
+    },
+    getJson(key, def=null) {
+        try { return JSON.parse(this.get(key) || 'null') ?? def; }
+        catch(e) { return def; }
+    },
+    setJson(key, val) {
+        this.set(key, JSON.stringify(val));
+    }
+};
