@@ -2,6 +2,23 @@ import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, updateDoc }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// ══ Cache غياب الطالب — يحسبه مرة وحدة ══
+const _absenceCountCache = {};
+
+async function getCachedAbsenceCount(schoolId, classId, studentName) {
+    const key = `${schoolId}_${classId}_${studentName}`;
+    if(_absenceCountCache[key] !== undefined) return _absenceCountCache[key];
+    const snap = await getDocs(query(collection(db,'attendance'),
+        where('schoolId','==',schoolId),
+        where('classId','==',classId),
+        where('status','==','absent')));
+    let count = 0;
+    snap.forEach(d => { if((d.data().studentName||d.data().name)===studentName) count++; });
+    _absenceCountCache[key] = count;
+    return count;
+}
+
+
 // ══════════════════════════════════════════════════════
 // موديل الإنذارات والتحذيرات الرسمية
 // وزارة التربية الكويتية — متوسطة سالم الحسينان
