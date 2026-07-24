@@ -1,3 +1,10 @@
+
+// ══ onSnapshot cleanup ══
+let _roundsUnsubs = [];
+window._cleanupRounds = function() {
+    _roundsUnsubs.forEach(fn => { try { fn(); } catch(e) {} });
+    _roundsUnsubs = [];
+};
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, addDoc, query, where, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
