@@ -249,8 +249,7 @@ window.printWarningForm = function() {
     const user = JSON.parse(localStorage.getItem('hs_user')||'{}');
     const dateAr = new Date(date+'T00:00:00').toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
 
-    const win = window.open('','_blank');
-    win.document.write(`<!DOCTYPE html>
+    const _warnHtml = `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
 <meta charset="UTF-8">
@@ -308,9 +307,8 @@ ${notes ? `\n\nملاحظات: ${notes}` : ''}
   </div>
 </div>
 </body>
-</html>`);
-    win.document.close();
-    setTimeout(()=>win.print(), 600);
+</html>`;
+    printHtmlIos(_warnHtml);
 };
 
 // ══ واتساب ══
@@ -342,6 +340,45 @@ window.sendWarningWhatsApp = async function() {
         window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
     } catch(e) { window.showToast('❌ '+e.message,'error'); }
 };
+
+
+// ══ دالة طباعة متوافقة مع iOS Safari ══
+function printHtmlIos(htmlContent) {
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
+
+    // محاولة window.open أولاً
+    const printWin = window.open(blobUrl, '_blank');
+
+    if (!printWin || printWin.closed || typeof printWin.closed === 'undefined') {
+        // iOS Safari يحجب window.open — نستخدم iframe
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column';
+        overlay.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#0b2545;color:#fff;font-family:Cairo,sans-serif">
+                <span style="font-weight:800;font-size:14px">معاينة الطباعة</span>
+                <div style="display:flex;gap:8px">
+                    <button id="_print-btn" style="background:#25d366;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-weight:800;cursor:pointer">🖨️ طباعة</button>
+                    <button id="_close-btn" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">✕ إغلاق</button>
+                </div>
+            </div>
+            <iframe id="_print-frame" src="${blobUrl}" style="flex:1;border:none;width:100%"></iframe>`;
+        document.body.appendChild(overlay);
+
+        document.getElementById('_print-btn').onclick = () => {
+            document.getElementById('_print-frame').contentWindow?.print();
+        };
+        document.getElementById('_close-btn').onclick = () => {
+            overlay.remove();
+            URL.revokeObjectURL(blobUrl);
+        };
+    } else {
+        setTimeout(() => {
+            try { printWin.print(); } catch(e) {}
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+        }, 700);
+    }
+}
 
 // ══ سجل الإنذارات لايف ══
 let allWarnings = [];
