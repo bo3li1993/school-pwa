@@ -39,6 +39,7 @@ export async function initManagerVisitsModule() {
 }
 
 async function loadTeacherDirectoryForVisits() {
+    try {
     const sel = document.getElementById('m-visit-teacher');
     try {
         const schoolId = getActiveSchoolId();
@@ -71,6 +72,7 @@ window.handleRegisterManagerVisitLive = async function(e) {
 };
 
 async function loadManagerVisitsLogsLive() {
+    try {
     const tbody = document.getElementById('manager-visits-tbody');
     const schoolId = getActiveSchoolId();
     const q = query(collection(db, 'manager_visits'), where('schoolId', '==', schoolId));
