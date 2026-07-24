@@ -1,3 +1,10 @@
+
+// ══ onSnapshot cleanup ══
+let _behaviorUnsubs = [];
+function cleanupBehavior() {
+    _behaviorUnsubs.forEach(fn => { try { fn(); } catch(e) {} });
+    _behaviorUnsubs = [];
+}
 import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, addDoc, query, where, serverTimestamp, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
@@ -97,7 +104,7 @@ export async function initBehaviorModule() {
 
         // تصفية الفصول المتاحة بناءً على طلاب المدرسة الحالية فقط لمنع التداخل
         const qClasses = query(collection(db, 'students'), where('schoolId', '==', schoolId));
-        onSnapshot(qClasses, (snapshot) => {
+        _behaviorUnsubs.push(onSnapshot(qClasses, (snapshot) => {
             let classesSet = new Set();
             snapshot.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
             
@@ -145,7 +152,7 @@ window.handleBehClassChange = async function(classId) {
     try {
         // فلترة مزدوجة: الفصل التابع للمدرسة الحالية فقط لضمان الخصوصية التامة
         const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
-        onSnapshot(q, (snapshot) => {
+        _behaviorUnsubs.push(onSnapshot(q, (snapshot) => {
             let arr = [];
             snapshot.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
             
@@ -221,7 +228,7 @@ function loadBehaviorLogsLive() {
     // جلب وحصر أرشيف المتابعات السلوكية التابع للمدرسة الحالية فقط
     const qLogs = query(collection(db, 'behavior'), where('schoolId', '==', schoolId));
 
-    onSnapshot(qLogs, (snapshot) => {
+    _behaviorUnsubs.push(onSnapshot(qLogs, (snapshot) => {
         let html = '';
         
         // إذا كان فارغاً والمدرسة هي الحسينان، نسحب الأرشيف القديم الغير مقيد بـ schoolId
