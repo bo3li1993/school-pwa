@@ -185,7 +185,8 @@ async function loadStudentHistory(studentName) {
             where('schoolId', '==', schoolId),
             where('studentName', '==', studentName),
             where('status', 'in', ['absent', 'late']));
-        const snapAtt = await getDocs(qAtt);
+        // ══ جلب كل بيانات الطالب بالتوازي ══
+        const [snapAtt, snapBeh, snapGate, snapClinic] = await Promise.all([getDocs(qAtt),
         let hAtt = '';
         const docs = snapAtt.docs.sort((a,b) => (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
         docs.forEach(docSnap => {
@@ -211,7 +212,7 @@ async function loadStudentHistory(studentName) {
     // ب) السلوك
     try {
         const qBeh = query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
-        const snapBeh = await getDocs(qBeh);
+            getDocs(qBeh),
         let hBeh = '';
         snapBeh.forEach(docSnap => {
             const d = docSnap.data();
@@ -233,7 +234,7 @@ async function loadStudentHistory(studentName) {
     // ج) الاستئذان
     try {
         const qGate = query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
-        const snapGate = await getDocs(qGate);
+            getDocs(qGate),
         let hGate = '';
         snapGate.forEach(docSnap => {
             const d = docSnap.data();
@@ -254,7 +255,8 @@ async function loadStudentHistory(studentName) {
     // د) زيارات العيادة
     try {
         const qClinic = query(collection(db, 'clinic'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
-        const snapClinic = await getDocs(qClinic);
+            getDocs(qClinic)]);
+
         let hClinic = '';
         snapClinic.forEach(docSnap => {
             const d = docSnap.data();
