@@ -132,6 +132,91 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
 }
 .dark-toggle:hover { border-color:var(--gold); color:var(--gold); }
 
+
+/* ══ وضع المدير البسيط ══ */
+.simple-mode .menu-group-title { display:none !important; }
+.simple-mode .sidebar > div > .menu-item { display:none !important; }
+.simple-mode .menu-item.pinned { display:flex !important; padding:18px 20px !important; font-size:15px !important; }
+.simple-mode .menu-item.pinned i { font-size:22px !important; }
+
+/* أزرار كبيرة في الوضع البسيط */
+.simple-shortcuts {
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:12px; padding:16px;
+}
+.simple-mode .simple-shortcuts { display:grid !important; }
+.shortcut-btn {
+    background:var(--white); border:2px solid var(--line);
+    border-radius:16px; padding:20px 16px;
+    text-align:center; cursor:pointer;
+    transition:all .2s; display:flex;
+    flex-direction:column; align-items:center; gap:10px;
+}
+.shortcut-btn:hover { border-color:var(--sky); transform:translateY(-2px); box-shadow:0 4px 16px rgba(26,120,194,.12); }
+.shortcut-btn i { font-size:32px; }
+.shortcut-btn span { font-size:13px; font-weight:800; color:var(--navy); }
+
+/* ══ تلميحات ══ */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position:absolute; bottom:110%; right:0;
+    background:#1e293b; color:#fff;
+    padding:6px 12px; border-radius:8px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap; z-index:9999;
+    pointer-events:none;
+    animation:tipIn .15s ease;
+}
+@keyframes tipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ شريط أدوات الإمكانية ══ */
+.a11y-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.a11y-btn {
+    background:rgba(255,255,255,.08); border:none;
+    color:rgba(255,255,255,.7); width:30px; height:30px;
+    border-radius:6px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-family:'Cairo',sans-serif;
+}
+.a11y-btn:hover { background:rgba(255,255,255,.18); color:#fff; }
+.a11y-btn.active { background:var(--gold); color:#fff; }
+
+/* ══ أحجام الخط ══ */
+body.font-lg  { font-size:16px !important; }
+body.font-xl  { font-size:18px !important; }
+body.font-lg .menu-item, body.font-xl .menu-item { font-size:15px !important; padding:16px 18px !important; }
+body.font-xl .menu-item { font-size:17px !important; padding:18px 20px !important; }
+
+/* ══ دليل سريع ══ */
+.quick-guide {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:9990; display:none; align-items:center;
+    justify-content:center; padding:20px;
+}
+.quick-guide.show { display:flex; }
+.guide-card {
+    background:#fff; border-radius:20px; padding:28px;
+    max-width:480px; width:100%; direction:rtl;
+    font-family:'Cairo',sans-serif; max-height:85vh; overflow-y:auto;
+}
+.guide-step {
+    display:flex; gap:14px; margin-bottom:16px;
+    align-items:flex-start;
+}
+.guide-num {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; flex-shrink:0;
+}
+.guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
+
 </style>
 </head>
 <body>
@@ -152,8 +237,45 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
     <p id="lbl-school-name">جاري التحميل...</p>
   </div>
 
+      <div class="simple-shortcuts">
+    <div class="shortcut-btn" onclick="window.switchTab('tab-index')" data-tip="الرئيسية">
+      <i class="bi bi-speedometer2" style="color:var(--sky)"></i>
+      <span>الرئيسية</span>
+    </div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-attendance')" data-tip="تسجيل الغياب">
+      <i class="bi bi-person-check-fill" style="color:var(--green)"></i>
+      <span>الغياب</span>
+    </div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-reports')" data-tip="التقارير">
+      <i class="bi bi-file-earmark-bar-graph-fill" style="color:var(--gold)"></i>
+      <span>التقارير</span>
+    </div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-users')" data-tip="المستخدمون">
+      <i class="bi bi-people-fill" style="color:var(--navy)"></i>
+      <span>المستخدمون</span>
+    </div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-behavior')" data-tip="السلوك">
+      <i class="bi bi-emoji-frown-fill" style="color:var(--red)"></i>
+      <span>السلوك</span>
+    </div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-announcements')" data-tip="الإعلانات">
+      <i class="bi bi-megaphone-fill" style="color:#7c3aed"></i>
+      <span>الإعلانات</span>
+    </div>
+  </div>
+  <div class="a11y-bar">
+    <button class="a11y-btn" onclick="window.toggleSimpleMode()" id="btn-simple" title="الوضع البسيط" data-tip="واجهة مبسطة للمدير">
+      <i class="bi bi-grid-2x2-fill"></i>
+    </button>
+    <button class="a11y-btn" onclick="window.cycleFontSize()" id="btn-font" data-tip="تكبير الخط">
+      <i class="bi bi-fonts"></i>
+    </button>
+    <button class="a11y-btn" onclick="window.showQuickGuide()" data-tip="دليل الاستخدام السريع">
+      <i class="bi bi-question-circle"></i>
+    </button>
+  </div>
   <div class="menu-group-title">عام</div>
-  <div class="menu-item active" data-tab="tab-index" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
+  <div class="menu-item active" data-tab="tab-index" data-tip="الصفحة الرئيسية — إحصائيات اليوم" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
   <div class="menu-item" data-tab="tab-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person"></i> ملف الطالب</div>
   <div class="menu-item" data-tab="tab-date" onclick="window.switchTab('tab-date')"><i class="bi bi-calendar3"></i> بحث بتاريخ</div>
 
@@ -163,14 +285,14 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
   <div class="menu-item" onclick="window.location.href='import.html'"><i class="bi bi-file-earmark-excel"></i> رفع كشف المدرسة</div>
 
   <div class="menu-group-title">الحضور والسلوك</div>
-  <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i> الغياب اليومي</div>
+  <div class="menu-item" data-tab="tab-attendance" data-tip="تسجيل حضور وغياب الطلاب" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i> الغياب اليومي</div>
   <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-calendar-week"></i> كشف يومي شامل</div>
   <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-triangle"></i> الغياب المتكرر</div>
-  <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-file-earmark-pdf"></i> التقارير الأسبوعية</div>
+  <div class="menu-item" data-tab="tab-reports" data-tip="تقارير الغياب الشهرية والأسبوعية" onclick="window.switchTab('tab-reports')"><i class="bi bi-file-earmark-pdf"></i> التقارير الأسبوعية</div>
   <div class="menu-item" data-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-bar-chart-line-fill"></i> التقارير الإحصائية الشهرية</div>
   <div class="menu-item" data-tab="tab-promotion" onclick="window.switchTab('tab-promotion')"><i class="bi bi-arrow-up-circle-fill"></i> الترحيل السنوي</div>
   <div class="menu-item" data-tab="tab-archive" onclick="window.switchTab('tab-archive')"><i class="bi bi-archive-fill"></i> الأرشيف</div>
-  <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
+  <div class="menu-item" data-tab="tab-behavior" data-tip="تسجيل الحوادث السلوكية" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
   <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
   <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
   <div class="menu-item" onclick="window.location.href='nurse.html'"><i class="bi bi-hospital"></i> بوابة الممرض</div>
@@ -179,7 +301,7 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
   <div class="menu-group-title">المعلمون والزيارات</div>
   <div class="menu-item" data-tab="tab-teachers" onclick="window.switchTab('tab-teachers')"><i class="bi bi-person-badge"></i> دليل المعلمين</div>
   <div class="menu-item" data-tab="tab-teacher-perf" onclick="window.switchTab('tab-teacher-perf')"><i class="bi bi-star"></i> كفاءة الأداء</div>
-  <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-clipboard-data"></i> الزيارات الفنية</div>
+  <div class="menu-item" data-tab="tab-visits" data-tip="تسجيل الزيارات الصفية الفنية" onclick="window.switchTab('tab-visits')"><i class="bi bi-clipboard-data"></i> الزيارات الفنية</div>
   <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-person-check"></i> زيارات المدير</div>
   <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-arrow-repeat"></i> جولة الجناح</div>
   <div class="menu-item" data-tab="tab-coverage" onclick="window.switchTab('tab-coverage')"><i class="bi bi-shuffle"></i> توزيع الاحتياط</div>
@@ -191,9 +313,9 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
   <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-gift"></i> الحوافز والتميز</div>
 
   <div class="menu-group-title">الإدارة والأمان</div>
-  <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people-fill"></i> إدارة المستخدمين</div>
+  <div class="menu-item" data-tab="tab-users" data-tip="إضافة وتعديل حسابات المستخدمين" onclick="window.switchTab('tab-users')"><i class="bi bi-people-fill"></i> إدارة المستخدمين</div>
   <div class="menu-item" data-tab="tab-audit" onclick="window.switchTab('tab-audit')"><i class="bi bi-journal-text"></i> سجل العمليات</div>
-  <div class="menu-item" data-tab="tab-backup" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-down-fill"></i> النسخ الاحتياطي</div>
+  <div class="menu-item" data-tab="tab-backup" data-tip="نسخ احتياطي للبيانات" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-down-fill"></i> النسخ الاحتياطي</div>
   <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-gear"></i> حسابي</div>
   <div class="menu-item" onclick="window.location.href='tv.html'"><i class="bi bi-tv"></i> شاشة القيادة TV</div>
   <div class="menu-item" onclick="window.location.href='guard.html'"><i class="bi bi-shield-lock"></i> بوابة الحارس</div>
@@ -491,6 +613,91 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
 }
 .dark-toggle:hover { border-color:var(--gold); color:var(--gold); }
 
+
+/* ══ وضع المدير البسيط ══ */
+.simple-mode .menu-group-title { display:none !important; }
+.simple-mode .sidebar > div > .menu-item { display:none !important; }
+.simple-mode .menu-item.pinned { display:flex !important; padding:18px 20px !important; font-size:15px !important; }
+.simple-mode .menu-item.pinned i { font-size:22px !important; }
+
+/* أزرار كبيرة في الوضع البسيط */
+.simple-shortcuts {
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:12px; padding:16px;
+}
+.simple-mode .simple-shortcuts { display:grid !important; }
+.shortcut-btn {
+    background:var(--white); border:2px solid var(--line);
+    border-radius:16px; padding:20px 16px;
+    text-align:center; cursor:pointer;
+    transition:all .2s; display:flex;
+    flex-direction:column; align-items:center; gap:10px;
+}
+.shortcut-btn:hover { border-color:var(--sky); transform:translateY(-2px); box-shadow:0 4px 16px rgba(26,120,194,.12); }
+.shortcut-btn i { font-size:32px; }
+.shortcut-btn span { font-size:13px; font-weight:800; color:var(--navy); }
+
+/* ══ تلميحات ══ */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position:absolute; bottom:110%; right:0;
+    background:#1e293b; color:#fff;
+    padding:6px 12px; border-radius:8px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap; z-index:9999;
+    pointer-events:none;
+    animation:tipIn .15s ease;
+}
+@keyframes tipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ شريط أدوات الإمكانية ══ */
+.a11y-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.a11y-btn {
+    background:rgba(255,255,255,.08); border:none;
+    color:rgba(255,255,255,.7); width:30px; height:30px;
+    border-radius:6px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-family:'Cairo',sans-serif;
+}
+.a11y-btn:hover { background:rgba(255,255,255,.18); color:#fff; }
+.a11y-btn.active { background:var(--gold); color:#fff; }
+
+/* ══ أحجام الخط ══ */
+body.font-lg  { font-size:16px !important; }
+body.font-xl  { font-size:18px !important; }
+body.font-lg .menu-item, body.font-xl .menu-item { font-size:15px !important; padding:16px 18px !important; }
+body.font-xl .menu-item { font-size:17px !important; padding:18px 20px !important; }
+
+/* ══ دليل سريع ══ */
+.quick-guide {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:9990; display:none; align-items:center;
+    justify-content:center; padding:20px;
+}
+.quick-guide.show { display:flex; }
+.guide-card {
+    background:#fff; border-radius:20px; padding:28px;
+    max-width:480px; width:100%; direction:rtl;
+    font-family:'Cairo',sans-serif; max-height:85vh; overflow-y:auto;
+}
+.guide-step {
+    display:flex; gap:14px; margin-bottom:16px;
+    align-items:flex-start;
+}
+.guide-num {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; flex-shrink:0;
+}
+.guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
+
 </style>
     `;
     document.body.appendChild(overlay);
@@ -627,6 +834,91 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
 }
 .dark-toggle:hover { border-color:var(--gold); color:var(--gold); }
 
+
+/* ══ وضع المدير البسيط ══ */
+.simple-mode .menu-group-title { display:none !important; }
+.simple-mode .sidebar > div > .menu-item { display:none !important; }
+.simple-mode .menu-item.pinned { display:flex !important; padding:18px 20px !important; font-size:15px !important; }
+.simple-mode .menu-item.pinned i { font-size:22px !important; }
+
+/* أزرار كبيرة في الوضع البسيط */
+.simple-shortcuts {
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:12px; padding:16px;
+}
+.simple-mode .simple-shortcuts { display:grid !important; }
+.shortcut-btn {
+    background:var(--white); border:2px solid var(--line);
+    border-radius:16px; padding:20px 16px;
+    text-align:center; cursor:pointer;
+    transition:all .2s; display:flex;
+    flex-direction:column; align-items:center; gap:10px;
+}
+.shortcut-btn:hover { border-color:var(--sky); transform:translateY(-2px); box-shadow:0 4px 16px rgba(26,120,194,.12); }
+.shortcut-btn i { font-size:32px; }
+.shortcut-btn span { font-size:13px; font-weight:800; color:var(--navy); }
+
+/* ══ تلميحات ══ */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position:absolute; bottom:110%; right:0;
+    background:#1e293b; color:#fff;
+    padding:6px 12px; border-radius:8px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap; z-index:9999;
+    pointer-events:none;
+    animation:tipIn .15s ease;
+}
+@keyframes tipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ شريط أدوات الإمكانية ══ */
+.a11y-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.a11y-btn {
+    background:rgba(255,255,255,.08); border:none;
+    color:rgba(255,255,255,.7); width:30px; height:30px;
+    border-radius:6px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-family:'Cairo',sans-serif;
+}
+.a11y-btn:hover { background:rgba(255,255,255,.18); color:#fff; }
+.a11y-btn.active { background:var(--gold); color:#fff; }
+
+/* ══ أحجام الخط ══ */
+body.font-lg  { font-size:16px !important; }
+body.font-xl  { font-size:18px !important; }
+body.font-lg .menu-item, body.font-xl .menu-item { font-size:15px !important; padding:16px 18px !important; }
+body.font-xl .menu-item { font-size:17px !important; padding:18px 20px !important; }
+
+/* ══ دليل سريع ══ */
+.quick-guide {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:9990; display:none; align-items:center;
+    justify-content:center; padding:20px;
+}
+.quick-guide.show { display:flex; }
+.guide-card {
+    background:#fff; border-radius:20px; padding:28px;
+    max-width:480px; width:100%; direction:rtl;
+    font-family:'Cairo',sans-serif; max-height:85vh; overflow-y:auto;
+}
+.guide-step {
+    display:flex; gap:14px; margin-bottom:16px;
+    align-items:flex-start;
+}
+.guide-num {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; flex-shrink:0;
+}
+.guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
+
 </style>${this.buildHeader(title, subtitle)}${contentHTML}${this.buildFooter()}`;
         document.body.appendChild(printEl);
 
@@ -712,6 +1004,91 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
 }
 .dark-toggle:hover { border-color:var(--gold); color:var(--gold); }
 
+
+/* ══ وضع المدير البسيط ══ */
+.simple-mode .menu-group-title { display:none !important; }
+.simple-mode .sidebar > div > .menu-item { display:none !important; }
+.simple-mode .menu-item.pinned { display:flex !important; padding:18px 20px !important; font-size:15px !important; }
+.simple-mode .menu-item.pinned i { font-size:22px !important; }
+
+/* أزرار كبيرة في الوضع البسيط */
+.simple-shortcuts {
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:12px; padding:16px;
+}
+.simple-mode .simple-shortcuts { display:grid !important; }
+.shortcut-btn {
+    background:var(--white); border:2px solid var(--line);
+    border-radius:16px; padding:20px 16px;
+    text-align:center; cursor:pointer;
+    transition:all .2s; display:flex;
+    flex-direction:column; align-items:center; gap:10px;
+}
+.shortcut-btn:hover { border-color:var(--sky); transform:translateY(-2px); box-shadow:0 4px 16px rgba(26,120,194,.12); }
+.shortcut-btn i { font-size:32px; }
+.shortcut-btn span { font-size:13px; font-weight:800; color:var(--navy); }
+
+/* ══ تلميحات ══ */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position:absolute; bottom:110%; right:0;
+    background:#1e293b; color:#fff;
+    padding:6px 12px; border-radius:8px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap; z-index:9999;
+    pointer-events:none;
+    animation:tipIn .15s ease;
+}
+@keyframes tipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ شريط أدوات الإمكانية ══ */
+.a11y-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.a11y-btn {
+    background:rgba(255,255,255,.08); border:none;
+    color:rgba(255,255,255,.7); width:30px; height:30px;
+    border-radius:6px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-family:'Cairo',sans-serif;
+}
+.a11y-btn:hover { background:rgba(255,255,255,.18); color:#fff; }
+.a11y-btn.active { background:var(--gold); color:#fff; }
+
+/* ══ أحجام الخط ══ */
+body.font-lg  { font-size:16px !important; }
+body.font-xl  { font-size:18px !important; }
+body.font-lg .menu-item, body.font-xl .menu-item { font-size:15px !important; padding:16px 18px !important; }
+body.font-xl .menu-item { font-size:17px !important; padding:18px 20px !important; }
+
+/* ══ دليل سريع ══ */
+.quick-guide {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:9990; display:none; align-items:center;
+    justify-content:center; padding:20px;
+}
+.quick-guide.show { display:flex; }
+.guide-card {
+    background:#fff; border-radius:20px; padding:28px;
+    max-width:480px; width:100%; direction:rtl;
+    font-family:'Cairo',sans-serif; max-height:85vh; overflow-y:auto;
+}
+.guide-step {
+    display:flex; gap:14px; margin-bottom:16px;
+    align-items:flex-start;
+}
+.guide-num {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; flex-shrink:0;
+}
+.guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
+
 </style></head><body>
         <div class="no-print" style="position:fixed;top:10px;right:10px;z-index:999;display:flex;gap:8px;">
             <button onclick="window.print()" style="background:#0b2545;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;font-size:14px;">🖨️ طباعة</button>
@@ -720,7 +1097,47 @@ body.dark-mode .bn-item.active i { background:#1a2740; }
         ${this.buildHeader(title, subtitle)}
         ${contentHTML}
         ${this.buildFooter()}
-        </body></html>`);
+        
+<div class="quick-guide" id="quick-guide" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="guide-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <h3 style="font-size:17px;font-weight:900;color:var(--navy)">📖 دليل الاستخدام السريع</h3>
+            <button onclick="document.getElementById('quick-guide').classList.remove('show')"
+                style="background:none;border:none;font-size:22px;cursor:pointer;color:#6b7280">✕</button>
+        </div>
+
+        <div class="guide-step">
+            <div class="guide-num">1</div>
+            <div class="guide-text"><b>تسجيل الغياب يومياً</b><br>من القائمة ← الحضور والسلوك ← تسجيل الغياب ← اختر الفصل والطلاب الغائبين ← اضغط حفظ</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">2</div>
+            <div class="guide-text"><b>إرسال واتساب للغائبين</b><br>من الرئيسية ← اختر الفصل من قائمة واتساب ← اضغط "إرسال للغائبين"</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">3</div>
+            <div class="guide-text"><b>إصدار تقرير شهري</b><br>من القائمة ← التقارير الشهرية ← اختر الشهر ← اضغط "تصدير PDF"</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">4</div>
+            <div class="guide-text"><b>إضافة مستخدم جديد</b><br>من القائمة ← إدارة المستخدمين ← أضف مستخدم ← أدخل البيانات ← حفظ</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">5</div>
+            <div class="guide-text"><b>إصدار إنذار غياب</b><br>من القائمة ← الإنذارات الرسمية ← اختر الفصل والطالب ← حدد المستوى ← احفظ وطبع</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">6</div>
+            <div class="guide-text"><b>المساعد الذكي 🤖</b><br>اضغط الزر الأزرق في أسفل يسار الشاشة واسأل أي سؤال بالعربي</div>
+        </div>
+
+        <div style="background:var(--ice);border-radius:10px;padding:14px;margin-top:8px;font-size:13px;font-weight:700;color:var(--navy)">
+            💡 نصيحة: لو ضغطت على شيء خطأ — اضغط زر الرجوع في المتصفح أو اضغط على "الرئيسية" في القائمة
+        </div>
+    </div>
+</div>
+
+</body></html>`);
         w.document.close();
         setTimeout(() => w.print(), 800);
     }
@@ -820,5 +1237,45 @@ if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW registration failed:', e));
 }
 </script>
+
+<div class="quick-guide" id="quick-guide" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="guide-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <h3 style="font-size:17px;font-weight:900;color:var(--navy)">📖 دليل الاستخدام السريع</h3>
+            <button onclick="document.getElementById('quick-guide').classList.remove('show')"
+                style="background:none;border:none;font-size:22px;cursor:pointer;color:#6b7280">✕</button>
+        </div>
+
+        <div class="guide-step">
+            <div class="guide-num">1</div>
+            <div class="guide-text"><b>تسجيل الغياب يومياً</b><br>من القائمة ← الحضور والسلوك ← تسجيل الغياب ← اختر الفصل والطلاب الغائبين ← اضغط حفظ</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">2</div>
+            <div class="guide-text"><b>إرسال واتساب للغائبين</b><br>من الرئيسية ← اختر الفصل من قائمة واتساب ← اضغط "إرسال للغائبين"</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">3</div>
+            <div class="guide-text"><b>إصدار تقرير شهري</b><br>من القائمة ← التقارير الشهرية ← اختر الشهر ← اضغط "تصدير PDF"</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">4</div>
+            <div class="guide-text"><b>إضافة مستخدم جديد</b><br>من القائمة ← إدارة المستخدمين ← أضف مستخدم ← أدخل البيانات ← حفظ</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">5</div>
+            <div class="guide-text"><b>إصدار إنذار غياب</b><br>من القائمة ← الإنذارات الرسمية ← اختر الفصل والطالب ← حدد المستوى ← احفظ وطبع</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">6</div>
+            <div class="guide-text"><b>المساعد الذكي 🤖</b><br>اضغط الزر الأزرق في أسفل يسار الشاشة واسأل أي سؤال بالعربي</div>
+        </div>
+
+        <div style="background:var(--ice);border-radius:10px;padding:14px;margin-top:8px;font-size:13px;font-weight:700;color:var(--navy)">
+            💡 نصيحة: لو ضغطت على شيء خطأ — اضغط زر الرجوع في المتصفح أو اضغط على "الرئيسية" في القائمة
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
