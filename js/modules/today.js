@@ -63,29 +63,29 @@ export async function initTodayModule() {
 
     <!-- KPIs -->
     <div class="dash-kpi-grid">
-        <div class="dash-kpi" style="border-color:#dc2626;cursor:pointer" onclick="window.showKpiDetail('absent')" title="اضغط لعرض التفاصيل">
-            <div class="lbl">غياب اليوم <i class="bi bi-chevron-left" style="font-size:9px;opacity:.5"></i></div>
+        <div class="dash-kpi" style="border-color:#dc2626">
+            <div class="lbl">غياب اليوم</div>
             <div class="num" id="kpi-absent" style="color:#dc2626">—</div>
             <div class="sub" id="kpi-absent-trend"></div>
         </div>
-        <div class="dash-kpi" style="border-color:#d97706;cursor:pointer" onclick="window.showKpiDetail('late')" title="اضغط لعرض التفاصيل">
-            <div class="lbl">تأخير اليوم <i class="bi bi-chevron-left" style="font-size:9px;opacity:.5"></i></div>
+        <div class="dash-kpi" style="border-color:#d97706">
+            <div class="lbl">تأخير اليوم</div>
             <div class="num" id="kpi-late" style="color:#d97706">—</div>
         </div>
-        <div class="dash-kpi" style="border-color:#7c3aed;cursor:pointer" onclick="window.showKpiDetail('behavior')" title="اضغط لعرض التفاصيل">
-            <div class="lbl">حوادث سلوكية <i class="bi bi-chevron-left" style="font-size:9px;opacity:.5"></i></div>
+        <div class="dash-kpi" style="border-color:#7c3aed">
+            <div class="lbl">حوادث سلوكية</div>
             <div class="num" id="kpi-behavior" style="color:#7c3aed">—</div>
         </div>
-        <div class="dash-kpi" style="border-color:#0891b2;cursor:pointer" onclick="window.showKpiDetail('gatepass')" title="اضغط لعرض التفاصيل">
-            <div class="lbl">استئذان اليوم <i class="bi bi-chevron-left" style="font-size:9px;opacity:.5"></i></div>
+        <div class="dash-kpi" style="border-color:#0891b2">
+            <div class="lbl">استئذان اليوم</div>
             <div class="num" id="kpi-gatepass" style="color:#0891b2">—</div>
         </div>
         <div class="dash-kpi" style="border-color:#16a34a">
             <div class="lbl">إجمالي الطلاب</div>
             <div class="num" id="kpi-total" style="color:#16a34a">—</div>
         </div>
-        <div class="dash-kpi" style="border-color:#d4920a;cursor:pointer" onclick="window.showKpiDetail('clinic')" title="اضغط لعرض التفاصيل">
-            <div class="lbl">عيادة اليوم <i class="bi bi-chevron-left" style="font-size:9px;opacity:.5"></i></div>
+        <div class="dash-kpi" style="border-color:#d4920a">
+            <div class="lbl">عيادة اليوم</div>
             <div class="num" id="kpi-clinic" style="color:#d4920a">—</div>
         </div>
     </div>
@@ -140,37 +140,27 @@ export async function initTodayModule() {
 
 async function loadDashboardData(schoolId, todayISO) {
     try {
-        // ══ غياب اليوم ══
-        const abSnap = await getDocs(query(collection(db,'attendance'),
-            where('schoolId','==',schoolId), where('date','==',todayISO),
-            where('status','==','absent')));
+        // ══ كل الـ queries بالتوازي دفعة وحدة ══
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yISO = yesterday.toISOString().slice(0,10);
 
-        const lateSnap = await getDocs(query(collection(db,'attendance'),
-            where('schoolId','==',schoolId), where('date','==',todayISO),
-            where('status','==','late')));
-
-        // ══ سلوك اليوم ══
-        const behSnap = await getDocs(query(collection(db,'behavior'),
-            where('schoolId','==',schoolId), where('date','==',todayISO)));
-
-        // ══ استئذان اليوم ══
-        const gateSnap = await getDocs(query(collection(db,'gatepass'),
-            where('schoolId','==',schoolId), where('dateStr','==',todayISO)));
-
-        // ══ عيادة اليوم ══
-        const clinicSnap = await getDocs(query(collection(db,'clinic'),
-            where('schoolId','==',schoolId), where('date','==',todayISO)));
-
-        // ══ إجمالي الطلاب ══
-        const stuSnap = await getDocs(query(collection(db,'students'),
-            where('schoolId','==',schoolId)));
+        const [abSnap, lateSnap, behSnap, gateSnap, clinicSnap, stuSnap, ySnap] = await Promise.all([
+            getDocs(query(collection(db,'attendance'),  where('schoolId','==',schoolId), where('date','==',todayISO), where('status','==','absent'))),
+            getDocs(query(collection(db,'attendance'),  where('schoolId','==',schoolId), where('date','==',todayISO), where('status','==','late'))),
+            getDocs(query(collection(db,'behavior'),    where('schoolId','==',schoolId), where('date','==',todayISO))),
+            getDocs(query(collection(db,'gatepass'),    where('schoolId','==',schoolId), where('dateStr','==',todayISO))),
+            getDocs(query(collection(db,'clinic'),      where('schoolId','==',schoolId), where('date','==',todayISO))),
+            getDocs(query(collection(db,'students'),    where('schoolId','==',schoolId))),
+            getDocs(query(collection(db,'attendance'),  where('schoolId','==',schoolId), where('date','==',yISO), where('status','==','absent'))),
+        ]);
 
         const totalStudents = stuSnap.size;
         const absentCount   = abSnap.size;
         const lateCount     = lateSnap.size;
-        const attendRate = totalStudents > 0
+        const attendRate    = totalStudents > 0
             ? Math.round(((totalStudents - absentCount) / totalStudents) * 100)
-            : null; // null = ما في بيانات بعد
+            : null;
 
         // ══ KPIs ══
         document.getElementById('kpi-absent').textContent    = absentCount;
@@ -179,10 +169,9 @@ async function loadDashboardData(schoolId, todayISO) {
         document.getElementById('kpi-gatepass').textContent  = gateSnap.size;
         document.getElementById('kpi-total').textContent     = totalStudents;
         document.getElementById('kpi-clinic').textContent    = clinicSnap.size;
-        document.getElementById('dash-attend-rate').textContent =
-            attendRate !== null ? attendRate + '%' : '—';
+        document.getElementById('dash-attend-rate').textContent = attendRate !== null ? attendRate + '%' : '—';
 
-        // ══ تحليل الغياب بالفصل ══
+        // ══ توزيع الغياب بالفصل ══
         const byClass = {};
         abSnap.forEach(d => {
             const c = d.data().classId || '—';
@@ -191,28 +180,22 @@ async function loadDashboardData(schoolId, todayISO) {
 
         buildClassesChart(byClass);
         buildDonutChart(byClass);
-        buildWeeklyChart(schoolId);
-        buildRepeatAlerts(schoolId);
         loadWhatsAppClasses(byClass);
 
-        // ══ trend: مقارنة بالأمس ══
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yISO = yesterday.toISOString().slice(0,10);
-        const ySnap = await getDocs(query(collection(db,'attendance'),
-            where('schoolId','==',schoolId), where('date','==',yISO),
-            where('status','==','absent')));
-        const diff = absentCount - ySnap.size;
+        // ══ Trend مقارنة بالأمس ══
+        const diff    = absentCount - ySnap.size;
         const trendEl = document.getElementById('kpi-absent-trend');
-        if(diff > 0)
-            trendEl.innerHTML = `<span class="trend-badge trend-up">▲ ${diff} أكثر من أمس</span>`;
-        else if(diff < 0)
-            trendEl.innerHTML = `<span class="trend-badge trend-down">▼ ${Math.abs(diff)} أقل من أمس</span>`;
-        else
-            trendEl.innerHTML = `<span style="color:#aaa;font-size:10px">نفس أمس</span>`;
+        if(diff > 0)       trendEl.innerHTML = `<span class="trend-badge trend-up">▲ ${diff} أكثر من أمس</span>`;
+        else if(diff < 0)  trendEl.innerHTML = `<span class="trend-badge trend-down">▼ ${Math.abs(diff)} أقل من أمس</span>`;
+        else               trendEl.innerHTML = `<span style="color:#aaa;font-size:10px">نفس أمس</span>`;
+
+        // ══ Charts الثقيلة تُحمَّل بعد الـ KPIs عشان تظهر البيانات بسرعة ══
+        buildWeeklyChart(schoolId);
+        buildRepeatAlerts(schoolId);
 
     } catch(e) {
         console.error('Dashboard error:', e);
+        window.showToast?.('⚠️ خطأ في تحميل البيانات', 'error');
     }
 }
 
@@ -279,6 +262,8 @@ function buildDonutChart(byClass) {
 
 // ══ Chart: أسبوعي ══
 async function buildWeeklyChart(schoolId) {
+    // نُحمّل الأسبوعي بعد 300ms عشان ما يبطّئ الـ KPIs
+    await new Promise(r => setTimeout(r, 300));
     const el = document.getElementById('weekly-chart');
     if(!el) return;
 
@@ -413,99 +398,4 @@ window.sendAbsenceAlert = function(name, cls, count, phone) {
         `يرجى مراجعة الإدارة.`
     );
     window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
-};
-
-
-// ══ تفاصيل KPI بالنقر ══
-const _kpiCache = {};
-
-window.showKpiDetail = async function(type) {
-    const schoolId = getActiveSchoolId();
-    const todayISO = getTodayISO();
-    const titles   = { absent:'غياب اليوم', late:'تأخير اليوم', behavior:'حوادث سلوكية', gatepass:'استئذان اليوم', clinic:'مراجعات العيادة' };
-    const colors   = { absent:'#dc2626', late:'#d97706', behavior:'#7c3aed', gatepass:'#0891b2', clinic:'#d4920a' };
-
-    // إزالة أي modal قديم
-    document.getElementById('kpi-modal')?.remove();
-
-    const modal = document.createElement('div');
-    modal.id = 'kpi-modal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
-    modal.innerHTML = `
-    <div style="background:#fff;border-radius:16px;padding:22px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-            <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0;display:flex;align-items:center;gap:8px">
-                <span style="width:10px;height:10px;border-radius:50%;background:${colors[type]};display:inline-block"></span>
-                ${titles[type]}
-            </h3>
-            <button onclick="document.getElementById('kpi-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>
-        </div>
-        <div id="kpi-detail-body" style="font-size:13px;color:#6b7280;font-weight:700;text-align:center;padding:20px">
-            ⏳ جاري التحميل...
-        </div>
-    </div>`;
-
-    modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
-    document.body.appendChild(modal);
-
-    try {
-        let snap, rows = [];
-
-        if(type === 'absent' || type === 'late') {
-            snap = await getDocs(query(collection(db,'attendance'),
-                where('schoolId','==',schoolId), where('date','==',todayISO),
-                where('status','==',(type==='absent'?'absent':'late'))));
-            snap.forEach(d => {
-                const data = d.data();
-                rows.push(`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0">
-                    <span style="font-weight:700">${data.studentName||data.name||'—'}</span>
-                    <span style="color:#6b7280">${data.classId||'—'}</span>
-                </div>`);
-            });
-        } else if(type === 'behavior') {
-            snap = await getDocs(query(collection(db,'behavior'),
-                where('schoolId','==',schoolId), where('date','==',todayISO)));
-            snap.forEach(d => {
-                const data = d.data();
-                rows.push(`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0">
-                    <span style="font-weight:700">${data.studentName||'—'}</span>
-                    <span style="color:#7c3aed;font-weight:700">${data.behaviorType||data.type||'—'}</span>
-                </div>`);
-            });
-        } else if(type === 'gatepass') {
-            snap = await getDocs(query(collection(db,'gatepass'),
-                where('schoolId','==',schoolId), where('dateStr','==',todayISO)));
-            snap.forEach(d => {
-                const data = d.data();
-                rows.push(`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0">
-                    <span style="font-weight:700">${data.studentName||'—'}</span>
-                    <span style="color:#0891b2">${data.reason||'—'}</span>
-                </div>`);
-            });
-        } else if(type === 'clinic') {
-            snap = await getDocs(query(collection(db,'clinic'),
-                where('schoolId','==',schoolId), where('date','==',todayISO)));
-            snap.forEach(d => {
-                const data = d.data();
-                rows.push(`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0">
-                    <span style="font-weight:700">${data.studentName||'—'}</span>
-                    <span style="color:#d4920a">${data.complaint||'—'}</span>
-                </div>`);
-            });
-        }
-
-        const body = document.getElementById('kpi-detail-body');
-        if(!rows.length) {
-            body.innerHTML = '<div style="text-align:center;padding:24px;color:#aaa">✅ لا توجد سجلات اليوم</div>';
-        } else {
-            body.innerHTML = `
-                <div style="font-size:11px;color:#aaa;font-weight:700;display:flex;justify-content:space-between;padding-bottom:6px;border-bottom:2px solid #f0f0f0;margin-bottom:4px">
-                    <span>الاسم</span><span>الفصل / التفصيل</span>
-                </div>
-                ${rows.join('')}
-                <div style="text-align:center;margin-top:12px;font-size:12px;color:#aaa;font-weight:700">إجمالي: ${rows.length}</div>`;
-        }
-    } catch(e) {
-        document.getElementById('kpi-detail-body').innerHTML = '❌ تعذر التحميل: ' + e.message;
-    }
 };
