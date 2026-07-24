@@ -471,6 +471,7 @@ window.handleParentRegister = async function(e) {
         const result = await registerFn({ schoolId: schoolFromUrl, civilId, phone, password });
         await signInWithCustomToken(auth, result.data.token);
         localStorage.setItem('hs_custom_token', result.data.token);
+        if(window.saveFcmToken) window.saveFcmToken(matchedSchoolId, civilId).catch(()=>{});
 
         // بعد تسجيل الدخول، تحديث بيانات الطالب المختار (وإخوته) بالرقم المدني ورقم الهاتف
         const batch = writeBatch(db);
@@ -525,6 +526,7 @@ window.handleParentLoginLive = async function(e) {
 
         await signInWithCustomToken(auth, result.data.token);
         localStorage.setItem('hs_custom_token', result.data.token);
+        if(window.saveFcmToken) window.saveFcmToken(matchedSchoolId, civilId).catch(()=>{});
 
         // جلب كل الأبناء المرتبطين بنفس الرقم المدني (الآن مسموح لأن التوكن يحمل نفس schoolId)
         const childrenSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', matchedSchoolId), where('civilId', '==', civilId)));
@@ -859,5 +861,32 @@ if('serviceWorker' in navigator) {
 <script>
 if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
 </script>
+
+<script type="module">
+// ══ FCM Token لإشعارات الغياب ══
+import { auth } from './js/firebase-config.js';
+import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
+import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+
+window.saveFcmToken = async function(schoolId, civilId) {
+    try {
+        if(!('Notification' in window)) return;
+        const perm = await Notification.requestPermission();
+        if(perm !== 'granted') return;
+        const reg  = await navigator.serviceWorker.ready;
+        const msg  = getMessaging(auth.app);
+        const token = await getToken(msg, {
+            vapidKey: 'BFN-D_Bbs7e12_OK7Em0RikolvNwRcgTBr45IZIZ2mQOMZh7-hCtvSVbjT6xUZCAYpwBZtp1yWvEUHKsY1luiB0',
+            serviceWorkerRegistration: reg
+        });
+        if(token) {
+            const fns = getFunctions(auth.app);
+            await httpsCallable(fns, 'saveFcmToken')({ schoolId, civilId, fcmToken: token });
+            console.log('✅ FCM parent token saved');
+        }
+    } catch(e) { console.warn('FCM:', e.message); }
+};
+</script>
+
 </body>
 </html>
