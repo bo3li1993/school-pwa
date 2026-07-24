@@ -160,7 +160,11 @@ window.loadMonthlyStats = async function(fromDate, toDate, label) {
 
         <div class="card" style="margin-top:0;">
             <div style="display:flex; gap:10px;">
-                <button onclick="window.printMonthlyReportPDF('${label}')"
+                <button onclick="window.generateCloudReport('${m.from}','${m.to}','${m.label}')"
+                style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px">
+                <i class="bi bi-cloud-arrow-down-fill"></i> تقرير سحابي
+            </button>
+            <button onclick="window.printMonthlyReportPDF('${label}')""
                     style="background:#dc2626; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
                     <i class="bi bi-file-earmark-pdf-fill"></i> تصدير PDF
                 </button>
@@ -287,4 +291,33 @@ ${absSnap.size} حالة غياب | ${behSnap.size} حادثة سلوكية
             }, 1000);
         }
     } catch(e) { console.log('Auto report check:', e.message); }
+};
+
+
+// ══ توليد تقرير من Cloud Function ══
+window.generateCloudReport = async function(fromDate, toDate, label) {
+    const btn = event?.target?.closest('button');
+    if(btn){ btn.disabled=true; btn.innerHTML='⏳ جاري التوليد...'; }
+    try {
+        const { getFunctions, httpsCallable } =
+            await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const { auth } = await import('../firebase-config.js');
+        const fns = getFunctions(auth.app);
+        const generateReportNow = httpsCallable(fns, 'generateReportNow');
+        const schoolId = getActiveSchoolId();
+
+        const result = await generateReportNow({ schoolId, fromDate, toDate, monthLabel: label });
+        const d = result.data;
+
+        if(d) {
+            window._monthlyData = d;
+            window.showToast('✅ تم جلب التقرير من السيرفر — جاهز للتصدير');
+            // تصدير مباشر
+            await window.printMonthlyReportPDF(label);
+        }
+    } catch(e) {
+        window.showToast('❌ تعذر التوليد: ' + e.message, 'error');
+    } finally {
+        if(btn){ btn.disabled=false; btn.innerHTML='<i class="bi bi-cloud-arrow-down-fill"></i> تقرير سحابي'; }
+    }
 };
