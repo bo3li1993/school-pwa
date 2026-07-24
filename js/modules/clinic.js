@@ -1,6 +1,19 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// ══ Cache للطلاب — يجلبهم مرة وحدة ══
+let _clinicStudentsCache = null;
+let _clinicSchoolCache   = null;
+
+async function getClinicStudents(schoolId) {
+    if(_clinicStudentsCache && _clinicSchoolCache === schoolId) return _clinicStudentsCache;
+    const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+    _clinicStudentsCache = snap;
+    _clinicSchoolCache   = schoolId;
+    return snap;
+}
+
+
 export async function initClinicModule() {
     const container = document.getElementById('tab-clinic');
     if (!container) return;
