@@ -706,6 +706,10 @@ window.createSchool = async function() {
     await setDoc(doc(db,'schools',schoolId), {
       name: schoolName, plan, status:'active',
       subscriptionEnd: subEnd, notes,
+      region: document.getElementById('s-region')?.value?.trim() || '',
+      primaryColor: document.getElementById('s-primary-color')?.value || '#0b2545',
+      accentColor:  document.getElementById('s-accent-color')?.value  || '#d4920a',
+      logoUrl:      document.getElementById('s-logo-url')?.value?.trim() || '',
       createdAt: serverTimestamp()
     });
 
@@ -919,5 +923,100 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 <script>
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
+
+<!-- Modal الإعلانات -->
+<div id="ann-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;border-radius:16px;padding:24px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">📢 إعلانات: <span id="ann-school-name"></span></h3>
+            <button onclick="document.getElementById('ann-modal').style.display='none'"
+                style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>
+        </div>
+
+        <!-- إضافة إعلان -->
+        <div style="background:#f8f9fc;border-radius:10px;padding:16px;margin-bottom:16px">
+            <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:6px">إضافة إعلان جديد</label>
+            <textarea id="ann-new-text" rows="3" placeholder="نص الإعلان..."
+                style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;outline:none;resize:none;margin-bottom:10px"></textarea>
+            <button onclick="addAnnouncement()"
+                style="background:#0b2545;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer;width:100%">
+                <i class="bi bi-plus-circle-fill"></i> إضافة الإعلان
+            </button>
+        </div>
+
+        <!-- قائمة الإعلانات -->
+        <div id="ann-list-super">⏳ جاري التحميل...</div>
+    </div>
+</div>
+
+<script type="module">
+import { db } from './js/firebase-config.js';
+import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+let currentAnnSchoolId = '';
+
+window.openAnnouncementsModal = async function(schoolId, schoolName) {
+    currentAnnSchoolId = schoolId;
+    document.getElementById('ann-school-name').textContent = schoolName;
+    document.getElementById('ann-modal').style.display = 'flex';
+    document.getElementById('ann-new-text').value = '';
+    await loadAnnouncementsSuper(schoolId);
+};
+
+async function loadAnnouncementsSuper(schoolId) {
+    const el = document.getElementById('ann-list-super');
+    try {
+        const snap = await getDocs(query(
+            collection(db,'school_announcements'),
+            where('schoolId','==',schoolId),
+            orderBy('createdAt','desc')
+        ));
+        if(snap.empty) {
+            el.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-weight:700">لا توجد إعلانات بعد</div>';
+            return;
+        }
+        el.innerHTML = snap.docs.map(d => {
+            const a = d.data();
+            const date = a.createdAt?.toDate?.()?.toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'}) || '';
+            return `<div style="background:${a.active?'#fff':'#f8f8f8'};border:1px solid #e5e7eb;border-right:4px solid ${a.active?'#0b2545':'#ccc'};border-radius:10px;padding:12px 16px;margin-bottom:10px">
+                <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:6px">${a.text||''}</div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <span style="font-size:11px;color:#aaa">${date}</span>
+                    <div style="display:flex;gap:6px">
+                        <button onclick="toggleAnnouncement('${d.id}',${!a.active})"
+                            style="background:${a.active?'#f0fdf4':'#fef2f2'};color:${a.active?'#16a34a':'#dc2626'};border:1px solid ${a.active?'#bbf7d0':'#fecaca'};border-radius:6px;padding:4px 10px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">
+                            ${a.active?'✅ نشط':'⏸ موقوف'}
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) { el.innerHTML = '❌ خطأ في التحميل'; }
+}
+
+window.addAnnouncement = async function() {
+    const text = document.getElementById('ann-new-text').value.trim();
+    if(!text) { alert('أدخل نص الإعلان'); return; }
+    try {
+        await addDoc(collection(db,'school_announcements'), {
+            schoolId: currentAnnSchoolId,
+            text, active: true,
+            createdAt: serverTimestamp()
+        });
+        document.getElementById('ann-new-text').value = '';
+        await loadAnnouncementsSuper(currentAnnSchoolId);
+        alert('✅ تم إضافة الإعلان');
+    } catch(e) { alert('❌ ' + e.message); }
+};
+
+window.toggleAnnouncement = async function(docId, newStatus) {
+    try {
+        await updateDoc(doc(db,'school_announcements',docId), { active: newStatus });
+        await loadAnnouncementsSuper(currentAnnSchoolId);
+    } catch(e) { alert('❌ ' + e.message); }
+};
+</script>
+
 </body>
 </html>
