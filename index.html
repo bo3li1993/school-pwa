@@ -1,344 +1,588 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تسجيل الدخول | المنظومة الرقمية الموحدة</title>
-    <link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>تسجيل الدخول | المنظومة الرقمية</title>
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
-    <meta name="theme-color" content="#0b2545">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <link class="apple-touch-icon" href="./logo.png">
-    <link rel="icon" type="image/x-icon" href="./favicon.ico">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        
-        
-        :root {
-            --navy:   #0b2545;
-            --sky:    #1a78c2;
-            --ice:    #eaf4fd;
-            --gold:   #d4920a;
-            --white:  #ffffff;
-            --off:    #f8f9fc;
-            --line:   #e5e7eb;
-            --text:   #111827;
-            --mid:    #6b7280;
-            --red:    #dc2626;
-            
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --primary: var(--sky);
-            --accent: var(--gold);
-            --success: #25d366;
-            --text-main: #f1f5f9;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; justify-content: center; }
-
-        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 35px 30px; border-radius: 16px; border: 1px solid #334155; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4); text-align: center; margin-bottom: 20px; position: relative; }
-        h1 { font-size: 24px; font-weight: 900; margin-bottom: 8px; color: #fff; line-height: 1.4; }
-        p { font-size: 14px; color: #94a3b8; margin-bottom: 25px; font-weight: 600; }
-
-        input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 14px; text-align: center; font-weight: 700; outline: none; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 120, 194, 0.2); }
-        input::placeholder { color: #475569; }
-
-        button { width: 100%; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: #fff; margin-bottom: 10px; font-weight: 900; }
-        .btn-primary:hover { background: #1462a0; }
-        .btn-success { background: rgba(37, 211, 102, 0.15); color: #25d366; border: 1px solid rgba(37, 211, 102, 0.3); margin-top: 5px; }
-        .btn-success:hover { background: rgba(37, 211, 102, 0.25); }
-        .btn-install { background: var(--green); color: #fff; max-width: 420px; margin-bottom: 15px; display: none; font-weight: 900; border-radius: 8px; padding: 14px; width: 100%; }
-
-        /* شارة الحماية والربط المخصص للمدارس */
-        .school-hint-badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 18px; display: none; animation: fadeIn 0.4s ease; }
-
-        /* نافذة المحاكاة الذكية المدمجة */
-        .demo-section { margin-top: 20px; width: 100%; max-width: 800px; display: none; }
-        .screen-frame { background: #1e293b; border: 4px solid #334155; border-radius: 12px; height: 400px; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: right; }
-        .cursor { position: absolute; width: 20px; height: 20px; background: url('https://cur.cursors-4u.net/arrow/arr-13/arr1219.png'), auto; z-index: 9999; transition: all 1s ease-in-out; pointer-events: none; }
-        .sim-sidebar { width: 200px; background: #0f172a; height: 100%; position: absolute; right: 0; padding: 15px; border-left: 1px solid #334155; }
-        .sim-main { margin-right: 200px; padding: 25px; height: 100%; position: relative; color: #fff; }
-        .sim-popup { display: none; position: absolute; top: 25%; left: 15%; background: white; color: black; padding: 20px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); width: 300px; text-align: center; }
-        .subtitle-bar { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; color: #fbbf24; font-weight: 700; width: 100%; max-width: 800px; font-size: 13.5px; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-    
-/* ══ Dark Mode ══ */
-body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
-body.dark-mode .header-nav { background:#0f1928 !important; }
-body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
-body.dark-mode .workspace-container > * { background:#1e2535; }
-body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-  background:#1e2535 !important; color:#e2e8f0 !important; border-color:#2a3650 !important;
-}
-body.dark-mode table th { background:#0f1928 !important; }
-body.dark-mode .bottom-nav { background:#1e2535 !important; border-color:#2a3650 !important; }
-body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !important; }
-
-</style>
+<meta name="theme-color" content="#0b2545">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --school-primary: #0b2545;
+    --school-accent:  #d4920a;
+    --navy:  #0b2545;
+    --sky:   #1a78c2;
+    --gold:  #d4920a;
+    --red:   #dc2626;
+    --green: #16a34a;
+    --mid:   #6b7280;
+    --line:  #e5e7eb;
+    --white: #ffffff;
+    --off:   #f8f9fc;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; }
+
+/* ══ خلفية ديناميكية ══ */
+body {
+    background: var(--school-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: background .5s ease;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* دوائر خلفية زخرفية */
+body::before {
+    content: '';
+    position: fixed;
+    top: -120px; left: -120px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+}
+body::after {
+    content: '';
+    position: fixed;
+    bottom: -80px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.03);
+    pointer-events: none;
+}
+
+/* ══ شريط الإعلانات ══ */
+.announcements-bar {
+    width: 100%;
+    max-width: 460px;
+    margin-bottom: 16px;
+    display: none;
+}
+.ann-header {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 10px 10px 0 0;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ann-item {
+    background: rgba(255,255,255,.08);
+    border-right: 3px solid var(--school-accent);
+    padding: 10px 16px;
+    color: rgba(255,255,255,.9);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.ann-item:last-child {
+    border-radius: 0 0 10px 10px;
+    border-bottom: none;
+}
+.ann-date {
+    font-size: 10px;
+    color: rgba(255,255,255,.5);
+    margin-top: 3px;
+    font-weight: 700;
+}
+
+/* ══ بطاقة الدخول ══ */
+.login-card {
+    width: 100%;
+    max-width: 460px;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,.3);
+}
+
+/* هيدر المدرسة */
+.school-header {
+    background: var(--school-primary);
+    padding: 28px 28px 22px;
+    text-align: center;
+    position: relative;
+    transition: background .5s ease;
+}
+.school-header::after {
+    content: '';
+    position: absolute;
+    bottom: -12px; left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 24px;
+    background: var(--school-primary);
+    border-radius: 50%;
+    transition: background .5s;
+}
+
+.school-logo-wrap {
+    width: 80px; height: 80px;
+    border-radius: 18px;
+    margin: 0 auto 14px;
+    background: rgba(255,255,255,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    border: 3px solid rgba(255,255,255,.25);
+    overflow: hidden;
+}
+.school-logo-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+.school-name {
+    font-size: 18px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+.school-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,.6);
+    font-weight: 700;
+}
+.school-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: rgba(255,255,255,.8);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+/* جسم النموذج */
+.login-body {
+    padding: 32px 28px 24px;
+}
+
+.login-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--mid);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Cairo',sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    background: var(--off);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    margin-bottom: 14px;
+    text-align: right;
+}
+.login-input:focus {
+    border-color: var(--school-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(11,37,69,.08);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--school-primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Cairo',sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all .2s;
+    margin-bottom: 12px;
+}
+.login-btn:hover { opacity: .92; transform: translateY(-1px); }
+.login-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+.login-footer {
+    text-align: center;
+    padding: 0 28px 20px;
+}
+.login-footer a {
+    font-size: 12px;
+    color: var(--mid);
+    text-decoration: none;
+    font-weight: 700;
+}
+.login-footer a:hover { color: var(--school-primary); }
+
+/* ══ رسالة الخطأ ══ */
+.error-msg {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: none;
+    text-align: center;
+}
+.error-msg.show { display: block; }
+
+/* ══ شاشة الإيقاف ══ */
+.lockdown-screen {
+    text-align: center;
+    padding: 40px 20px;
+}
+.lockdown-screen .icon { font-size: 52px; margin-bottom: 16px; }
+.lockdown-screen h2 { font-size: 18px; font-weight: 900; color: #111; margin-bottom: 10px; }
+.lockdown-screen p  { font-size: 13px; color: var(--mid); font-weight: 600; line-height: 1.7; }
+
+/* ══ زر التثبيت ══ */
+.install-btn {
+    width: 100%; max-width: 460px;
+    padding: 13px;
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+    font-family: 'Cairo',sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+    transition: all .2s;
+}
+.install-btn:hover { background: rgba(255,255,255,.18); }
+
+/* ══ شريط المنظومة ══ */
+.system-brand {
+    margin-top: 20px;
+    color: rgba(255,255,255,.35);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ══ Skeleton loading ══ */
+.skeleton {
+    background: linear-gradient(90deg,rgba(255,255,255,.1) 25%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.1) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+@media(max-width:480px) {
+    .login-card { border-radius: 16px; }
+    .school-header { padding: 22px 20px 18px; }
+    .login-body { padding: 24px 20px 16px; }
+}
+</style>
 </head>
 <body>
 
-    <button id="btn-install-pwa" class="btn-install"><i class="bi bi-phone"></i> ثبّت المنظومة كتطبيق على جهازك الحين</button>
-
-    <div class="login-container">
-        <div id="school-link-badge" class="school-hint-badge"></div>
-
-        <h1 id="lbl-main-title">المنظومة الرقمية الموحدة</h1>
-        <p id="lbl-default-school-title">بوابة الدخول السحابية الذكية</p>
-        
-        <form id="form-login" onsubmit="window.login(event)">
-            <input type="text" id="id" placeholder="رقم المستخدم الخاص بك" required>
-            <input type="password" id="pass" placeholder="كلمة المرور السرية" required>
-            <button type="submit" class="btn-primary"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول آمن</button>
-        </form>
-
-        <button class="btn-success" onclick="startIntegratedDemo()"><i class="bi bi-play-btn-fill"></i> شاهد العرض الحي التجريبي للمنظومة</button>
-
-        <a href="privacy.html" style="display:block; margin-top:18px; font-size:12px; color:var(--mid); text-decoration:none; font-weight:bold;">
-            <i class="bi bi-shield-lock"></i> سياسة الخصوصية والاستخدام الآمن
-        </a>
+<!-- إعلانات المدرسة -->
+<div class="announcements-bar" id="ann-bar">
+    <div class="ann-header">
+        <i class="bi bi-megaphone-fill"></i>
+        إعلانات المدرسة
     </div>
+    <div id="ann-list"></div>
+</div>
 
-    <div class="demo-section" id="demo-zone">
-        <div class="screen-frame">
-            <div class="cursor" id="fake-cursor" style="top: 220px; left: 300px;"></div>
-            
-            <div class="sim-sidebar">
-                <h3 style="color:var(--accent); font-size:13px; margin-bottom:20px; font-weight:900;"><i class="bi bi-shield-check"></i> نظام سحابة المدارس</h3>
-                <div id="sim-nav-1" style="padding:8px; background:#1e293b; color:#fff; border-radius:6px; font-size:12px; margin-bottom:8px; font-weight:bold;"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
-                <div id="sim-nav-2" style="padding:8px; font-size:12px; opacity:0.5; color:#fff;"><i class="bi bi-file-earmark-pdf"></i> تقارير الغياب</div>
-            </div>
+<!-- بطاقة الدخول -->
+<div class="login-card" id="login-card">
 
-            <div class="sim-main">
-                <div id="sim-content">
-                    <h2 style="font-size:18px; font-weight:700; margin-bottom:15px; color:#fff;">لوحة الإجراءات السريعة والمباشرة</h2>
-                    <div style="background:#0f172a; padding:15px; border-radius:10px; border:1px solid #334155;">
-                        <span style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:8px;">محرك بث غياب الحصة الحالي لأولياء الأمور:</span>
-                        <select style="padding:6px; width:120px; border-radius:6px; font-weight:bold; background:#1e293b; color:#fff; border:1px solid #334155;"><option>الصف 9/1</option></select>
-                        <button id="sim-whatsapp-btn" style="background:var(--success); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; margin-right:8px; display:inline-block; width:auto; font-size:12px;">بث للواتساب</button>
-                    </div>
-                </div>
-
-                <div class="sim-popup" id="sim-whatsapp-popup">
-                    <h3 style="color:#059669; font-size:16px; margin-bottom:10px; font-weight:900;"><i class="bi bi-check-circle-fill"></i> نجح محرك البث!</h3>
-                    <p style="font-size:12px; color:#111827; line-height:1.5; font-weight:600;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
-                </div>
-            </div>
+    <!-- هيدر المدرسة -->
+    <div class="school-header" id="school-header">
+        <div class="school-logo-wrap" id="school-logo">🏫</div>
+        <div class="school-name" id="school-name">المنظومة الرقمية</div>
+        <div class="school-sub" id="school-sub">بوابة الدخول الآمنة</div>
+        <div class="school-badge">
+            <i class="bi bi-shield-check-fill"></i>
+            اتصال مشفر وآمن
         </div>
-        
-        <div class="subtitle-bar" id="sim-subtitle">جاري تجهيز بيئة العرض التفاعلي...</div>
     </div>
 
-    <script type="module">
-        import { db, auth } from './js/firebase-config.js';
-        import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
-        import { signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    <!-- نموذج الدخول -->
+    <div class="login-body">
+        <div class="error-msg" id="error-msg"></div>
 
-        // قراءة كود المدرسة من الرابط للروابط الذكية المخصصة (?school=salem)
-        const urlParams = new URLSearchParams(window.location.search);
-        const schoolFromUrl = urlParams.get('school')?.trim().toLowerCase();
+        <label class="login-label">رقم المستخدم</label>
+        <input type="text" class="login-input" id="inp-id"
+            placeholder="أدخل رقمك..." autocomplete="username" required>
 
-        // 📡 محرك التحقق المسبق وبناء هوية المدرسة الحية فور تحميل الصفحة
-        async function checkPreBrandingAndStatus() {
-            if (!schoolFromUrl) return;
+        <label class="login-label">كلمة المرور</label>
+        <input type="password" class="login-input" id="inp-pass"
+            placeholder="••••••••" autocomplete="current-password" required>
 
-            try {
-                const schoolSnap = await getDoc(doc(db, 'schools', schoolFromUrl));
-                if (schoolSnap.exists()) {
-                    const schoolData = schoolSnap.data();
-                    
-                    // فحص الرخص الأمنية وحالة العقد الاستثماري فوراً
-                    if (schoolData.status === 'suspended') {
-                        showLockdownScreen('⚠️ الحساب السحابي للمدرسة موقوف إدارياً! يرجى مراجعة الدعم الفني لتجديد الخدمة.');
-                        return;
-                    }
-                    if (schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) {
-                        showLockdownScreen('⚠️ انتهت فترة الترخيص السحابي للمدرسة! يرجى مراجعة إدارة الدعم الفني للتجديد.');
-                        return;
-                    }
+        <button class="login-btn" id="login-btn" onclick="doLogin()">
+            <i class="bi bi-box-arrow-in-left"></i>
+            تسجيل الدخول
+        </button>
+    </div>
 
-                    // حقن وتبديل اسم وعنوان الواجهة باسم المدرسة المعتمد رسمياً
-                    document.getElementById('lbl-main-title').textContent = schoolData.name;
-                    document.getElementById('lbl-default-school-title').textContent = "بوابة الدخول الذكية والآمنة للمنشأة";
-                    
-                    const badge = document.getElementById('school-link-badge');
-                    badge.innerHTML = `<i class="bi bi-building-check"></i> اتصال سحابي آمن ومشفر بملفات: <b>${schoolData.name}</b>`;
-                    badge.style.display = 'block';
-                } else {
-                    console.warn("School ID from slug not found in central registry.");
-                }
-            } catch (e) {
-                console.error("Core engine branding check error:", e);
-            }
+    <div class="login-footer">
+        <a href="privacy.html"><i class="bi bi-shield-lock"></i> سياسة الخصوصية</a>
+    </div>
+</div>
+
+<!-- زر التثبيت -->
+<button class="install-btn" id="install-btn">
+    <i class="bi bi-phone-fill"></i>
+    ثبّت التطبيق على جهازك
+</button>
+
+<!-- شعار المنظومة -->
+<div class="system-brand">
+    <i class="bi bi-grid-3x3-gap-fill"></i>
+    المنظومة الرقمية الموحدة © 2026
+</div>
+
+<script type="module">
+import { db, auth } from './js/firebase-config.js';
+import { getDoc, doc, collection, query, where, getDocs, orderBy }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFunctions, httpsCallable }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+import { signInWithCustomToken }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+const urlParams    = new URLSearchParams(window.location.search);
+const schoolFromUrl = urlParams.get('school')?.trim().toLowerCase() || '';
+const functions    = getFunctions(auth.app);
+const loginUserFn  = httpsCallable(functions, 'loginUser');
+
+// ══ تحميل بيانات المدرسة ══
+async function loadSchoolBranding() {
+    if (!schoolFromUrl) return;
+
+    try {
+        const snap = await getDoc(doc(db, 'schools', schoolFromUrl));
+        if (!snap.exists()) return;
+
+        const s = snap.data();
+
+        // فحص الحالة
+        if (s.status === 'suspended') {
+            showLockdown('⛔', 'الحساب موقوف', 'تم إيقاف حساب هذه المدرسة. يرجى التواصل مع الدعم الفني لتجديد الاشتراك.');
+            return;
+        }
+        if (s.subscriptionEnd && new Date(s.subscriptionEnd) < new Date()) {
+            showLockdown('⏰', 'انتهى الاشتراك', 'انتهت مدة اشتراك هذه المدرسة. يرجى التواصل مع الدعم الفني للتجديد.');
+            return;
         }
 
-        function showLockdownScreen(message) {
-            const container = document.querySelector('.login-container');
-            if (container) {
-                container.innerHTML = `
-                    <div style="font-size:50px; color:var(--red); margin-bottom:15px;"><i class="bi bi-shield-slash-fill"></i></div>
-                    <h2 style="font-size:18px; font-weight:900; color:#fff; margin-bottom:12px;">🚫 تم تعليق صلاحيات الوصول</h2>
-                    <p style="color:#94a3b8; font-size:13.5px; font-weight:700; line-height:1.6;">${message}</p>
-                    <div style="background:rgba(220,38,38,0.1); border:1px solid rgba(220,38,38,0.2); padding:10px; border-radius:8px; font-size:11px; font-weight:bold; color:#ef4444; margin-top:15px;">
-                        المنظومة الرقمية الموحدة — الأمن السحابي لربط البيانات
-                    </div>
-                `;
-            }
+        // ══ تطبيق هوية المدرسة ══
+
+        // الاسم
+        document.getElementById('school-name').textContent = s.name || 'المدرسة';
+        document.getElementById('school-sub').textContent  = s.region || 'وزارة التربية — الكويت';
+        document.title = `دخول | ${s.name}`;
+
+        // اللون المخصص
+        if (s.primaryColor) {
+            document.documentElement.style.setProperty('--school-primary', s.primaryColor);
+            document.getElementById('school-header').style.background = s.primaryColor;
+            document.getElementById('school-header').style.setProperty('--school-primary', s.primaryColor);
+            document.querySelector('.login-btn').style.background = s.primaryColor;
+            document.querySelector('body').style.background = s.primaryColor;
+        }
+        if (s.accentColor) {
+            document.documentElement.style.setProperty('--school-accent', s.accentColor);
         }
 
-        // انطلاق فحص الهوية الفوري
-        checkPreBrandingAndStatus();
+        // اللوغو
+        const logoWrap = document.getElementById('school-logo');
+        if (s.logoUrl) {
+            logoWrap.innerHTML = `<img src="${s.logoUrl}" alt="${s.name}" onerror="this.parentElement.innerHTML='🏫'">`;
+        } else {
+            logoWrap.textContent = '🏫';
+        }
 
-        const functions = getFunctions(auth.app);
-        const loginUserFn = httpsCallable(functions, 'loginUser');
+        // ══ تحميل الإعلانات ══
+        loadAnnouncements(snap.id);
 
-        window.login = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('id').value.trim();
-            const pass = document.getElementById('pass').value.trim();
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '⏳ جاري مضاهاة البيانات وتأمين الاتصال...';
+    } catch(e) {
+        console.error('Branding error:', e);
+    }
+}
 
-            try {
-                // 🔐 التحقق الآمن والمشفر عبر الـ Cloud Function لمنع انكشاف كلمات المرور
-                const result = await loginUserFn({ schoolId: schoolFromUrl || null, userId: id, password: pass });
-                const userData = result.data;
+// ══ تحميل الإعلانات ══
+async function loadAnnouncements(schoolId) {
+    try {
+        const snap = await getDocs(query(
+            collection(db, 'school_announcements'),
+            where('schoolId', '==', schoolId),
+            where('active',   '==', true),
+            orderBy('createdAt', 'desc')
+        ));
 
-                // 🔒 منع محاولات تسجيل الدخول العشوائية من روابط المدارس الأخرى
-                if (schoolFromUrl && userData.schoolId !== schoolFromUrl) {
-                    throw { code: 'school-mismatch' };
-                }
+        if (snap.empty) return;
 
-                // تفويض الدخول الرسمي بالتوكن المشفر
-                await signInWithCustomToken(auth, userData.token);
-                localStorage.setItem('hs_custom_token', userData.token);
+        const bar  = document.getElementById('ann-bar');
+        const list = document.getElementById('ann-list');
+        bar.style.display = 'block';
 
-                // فحص نهائي للرخصة الفنية وصلاحية العقد الاستثماري للسيرفر
-                const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
-                if (!schoolSnap.exists()) throw { code: 'school-not-found' };
-                const schoolData = schoolSnap.data();
+        list.innerHTML = snap.docs.slice(0,5).map(d => {
+            const a = d.data();
+            const date = a.createdAt?.toDate?.()?.toLocaleDateString('ar-KW', {
+                month:'long', day:'numeric'
+            }) || '';
+            return `<div class="ann-item">
+                ${a.text || ''}
+                ${date ? `<div class="ann-date"><i class="bi bi-calendar3"></i> ${date}</div>` : ''}
+            </div>`;
+        }).join('');
 
-                if (schoolData.status === 'suspended') throw { code: 'school-suspended' };
-                if (schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) throw { code: 'subscription-ended' };
+    } catch(e) { /* الإعلانات اختيارية */ }
+}
 
-                // ربط الجلسة المتكاملة وتخزين البيانات الإدارية محلياً بالكاش
-                const role = String(userData.role || '').trim().toLowerCase();
-                localStorage.setItem('hs_user', JSON.stringify({
-                    userId:     id,
-                    name:       userData.name || '',
-                    role:       role,
-                    schoolId:   userData.schoolId,
-                    schoolName: schoolData.name || 'المنظومة الرقمية السحابية',
-                    classId:    userData.classId || ''
-                }));
+// ══ شاشة الإيقاف ══
+function showLockdown(icon, title, msg) {
+    document.getElementById('login-card').innerHTML = `
+        <div class="lockdown-screen">
+            <div class="icon">${icon}</div>
+            <h2>${title}</h2>
+            <p>${msg}</p>
+        </div>`;
+}
 
-                // نظام تحويل وتوجيه الرتب الذكي الموحد
-                const adminRoles = ['admin','assistant_manager','wing_supervisor'];
-                const dest = adminRoles.includes(role) ? 'admin.html'
-                           : role === 'social_worker'    ? 'social.html'
-                           : role === 'guard'            ? 'guard.html'
-                           : role === 'nurse'            ? 'nurse.html'
-                           : role === 'department_head'  ? 'department_head.html'
-                           : 'teacher.html';
-                           
-                window.location.replace(dest);
+// ══ تسجيل الدخول ══
+window.doLogin = async function() {
+    const id   = document.getElementById('inp-id').value.trim();
+    const pass = document.getElementById('inp-pass').value.trim();
+    const btn  = document.getElementById('login-btn');
+    const err  = document.getElementById('error-msg');
 
-            } catch(err) {
-                const code = err.code || '';
-                const messages = {
-                    'functions/not-found':         '❌ رقم المستخدم غير مسجل بالسجلات المركزية للمنظومة',
-                    'functions/permission-denied': '❌ كلمة المرور غير صحيحة، أو تم تعطيل حسابك مؤقتاً',
-                    'functions/invalid-argument':  '⚠️ يرجى تعبئة الحقول المطلوبة بشكل سليم للولوج',
-                    'school-mismatch':   '❌ حسابك غير تابع لهذه المدرسة! لا يمكن الدخول من رابط هذا الملف الدراسي.',
-                    'school-not-found':  '❌ رخصة المنشأة والمدرسة المطلوبة غير مسجلة حاليأ بالسيرفر',
-                    'school-suspended':  '⚠️ الحساب السحابي للمدرسة موقوف إدارياً! تواصل مع الدعم الفني.',
-                    'subscription-ended':'⚠️ انتهت فترة الاشتراك السنوي للمدرسة! تواصل مع الدعم لتجديد الترخيص السحابي.'
-                };
-                alert(messages[code] || ('❌ فشل الدخول: ' + (err.message || 'يرجى التحقق من جودة اتصالك بالإنترنت والملفات')));
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول آمن';
-            }
+    err.classList.remove('show');
+
+    if (!id || !pass) {
+        err.textContent = '⚠️ أدخل رقم المستخدم وكلمة المرور';
+        err.classList.add('show'); return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
+
+    try {
+        const result   = await loginUserFn({ schoolId: schoolFromUrl || null, userId: id, password: pass });
+        const userData = result.data;
+
+        if (schoolFromUrl && userData.schoolId !== schoolFromUrl) {
+            throw { code: 'school-mismatch' };
+        }
+
+        await signInWithCustomToken(auth, userData.token);
+        localStorage.setItem('hs_custom_token', userData.token);
+
+        const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
+        if (!schoolSnap.exists()) throw { code: 'school-not-found' };
+        const schoolData = schoolSnap.data();
+
+        if (schoolData.status === 'suspended')                                    throw { code: 'school-suspended' };
+        if (schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) throw { code: 'subscription-ended' };
+
+        const role = String(userData.role || '').trim().toLowerCase();
+        localStorage.setItem('hs_user', JSON.stringify({
+            userId:     id,
+            name:       userData.name || '',
+            role,
+            schoolId:   userData.schoolId,
+            schoolName: schoolData.name || '',
+            classId:    userData.classId || '',
+            primaryColor: schoolData.primaryColor || ''
+        }));
+
+        const adminRoles = ['admin','assistant_manager','wing_supervisor'];
+        const dest = adminRoles.includes(role)  ? 'admin.html'
+                   : role === 'social_worker'   ? 'social.html'
+                   : role === 'guard'           ? 'guard.html'
+                   : role === 'nurse'           ? 'nurse.html'
+                   : role === 'department_head' ? 'department_head.html'
+                   : 'teacher.html';
+
+        window.location.replace(dest);
+
+    } catch(errObj) {
+        const msgs = {
+            'functions/not-found':         '❌ رقم المستخدم غير موجود',
+            'functions/permission-denied': '❌ كلمة المرور غير صحيحة',
+            'functions/invalid-argument':  '⚠️ أدخل البيانات بشكل صحيح',
+            'school-mismatch':             '❌ هذا الحساب غير تابع لهذه المدرسة',
+            'school-not-found':            '❌ المدرسة غير مسجلة في النظام',
+            'school-suspended':            '⚠️ حساب المدرسة موقوف — تواصل مع الدعم',
+            'subscription-ended':          '⚠️ انتهى اشتراك المدرسة — تواصل مع الدعم'
         };
+        err.textContent = msgs[errObj.code] || ('❌ ' + (errObj.message || 'حدث خطأ، حاول مرة أخرى'));
+        err.classList.add('show');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول';
+    }
+};
 
-        // محرك الـ PWA لتهيئة بيئة الهواتف الذكية والتثبيت المباشر
-        window.addEventListener('beforeinstallprompt', e => {
-            e.preventDefault();
-            const installBtn = document.getElementById('btn-install-pwa');
-            if(installBtn) installBtn.style.display = 'flex';
-            window.deferredPrompt = e;
-        });
-        
-        document.getElementById('btn-install-pwa').addEventListener('click', async () => {
-            if(!window.deferredPrompt) return;
-            window.deferredPrompt.prompt();
-            await window.deferredPrompt.userChoice;
-            window.deferredPrompt = null;
-            document.getElementById('btn-install-pwa').style.display = 'none';
-        });
-    </script>
+// Enter key
+document.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
-    <script>
-        // موديول تشغيل المحاكاة التفاعلية الحية للعرض
-        function startIntegratedDemo() {
-            const demoZone = document.getElementById('demo-zone');
-            demoZone.style.display = 'block';
-            demoZone.scrollIntoView({ behavior: 'smooth' });
+// PWA install
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    const btn = document.getElementById('install-btn');
+    btn.style.display = 'flex';
+    btn.onclick = async () => {
+        e.prompt();
+        await e.userChoice;
+        btn.style.display = 'none';
+    };
+});
 
-            const cursor = document.getElementById('fake-cursor');
-            const subtitle = document.getElementById('sim-subtitle');
-            const popup = document.getElementById('sim-whatsapp-popup');
-            const navReport = document.getElementById('sim-nav-2');
-
-            subtitle.textContent = "مرحباً بك في العرض الحي للمنظومة السحابية.. هكذا تدار البيانات الفنية للمدارس.";
-            
-            setTimeout(() => {
-                cursor.style.top = '125px';
-                cursor.style.left = '290px';
-                subtitle.textContent = "يختار المسؤول أو الوكيل الفصل الدراسي، ويتجه مباشرة إلى زر البث الذكي المباشر..";
-            }, 2500);
-
-            setTimeout(() => {
-                if(popup) popup.style.display = 'block';
-                subtitle.textContent = "بضغطة واحدة، يقوم النظام بسحب الغياب الفعلي وإشعار أولياء الأمور تلقائياً عبر الواتساب دون تكاليف SMS!";
-            }, 5000);
-
-            setTimeout(() => {
-                if(popup) popup.style.display = 'none';
-                cursor.style.top = '90px';
-                cursor.style.left = '650px';
-                subtitle.textContent = "الآن نتوجه بالماوس إلى موديول التقارير الإحصائية المعتمدة..";
-            }, 8500);
-
-            setTimeout(() => {
-                if(navReport) {
-                    navReport.style.background = '#1e293b';
-                    navReport.style.opacity = '1';
-                }
-                subtitle.textContent = "يقوم النظام بتصدير كشوف الغياب التراكمي وتجهيز ملفات PDF المطابقة للمنطقة التعليمية فوراً.";
-            }, 10500);
-        }
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.error('❌ PWA SW error:', err));
-            });
-        }
-    </script>
+// تحميل الهوية
+loadSchoolBranding();
+</script>
 
 <script>
-if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
+if('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+}
 </script>
 </body>
 </html>
