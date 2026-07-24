@@ -1,5 +1,5 @@
 import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
-import { collection, query, where, getDocs }
+import { collection, query, where, getDocs, limit }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // ══════════════════════════════════════════════
@@ -251,7 +251,7 @@ async function buildDataContext(schoolId, question) {
     try {
         // غياب اليوم دائماً
         const todayAbs = await getDocs(query(collection(db,'attendance'),
-            where('schoolId','==',schoolId), where('date','==',today), where('status','==','absent')));
+            where('schoolId','==',schoolId), where('date','==',today), where('status','==','absent'), limit(200)));
         context += `غياب اليوم: ${todayAbs.size} طالب\n`;
 
         // توزيع بالفصل
@@ -268,7 +268,7 @@ async function buildDataContext(schoolId, question) {
         // أسبوع أو شهر
         if(q.includes('أسبوع') || q.includes('اسبوع')) {
             const weekSnap = await getDocs(query(collection(db,'attendance'),
-                where('schoolId','==',schoolId), where('date','>=',weekISO), where('status','==','absent')));
+                where('schoolId','==',schoolId), where('date','>=',weekISO), where('status','==','absent'), limit(200)));
             context += `غياب الأسبوع الماضي: ${weekSnap.size}\n`;
 
             const byClass = {};
@@ -279,7 +279,7 @@ async function buildDataContext(schoolId, question) {
 
         if(q.includes('شهر')) {
             const monthSnap = await getDocs(query(collection(db,'attendance'),
-                where('schoolId','==',schoolId), where('date','>=',monthISO), where('status','==','absent')));
+                where('schoolId','==',schoolId), where('date','>=',monthISO), where('status','==','absent'), limit(200)));
             context += `غياب هذا الشهر: ${monthSnap.size}\n`;
         }
 
@@ -293,7 +293,7 @@ async function buildDataContext(schoolId, question) {
         // أكثر طالب غياباً
         if(q.includes('أكثر') || q.includes('اكثر') || q.includes('من غاب') || q.includes('متكرر')) {
             const allAbs = await getDocs(query(collection(db,'attendance'),
-                where('schoolId','==',schoolId), where('status','==','absent')));
+                where('schoolId','==',schoolId), where('status','==','absent'), limit(200)));
             const byStudent = {};
             allAbs.forEach(d => {
                 const name = d.data().studentName||'—';
