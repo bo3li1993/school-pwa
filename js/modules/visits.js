@@ -589,8 +589,8 @@ window.printOfficialVisitForm = function(data) {
     const schoolUser = JSON.parse(localStorage.getItem('hs_user')||'{}');
     const schoolName = schoolUser.schoolName || 'مدرسة سالم الحسينان المتوسطة — بنين';
 
-    const win = window.open('','_blank');
-    win.document.write(`<!DOCTYPE html>
+    // ══ طباعة متوافقة مع iOS ══
+    const htmlContent = `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
 <meta charset="UTF-8">
@@ -709,10 +709,65 @@ window.printOfficialVisitForm = function(data) {
   </tbody>
 </table>
 </body>
-</html>`);
-    win.document.close();
-    setTimeout(() => win.print(), 800);
+</html>`;
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
+    const printWin = window.open(blobUrl, '_blank');
+    if(!printWin) {
+        // iOS Safari يمنع window.open — نستخدم iframe
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;border:none;background:#fff';
+        iframe.src = blobUrl;
+        document.body.appendChild(iframe);
+        iframe.onload = () => {
+            setTimeout(() => {
+                iframe.contentWindow?.print();
+                setTimeout(() => iframe.remove(), 2000);
+            }, 500);
+        };
+    } else {
+        setTimeout(() => { printWin.print(); URL.revokeObjectURL(blobUrl); }, 600);
+    }
 };
+
+
+// ══ دالة طباعة متوافقة مع iOS Safari ══
+function printHtmlIos(htmlContent) {
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
+
+    // محاولة window.open أولاً
+    const printWin = window.open(blobUrl, '_blank');
+
+    if (!printWin || printWin.closed || typeof printWin.closed === 'undefined') {
+        // iOS Safari يحجب window.open — نستخدم iframe
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column';
+        overlay.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#0b2545;color:#fff;font-family:Cairo,sans-serif">
+                <span style="font-weight:800;font-size:14px">معاينة الطباعة</span>
+                <div style="display:flex;gap:8px">
+                    <button id="_print-btn" style="background:#25d366;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-weight:800;cursor:pointer">🖨️ طباعة</button>
+                    <button id="_close-btn" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">✕ إغلاق</button>
+                </div>
+            </div>
+            <iframe id="_print-frame" src="${blobUrl}" style="flex:1;border:none;width:100%"></iframe>`;
+        document.body.appendChild(overlay);
+
+        document.getElementById('_print-btn').onclick = () => {
+            document.getElementById('_print-frame').contentWindow?.print();
+        };
+        document.getElementById('_close-btn').onclick = () => {
+            overlay.remove();
+            URL.revokeObjectURL(blobUrl);
+        };
+    } else {
+        setTimeout(() => {
+            try { printWin.print(); } catch(e) {}
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+        }, 700);
+    }
+}
 
 // ══ أرشيف الزيارات ══
 let allVisitsDocs = [];
