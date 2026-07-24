@@ -7,7 +7,7 @@ let _clinicSchoolCache   = null;
 
 async function getClinicStudents(schoolId) {
     if(_clinicStudentsCache && _clinicSchoolCache === schoolId) return _clinicStudentsCache;
-    const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+    const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId), limit(500)));
     _clinicStudentsCache = snap;
     _clinicSchoolCache   = schoolId;
     return snap;
