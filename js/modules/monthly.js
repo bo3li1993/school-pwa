@@ -242,3 +242,49 @@ window.printMonthlyReportDirect = function(label) {
         `<tr><td>${c}</td><td style="text-align:center;">${n}</td></tr>`).join('')}</tbody></table>`;
     window.ManzoumaReport.printDirect(contentHTML, `التقرير الشهري — ${label}`);
 };
+
+
+// ══ تقرير شهري تلقائي — يُرسل أول كل شهر ══
+window.checkAutoMonthlyReport = async function() {
+    const lastCheck = localStorage.getItem('hs_last_monthly_report');
+    const today     = getTodayISO();
+    const dayOfMonth = new Date().getDate();
+
+    // فقط أول يوم عمل في الشهر (يوم 1-3)
+    if(dayOfMonth > 3) return;
+    if(lastCheck && lastCheck.slice(0,7) === today.slice(0,7)) return;
+
+    try {
+        const schoolId = getActiveSchoolId();
+        const d        = new Date();
+        d.setMonth(d.getMonth()-1);
+        const from  = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`;
+        const month = d.toLocaleDateString('ar-KW',{month:'long',year:'numeric'});
+
+        // جلب البيانات
+        const [absSnap, behSnap] = await Promise.all([
+            getDocs(query(collection(db,'attendance'),
+                where('schoolId','==',schoolId), where('date','>=',from), where('status','==','absent'))),
+            getDocs(query(collection(db,'behavior'),
+                where('schoolId','==',schoolId), where('date','>=',from)))
+        ]);
+
+        localStorage.setItem('hs_last_monthly_report', today);
+
+        // إشعار للمدير
+        if(absSnap.size > 0) {
+            window.showToast(`📊 التقرير الشهري جاهز — ${month}: ${absSnap.size} غياب | ${behSnap.size} حادثة سلوكية`, 'info');
+
+            // عرض نافذة تأكيد
+            setTimeout(() => {
+                if(confirm(`📊 التقرير الشهري لـ ${month} جاهز!
+${absSnap.size} حالة غياب | ${behSnap.size} حادثة سلوكية
+
+هل تريد تصديره الآن؟`)) {
+                    window.loadMonthlyStats(from, getTodayISO(), month);
+                    setTimeout(() => window.printMonthlyReportPDF(month), 2000);
+                }
+            }, 1000);
+        }
+    } catch(e) { console.log('Auto report check:', e.message); }
+};
