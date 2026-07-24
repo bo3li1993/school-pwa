@@ -66,6 +66,33 @@ body.dark-mode table th { background:#0f1928 !important; }
 body.dark-mode .bottom-nav { background:#1e2535 !important; border-color:#2a3650 !important; }
 body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !important; }
 
+
+/* ══ بوابة ولي الأمر المحسّنة ══ */
+.student-card-hero {
+    background:linear-gradient(135deg,var(--navy),#1a4a8a);
+    border-radius:16px; padding:22px; color:#fff; margin-bottom:14px;
+    display:flex; gap:16px; align-items:center;
+}
+.stu-avatar {
+    width:60px; height:60px; border-radius:50%;
+    background:rgba(255,255,255,.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; flex-shrink:0; border:2px solid rgba(255,255,255,.3);
+}
+.stu-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.stu-kpi { background:var(--white); border-radius:10px; padding:14px; text-align:center; border-bottom:3px solid; }
+.stu-kpi .n { font-size:26px; font-weight:900; }
+.stu-kpi .l { font-size:11px; color:var(--mid); font-weight:700; margin-top:3px; }
+.permit-form { background:var(--off); border-radius:12px; padding:16px; border:1px solid var(--line); }
+.permit-label { font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px; }
+.permit-input { width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:600; outline:none; transition:border-color .2s; margin-bottom:10px; }
+.permit-input:focus { border-color:var(--sky); }
+.permit-btn { width:100%; padding:12px; background:var(--sky); color:#fff; border:none; border-radius:8px; font-family:'Cairo',sans-serif; font-size:14px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+.abs-timeline { display:flex; flex-direction:column; gap:8px; }
+.abs-entry { background:var(--white); border:1px solid var(--line); border-right:4px solid var(--red); border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+.abs-date { font-weight:800; color:var(--navy); }
+.abs-type { font-weight:700; color:var(--mid); font-size:12px; }
+
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 
@@ -109,6 +136,33 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
   .btn-header i { font-size: 14px; }
   .card { padding: 10px; }
 }
+
+/* ══ بوابة ولي الأمر المحسّنة ══ */
+.student-card-hero {
+    background:linear-gradient(135deg,var(--navy),#1a4a8a);
+    border-radius:16px; padding:22px; color:#fff; margin-bottom:14px;
+    display:flex; gap:16px; align-items:center;
+}
+.stu-avatar {
+    width:60px; height:60px; border-radius:50%;
+    background:rgba(255,255,255,.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; flex-shrink:0; border:2px solid rgba(255,255,255,.3);
+}
+.stu-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.stu-kpi { background:var(--white); border-radius:10px; padding:14px; text-align:center; border-bottom:3px solid; }
+.stu-kpi .n { font-size:26px; font-weight:900; }
+.stu-kpi .l { font-size:11px; color:var(--mid); font-weight:700; margin-top:3px; }
+.permit-form { background:var(--off); border-radius:12px; padding:16px; border:1px solid var(--line); }
+.permit-label { font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px; }
+.permit-input { width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:600; outline:none; transition:border-color .2s; margin-bottom:10px; }
+.permit-input:focus { border-color:var(--sky); }
+.permit-btn { width:100%; padding:12px; background:var(--sky); color:#fff; border:none; border-radius:8px; font-family:'Cairo',sans-serif; font-size:14px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+.abs-timeline { display:flex; flex-direction:column; gap:8px; }
+.abs-entry { background:var(--white); border:1px solid var(--line); border-right:4px solid var(--red); border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+.abs-date { font-weight:800; color:var(--navy); }
+.abs-type { font-weight:700; color:var(--mid); font-size:12px; }
+
 </style>
 
 </head>
