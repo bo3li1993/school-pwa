@@ -47,10 +47,16 @@ window.loadDailyReport = async function() {
     const schoolId = getActiveSchoolId();
     let html = '';
 
+    // ══ جلب كل بيانات اليوم بالتوازي ══
+    const [attSnap, gateSnap, clinicSnap] = await Promise.all([
+        getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',isoDate))),
+        getDocs(query(collection(db,'gatepass'),   where('schoolId','==',schoolId), where('date','==',isoDate))),
+        getDocs(query(collection(db,'clinic'),     where('schoolId','==',schoolId), where('date','==',isoDate))),
+    ]).catch(e => { throw new Error('خطأ في جلب البيانات: ' + e.message); });
+
     // ===== أ) كشف الغياب مجمّع بالفصل =====
     try {
-        const q = query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',isoDate));
-        const snap = await getDocs(q);
+        const snap = attSnap;
         const byClass = {};
         snap.forEach(docSnap => {
             const dd = docSnap.data();
@@ -90,8 +96,7 @@ window.loadDailyReport = async function() {
 
     // ===== ب) الاستئذانات =====
     try {
-        const q = query(collection(db,'gatepass'), where('schoolId','==',schoolId), where('date','==',isoDate));
-        const snap = await getDocs(q);
+        const snap = gateSnap;
         let rows = '';
         snap.forEach(docSnap => {
             const d = docSnap.data();
@@ -111,8 +116,7 @@ window.loadDailyReport = async function() {
 
     // ===== ج) زيارات العيادة =====
     try {
-        const q = query(collection(db,'clinic'), where('schoolId','==',schoolId), where('date','==',isoDate));
-        const snap = await getDocs(q);
+        const snap = clinicSnap;
         let rows = '';
         snap.forEach(docSnap => {
             const d = docSnap.data();
