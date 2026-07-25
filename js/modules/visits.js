@@ -771,13 +771,19 @@ function printHtmlIos(htmlContent) {
 
 // ══ أرشيف الزيارات ══
 let allVisitsDocs = [];
+let _visitsUnsub  = null;
+
+function cleanupVisitsListeners() {
+    if(_visitsUnsub) { try { _visitsUnsub(); } catch(e) {} _visitsUnsub = null; }
+}
 
 function loadTechVisitsLive() {
     const tbody = document.getElementById('tech-visits-tbody');
     const schoolId = getActiveSchoolId();
     const q = query(collection(db,'technical_visits'), where('schoolId','==',schoolId));
 
-    onSnapshot(q, snap => {
+    cleanupVisitsListeners();
+    _visitsUnsub = onSnapshot(q, snap => {
         allVisitsDocs = [];
         snap.forEach(d => allVisitsDocs.push({ id:d.id, ...d.data() }));
         allVisitsDocs.sort((a,b) => (b.date||'').localeCompare(a.date||''));
