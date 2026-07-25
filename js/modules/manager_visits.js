@@ -1,7 +1,15 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
-import { collection, getDocs, addDoc, query, where, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, addDoc, query, where, serverTimestamp, onSnapshot }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// ══ onSnapshot cleanup ══
+let _mgrVisitUnsub = null;
+function cleanupMgrListeners() {
+    if(_mgrVisitUnsub) { try { _mgrVisitUnsub(); } catch(e) {} _mgrVisitUnsub = null; }
+}
 
 export async function initManagerVisitsModule() {
+
     const container = document.getElementById('tab-manager-visits');
     if (!container) return;
 
@@ -26,25 +34,31 @@ export async function initManagerVisitsModule() {
             </table>
         </div>`;
 
-    const schoolId = getActiveSchoolId();
+    const schoolId    = getActiveSchoolId();
     const classSelect = document.getElementById('m-visit-class');
-    const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+
+    // ══ جلب الطلاب والمعلمين بالتوازي ══
+    const [studentsSnap, teachersSnap] = await Promise.all([
+        getDocs(query(collection(db,'students'), where('schoolId','==',schoolId))),
+        getDocs(query(collection(db,'users'),    where('schoolId','==',schoolId), where('role','==','teacher')))
+    ]);
+    const snap = studentsSnap;
     
     let html = '<option value="">-- اختر الفصل --</option>';
     new Set(snap.docs.map(d => d.data().classId)).forEach(c => { if(c) html += `<option value="${c}">${c}</option>`; });
     classSelect.innerHTML = html;
 
-    loadTeacherDirectoryForVisits();
+    loadTeacherDirectoryForVisits(teachersSnap);
     loadManagerVisitsLogsLive();
 }
 
-async function loadTeacherDirectoryForVisits() {
+async function loadTeacherDirectoryForVisits(teachersSnap) {
     try {
     const sel = document.getElementById('m-visit-teacher');
     try {
-        const schoolId = getActiveSchoolId();
-        const q = query(collection(db,'users'), where('schoolId','==',schoolId), where('role','==','teacher'));
-        const snap = await getDocs(q);
+        // استخدم البيانات المحملة مسبقاً إن وجدت
+        const snap = teachersSnap || await getDocs(query(collection(db,'users'),
+            where('schoolId','==',getActiveSchoolId()), where('role','==','teacher')));
         const names = [];
         snap.forEach(d => { if(d.data().name) names.push(d.data().name.trim()); });
         names.sort((a,b)=>a.localeCompare(b,'ar'));
@@ -77,7 +91,8 @@ async function loadManagerVisitsLogsLive() {
     const schoolId = getActiveSchoolId();
     const q = query(collection(db, 'manager_visits'), where('schoolId', '==', schoolId));
     
-    onSnapshot(q, (snap) => {
+    cleanupMgrListeners();
+    _mgrVisitUnsub = onSnapshot(q, (snap) => {
         let html = '';
         snap.forEach(doc => {
             const d = doc.data();
