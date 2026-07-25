@@ -723,3 +723,53 @@ exports.saveFcmToken = onCall({ cors: true, region: 'us-central1' }, async (requ
         throw new HttpsError('internal', e.message);
     }
 });
+
+// ============================================================
+// FUNCTION 14: askAiAssistant — المساعد الذكي (proxy آمن)
+// يستدعي Claude API بدون كشف الـ API key للـ frontend
+// ============================================================
+exports.askAiAssistant = onCall({ cors: true, region: 'us-central1' }, async (request) => {
+    const { context, question, history = [] } = request.data;
+
+    if (!question) throw new HttpsError('invalid-argument', 'السؤال مطلوب');
+
+    // API Key محفوظ في Firebase environment
+    const apiKey = process.env.ANTHROPIC_API_KEY || functions.config().anthropic?.api_key;
+    if (!apiKey) throw new HttpsError('internal', 'API key غير مُعيَّن');
+
+    try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type':    'application/json',
+                'x-api-key':       apiKey,
+                'anthropic-version': '2023-06-01'
+            },
+            body: JSON.stringify({
+                model:      'claude-sonnet-4-6',
+                max_tokens: 1000,
+                system: `أنت مساعد ذكي داخل منظومة إدارة مدرسة في الكويت.
+تجاوب بالعربي بشكل مختصر وواضح ومفيد.
+لا تستخدم مصطلحات تقنية.
+الأرقام والأسماء من البيانات المُعطاة فقط.
+إذا السؤال عن إجراء، وضّح الخطوات ببساطة.`,
+                messages: [
+                    ...history.map(h => ({ role: h.role, content: h.content })),
+                    { role: 'user', content: `البيانات الحالية:\n${context}\n\nالسؤال: ${question}` }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            const err = await response.text();
+            throw new Error(`Claude API error: ${response.status} — ${err}`);
+        }
+
+        const data = await response.json();
+        return { answer: data.content?.[0]?.text || 'لم يُرجع المساعد إجابة' };
+
+    } catch(e) {
+        console.error('askAiAssistant error:', e.message);
+        throw new HttpsError('internal', 'تعذر الاتصال بالمساعد الذكي: ' + e.message);
+    }
+});
