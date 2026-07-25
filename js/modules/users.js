@@ -197,10 +197,16 @@ async function loadSystemUsersDirectoryLive() {
                     <td>${statusLabel}</td>
                     <td>${securityBadge}</td>
                     <td>
-                        <button onclick="window.openResetPasswordModal('${docSnap.id}', '${(u.name||'').replace(/'/g,"\\'")}')"
-                            style="background:var(--sky); color:#fff; border:none; padding:5px 10px; border-radius:6px; font-weight:700; cursor:pointer; font-size:11px;">
-                            <i class="bi bi-key-fill"></i> إعادة تعيين
-                        </button>
+                        <div style="display:flex;gap:5px;flex-wrap:wrap">
+                            <button onclick="window.openEditUserModal('${docSnap.id}','${(u.name||'').replace(/'/g,"\\'")}','${u.role||''}','${u.userId||''}','${u.department||''}')"
+                                style="background:#16a34a;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px">
+                                <i class="bi bi-pencil-fill"></i> تعديل
+                            </button>
+                            <button onclick="window.openResetPasswordModal('${docSnap.id}', '${(u.name||'').replace(/'/g,"\\'")}')"
+                                style="background:var(--sky);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px">
+                                <i class="bi bi-key-fill"></i> كلمة المرور
+                            </button>
+                        </div>
                     </td>
                 </tr>`;
         });
@@ -233,4 +239,56 @@ window.executeResetPassword = async function(userDocId, newPass, userName) {
     } catch (e) {
         window.showToast('❌ خطأ: ' + e.message, 'error');
     }
+};
+
+
+// ══ تعديل بيانات المستخدم ══
+window.openEditUserModal = function(docId, name, role, userId, department) {
+    document.getElementById('edit-user-modal')?.remove();
+    const roles = [
+        ['admin','مدير'],['assistant_manager','مساعد مدير'],['wing_supervisor','مشرف جناح'],
+        ['department_head','رئيس قسم'],['teacher','معلم'],['social_worker','أخصائي اجتماعي'],
+        ['guard','حارس'],['nurse','ممرض']
+    ];
+    const modal = document.createElement('div');
+    modal.id    = 'edit-user-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    modal.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:24px;max-width:420px;width:100%;direction:rtl;font-family:'Cairo',sans-serif">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">✏️ تعديل المستخدم</h3>
+            <button onclick="document.getElementById('edit-user-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">✕</button>
+        </div>
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">الاسم</label>
+        <input id="edit-user-name" type="text" value="${name}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px;outline:none">
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">الدور</label>
+        <select id="edit-user-role" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px;outline:none">
+            ${roles.map(([v,l])=>`<option value="${v}" ${v===role?'selected':''}>${l}</option>`).join('')}
+        </select>
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">القسم (لرئيس القسم فقط)</label>
+        <input id="edit-user-dept" type="text" value="${department||''}" placeholder="مثال: رياضيات" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:16px;outline:none">
+        <button onclick="window.saveUserEdit('${docId}')"
+            style="width:100%;padding:12px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer">
+            حفظ التعديلات
+        </button>
+    </div>`;
+    modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
+    document.body.appendChild(modal);
+};
+
+window.saveUserEdit = async function(docId) {
+    const name = document.getElementById('edit-user-name')?.value?.trim();
+    const role = document.getElementById('edit-user-role')?.value;
+    const dept = document.getElementById('edit-user-dept')?.value?.trim();
+    if(!name) { window.showToast?.('⚠️ أدخل الاسم','warning'); return; }
+    try {
+        const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const { db: database }   = await import('../firebase-config.js');
+        const updates = { name, role };
+        if(dept) updates.department = dept;
+        await updateDoc(doc(database,'users',docId), updates);
+        window.showToast?.('✅ تم حفظ التعديلات');
+        document.getElementById('edit-user-modal')?.remove();
+        setTimeout(() => window.loadSystemUsersDirectoryLive?.(), 500);
+    } catch(e) { window.showToast?.('❌ '+e.message,'error'); }
 };
