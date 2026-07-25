@@ -1,3 +1,5 @@
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, addDoc, getDocs, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // ══ onSnapshot cleanup ══
 let _distUnsubs = [];
@@ -5,8 +7,7 @@ window._cleanupDistribution = function() {
     _distUnsubs.forEach(fn => { try { fn(); } catch(e) {} });
     _distUnsubs = [];
 };
-import { db, getActiveSchoolId } from '../firebase-config.js';
-import { collection, addDoc, getDocs, query, where, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
 
 const ALL_CLASSES = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'];
 
