@@ -1,3 +1,5 @@
+import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
+import { collection, addDoc, query, where, serverTimestamp, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // ══ onSnapshot cleanup ══
 let _behaviorUnsubs = [];
@@ -5,8 +7,7 @@ function cleanupBehavior() {
     _behaviorUnsubs.forEach(fn => { try { fn(); } catch(e) {} });
     _behaviorUnsubs = [];
 }
-import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
-import { collection, addDoc, query, where, serverTimestamp, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
 
 export async function initBehaviorModule() {
     const container = document.getElementById('tab-behavior');
