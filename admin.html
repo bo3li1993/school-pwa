@@ -1226,6 +1226,32 @@ window.switchTab('tab-index').finally(() => {
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW registration failed:', e));
 }
+
+// ══ Dark Mode — iOS Safari Compatible ══
+window.toggleDarkMode = function() {
+    const body   = document.body;
+    const isDark = body.classList.toggle('dark-mode');
+    try { localStorage.setItem('hs_dark_mode', isDark ? '1' : '0'); } catch(e) {}
+    const icon  = document.getElementById('dark-icon');
+    const label = document.getElementById('dark-label');
+    if(icon)  icon.textContent  = isDark ? '☀️' : '🌙';
+    if(label) label.textContent = isDark ? 'نهاري' : 'ليلي';
+};
+
+// استعادة عند التحميل
+(function() {
+    var isDark = false;
+    try { isDark = localStorage.getItem('hs_dark_mode') === '1'; } catch(e) {}
+    if(isDark) {
+        document.body.classList.add('dark-mode');
+        document.addEventListener('DOMContentLoaded', function() {
+            var i = document.getElementById('dark-icon');
+            var l = document.getElementById('dark-label');
+            if(i) i.textContent = '☀️';
+            if(l) l.textContent = 'نهاري';
+        });
+    }
+})();
 </script>
 
 <div class="quick-guide" id="quick-guide" onclick="if(event.target===this)this.classList.remove('show')">
