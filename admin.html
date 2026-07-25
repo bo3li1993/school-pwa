@@ -1214,41 +1214,13 @@ window.switchTab('tab-index').finally(() => {
     document.getElementById('splash').classList.add('hide');
     listenToEmergencyAlertsLive();
     // ══ تحميل المساعد الذكي ══
-    import('./js/modules/ai_assistant.js')
-        .then(m => { if(m.initAiAssistant) m.initAiAssistant(); })
+    // ai_assistant disabled })
         .catch(e => console.warn('AI Assistant:', e));
 });
 
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW registration failed:', e));
 }
-
-// ══ Dark Mode — يعمل على iOS Safari ══
-window.toggleDarkMode = function() {
-    const body  = document.body;
-    const isDark = body.classList.toggle('dark-mode');
-    try { localStorage.setItem('hs_dark_mode', isDark ? '1' : '0'); } catch(e) {}
-    const icon  = document.getElementById('dark-icon');
-    const label = document.getElementById('dark-label');
-    if(icon)  icon.textContent  = isDark ? '☀️' : '🌙';
-    if(label) label.textContent = isDark ? 'نهاري' : 'ليلي';
-};
-
-// استعادة Dark Mode عند التحميل
-(function() {
-    var isDark = false;
-    try { isDark = localStorage.getItem('hs_dark_mode') === '1'; } catch(e) {}
-    if(isDark) {
-        document.body.classList.add('dark-mode');
-        document.addEventListener('DOMContentLoaded', function() {
-            var icon  = document.getElementById('dark-icon');
-            var label = document.getElementById('dark-label');
-            if(icon)  icon.textContent  = '☀️';
-            if(label) label.textContent = 'نهاري';
-        });
-    }
-})();
-
 </script>
 
 <div class="quick-guide" id="quick-guide" onclick="if(event.target===this)this.classList.remove('show')">
