@@ -223,12 +223,14 @@ function buildDonutChart(byClass) {
     if(!svg || !leg) return;
 
     const grades = {6:0, 7:0, 8:0, 9:0};
+    let unknown = 0;
     Object.entries(byClass).forEach(([cls, cnt]) => {
         const g = parseInt(cls.split('/')[0]);
         if(grades[g] !== undefined) grades[g] += cnt;
+        else unknown += cnt; // غياب بدون صف واضح
     });
 
-    const total = Object.values(grades).reduce((a,b)=>a+b,0);
+    const total = Object.values(grades).reduce((a,b)=>a+b,0) + unknown;
     const colors = ['#dc2626','#1a78c2','#16a34a','#d4920a'];
     const names  = {6:'السادس',7:'السابع',8:'الثامن',9:'التاسع'};
     const cx=70, cy=70, rad=55;
@@ -270,6 +272,20 @@ function buildDonutChart(byClass) {
         circles = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#f0f4f8" stroke-width="22"/>` + circles;
     }
 
+    // أضف دائرة للغياب غير المحدد الصف
+    if(unknown > 0) {
+        const pct   = unknown / total;
+        const dash  = pct * circ;
+        const gap   = circ - dash;
+        const rot   = (offset / total) * 360 - 90;
+        circles = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none"
+            stroke="#9ca3af" stroke-width="22"
+            stroke-dasharray="${dash} ${gap}"
+            stroke-dashoffset="${-(offset/total)*circ}"
+            transform="rotate(${rot} ${cx} ${cy})"
+            style="transition:stroke-dasharray 1s ease"/>` + circles;
+    }
+
     svg.innerHTML = circles + `
         <text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="20" font-weight="900" fill="#0b2545">${total}</text>
         <text x="${cx}" y="${cy+12}" text-anchor="middle" font-size="10" fill="#999">غائب</text>`;
@@ -278,7 +294,11 @@ function buildDonutChart(byClass) {
         <div class="legend-item">
             <div class="legend-dot" style="background:${colors[i]}"></div>
             الصف ${names[g]}: <b>${cnt}</b>
-        </div>`).join('');
+        </div>`).join('') + (unknown > 0 ? `
+        <div class="legend-item">
+            <div class="legend-dot" style="background:#9ca3af"></div>
+            غير محدد: <b>${unknown}</b>
+        </div>` : '');
 }
 
 // ══ Chart: أسبوعي ══
