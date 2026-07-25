@@ -203,26 +203,19 @@ window.sendAiMessage = async function() {
         const context  = await buildDataContext(schoolId, q);
 
         // استدعاء Claude
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: 'claude-sonnet-4-6',
-                max_tokens: 1000,
-                system: `أنت مساعد ذكي داخل منظومة إدارة مدرسة في الكويت.
-تجاوب بالعربي بشكل مختصر وواضح.
-لا تستخدم مصطلحات تقنية.
-الأرقام والأسماء من البيانات الفعلية فقط.
-إذا السؤال عن إجراء، وضّح الخطوات ببساطة.`,
-                messages: [
-                    ...chatHistory.slice(-6),
-                    { role: 'user', content: `البيانات الحالية:\n${context}\n\nالسؤال: ${q}` }
-                ]
-            })
+        // ══ استدعاء Cloud Function كـ proxy آمن ══
+        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        const { auth } = await import('../firebase-config.js');
+        const fns = getFunctions(auth.app);
+        const askAiFn = httpsCallable(fns, 'askAiAssistant');
+
+        const result = await askAiFn({
+            context,
+            question: q,
+            history: chatHistory.slice(-6)
         });
 
-        const data   = await response.json();
-        const answer = data.content?.[0]?.text || 'تعذر الحصول على إجابة';
+        const answer = result.data?.answer || 'تعذر الحصول على إجابة';
 
         hideTyping();
         addMessage(answer, 'bot');
