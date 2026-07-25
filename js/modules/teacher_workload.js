@@ -295,15 +295,30 @@ window.exportWorkloadPDF = async function() {
         await window.ManzoumaReport.exportPDF(tableHTML, 'المشغول_الفعلي', 'المشغول الفعلي للمعلمين بحسب الأقسام', '');
     } else {
         // طباعة مباشرة
-        const win = window.open('','_blank');
-        if(win) {
-            win.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8">
+        const htmlContent = `<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8">
                 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
                 <title>المشغول الفعلي</title>
                 <style>body{font-family:'Cairo',sans-serif;padding:20px}h1{font-size:16px;margin-bottom:16px}</style>
-                </head><body><h1>المشغول الفعلي للمعلمين</h1>${tableHTML}</body></html>`);
-            win.document.close();
-            setTimeout(()=>win.print(), 600);
+                </head><body><h1>المشغول الفعلي للمعلمين</h1>${tableHTML}</body></html>`;
+        const blob    = new Blob([htmlContent], { type:'text/html;charset=utf-8' });
+        const blobUrl = URL.createObjectURL(blob);
+        const win     = window.open(blobUrl, '_blank');
+        if(!win) {
+            // iOS fallback
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column';
+            overlay.innerHTML = `<div style="padding:12px 16px;background:#0b2545;color:#fff;font-family:Cairo,sans-serif;display:flex;justify-content:space-between">
+                <span style="font-weight:800">معاينة الطباعة</span>
+                <div style="display:flex;gap:8px">
+                    <button id="_pb" style="background:#25d366;color:#fff;border:none;padding:7px 14px;border-radius:6px;font-family:Cairo,sans-serif;font-weight:800;cursor:pointer">🖨️ طباعة</button>
+                    <button id="_cb" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:7px 12px;border-radius:6px;cursor:pointer">✕</button>
+                </div></div>
+                <iframe id="_pf" src="${blobUrl}" style="flex:1;border:none;width:100%"></iframe>`;
+            document.body.appendChild(overlay);
+            document.getElementById('_pb').onclick = () => document.getElementById('_pf').contentWindow?.print();
+            document.getElementById('_cb').onclick = () => { overlay.remove(); URL.revokeObjectURL(blobUrl); };
+        } else {
+            setTimeout(() => { win.print(); URL.revokeObjectURL(blobUrl); }, 700);
         }
     }
 };
