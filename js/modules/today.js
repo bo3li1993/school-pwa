@@ -228,26 +228,47 @@ function buildDonutChart(byClass) {
         if(grades[g] !== undefined) grades[g] += cnt;
     });
 
-    const total = Object.values(grades).reduce((a,b)=>a+b,0) || 1;
+    const total = Object.values(grades).reduce((a,b)=>a+b,0);
     const colors = ['#dc2626','#1a78c2','#16a34a','#d4920a'];
     const names  = {6:'السادس',7:'السابع',8:'الثامن',9:'التاسع'};
-    const r=55, cx=70, cy=70;
-    const circumference = 2 * Math.PI * r;
+    const cx=70, cy=70, rad=55;
+    const circ = 2 * Math.PI * rad;
+
+    if(total === 0) {
+        svg.innerHTML = `
+            <circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#f0f4f8" stroke-width="22"/>
+            <text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="20" font-weight="900" fill="#0b2545">0</text>
+            <text x="${cx}" y="${cy+12}" text-anchor="middle" font-size="10" fill="#999">غائب</text>`;
+        leg.innerHTML = Object.entries(grades).map(([g],i) => `
+            <div class="legend-item">
+                <div class="legend-dot" style="background:${colors[i]}"></div>
+                الصف ${names[g]}: <b>0</b>
+            </div>`).join('');
+        return;
+    }
 
     let offset = 0;
     let circles = '';
     Object.entries(grades).forEach(([g, cnt], i) => {
-        const pct = cnt / total;
-        const dash = pct * circumference;
-        const rotate = (offset / total) * 360 - 90;
-        circles += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+        if(cnt === 0) { offset += cnt; return; }
+        const pct   = cnt / total;
+        const dash  = pct * circ;
+        const gap   = circ - dash;
+        const rot   = (offset / total) * 360 - 90;
+        circles += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none"
             stroke="${colors[i]}" stroke-width="22"
-            stroke-dasharray="${dash} ${circumference - dash}"
-            stroke-dashoffset="${-(offset/total)*circumference}"
-            transform="rotate(${rotate} ${cx} ${cy})"
+            stroke-dasharray="${dash} ${gap}"
+            stroke-dashoffset="${-(offset/total)*circ}"
+            transform="rotate(${rot} ${cx} ${cy})"
             style="transition:stroke-dasharray 1s ease"/>`;
         offset += cnt;
     });
+
+    // لو فيه فصل وحيد — أضف دائرة خلفية
+    const activeGrades = Object.values(grades).filter(v=>v>0).length;
+    if(activeGrades === 1) {
+        circles = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#f0f4f8" stroke-width="22"/>` + circles;
+    }
 
     svg.innerHTML = circles + `
         <text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="20" font-weight="900" fill="#0b2545">${total}</text>
