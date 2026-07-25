@@ -1,6 +1,12 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// ══ onSnapshot cleanup ══
+let _clinicUnsub = null;
+function cleanupClinicListeners() {
+    if(_clinicUnsub) { try { _clinicUnsub(); } catch(e) {} _clinicUnsub = null; }
+}
+
 // ══ Cache للطلاب — يجلبهم مرة وحدة ══
 let _clinicStudentsCache = null;
 let _clinicSchoolCache   = null;
