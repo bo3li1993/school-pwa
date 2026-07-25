@@ -16,9 +16,10 @@ export async function initClassesModule() {
                 <table>
                     <thead>
                         <tr style="background:#f4f6f9;">
-                            <th>الفصل الدراسي الرسمي</th>
-                            <th style="text-align:center;">إجمالي الطلاب المقيدين بالسيرفر</th>
-                            <th style="text-align:center;">حالة نشاط الفصل</th>
+                            <th>الفصل الدراسي</th>
+                            <th style="text-align:center;">عدد الطلاب</th>
+                            <th style="text-align:center;">الحالة</th>
+                            <th style="text-align:center;">عرض / تعديل</th>
                         </tr>
                     </thead>
                     <tbody id="school-classes-tbody">
@@ -76,8 +77,14 @@ async function loadSchoolClassesStatsLive() {
             html += `
                 <tr style="border-bottom:1px solid #eee;">
                     <td><b>🏫 صف ${cId}</b></td>
-                    <td style="text-align:center; font-weight:700; color:var(--primary-color); font-size:14px;">${count} طلاب مقيدين</td>
-                    <td style="text-align:center;"><span class="badge ${count > 0 ? 'success' : 'warning'}" style="background:${count > 0 ? '#2ecc71' : '#f1c40f'}; color:#fff; padding:3px 8px; border-radius:4px;">${count > 0 ? 'نشط ومستقر' : 'خالٍ من الطلاب'}</span></td>
+                    <td style="text-align:center; font-weight:800; color:var(--primary-color); font-size:16px; cursor:pointer;" onclick="window.showClassStudents('${cId}')">${count}</td>
+                    <td style="text-align:center;"><span style="background:${count > 0 ? '#2ecc71' : '#f1c40f'}; color:#fff; padding:3px 10px; border-radius:6px; font-size:12px; font-weight:700;">${count > 0 ? 'نشط ومستقر' : 'خالٍ من الطلاب'}</span></td>
+                    <td style="text-align:center;">
+                        <button onclick="window.showClassStudents('${cId}')"
+                            style="background:var(--sky,#1a78c2);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">
+                            👁 عرض
+                        </button>
+                    </td>
                 </tr>
             `;
         });
@@ -87,3 +94,76 @@ async function loadSchoolClassesStatsLive() {
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red; padding:15px; font-weight:bold;">❌ تعذر استدعاء الكثافة الطلابية من السيرفر الموحد.</td></tr>';
     }
 }
+
+// ══ عرض طلاب الفصل مع إمكانية نقلهم ══
+window.showClassStudents = async function(classId) {
+    const { getDocs: gd, query: q, collection: col, where: wh, updateDoc, doc }
+        = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+    const { db: database, getActiveSchoolId: getSchool }
+        = await import('../firebase-config.js');
+
+    document.getElementById('class-students-modal')?.remove();
+
+    const modal = document.createElement('div');
+    modal.id    = 'class-students-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    modal.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:22px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">🏫 طلاب الصف ${classId}</h3>
+            <button onclick="document.getElementById('class-students-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">✕</button>
+        </div>
+        <div id="class-students-body" style="font-size:13px;text-align:center;padding:20px;color:#aaa">⏳ جاري التحميل...</div>
+    </div>`;
+    modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
+    document.body.appendChild(modal);
+
+    try {
+        const schoolId = getSchool();
+        const snap = await gd(q(col(database,'students'), wh('schoolId','==',schoolId), wh('classId','==',classId)));
+        const body = document.getElementById('class-students-body');
+
+        if(snap.empty) { body.innerHTML = '<div style="padding:20px;color:#aaa">لا يوجد طلاب في هذا الفصل</div>'; return; }
+
+        // جلب كل الفصول للنقل
+        const allSnap = await gd(q(col(database,'students'), wh('schoolId','==',schoolId)));
+        const allClasses = [...new Set(allSnap.docs.map(d=>d.data().classId).filter(Boolean))].sort();
+        const classOpts  = allClasses.map(c=>`<option value="${c}">${c}</option>`).join('');
+
+        const rows = snap.docs.map(d => {
+            const s = d.data();
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f0f0;gap:8px">
+                <span style="font-weight:700;font-size:13px;flex:1">${s.name||'—'}</span>
+                <select id="move-${d.id}" style="padding:5px 8px;border:1.5px solid #e5e7eb;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:600">
+                    ${allClasses.map(c=>`<option value="${c}" ${c===classId?'selected':''}>${c}</option>`).join('')}
+                </select>
+                <button onclick="window.moveStudent('${d.id}','${classId}')"
+                    style="background:#1a78c2;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">
+                    نقل
+                </button>
+            </div>`;
+        }).join('');
+
+        body.innerHTML = `
+            <div style="font-size:11px;color:#aaa;font-weight:700;margin-bottom:8px">إجمالي: ${snap.size} طالب</div>
+            ${rows}`;
+
+    } catch(e) {
+        document.getElementById('class-students-body').innerHTML = '❌ ' + e.message;
+    }
+};
+
+window.moveStudent = async function(studentId, currentClass) {
+    const newClass = document.getElementById(`move-${studentId}`)?.value;
+    if(!newClass || newClass === currentClass) { window.showToast?.('اختر فصلاً مختلفاً','warning'); return; }
+
+    try {
+        const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const { db: database }   = await import('../firebase-config.js');
+        await updateDoc(doc(database,'students',studentId), { classId: newClass });
+        window.showToast?.(`✅ تم نقل الطالب إلى ${newClass}`);
+        document.getElementById('class-students-modal')?.remove();
+        // تحديث الجدول
+        setTimeout(() => document.querySelector('[data-tab="tab-classes"]')?.click(), 500);
+    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
+};
