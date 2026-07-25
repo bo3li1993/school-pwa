@@ -381,12 +381,18 @@ function printHtmlIos(htmlContent) {
 }
 
 // ══ سجل الإنذارات لايف ══
-let allWarnings = [];
+let allWarnings   = [];
+let _warningsUnsub = null;
+
+function cleanupWarningsListeners() {
+    if(_warningsUnsub) { try { _warningsUnsub(); } catch(e) {} _warningsUnsub = null; }
+}
 
 function loadWarningsLive(schoolId) {
     const tbody = document.getElementById('warnings-tbody');
     const q = query(collection(db,'warnings'), where('schoolId','==',schoolId));
-    onSnapshot(q, snap => {
+    cleanupWarningsListeners();
+    _warningsUnsub = onSnapshot(q, snap => {
         allWarnings = [];
         snap.forEach(d => allWarnings.push({ id:d.id, ...d.data() }));
         allWarnings.sort((a,b) => (b.date||'').localeCompare(a.date||''));
