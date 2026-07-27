@@ -727,7 +727,7 @@ window.saveProfile = async function() {
         if (newPass) {
             try {
                 const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-                const fns = getFunctions(auth.app);
+                const fns = getFunctions(auth.app, 'me-central1');
                 const resetFn = httpsCallable(fns, 'resetUserPassword');
                 await resetFn({ userDocId: snap.docs[0].id, newPassword: newPass });
             } catch(passErr) {
