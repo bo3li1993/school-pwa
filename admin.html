@@ -218,34 +218,46 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
 
 
-/* ══ قائمة أقسام قابلة للطي ══ */
-.menu-section { }
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
 
+/* ══ قائمة أقسام قابلة للطي ══ */
 .menu-sec-title {
     display:flex; align-items:center; justify-content:space-between;
-    padding:10px 16px 6px;
-    color:rgba(255,255,255,.4);
+    padding:9px 16px 5px;
+    color:rgba(255,255,255,.45);
     font-size:10px; font-weight:900;
-    letter-spacing:1px;
-    cursor:pointer;
-    user-select:none;
+    letter-spacing:.8px;
+    cursor:pointer; user-select:none;
     transition:color .2s;
 }
-.menu-sec-title:hover { color:rgba(255,255,255,.7); }
-.menu-sec-title .sec-icon { font-size:12px; transition:transform .25s; }
-.menu-sec-title.closed .sec-icon { transform:rotate(-90deg); }
-
-.menu-sec-body {
-    overflow:hidden;
-    transition:max-height .28s ease;
-}
+.menu-sec-title:hover { color:rgba(255,255,255,.75); }
+.menu-sec-title .sec-chev { font-size:10px; transition:transform .25s; }
+.menu-sec-title.closed .sec-chev { transform:rotate(-90deg); }
+.menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
 .menu-sec-body.closed { max-height:0 !important; }
-
-.menu-divider {
-    height:1px;
-    background:rgba(255,255,255,.06);
-    margin:6px 14px;
-}
+.menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
 
 </style>
 </head>
@@ -270,10 +282,10 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
       <div class="simple-shortcuts">
     <div class="shortcut-btn" onclick="window.switchTab('tab-index')"><i class="bi bi-speedometer2" style="color:var(--sky)"></i><span>الرئيسية</span></div>
     <div class="shortcut-btn" onclick="window.switchTab('tab-attendance')"><i class="bi bi-person-check-fill" style="color:var(--green)"></i><span>الغياب</span></div>
-    <div class="shortcut-btn" onclick="window.switchTab('tab-reports')"><i class="bi bi-bar-chart-fill" style="color:var(--gold)"></i><span>التقارير</span></div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-monthly')"><i class="bi bi-bar-chart-fill" style="color:var(--gold)"></i><span>التقارير</span></div>
     <div class="shortcut-btn" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation" style="color:var(--red)"></i><span>السلوك</span></div>
     <div class="shortcut-btn" onclick="window.switchTab('tab-users')"><i class="bi bi-people-fill" style="color:#7c3aed"></i><span>المستخدمون</span></div>
-    <div class="shortcut-btn" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill" style="color:var(--warn,#d97706)"></i><span>الإنذارات</span></div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill" style="color:#d97706"></i><span>الإنذارات</span></div>
   </div>
 
   <div class="a11y-bar">
@@ -284,7 +296,6 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 
   <div class="menu-divider"></div>
 
-  <!-- الرئيسية -->
   <div class="menu-item active" data-tab="tab-index" onclick="window.switchTab('tab-index')">
     <i class="bi bi-speedometer2"></i> الرئيسية
   </div>
@@ -292,122 +303,106 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
   <div class="menu-divider"></div>
 
   <!-- الطلاب -->
-  <div class="menu-section">
-    <div class="menu-sec-title" onclick="toggleSec(this)">
-      <span><i class="bi bi-people-fill" style="color:var(--sky);margin-left:6px"></i>الطلاب</span>
-      <i class="bi bi-chevron-down sec-icon"></i>
-    </div>
-    <div class="menu-sec-body">
-      <div class="menu-item" data-tab="tab-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person-lines-fill"></i> ملف الطالب</div>
-      <div class="menu-item" data-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-person-gear"></i> إدارة الطلاب</div>
-      <div class="menu-item" data-tab="tab-classes" onclick="window.switchTab('tab-classes')"><i class="bi bi-grid-3x3"></i> الفصول والتوزيع</div>
-      <div class="menu-item" onclick="window.location.href='import.html'"><i class="bi bi-upload"></i> رفع كشف المدرسة</div>
-      <div class="menu-item" data-tab="tab-promotion" onclick="window.switchTab('tab-promotion')"><i class="bi bi-arrow-up-circle"></i> الترحيل السنوي</div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-people-fill" style="color:var(--sky);margin-left:6px"></i>الطلاب</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person-lines-fill"></i> ملف الطالب</div>
+    <div class="menu-item" data-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-person-gear"></i> إدارة الطلاب</div>
+    <div class="menu-item" data-tab="tab-classes" onclick="window.switchTab('tab-classes')"><i class="bi bi-grid-3x3"></i> الفصول والتوزيع</div>
+    <div class="menu-item" data-tab="tab-import" onclick="window.switchTab('tab-import')"><i class="bi bi-upload"></i> رفع كشف المدرسة</div>
+    <div class="menu-item" data-tab="tab-promotion" onclick="window.switchTab('tab-promotion')"><i class="bi bi-arrow-up-circle"></i> الترحيل السنوي</div>
   </div>
 
   <div class="menu-divider"></div>
 
   <!-- الحضور والسلوك -->
-  <div class="menu-section">
-    <div class="menu-sec-title" onclick="toggleSec(this)">
-      <span><i class="bi bi-clipboard-check-fill" style="color:#16a34a;margin-left:6px"></i>الحضور والسلوك</span>
-      <i class="bi bi-chevron-down sec-icon"></i>
-    </div>
-    <div class="menu-sec-body">
-      <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-person-check"></i> الغياب اليومي</div>
-      <div class="menu-item" data-tab="tab-date" onclick="window.switchTab('tab-date')"><i class="bi bi-calendar3"></i> بحث بتاريخ</div>
-      <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-circle"></i> الغياب المتكرر</div>
-      <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
-      <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
-      <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
-      <div class="menu-item" data-tab="tab-warnings" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill"></i> الإنذارات الرسمية</div>
-      <div class="menu-item" onclick="window.open('nurse.html','_blank')"><i class="bi bi-hospital"></i> بوابة الممرض</div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-clipboard-check-fill" style="color:#16a34a;margin-left:6px"></i>الحضور والسلوك</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-person-check"></i> تسجيل الغياب</div>
+    <div class="menu-item" data-tab="tab-date" onclick="window.switchTab('tab-date')"><i class="bi bi-calendar3"></i> بحث بتاريخ</div>
+    <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-circle"></i> الغياب المتكرر</div>
+    <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
+    <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
+    <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
+    <div class="menu-item" data-tab="tab-warnings" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill"></i> الإنذارات</div>
   </div>
 
   <div class="menu-divider"></div>
 
   <!-- التقارير -->
-  <div class="menu-section">
-    <div class="menu-sec-title" onclick="toggleSec(this)">
-      <span><i class="bi bi-bar-chart-fill" style="color:var(--gold);margin-left:6px"></i>التقارير</span>
-      <i class="bi bi-chevron-down sec-icon"></i>
-    </div>
-    <div class="menu-sec-body">
-      <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-file-text"></i> كشف يومي شامل</div>
-      <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-graph-up"></i> التقارير الأسبوعية</div>
-      <div class="menu-item" data-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-calendar-month"></i> التقارير الشهرية</div>
-      <div class="menu-item" data-tab="tab-archive" onclick="window.switchTab('tab-archive')"><i class="bi bi-archive"></i> الأرشيف</div>
-      <div class="menu-item" data-tab="tab-ai-insights" onclick="window.switchTab('tab-ai-insights')"><i class="bi bi-robot"></i> التقارير الذكية</div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-bar-chart-fill" style="color:var(--gold);margin-left:6px"></i>التقارير</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-file-text"></i> الكشف اليومي</div>
+    <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-graph-up"></i> التقارير الأسبوعية</div>
+    <div class="menu-item" data-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-calendar-month"></i> التقارير الشهرية</div>
+    <div class="menu-item" data-tab="tab-archive" onclick="window.switchTab('tab-archive')"><i class="bi bi-archive"></i> الأرشيف</div>
   </div>
 
   <div class="menu-divider"></div>
 
   <!-- المعلمون -->
-  <div class="menu-section">
-    <div class="menu-sec-title" onclick="toggleSec(this)">
-      <span><i class="bi bi-person-workspace" style="color:#7c3aed;margin-left:6px"></i>المعلمون</span>
-      <i class="bi bi-chevron-down sec-icon"></i>
-    </div>
-    <div class="menu-sec-body">
-      <div class="menu-item" data-tab="tab-teachers" onclick="window.switchTab('tab-teachers')"><i class="bi bi-person-badge"></i> دليل المعلمين</div>
-      <div class="menu-item" data-tab="tab-teacher-workload" onclick="window.switchTab('tab-teacher-workload')"><i class="bi bi-diagram-3-fill"></i> المشغول الفعلي</div>
-      <div class="menu-item" data-tab="tab-teacher-perf" onclick="window.switchTab('tab-teacher-perf')"><i class="bi bi-speedometer"></i> كفاءة الأداء</div>
-      <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> الزيارات الفنية</div>
-      <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-eye"></i> زيارات المدير</div>
-      <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-binoculars"></i> جولة الجناح</div>
-      <div class="menu-item" data-tab="tab-coverage" onclick="window.switchTab('tab-coverage')"><i class="bi bi-calendar-week"></i> توزيع الاحتياط</div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-person-workspace" style="color:#7c3aed;margin-left:6px"></i>المعلمون</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-teachers" onclick="window.switchTab('tab-teachers')"><i class="bi bi-person-badge"></i> دليل المعلمين</div>
+    <div class="menu-item" data-tab="tab-teacher-workload" onclick="window.switchTab('tab-teacher-workload')"><i class="bi bi-diagram-3-fill"></i> المشغول الفعلي</div>
+    <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> الزيارات الفنية</div>
+    <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-eye"></i> زيارات المدير</div>
+    <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-binoculars"></i> جولة الجناح</div>
+    <div class="menu-item" data-tab="tab-coverage" onclick="window.switchTab('tab-coverage')"><i class="bi bi-calendar-week"></i> توزيع الاحتياط</div>
   </div>
 
   <div class="menu-divider"></div>
 
   <!-- التواصل والتحفيز -->
-  <div class="menu-section">
-    <div class="menu-sec-title" onclick="toggleSec(this)">
-      <span><i class="bi bi-megaphone-fill" style="color:#0891b2;margin-left:6px"></i>التواصل والتحفيز</span>
-      <i class="bi bi-chevron-down sec-icon"></i>
-    </div>
-    <div class="menu-sec-body">
-      <div class="menu-item" data-tab="tab-announcements" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone"></i> الإعلانات</div>
-      <div class="menu-item" data-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i> المراسلات</div>
-      <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
-      <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-star"></i> الحوافز والتميز</div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-megaphone-fill" style="color:#0891b2;margin-left:6px"></i>التواصل والتحفيز</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-announcements" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone"></i> الإعلانات</div>
+    <div class="menu-item" data-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i> المراسلات</div>
+    <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
+    <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-star"></i> الحوافز</div>
   </div>
 
   <div class="menu-divider"></div>
 
-  <!-- الإدارة والنظام -->
-  <div class="menu-section">
-    <div class="menu-sec-title" onclick="toggleSec(this)">
-      <span><i class="bi bi-gear-fill" style="color:var(--mid);margin-left:6px"></i>الإدارة والنظام</span>
-      <i class="bi bi-chevron-down sec-icon"></i>
-    </div>
-    <div class="menu-sec-body">
-      <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people"></i> إدارة المستخدمين</div>
-      <div class="menu-item" data-tab="tab-audit" onclick="window.switchTab('tab-audit')"><i class="bi bi-clock-history"></i> سجل العمليات</div>
-      <div class="menu-item" data-tab="tab-backup" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-up"></i> النسخ الاحتياطي</div>
-      <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-circle"></i> حسابي</div>
-      <div class="menu-item" onclick="window.open('user_guide.html','_blank')"><i class="bi bi-book"></i> دليل المستخدم</div>
-    </div>
+  <!-- الإدارة -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-gear-fill" style="color:var(--mid);margin-left:6px"></i>الإدارة والنظام</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people"></i> المستخدمون</div>
+    <div class="menu-item" data-tab="tab-audit" onclick="window.switchTab('tab-audit')"><i class="bi bi-clock-history"></i> سجل العمليات</div>
+    <div class="menu-item" data-tab="tab-backup" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-up"></i> النسخ الاحتياطي</div>
+    <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-circle"></i> حسابي</div>
+    <div class="menu-item" onclick="window.open('user_guide.html','_blank')"><i class="bi bi-book"></i> دليل المستخدم</div>
   </div>
 
   <div class="menu-divider"></div>
 
-  <!-- بوابات أخرى -->
-  <div class="menu-section">
-    <div class="menu-sec-title" onclick="toggleSec(this)">
-      <span><i class="bi bi-grid" style="color:var(--mid);margin-left:6px"></i>بوابات أخرى</span>
-      <i class="bi bi-chevron-down sec-icon"></i>
-    </div>
-    <div class="menu-sec-body">
-      <div class="menu-item" onclick="window.open('tv.html','_blank')"><i class="bi bi-display"></i> شاشة TV</div>
-      <div class="menu-item" onclick="window.open('guard.html','_blank')"><i class="bi bi-shield"></i> بوابة الحارس</div>
-      <div class="menu-item" onclick="window.open('social.html','_blank')"><i class="bi bi-person-heart"></i> الأخصائي الاجتماعي</div>
-    </div>
+  <!-- سجلات البوابات الأخرى -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-grid" style="color:var(--mid);margin-left:6px"></i>البوابات الأخرى</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" onclick="window.open('nurse.html','_blank')"><i class="bi bi-hospital"></i> بوابة الممرض</div>
+    <div class="menu-item" onclick="window.open('guard.html','_blank')"><i class="bi bi-shield"></i> بوابة الحارس</div>
+    <div class="menu-item" onclick="window.open('social.html','_blank')"><i class="bi bi-person-heart"></i> الأخصائي الاجتماعي</div>
+    <div class="menu-item" onclick="window.open('tv.html','_blank')"><i class="bi bi-display"></i> شاشة TV</div>
   </div>
 </div>
 
@@ -428,6 +423,7 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
     <div id="tab-student" class="tab-content"></div>
     <div id="tab-date" class="tab-content"></div>
     <div id="tab-students-manage" class="tab-content"></div>
+  <div id="tab-import" class="tab-content"></div>
     <div id="tab-classes" class="tab-content"></div>
     <div id="tab-attendance" class="tab-content"></div>
     <div id="tab-daily-report" class="tab-content"></div>
@@ -586,6 +582,7 @@ const moduleMap = {
     'tab-student':          { file: './js/modules/student.js',        init: 'initStudentModule' },
     'tab-date':             { file: './js/modules/date_search.js',     init: 'initDateSearchModule' },
     'tab-students-manage':  { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
+        'tab-import':           { file: null, init: null, url: './import.html' },
     'tab-classes':          { file: './js/modules/classes.js',         init: 'initClassesModule' },
     'tab-attendance':       { file: './js/modules/attendance.js',      init: 'initAttendanceModule' },
     'tab-daily-report':     { file: './js/modules/daily_report.js',    init: 'initDailyReportModule' },
@@ -785,34 +782,46 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
 
 
-/* ══ قائمة أقسام قابلة للطي ══ */
-.menu-section { }
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
 
+/* ══ قائمة أقسام قابلة للطي ══ */
 .menu-sec-title {
     display:flex; align-items:center; justify-content:space-between;
-    padding:10px 16px 6px;
-    color:rgba(255,255,255,.4);
+    padding:9px 16px 5px;
+    color:rgba(255,255,255,.45);
     font-size:10px; font-weight:900;
-    letter-spacing:1px;
-    cursor:pointer;
-    user-select:none;
+    letter-spacing:.8px;
+    cursor:pointer; user-select:none;
     transition:color .2s;
 }
-.menu-sec-title:hover { color:rgba(255,255,255,.7); }
-.menu-sec-title .sec-icon { font-size:12px; transition:transform .25s; }
-.menu-sec-title.closed .sec-icon { transform:rotate(-90deg); }
-
-.menu-sec-body {
-    overflow:hidden;
-    transition:max-height .28s ease;
-}
+.menu-sec-title:hover { color:rgba(255,255,255,.75); }
+.menu-sec-title .sec-chev { font-size:10px; transition:transform .25s; }
+.menu-sec-title.closed .sec-chev { transform:rotate(-90deg); }
+.menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
 .menu-sec-body.closed { max-height:0 !important; }
-
-.menu-divider {
-    height:1px;
-    background:rgba(255,255,255,.06);
-    margin:6px 14px;
-}
+.menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
 
 </style>
     `;
@@ -1030,34 +1039,46 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
 
 
-/* ══ قائمة أقسام قابلة للطي ══ */
-.menu-section { }
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
 
+/* ══ قائمة أقسام قابلة للطي ══ */
 .menu-sec-title {
     display:flex; align-items:center; justify-content:space-between;
-    padding:10px 16px 6px;
-    color:rgba(255,255,255,.4);
+    padding:9px 16px 5px;
+    color:rgba(255,255,255,.45);
     font-size:10px; font-weight:900;
-    letter-spacing:1px;
-    cursor:pointer;
-    user-select:none;
+    letter-spacing:.8px;
+    cursor:pointer; user-select:none;
     transition:color .2s;
 }
-.menu-sec-title:hover { color:rgba(255,255,255,.7); }
-.menu-sec-title .sec-icon { font-size:12px; transition:transform .25s; }
-.menu-sec-title.closed .sec-icon { transform:rotate(-90deg); }
-
-.menu-sec-body {
-    overflow:hidden;
-    transition:max-height .28s ease;
-}
+.menu-sec-title:hover { color:rgba(255,255,255,.75); }
+.menu-sec-title .sec-chev { font-size:10px; transition:transform .25s; }
+.menu-sec-title.closed .sec-chev { transform:rotate(-90deg); }
+.menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
 .menu-sec-body.closed { max-height:0 !important; }
-
-.menu-divider {
-    height:1px;
-    background:rgba(255,255,255,.06);
-    margin:6px 14px;
-}
+.menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
 
 </style>${this.buildHeader(title, subtitle)}${contentHTML}${this.buildFooter()}`;
         document.body.appendChild(printEl);
@@ -1224,34 +1245,46 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
 
 
-/* ══ قائمة أقسام قابلة للطي ══ */
-.menu-section { }
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
 
+/* ══ قائمة أقسام قابلة للطي ══ */
 .menu-sec-title {
     display:flex; align-items:center; justify-content:space-between;
-    padding:10px 16px 6px;
-    color:rgba(255,255,255,.4);
+    padding:9px 16px 5px;
+    color:rgba(255,255,255,.45);
     font-size:10px; font-weight:900;
-    letter-spacing:1px;
-    cursor:pointer;
-    user-select:none;
+    letter-spacing:.8px;
+    cursor:pointer; user-select:none;
     transition:color .2s;
 }
-.menu-sec-title:hover { color:rgba(255,255,255,.7); }
-.menu-sec-title .sec-icon { font-size:12px; transition:transform .25s; }
-.menu-sec-title.closed .sec-icon { transform:rotate(-90deg); }
-
-.menu-sec-body {
-    overflow:hidden;
-    transition:max-height .28s ease;
-}
+.menu-sec-title:hover { color:rgba(255,255,255,.75); }
+.menu-sec-title .sec-chev { font-size:10px; transition:transform .25s; }
+.menu-sec-title.closed .sec-chev { transform:rotate(-90deg); }
+.menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
 .menu-sec-body.closed { max-height:0 !important; }
-
-.menu-divider {
-    height:1px;
-    background:rgba(255,255,255,.06);
-    margin:6px 14px;
-}
+.menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
 
 </style></head><body>
         <div class="no-print" style="position:fixed;top:10px;right:10px;z-index:999;display:flex;gap:8px;">
