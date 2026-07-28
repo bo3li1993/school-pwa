@@ -531,7 +531,7 @@ window.saveProfile = async function() {
     if(pass){
       try {
         const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const fns=getFunctions(undefined, 'us-central1');
+        const fns=getFunctions(undefined, 'me-central1');
         await httpsCallable(fns,'resetUserPassword')({userDocId:snap.docs[0].id,newPassword:pass});
       } catch(pe){ showToast('⚠️ تم الحفظ لكن تعذر تغيير كلمة المرور','warning'); }
     }
