@@ -1,775 +1,595 @@
-const { onCall, HttpsError } = require('firebase-functions/v2/https');
-const { onDocumentCreated } = require('firebase-functions/v2/firestore');
-const { onSchedule } = require('firebase-functions/v2/scheduler');
-const admin = require('firebase-admin');
-
-admin.initializeApp();
-const db = admin.firestore();
-
-// ============================================================
-// أدوات مساعدة: حد محاولات الدخول الفاشلة (Rate Limiting)
-// 5 محاولات فاشلة → قفل 15 دقيقة
-// ============================================================
-const MAX_ATTEMPTS = 5;
-const LOCKOUT_MINUTES = 15;
-
-async function checkRateLimit(identifier) {
-    const ref = db.collection('login_attempts').doc(identifier);
-    const snap = await ref.get();
-    if (!snap.exists) return { locked: false };
-
-    const data = snap.data();
-    const lastAttempt = data.lastAttempt?.toDate ? data.lastAttempt.toDate() : new Date(0);
-    const minutesSince = (Date.now() - lastAttempt.getTime()) / 60000;
-
-    if (data.count >= MAX_ATTEMPTS && minutesSince < LOCKOUT_MINUTES) {
-        const remaining = Math.ceil(LOCKOUT_MINUTES - minutesSince);
-        return { locked: true, remaining };
-    }
-    return { locked: false };
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>تسجيل الدخول | المنظومة الرقمية</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#0b2545">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/x-icon" href="./favicon.ico">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --school-primary: #0b2545;
+    --school-accent:  #d4920a;
+    --navy:  #0b2545;
+    --sky:   #1a78c2;
+    --gold:  #d4920a;
+    --red:   #dc2626;
+    --green: #16a34a;
+    --mid:   #6b7280;
+    --line:  #e5e7eb;
+    --white: #ffffff;
+    --off:   #f8f9fc;
 }
 
-async function recordFailedAttempt(identifier) {
-    const ref = db.collection('login_attempts').doc(identifier);
-    const snap = await ref.get();
-    const minutesSince = snap.exists && snap.data().lastAttempt?.toDate
-        ? (Date.now() - snap.data().lastAttempt.toDate().getTime()) / 60000 : 999;
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; }
 
-    // لو مرّ وقت أطول من فترة القفل، نبدأ العد من جديد
-    const newCount = (snap.exists && minutesSince < LOCKOUT_MINUTES) ? (snap.data().count || 0) + 1 : 1;
-
-    await ref.set({ count: newCount, lastAttempt: admin.firestore.FieldValue.serverTimestamp() });
+/* ══ خلفية ديناميكية ══ */
+body {
+    background: var(--school-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: background .5s ease;
+    position: relative;
+    overflow-x: hidden;
 }
 
-async function resetAttempts(identifier) {
-    await db.collection('login_attempts').doc(identifier).delete().catch(() => {});
+/* دوائر خلفية زخرفية */
+body::before {
+    content: '';
+    position: fixed;
+    top: -120px; left: -120px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+}
+body::after {
+    content: '';
+    position: fixed;
+    bottom: -80px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.03);
+    pointer-events: none;
 }
 
-// ============================================================
-// FUNCTION 1: loginUser — مصادقة المستخدمين (موجودة ومفعّلة)
-// ============================================================
-exports.loginUser = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { schoolId, userId, password } = request.data;
-    if (!userId || !password) throw new HttpsError('invalid-argument', 'userId و password مطلوبان');
+/* ══ شريط الإعلانات ══ */
+.announcements-bar {
+    width: 100%;
+    max-width: 460px;
+    margin-bottom: 16px;
+    display: none;
+}
+.ann-header {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 10px 10px 0 0;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ann-item {
+    background: rgba(255,255,255,.08);
+    border-right: 3px solid var(--school-accent);
+    padding: 10px 16px;
+    color: rgba(255,255,255,.9);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.ann-item:last-child {
+    border-radius: 0 0 10px 10px;
+    border-bottom: none;
+}
+.ann-date {
+    font-size: 10px;
+    color: rgba(255,255,255,.5);
+    margin-top: 3px;
+    font-weight: 700;
+}
 
-    const rateLimitKey = `user_${userId}`;
-    const rateCheck = await checkRateLimit(rateLimitKey);
-    if (rateCheck.locked) {
-        throw new HttpsError('resource-exhausted', `محاولات كثيرة فاشلة — يرجى المحاولة بعد ${rateCheck.remaining} دقيقة`);
-    }
+/* ══ بطاقة الدخول ══ */
+.login-card {
+    width: 100%;
+    max-width: 460px;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,.3);
+}
 
-    // Super Admin — لا rate limit، هاش ثابت فقط
-    if (userId === 'superadmin') {
-        // فك القفل تلقائياً في كل محاولة للسوبر أدمن
-        await resetAttempts(rateLimitKey);
+/* هيدر المدرسة */
+.school-header {
+    background: var(--school-primary);
+    padding: 28px 28px 22px;
+    text-align: center;
+    position: relative;
+    transition: background .5s ease;
+}
+.school-header::after {
+    content: '';
+    position: absolute;
+    bottom: -12px; left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 24px;
+    background: var(--school-primary);
+    border-radius: 50%;
+    transition: background .5s;
+}
 
-        const crypto = require('crypto');
-        const hash = crypto.createHash('sha256').update(password).digest('hex');
+.school-logo-wrap {
+    width: 80px; height: 80px;
+    border-radius: 18px;
+    margin: 0 auto 14px;
+    background: rgba(255,255,255,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    border: 3px solid rgba(255,255,255,.25);
+    overflow: hidden;
+}
+.school-logo-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+}
 
-        // هاش ثابت فقط — لا يعتمد على Firestore
-        // كلمة المرور: husainan@2026
-        const SUPER_HASH = '07b4ba632fba1d0883ef24fad3afe2d0dd2c0f97993d505186ef656b431f7e18';
+.school-name {
+    font-size: 18px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+.school-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,.6);
+    font-weight: 700;
+}
+.school-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: rgba(255,255,255,.8);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 10px;
+}
 
-        if (hash !== SUPER_HASH) {
-            throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
+/* جسم النموذج */
+.login-body {
+    padding: 32px 28px 24px;
+}
+
+.login-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--mid);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Cairo',sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    background: var(--off);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    margin-bottom: 14px;
+    text-align: right;
+}
+.login-input:focus {
+    border-color: var(--school-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(11,37,69,.08);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--school-primary);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Cairo',sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all .2s;
+    margin-bottom: 12px;
+}
+.login-btn:hover { opacity: .92; transform: translateY(-1px); }
+.login-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+.login-footer {
+    text-align: center;
+    padding: 0 28px 20px;
+}
+.login-footer a {
+    font-size: 12px;
+    color: var(--mid);
+    text-decoration: none;
+    font-weight: 700;
+}
+.login-footer a:hover { color: var(--school-primary); }
+
+/* ══ رسالة الخطأ ══ */
+.error-msg {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: none;
+    text-align: center;
+}
+.error-msg.show { display: block; }
+
+/* ══ شاشة الإيقاف ══ */
+.lockdown-screen {
+    text-align: center;
+    padding: 40px 20px;
+}
+.lockdown-screen .icon { font-size: 52px; margin-bottom: 16px; }
+.lockdown-screen h2 { font-size: 18px; font-weight: 900; color: #111; margin-bottom: 10px; }
+.lockdown-screen p  { font-size: 13px; color: var(--mid); font-weight: 600; line-height: 1.7; }
+
+/* ══ زر التثبيت ══ */
+.install-btn {
+    width: 100%; max-width: 460px;
+    padding: 13px;
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+    font-family: 'Cairo',sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+    transition: all .2s;
+}
+.install-btn:hover { background: rgba(255,255,255,.18); }
+
+/* ══ شريط المنظومة ══ */
+.system-brand {
+    margin-top: 20px;
+    color: rgba(255,255,255,.35);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ══ Skeleton loading ══ */
+.skeleton {
+    background: linear-gradient(90deg,rgba(255,255,255,.1) 25%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.1) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+@media(max-width:480px) {
+    .login-card { border-radius: 16px; }
+    .school-header { padding: 22px 20px 18px; }
+    .login-body { padding: 24px 20px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- إعلانات المدرسة -->
+<div class="announcements-bar" id="ann-bar">
+    <div class="ann-header">
+        <i class="bi bi-megaphone-fill"></i>
+        إعلانات المدرسة
+    </div>
+    <div id="ann-list"></div>
+</div>
+
+<!-- بطاقة الدخول -->
+<div class="login-card" id="login-card">
+
+    <!-- هيدر المدرسة -->
+    <div class="school-header" id="school-header">
+        <div class="school-logo-wrap" id="school-logo">🏫</div>
+        <div class="school-name" id="school-name">المنظومة الرقمية</div>
+        <div class="school-sub" id="school-sub">بوابة الدخول الآمنة</div>
+        <div class="school-badge">
+            <i class="bi bi-shield-check-fill"></i>
+            اتصال مشفر وآمن
+        </div>
+    </div>
+
+    <!-- نموذج الدخول -->
+    <div class="login-body">
+        <div class="error-msg" id="error-msg"></div>
+
+        <label class="login-label">رقم المستخدم</label>
+        <input type="text" class="login-input" id="inp-id"
+            placeholder="أدخل رقمك..." autocomplete="username" required>
+
+        <label class="login-label">كلمة المرور</label>
+        <input type="password" class="login-input" id="inp-pass"
+            placeholder="••••••••" autocomplete="current-password" required>
+
+        <button class="login-btn" id="login-btn" onclick="doLogin()">
+            <i class="bi bi-box-arrow-in-left"></i>
+            تسجيل الدخول
+        </button>
+    </div>
+
+    <div class="login-footer">
+        <a href="privacy.html"><i class="bi bi-shield-lock"></i> سياسة الخصوصية</a>
+    </div>
+</div>
+
+<!-- زر التثبيت -->
+<button class="install-btn" id="install-btn">
+    <i class="bi bi-phone-fill"></i>
+    ثبّت التطبيق على جهازك
+</button>
+
+<!-- شعار المنظومة -->
+<div class="system-brand">
+    <i class="bi bi-grid-3x3-gap-fill"></i>
+    المنظومة الرقمية الموحدة © 2026
+</div>
+
+<script type="module">
+import { db, auth } from './js/firebase-config.js';
+import { getDoc, doc, collection, query, where, getDocs, orderBy }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFunctions, httpsCallable }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+import { signInWithCustomToken }
+  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+const urlParams    = new URLSearchParams(window.location.search);
+const schoolFromUrl = urlParams.get('school')?.trim().toLowerCase() || '';
+const functions    = getFunctions(auth.app, 'us-central1');
+const loginUserFn  = httpsCallable(functions, 'loginUser');
+
+// ══ تحميل بيانات المدرسة ══
+async function loadSchoolBranding() {
+    if (!schoolFromUrl) return;
+
+    try {
+        const snap = await getDoc(doc(db, 'schools', schoolFromUrl));
+        if (!snap.exists()) return;
+
+        const s = snap.data();
+
+        // فحص الحالة
+        if (s.status === 'suspended') {
+            showLockdown('⛔', 'الحساب موقوف', 'تم إيقاف حساب هذه المدرسة. يرجى التواصل مع الدعم الفني لتجديد الاشتراك.');
+            return;
         }
-        const token = await admin.auth().createCustomToken('superadmin', { role: 'superadmin', schoolId: 'system' });
-        return { token, role: 'superadmin', schoolId: 'system', name: 'حسين', userId: 'superadmin' };
+        if (s.subscriptionEnd && new Date(s.subscriptionEnd) < new Date()) {
+            showLockdown('⏰', 'انتهى الاشتراك', 'انتهت مدة اشتراك هذه المدرسة. يرجى التواصل مع الدعم الفني للتجديد.');
+            return;
+        }
+
+        // ══ تطبيق هوية المدرسة ══
+
+        // الاسم
+        document.getElementById('school-name').textContent = s.name || 'المدرسة';
+        document.getElementById('school-sub').textContent  = s.region || 'وزارة التربية — الكويت';
+        document.title = `دخول | ${s.name}`;
+
+        // اللون المخصص
+        if (s.primaryColor) {
+            document.documentElement.style.setProperty('--school-primary', s.primaryColor);
+            document.getElementById('school-header').style.background = s.primaryColor;
+            document.getElementById('school-header').style.setProperty('--school-primary', s.primaryColor);
+            document.querySelector('.login-btn').style.background = s.primaryColor;
+            document.querySelector('body').style.background = s.primaryColor;
+        }
+        if (s.accentColor) {
+            document.documentElement.style.setProperty('--school-accent', s.accentColor);
+        }
+
+        // اللوغو
+        const logoWrap = document.getElementById('school-logo');
+        if (s.logoUrl) {
+            logoWrap.innerHTML = `<img src="${s.logoUrl}" alt="${s.name}" onerror="this.parentElement.innerHTML='🏫'">`;
+        } else {
+            logoWrap.textContent = '🏫';
+        }
+
+        // ══ تحميل الإعلانات ══
+        loadAnnouncements(snap.id);
+
+    } catch(e) {
+        console.error('Branding error:', e);
+    }
+}
+
+// ══ تحميل الإعلانات ══
+async function loadAnnouncements(schoolId) {
+    try {
+        const snap = await getDocs(query(
+            collection(db, 'school_announcements'),
+            where('schoolId', '==', schoolId),
+            where('active',   '==', true),
+            orderBy('createdAt', 'desc')
+        ));
+
+        if (snap.empty) return;
+
+        const bar  = document.getElementById('ann-bar');
+        const list = document.getElementById('ann-list');
+        bar.style.display = 'block';
+
+        list.innerHTML = snap.docs.slice(0,5).map(d => {
+            const a = d.data();
+            const date = a.createdAt?.toDate?.()?.toLocaleDateString('ar-KW', {
+                month:'long', day:'numeric'
+            }) || '';
+            return `<div class="ann-item">
+                ${a.text || ''}
+                ${date ? `<div class="ann-date"><i class="bi bi-calendar3"></i> ${date}</div>` : ''}
+            </div>`;
+        }).join('');
+
+    } catch(e) { /* الإعلانات اختيارية */ }
+}
+
+// ══ شاشة الإيقاف ══
+function showLockdown(icon, title, msg) {
+    document.getElementById('login-card').innerHTML = `
+        <div class="lockdown-screen">
+            <div class="icon">${icon}</div>
+            <h2>${title}</h2>
+            <p>${msg}</p>
+        </div>`;
+}
+
+// ══ تسجيل الدخول ══
+window.doLogin = async function() {
+    const id   = document.getElementById('inp-id').value.trim();
+    const pass = document.getElementById('inp-pass').value.trim();
+    const btn  = document.getElementById('login-btn');
+    const err  = document.getElementById('error-msg');
+
+    err.classList.remove('show');
+
+    if (!id || !pass) {
+        err.textContent = '⚠️ أدخل رقم المستخدم وكلمة المرور';
+        err.classList.add('show'); return;
     }
 
-    // Regular users
-    let usersQuery = db.collection('users').where('userId', '==', userId);
-    if (schoolId) usersQuery = usersQuery.where('schoolId', '==', schoolId);
-    const snap = await usersQuery.limit(1).get();
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
 
-    if (snap.empty) {
-        await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('not-found', 'المستخدم غير موجود');
+    try {
+        const result   = await loginUserFn({ schoolId: schoolFromUrl || null, userId: id, password: pass });
+        const userData = result.data;
+
+        if (schoolFromUrl && userData.schoolId !== schoolFromUrl) {
+            throw { code: 'school-mismatch' };
+        }
+
+        await signInWithCustomToken(auth, userData.token);
+        localStorage.setItem('hs_custom_token', userData.token);
+
+        const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
+        if (!schoolSnap.exists()) throw { code: 'school-not-found' };
+        const schoolData = schoolSnap.data();
+
+        if (schoolData.status === 'suspended')                                    throw { code: 'school-suspended' };
+        if (schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date()) throw { code: 'subscription-ended' };
+
+        const role = String(userData.role || '').trim().toLowerCase();
+        localStorage.setItem('hs_user', JSON.stringify({
+            userId:     id,
+            name:       userData.name || '',
+            role,
+            schoolId:   userData.schoolId,
+            schoolName: schoolData.name || '',
+            classId:    userData.classId || '',
+            primaryColor: schoolData.primaryColor || ''
+        }));
+
+        const adminRoles = ['admin','assistant_manager','wing_supervisor'];
+        const dest = adminRoles.includes(role)  ? 'admin.html'
+                   : role === 'social_worker'   ? 'social.html'
+                   : role === 'guard'           ? 'guard.html'
+                   : role === 'nurse'           ? 'nurse.html'
+                   : role === 'department_head' ? 'department_head.html'
+                   : 'teacher.html';
+
+        window.location.replace(dest);
+
+    } catch(errObj) {
+        const msgs = {
+            'functions/not-found':         '❌ رقم المستخدم غير موجود',
+            'functions/permission-denied': '❌ كلمة المرور غير صحيحة',
+            'functions/invalid-argument':  '⚠️ أدخل البيانات بشكل صحيح',
+            'school-mismatch':             '❌ هذا الحساب غير تابع لهذه المدرسة',
+            'school-not-found':            '❌ المدرسة غير مسجلة في النظام',
+            'school-suspended':            '⚠️ حساب المدرسة موقوف — تواصل مع الدعم',
+            'subscription-ended':          '⚠️ انتهى اشتراك المدرسة — تواصل مع الدعم'
+        };
+        err.textContent = msgs[errObj.code] || ('❌ ' + (errObj.message || 'حدث خطأ، حاول مرة أخرى'));
+        err.classList.add('show');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول';
     }
+};
 
-    const user = snap.docs[0].data();
-    const crypto = require('crypto');
-    const providedHash = crypto.createHash('sha256').update(password).digest('hex');
+// Enter key
+document.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
-    // ندعم النظامين: passHash الجديد الآمن (SHA-256)، أو plainPass القديم الموروث (توافقاً خلفياً للحسابات غير المُحدَّثة بعد)
-    const isValid = user.passHash ? (providedHash === user.passHash) : (user.plainPass === password);
-
-    if (!isValid) {
-        await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
-    }
-    if (user.status === 'suspended') throw new HttpsError('permission-denied', 'الحساب موقوف');
-
-    await resetAttempts(rateLimitKey);
-
-    const schoolSnap = await db.collection('schools').doc(user.schoolId).get();
-    const schoolData = schoolSnap.exists ? schoolSnap.data() : {};
-
-    const token = await admin.auth().createCustomToken(snap.docs[0].id, {
-        role: user.role,
-        schoolId: user.schoolId,
-        userId: user.userId
-    });
-
-    return {
-        token,
-        role: user.role,
-        schoolId: user.schoolId,
-        userId: user.userId,
-        name: user.name || '',
-        schoolName: schoolData.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
-        classId: user.classId || '',
-        department: user.department || ''
+// PWA install
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    const btn = document.getElementById('install-btn');
+    btn.style.display = 'flex';
+    btn.onclick = async () => {
+        e.prompt();
+        await e.userChoice;
+        btn.style.display = 'none';
     };
 });
 
-// ============================================================
-// FUNCTION 2: onAttendanceCreated — إشعار FCM عند تسجيل غياب
-// ============================================================
-exports.onAttendanceCreated = onDocumentCreated({
-    document: 'attendance/{docId}',
-    region: 'me-central1'
-}, async (event) => {
-    const data = event.data.data();
+// تحميل الهوية
+loadSchoolBranding();
+</script>
 
-    // فقط الغياب (مش حضور أو تأخير)
-    if (data.status !== 'absent') return null;
-
-    const { studentName, classId, period, date, schoolId } = data;
-
-    try {
-        // جلب بيانات الطالب (رقم هاتف ولي الأمر)
-        const studentsSnap = await db.collection('students')
-            .where('schoolId', '==', schoolId)
-            .where('name', '==', studentName)
-            .limit(1).get();
-
-        if (studentsSnap.empty) return null;
-        const student = studentsSnap.docs[0].data();
-        const parentPhone = student.parentPhone;
-        if (!parentPhone) return null;
-
-        // إضافة لقائمة إشعارات واتساب (للإرسال اليدوي أو السيرفر)
-        await db.collection('notifications_queue').add({
-            schoolId,
-            studentName,
-            classId,
-            period,
-            date,
-            parentPhone,
-            message: `غياب: ${studentName} — الفصل ${classId} — الحصة ${period} — ${date}`,
-            type: 'absence',
-            sent: false,
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        // إرسال FCM لولي الأمر (لو مسجّل)
-        const usersWithToken = await db.collection('users')
-            .where('schoolId', '==', schoolId)
-            .where('parentPhone', '==', parentPhone)
-            .where('fcmToken', '!=', '')
-            .limit(3).get();
-
-        if (!usersWithToken.empty) {
-            const tokens = usersWithToken.docs
-                .map(d => d.data().fcmToken)
-                .filter(Boolean);
-
-            if (tokens.length > 0) {
-                await admin.messaging().sendEachForMulticast({
-                    tokens,
-                    notification: {
-                        title: `غياب: ${studentName}`,
-                        body: `غاب ابنكم بتاريخ ${date} — الحصة ${period}`
-                    },
-                    data: { schoolId, studentName, classId, type: 'absence' },
-                    android: { priority: 'high' },
-                    apns: { payload: { aps: { sound: 'default', badge: 1 } } }
-                });
-            }
-        }
-
-        return null;
-    } catch (err) {
-        console.error('onAttendanceCreated error:', err);
-        return null;
-    }
-});
-
-// ============================================================
-// FUNCTION 3: generateMonthlyReport — تقرير شهري تلقائي
-// كل أول الشهر الساعة 7 صباحاً بتوقيت الكويت (UTC+3 = 04:00 UTC)
-// ============================================================
-exports.generateMonthlyReport = onSchedule({
-    schedule: '0 4 1 * *',
-    timeZone: 'Asia/Kuwait',
-    region: 'me-central1'
-}, async (event) => {
-    console.log('🔄 Monthly Report: Starting...');
-
-    // الشهر الماضي
-    const now = new Date();
-    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const fromDate = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth()+1).padStart(2,'0')}-01`;
-    const toDate = new Date(lastMonth.getFullYear(), lastMonth.getMonth()+1, 0).toISOString().slice(0,10);
-    const monthLabel = `${lastMonth.getFullYear()}/${String(lastMonth.getMonth()+1).padStart(2,'0')}`;
-
-    // جلب كل المدارس النشطة
-    const schoolsSnap = await db.collection('schools').where('status', '==', 'active').get();
-    console.log(`Found ${schoolsSnap.size} active schools`);
-
-    for (const schoolDoc of schoolsSnap.docs) {
-        const schoolId = schoolDoc.id;
-        const schoolData = schoolDoc.data();
-
-        try {
-            // إحصائيات الغياب
-            const absSnap = await db.collection('attendance')
-                .where('schoolId', '==', schoolId)
-                .where('status', '==', 'absent')
-                .where('date', '>=', fromDate)
-                .where('date', '<=', toDate)
-                .get();
-
-            const lateSnap = await db.collection('attendance')
-                .where('schoolId', '==', schoolId)
-                .where('status', '==', 'late')
-                .where('date', '>=', fromDate)
-                .where('date', '<=', toDate)
-                .get();
-
-            // إحصائيات السلوك
-            const behSnap = await db.collection('behavior')
-                .where('schoolId', '==', schoolId)
-                .where('date', '>=', fromDate)
-                .where('date', '<=', toDate)
-                .get();
-
-            // إحصائيات الاستئذان
-            const gateSnap = await db.collection('gatepass')
-                .where('schoolId', '==', schoolId)
-                .where('dateStr', '>=', fromDate)
-                .where('dateStr', '<=', toDate)
-                .get();
-
-            // إحصائيات العيادة
-            const clinicSnap = await db.collection('clinic')
-                .where('schoolId', '==', schoolId)
-                .where('dateStr', '>=', fromDate)
-                .where('dateStr', '<=', toDate)
-                .get();
-
-            // تجميع بالفصل والطالب
-            const absenceByClass = {};
-            const absenceByStudent = {};
-            let positiveBeh = 0, negativeBeh = 0;
-
-            absSnap.forEach(d => {
-                const dd = d.data();
-                absenceByClass[dd.classId] = (absenceByClass[dd.classId] || 0) + 1;
-                absenceByStudent[dd.studentName] = (absenceByStudent[dd.studentName] || 0) + 1;
-            });
-
-            behSnap.forEach(d => {
-                if (d.data().type === 'إيجابي') positiveBeh++;
-                else if (d.data().type === 'سلبي') negativeBeh++;
-            });
-
-            // أكثر 10 طلاب غياباً
-            const topAbsentees = Object.entries(absenceByStudent)
-                .sort((a,b) => b[1]-a[1]).slice(0,10)
-                .map(([name, count]) => ({ name, count }));
-
-            // حفظ التقرير بـ Firestore
-            await db.collection('monthly_reports').add({
-                schoolId,
-                schoolName: schoolData.name || '',
-                month: monthLabel,
-                fromDate,
-                toDate,
-                stats: {
-                    totalAbsences: absSnap.size,
-                    totalLate: lateSnap.size,
-                    totalGatepass: gateSnap.size,
-                    totalClinic: clinicSnap.size,
-                    positiveBehavior: positiveBeh,
-                    negativeBehavior: negativeBeh,
-                    absenceByClass,
-                    topAbsentees
-                },
-                generatedAt: admin.firestore.FieldValue.serverTimestamp()
-            });
-
-            console.log(`✅ Report generated for ${schoolId}: ${absSnap.size} absences`);
-        } catch (err) {
-            console.error(`❌ Error for ${schoolId}:`, err);
-        }
-    }
-
-    return null;
-});
-
-// ============================================================
-// FUNCTION 4: generateReportNow — توليد تقرير فوري (Callable)
-// يُستدعى من super.html أو admin.html لتوليد تقرير أي شهر
-// ============================================================
-exports.generateReportNow = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { schoolId, fromDate, toDate, monthLabel } = request.data;
-    if (!schoolId || !fromDate || !toDate) throw new HttpsError('invalid-argument', 'schoolId و fromDate و toDate مطلوبة');
-
-    const absSnap = await db.collection('attendance')
-        .where('schoolId', '==', schoolId)
-        .where('status', '==', 'absent')
-        .where('date', '>=', fromDate)
-        .where('date', '<=', toDate).get();
-
-    const lateSnap = await db.collection('attendance')
-        .where('schoolId', '==', schoolId)
-        .where('status', '==', 'late')
-        .where('date', '>=', fromDate)
-        .where('date', '<=', toDate).get();
-
-    const behSnap = await db.collection('behavior')
-        .where('schoolId', '==', schoolId)
-        .where('date', '>=', fromDate)
-        .where('date', '<=', toDate).get();
-
-    const gateSnap = await db.collection('gatepass')
-        .where('schoolId', '==', schoolId)
-        .where('dateStr', '>=', fromDate)
-        .where('dateStr', '<=', toDate).get();
-
-    const absenceByClass = {};
-    const absenceByStudent = {};
-    let positiveBeh = 0, negativeBeh = 0;
-
-    absSnap.forEach(d => {
-        const dd = d.data();
-        absenceByClass[dd.classId] = (absenceByClass[dd.classId]||0) + 1;
-        absenceByStudent[dd.studentName] = (absenceByStudent[dd.studentName]||0) + 1;
+<script>
+if('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(()=>{});
     });
-    behSnap.forEach(d => {
-        if (d.data().type === 'إيجابي') positiveBeh++;
-        else if (d.data().type === 'سلبي') negativeBeh++;
-    });
-
-    const topAbsentees = Object.entries(absenceByStudent)
-        .sort((a,b)=>b[1]-a[1]).slice(0,10)
-        .map(([name,count])=>({name,count}));
-
-    const ref = await db.collection('monthly_reports').add({
-        schoolId,
-        month: monthLabel || fromDate.slice(0,7),
-        fromDate, toDate,
-        stats: {
-            totalAbsences: absSnap.size,
-            totalLate: lateSnap.size,
-            totalGatepass: gateSnap.size,
-            positiveBehavior: positiveBeh,
-            negativeBehavior: negativeBeh,
-            absenceByClass,
-            topAbsentees
-        },
-        generatedAt: admin.firestore.FieldValue.serverTimestamp()
-    });
-
-    return { success: true, reportId: ref.id, stats: { totalAbsences: absSnap.size, totalLate: lateSnap.size } };
-});
-
-// ============================================================
-// FUNCTION 5: changeSuperPassword — تغيير كلمة مرور السوبر أدمن بأمان
-// يتحقق من الكلمة الحالية server-side قبل الحفظ بـ Firestore
-// ============================================================
-exports.changeSuperPassword = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { currentPassword, newPassword } = request.data;
-    if (!currentPassword || !newPassword) throw new HttpsError('invalid-argument', 'الحقول مطلوبة');
-    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور الجديدة قصيرة جداً');
-
-    const crypto = require('crypto');
-    const currentHash = crypto.createHash('sha256').update(currentPassword).digest('hex');
-
-    // جلب الـ hash الحالي المخزّن (من system_config أو الافتراضي)
-    const configSnap = await db.collection('system_config').where('key', '==', 'super_pass_hash').limit(1).get();
-    const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
-    const storedHash = configSnap.empty ? DEFAULT_HASH : configSnap.docs[0].data().value;
-
-    if (currentHash !== storedHash) throw new HttpsError('unauthenticated', 'كلمة المرور الحالية غير صحيحة');
-
-    const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
-
-    if (configSnap.empty) {
-        await db.collection('system_config').add({
-            key: 'super_pass_hash', value: newHash, updatedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-    } else {
-        await configSnap.docs[0].ref.update({ value: newHash, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
-    }
-
-    return { success: true };
-});
-
-// ============================================================
-// FUNCTION 6: registerParent — تسجيل حساب ولي أمر جديد
-// يُنشئ حساب بالرقم المدني ويُصدر Custom Token لتسجيل الدخول الفوري
-// ============================================================
-exports.registerParent = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { schoolId, civilId, phone, password } = request.data;
-    if (!schoolId || !civilId || !phone || !password) {
-        throw new HttpsError('invalid-argument', 'جميع الحقول مطلوبة');
-    }
-    if (!/^\d{5,15}$/.test(civilId)) throw new HttpsError('invalid-argument', 'الرقم المدني غير صحيح');
-    if (password.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور قصيرة جداً');
-
-    const accountId = `${schoolId}_${civilId}`;
-    const accountRef = db.collection('parent_accounts').doc(accountId);
-    const existing = await accountRef.get();
-    if (existing.exists) throw new HttpsError('already-exists', 'هذا الرقم المدني مسجّل مسبقاً');
-
-    const crypto = require('crypto');
-    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
-
-    await accountRef.set({
-        civilId, schoolId, phone, passwordHash,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
-
-    const token = await admin.auth().createCustomToken(accountId, { role: 'parent', schoolId, civilId });
-    return { token, schoolId, civilId };
-});
-
-// ============================================================
-// FUNCTION 7: loginParent — تسجيل دخول ولي الأمر بالرقم المدني
-// ============================================================
-exports.loginParent = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { schoolId, civilId, password } = request.data;
-    if (!civilId || !password) throw new HttpsError('invalid-argument', 'الرقم المدني وكلمة المرور مطلوبان');
-
-    const rateLimitKey = `parent_${civilId}`;
-    const rateCheck = await checkRateLimit(rateLimitKey);
-    if (rateCheck.locked) {
-        throw new HttpsError('resource-exhausted', `محاولات كثيرة فاشلة — يرجى المحاولة بعد ${rateCheck.remaining} دقيقة`);
-    }
-
-    const crypto = require('crypto');
-    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
-
-    let accountData = null;
-    let matchedSchoolId = schoolId;
-
-    if (schoolId) {
-        const accSnap = await db.collection('parent_accounts').doc(`${schoolId}_${civilId}`).get();
-        if (accSnap.exists) accountData = accSnap.data();
-    } else {
-        const q = await db.collection('parent_accounts').where('civilId', '==', civilId).get();
-        if (q.size === 1) {
-            accountData = q.docs[0].data();
-            matchedSchoolId = accountData.schoolId;
-        } else if (q.size > 1) {
-            throw new HttpsError('failed-precondition', 'يرجى استخدام رابط مدرستك الخاص لتسجيل الدخول');
-        }
-    }
-
-    if (!accountData || accountData.passwordHash !== passwordHash) {
-        await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('unauthenticated', 'الرقم المدني أو كلمة المرور غير صحيحة');
-    }
-
-    await resetAttempts(rateLimitKey);
-
-    const accountId = `${matchedSchoolId}_${civilId}`;
-    const token = await admin.auth().createCustomToken(accountId, { role: 'parent', schoolId: matchedSchoolId, civilId });
-    return { token, schoolId: matchedSchoolId, civilId };
-});
-
-// ============================================================
-// FUNCTION 8: getRegistrationClasses — جلب قائمة الفصول (بدون حاجة لتسجيل دخول)
-// يُستخدم فقط بصفحة تسجيل ولي الأمر الجديد، يرجع أسماء الفصول فقط (بيانات غير حساسة)
-// ============================================================
-exports.getRegistrationClasses = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { schoolId } = request.data;
-    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId مطلوب');
-
-    // نجرب classes collection أولاً (أخف وأسرع)
-    const classesSnap = await db.collection('classes').where('schoolId', '==', schoolId).get();
-    if (!classesSnap.empty) {
-        const classes = [...new Set(classesSnap.docs.map(d => d.data().classId).filter(Boolean))];
-        return { classes: classes.sort((a, b) => a.localeCompare(b)) };
-    }
-
-    // fallback: مسح students لاستخراج الفصول
-    const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
-    const classes = [...new Set(studentsSnap.docs.map(d => d.data().classId).filter(Boolean))];
-    return { classes: classes.sort((a, b) => a.localeCompare(b)) };
-});
-
-// ============================================================
-// FUNCTION 9: getRegistrationStudents — جلب أسماء طلاب فصل معيّن (بدون تسجيل دخول)
-// يرجع فقط id + name (بدون هاتف أو رقم مدني، حماية للخصوصية)
-// ============================================================
-exports.getRegistrationStudents = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { schoolId, classId } = request.data;
-    if (!schoolId || !classId) throw new HttpsError('invalid-argument', 'schoolId و classId مطلوبان');
-
-    const snap = await db.collection('students')
-        .where('schoolId', '==', schoolId)
-        .where('classId', '==', classId)
-        .get();
-
-    const students = snap.docs
-        .map(d => ({ id: d.id, name: d.data().name || '' }))
-        .filter(s => s.name)
-        .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-
-    return { students };
-});
-
-// ============================================================
-// FUNCTION 10: changeParentPassword — تغيير كلمة مرور ولي الأمر بأمان
-// يتحقق من الكلمة الحالية server-side قبل الحفظ بـ Firestore
-// ============================================================
-exports.changeParentPassword = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { schoolId, civilId, currentPassword, newPassword } = request.data;
-    if (!schoolId || !civilId || !currentPassword || !newPassword) {
-        throw new HttpsError('invalid-argument', 'جميع الحقول مطلوبة');
-    }
-    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور الجديدة قصيرة جداً');
-
-    const crypto = require('crypto');
-    const currentHash = crypto.createHash('sha256').update(currentPassword).digest('hex');
-
-    const accountId = `${schoolId}_${civilId}`;
-    const accountRef = db.collection('parent_accounts').doc(accountId);
-    const accountSnap = await accountRef.get();
-
-    if (!accountSnap.exists) throw new HttpsError('not-found', 'الحساب غير موجود');
-    if (accountSnap.data().passwordHash !== currentHash) {
-        throw new HttpsError('unauthenticated', 'كلمة المرور الحالية غير صحيحة');
-    }
-
-    const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
-    await accountRef.update({ passwordHash: newHash, updatedAt: admin.firestore.FieldValue.serverTimestamp() });
-
-    return { success: true };
-});
-// ============================================================
-// FUNCTION 11: promoteStudents — الترحيل السنوي الشامل
-// يرفع كل طالب صفاً واحداً (نفس الشعبة)، يؤرشف صف 9 كخريجين،
-// ويسم كل السجلات الحالية بالسنة الدراسية قبل الترحيل
-// ============================================================
-exports.promoteStudents = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
-        throw new HttpsError('permission-denied', 'هذا الإجراء يتطلب صلاحية مدير');
-    }
-
-    const { schoolId, academicYearLabel } = request.data;
-    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId مطلوب');
-    if (request.auth.token.schoolId !== schoolId) {
-        throw new HttpsError('permission-denied', 'لا يمكنك ترحيل مدرسة أخرى');
-    }
-
-    const now = new Date();
-    const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
-    const yearLabel = academicYearLabel || `${startYear}-${startYear + 1}`;
-
-    // ===== الخطوة 1: تسمية كل السجلات غير الموسومة بعد بالسنة الدراسية =====
-    const recordCollections = ['attendance', 'behavior', 'gatepass', 'clinic'];
-    const taggedCounts = {};
-
-    for (const colName of recordCollections) {
-        const snap = await db.collection(colName).where('schoolId', '==', schoolId).get();
-        let batch = db.batch();
-        let opCount = 0;
-        let taggedTotal = 0;
-
-        for (const docSnap of snap.docs) {
-            const data = docSnap.data();
-            if (!data.academicYear) {
-                batch.update(docSnap.ref, { academicYear: yearLabel });
-                opCount++;
-                taggedTotal++;
-                if (opCount >= 450) {
-                    await batch.commit();
-                    batch = db.batch();
-                    opCount = 0;
-                }
-            }
-        }
-        if (opCount > 0) await batch.commit();
-        taggedCounts[colName] = taggedTotal;
-    }
-
-    // ===== الخطوة 2: ترحيل الطلاب =====
-    const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
-    let promoted = 0, graduated = 0, skipped = 0;
-    let batch2 = db.batch();
-    let opCount2 = 0;
-    const newClassesSet = new Set();
-
-    for (const docSnap of studentsSnap.docs) {
-        const data = docSnap.data();
-        const classId = data.classId || '';
-        const parts = classId.split('/');
-
-        if (parts.length !== 2) { skipped++; continue; }
-        const grade = parseInt(parts[0]);
-        const section = parts[1];
-        if (isNaN(grade)) { skipped++; continue; }
-
-        if (grade >= 9) {
-            const graduateRef = db.collection('graduates').doc();
-            batch2.set(graduateRef, {
-                ...data,
-                originalId: docSnap.id,
-                graduatedAt: admin.firestore.FieldValue.serverTimestamp(),
-                academicYearGraduated: yearLabel
-            });
-            batch2.delete(docSnap.ref);
-            graduated++;
-        } else {
-            const newClassId = `${grade + 1}/${section}`;
-            batch2.update(docSnap.ref, { classId: newClassId });
-            newClassesSet.add(newClassId);
-            promoted++;
-        }
-
-        opCount2++;
-        if (opCount2 >= 450) {
-            await batch2.commit();
-            batch2 = db.batch();
-            opCount2 = 0;
-        }
-    }
-    if (opCount2 > 0) await batch2.commit();
-
-    // ===== الخطوة 3: تحديث كولكشن classes بالفصول الجديدة =====
-    if (newClassesSet.size > 0) {
-        const batch3 = db.batch();
-        newClassesSet.forEach(c => {
-            const ref = db.collection('classes').doc(`${schoolId}_${c.replace('/', '-')}`);
-            batch3.set(ref, { schoolId, classId: c, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
-        });
-        await batch3.commit();
-    }
-
-    // ===== الخطوة 4: حفظ سجل الترحيل نفسه =====
-    await db.collection('promotion_logs').add({
-        schoolId, yearLabel, promoted, graduated, skipped,
-        taggedCounts, performedBy: request.auth.token.userId || 'admin',
-        performedAt: admin.firestore.FieldValue.serverTimestamp()
-    });
-
-    return { success: true, promoted, graduated, skipped, taggedCounts, yearLabel };
-});
-
-// ============================================================
-// FUNCTION 12: resetUserPassword — إعادة تعيين كلمة مرور موظف (Admin فقط)
-// يستخدم SHA-256 hash بدل النص الصريح — يحل ثغرة plainPass تدريجياً
-// ============================================================
-exports.resetUserPassword = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
-        throw new HttpsError('permission-denied', 'هذا الإجراء يتطلب صلاحية مدير');
-    }
-
-    const { userDocId, newPassword } = request.data;
-    if (!userDocId || !newPassword) throw new HttpsError('invalid-argument', 'الحقول مطلوبة');
-    if (newPassword.length < 4) throw new HttpsError('invalid-argument', 'كلمة المرور قصيرة جداً');
-
-    const userRef = db.collection('users').doc(userDocId);
-    const userSnap = await userRef.get();
-    if (!userSnap.exists) throw new HttpsError('not-found', 'المستخدم غير موجود');
-    if (userSnap.data().schoolId !== request.auth.token.schoolId) {
-        throw new HttpsError('permission-denied', 'لا يمكنك تعديل موظف بمدرسة أخرى');
-    }
-
-    const crypto = require('crypto');
-    const passHash = crypto.createHash('sha256').update(newPassword).digest('hex');
-
-    // نحذف plainPass القديم (لو موجود) ونحفظ passHash الآمن بدلاً منه
-    await userRef.update({
-        passHash,
-        plainPass: admin.firestore.FieldValue.delete()
-    });
-
-    return { success: true };
-});
-// ============================================================
-// FUNCTION 13: saveFcmToken — حفظ توكن الإشعارات لولي الأمر
-// ============================================================
-exports.saveFcmToken = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { schoolId, civilId, fcmToken } = request.data;
-    if (!schoolId || !civilId || !fcmToken) {
-        throw new HttpsError('invalid-argument', 'البيانات ناقصة');
-    }
-
-    try {
-        // نبحث عن ولي الأمر بالرقم المدني
-        const snap = await db.collection('users')
-            .where('schoolId', '==', schoolId)
-            .where('civilId', '==', civilId)
-            .where('role', '==', 'parent')
-            .limit(1).get();
-
-        if (snap.empty) throw new HttpsError('not-found', 'ولي الأمر غير موجود');
-
-        await snap.docs[0].ref.update({
-            fcmToken,
-            fcmUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        return { success: true };
-    } catch(e) {
-        throw new HttpsError('internal', e.message);
-    }
-});
-
-// ============================================================
-// FUNCTION 14: askAiAssistant — المساعد الذكي (proxy آمن)
-// يستدعي Claude API بدون كشف الـ API key للـ frontend
-// ============================================================
-exports.askAiAssistant = onCall({ cors: true, region: 'me-central1' }, async (request) => {
-    const { context, question, history = [] } = request.data;
-
-    if (!question) throw new HttpsError('invalid-argument', 'السؤال مطلوب');
-
-    // API Key محفوظ في Firebase environment
-    const apiKey = process.env.ANTHROPIC_API_KEY || functions.config().anthropic?.api_key;
-    if (!apiKey) throw new HttpsError('internal', 'API key غير مُعيَّن');
-
-    try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type':    'application/json',
-                'x-api-key':       apiKey,
-                'anthropic-version': '2023-06-01'
-            },
-            body: JSON.stringify({
-                model:      'claude-sonnet-4-6',
-                max_tokens: 1000,
-                system: `أنت مساعد ذكي داخل منظومة إدارة مدرسة في الكويت.
-تجاوب بالعربي بشكل مختصر وواضح ومفيد.
-لا تستخدم مصطلحات تقنية.
-الأرقام والأسماء من البيانات المُعطاة فقط.
-إذا السؤال عن إجراء، وضّح الخطوات ببساطة.`,
-                messages: [
-                    ...history.map(h => ({ role: h.role, content: h.content })),
-                    { role: 'user', content: `البيانات الحالية:\n${context}\n\nالسؤال: ${question}` }
-                ]
-            })
-        });
-
-        if (!response.ok) {
-            const err = await response.text();
-            throw new Error(`Claude API error: ${response.status} — ${err}`);
-        }
-
-        const data = await response.json();
-        return { answer: data.content?.[0]?.text || 'لم يُرجع المساعد إجابة' };
-
-    } catch(e) {
-        console.error('askAiAssistant error:', e.message);
-        throw new HttpsError('internal', 'تعذر الاتصال بالمساعد الذكي: ' + e.message);
-    }
-});
+}
+</script>
+
+<style>
+body.dark-mode { filter: brightness(0.92); }
+</style>
+<script>
+if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
+</script>
+</body>
+</html>
