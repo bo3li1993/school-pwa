@@ -25,7 +25,7 @@ enableIndexedDbPersistence(db).catch(err => {
     else if(err.code === 'unimplemented') {}  // المتصفح لا يدعمه
 });
 export { onAuthStateChanged };
-export const functions = getFunctions(app, 'me-central1');
+export const functions = getFunctions(app, 'us-central1');
 
 // 🔔 تفعيل وتصدير نظام المراسلات الفورية والإشعارات (FCM) للمتصفحات المتوافقة والهواتف
 export const messaging = typeof window !== 'undefined' && 'serviceWorker' in navigator ? getMessaging(app) : null;
