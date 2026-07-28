@@ -386,7 +386,7 @@ import { signInWithCustomToken }
 
 const urlParams    = new URLSearchParams(window.location.search);
 const schoolFromUrl = urlParams.get('school')?.trim().toLowerCase() || '';
-const functions    = getFunctions(auth.app, 'us-central1');
+const functions    = getFunctions(auth.app, 'me-central1');
 const loginUserFn  = httpsCallable(functions, 'loginUser');
 
 // ══ تحميل بيانات المدرسة ══
