@@ -401,7 +401,7 @@ async function loadRegisterClasses() {
     sel.innerHTML = '<option value="">⏳ جاري تحميل الفصول...</option>';
     try {
         const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const functions = getFunctions(auth.app, 'me-central1');
+        const functions = getFunctions(auth.app, 'us-central1');
         const getClassesFn = httpsCallable(functions, 'getRegistrationClasses');
         const result = await getClassesFn({ schoolId: schoolFromUrl });
         const classes = result.data.classes || [];
@@ -426,7 +426,7 @@ window.onRegisterClassChange = async function(classId) {
     sel.disabled = true;
     try {
         const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const functions = getFunctions(auth.app, 'me-central1');
+        const functions = getFunctions(auth.app, 'us-central1');
         const getStudentsFn = httpsCallable(functions, 'getRegistrationStudents');
         const result = await getStudentsFn({ schoolId: schoolFromUrl, classId });
         const students = result.data.students || [];
@@ -465,7 +465,7 @@ window.handleParentRegister = async function(e) {
 
     try {
         const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const functions = getFunctions(auth.app, 'me-central1');
+        const functions = getFunctions(auth.app, 'us-central1');
         const registerFn = httpsCallable(functions, 'registerParent');
 
         const result = await registerFn({ schoolId: schoolFromUrl, civilId, phone, password });
@@ -518,7 +518,7 @@ window.handleParentLoginLive = async function(e) {
 
     try {
         const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const functions = getFunctions(auth.app, 'me-central1');
+        const functions = getFunctions(auth.app, 'us-central1');
         const loginFn = httpsCallable(functions, 'loginParent');
 
         const result = await loginFn({ schoolId: schoolFromUrl || null, civilId, password });
@@ -633,7 +633,7 @@ window.changeParentPassword = async function() {
 
     try {
         const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const functions = getFunctions(auth.app, 'me-central1');
+        const functions = getFunctions(auth.app, 'us-central1');
         const changePassFn = httpsCallable(functions, 'changeParentPassword');
 
         await changePassFn({ schoolId: activeStudent.schoolId, civilId: activeStudent.civilId, currentPassword: currentPass, newPassword: newPass });
@@ -880,7 +880,7 @@ window.saveFcmToken = async function(schoolId, civilId) {
             serviceWorkerRegistration: reg
         });
         if(token) {
-            const fns = getFunctions(auth.app, 'me-central1');
+            const fns = getFunctions(auth.app, 'us-central1');
             await httpsCallable(fns, 'saveFcmToken')({ schoolId, civilId, fcmToken: token });
             console.log('✅ FCM parent token saved');
         }
