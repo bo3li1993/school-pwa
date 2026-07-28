@@ -516,7 +516,7 @@ window.checkSuperPass = async function() {
   btn.innerHTML = '⏳ جاري التحقق...'; btn.disabled = true; err.style.display='none';
   try {
     const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-    const fns = getFunctions(auth.app);
+    const fns = getFunctions(auth.app, 'me-central1');
     const res = await httpsCallable(fns, 'loginUser')({ schoolId:null, userId:'superadmin', password:pass });
     if(res.data?.token) {
       await signInWithCustomToken(auth, res.data.token);
@@ -906,7 +906,7 @@ window.submitChangePassword = async function() {
 
   try {
     const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-    await httpsCallable(getFunctions(auth.app), 'changeSuperPassword')({ currentPassword:current, newPassword:newPass });
+    await httpsCallable(getFunctions(auth.app, 'me-central1'), 'changeSuperPassword')({ currentPassword:current, newPassword:newPass });
     closeModal('change-pass-modal');
     alert('✅ تم تغيير كلمة المرور بنجاح.');
   } catch(e) {
