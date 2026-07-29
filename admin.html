@@ -608,9 +608,14 @@ const moduleMap = {
     'tab-users':            { file: './js/modules/users.js',           init: 'initUsersModule' },
     'tab-audit':            { file: './js/modules/audit.js',           init: 'initAuditModule' },
     'tab-backup':           { file: './js/modules/backup_manager.js',  init: 'initBackupModule' },
-        'tab-ai-insights':      { file: './js/modules/ai_insights.js',    init: 'initAiInsightsModule' },
         'tab-warnings':         { file: './js/modules/warnings.js',       init: 'initWarningsModule' },
-};
+        'tab-teacher-workload': { file: './js/modules/teacher_workload.js', init: 'initTeacherWorkloadModule' },
+        'tab-teacher-perf':     { file: './js/modules/teacher_perf.js',    init: 'initTeacherPerfModule' },
+        'tab-manager-visits':   { file: './js/modules/manager_visits.js',  init: 'initManagerVisitsModule' },
+        'tab-daily-report':     { file: './js/modules/daily_report.js',    init: 'initDailyReportModule' },
+        'tab-students-manage':  { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
+        'tab-ai-insights':      { file: './js/modules/ai_insights.js',    init: 'initAiInsightsModule' },
+        };
 
 const loadedTabs = new Set();
 
