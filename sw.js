@@ -4,8 +4,8 @@
 
 
 // ══ Service Worker v2.3 — iOS Compatible ══
-const CACHE_NAME   = 'manzoma-v2.3';
-const STATIC_CACHE = 'manzoma-static-v2.3';
+const CACHE_NAME   = 'manzoma-v3.0';
+const STATIC_CACHE = 'manzoma-static-v3.0';
 
 const STATIC_ASSETS = [
   './index.html',
@@ -132,4 +132,27 @@ self.addEventListener('notificationclick', event => {
       if (clients.openWindow) return clients.openWindow(url);
     })
   );
+});
+
+
+// ══ Auto-update — يبلّغ الصفحة عند وجود تحديث ══
+self.addEventListener('message', event => {
+    if(event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
+// عند التفعيل — يأخذ التحكم فوراً
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        Promise.all([
+            caches.keys().then(keys =>
+                Promise.all(keys
+                    .filter(k => k !== STATIC_CACHE && k !== CACHE_NAME)
+                    .map(k => caches.delete(k))
+                )
+            ),
+            self.clients.claim()
+        ])
+    );
 });
