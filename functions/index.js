@@ -48,7 +48,7 @@ async function resetAttempts(identifier) {
 // ============================================================
 // FUNCTION 1: loginUser — مصادقة المستخدمين (موجودة ومفعّلة)
 // ============================================================
-exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, userId, password } = request.data;
     if (!userId || !password) throw new HttpsError('invalid-argument', 'userId و password مطلوبان');
 
@@ -130,7 +130,7 @@ exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], regi
 // ============================================================
 exports.onAttendanceCreated = onDocumentCreated({
     document: 'attendance/{docId}',
-    region: 'us-central1'
+    region: 'me-central1'
 }, async (event) => {
     const data = event.data.data();
 
@@ -205,7 +205,7 @@ exports.onAttendanceCreated = onDocumentCreated({
 exports.generateMonthlyReport = onSchedule({
     schedule: '0 4 1 * *',
     timeZone: 'Asia/Kuwait',
-    region: 'us-central1'
+    region: 'me-central1'
 }, async (event) => {
     console.log('🔄 Monthly Report: Starting...');
 
@@ -315,7 +315,7 @@ exports.generateMonthlyReport = onSchedule({
 // FUNCTION 4: generateReportNow — توليد تقرير فوري (Callable)
 // يُستدعى من super.html أو admin.html لتوليد تقرير أي شهر
 // ============================================================
-exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, fromDate, toDate, monthLabel } = request.data;
     if (!schoolId || !fromDate || !toDate) throw new HttpsError('invalid-argument', 'schoolId و fromDate و toDate مطلوبة');
 
@@ -382,7 +382,7 @@ exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost
 // FUNCTION 5: changeSuperPassword — تغيير كلمة مرور السوبر أدمن بأمان
 // يتحقق من الكلمة الحالية server-side قبل الحفظ بـ Firestore
 // ============================================================
-exports.changeSuperPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.changeSuperPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { currentPassword, newPassword } = request.data;
     if (!currentPassword || !newPassword) throw new HttpsError('invalid-argument', 'الحقول مطلوبة');
     if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور الجديدة قصيرة جداً');
@@ -414,7 +414,7 @@ exports.changeSuperPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localho
 // FUNCTION 6: registerParent — تسجيل حساب ولي أمر جديد
 // يُنشئ حساب بالرقم المدني ويُصدر Custom Token لتسجيل الدخول الفوري
 // ============================================================
-exports.registerParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.registerParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, phone, password } = request.data;
     if (!schoolId || !civilId || !phone || !password) {
         throw new HttpsError('invalid-argument', 'جميع الحقول مطلوبة');
@@ -442,7 +442,7 @@ exports.registerParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/],
 // ============================================================
 // FUNCTION 7: loginParent — تسجيل دخول ولي الأمر بالرقم المدني
 // ============================================================
-exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, password } = request.data;
     if (!civilId || !password) throw new HttpsError('invalid-argument', 'الرقم المدني وكلمة المرور مطلوبان');
 
@@ -487,7 +487,7 @@ exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], re
 // FUNCTION 8: getRegistrationClasses — جلب قائمة الفصول (بدون حاجة لتسجيل دخول)
 // يُستخدم فقط بصفحة تسجيل ولي الأمر الجديد، يرجع أسماء الفصول فقط (بيانات غير حساسة)
 // ============================================================
-exports.getRegistrationClasses = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.getRegistrationClasses = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId } = request.data;
     if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId مطلوب');
 
@@ -508,7 +508,7 @@ exports.getRegistrationClasses = onCall({ cors: [/bo3li1993\.github\.io$/, /loca
 // FUNCTION 9: getRegistrationStudents — جلب أسماء طلاب فصل معيّن (بدون تسجيل دخول)
 // يرجع فقط id + name (بدون هاتف أو رقم مدني، حماية للخصوصية)
 // ============================================================
-exports.getRegistrationStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.getRegistrationStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, classId } = request.data;
     if (!schoolId || !classId) throw new HttpsError('invalid-argument', 'schoolId و classId مطلوبان');
 
@@ -529,7 +529,7 @@ exports.getRegistrationStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /loc
 // FUNCTION 10: changeParentPassword — تغيير كلمة مرور ولي الأمر بأمان
 // يتحقق من الكلمة الحالية server-side قبل الحفظ بـ Firestore
 // ============================================================
-exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, currentPassword, newPassword } = request.data;
     if (!schoolId || !civilId || !currentPassword || !newPassword) {
         throw new HttpsError('invalid-argument', 'جميع الحقول مطلوبة');
@@ -558,7 +558,7 @@ exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localh
 // يرفع كل طالب صفاً واحداً (نفس الشعبة)، يؤرشف صف 9 كخريجين،
 // ويسم كل السجلات الحالية بالسنة الدراسية قبل الترحيل
 // ============================================================
-exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
         throw new HttpsError('permission-denied', 'هذا الإجراء يتطلب صلاحية مدير');
     }
@@ -667,7 +667,7 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
 // FUNCTION 12: resetUserPassword — إعادة تعيين كلمة مرور موظف (Admin فقط)
 // يستخدم SHA-256 hash بدل النص الصريح — يحل ثغرة plainPass تدريجياً
 // ============================================================
-exports.resetUserPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.resetUserPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
         throw new HttpsError('permission-denied', 'هذا الإجراء يتطلب صلاحية مدير');
     }
@@ -697,7 +697,7 @@ exports.resetUserPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost
 // ============================================================
 // FUNCTION 13: saveFcmToken — حفظ توكن الإشعارات لولي الأمر
 // ============================================================
-exports.saveFcmToken = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.saveFcmToken = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, fcmToken } = request.data;
     if (!schoolId || !civilId || !fcmToken) {
         throw new HttpsError('invalid-argument', 'البيانات ناقصة');
@@ -728,7 +728,7 @@ exports.saveFcmToken = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], r
 // FUNCTION 14: askAiAssistant — المساعد الذكي (proxy آمن)
 // يستدعي Claude API بدون كشف الـ API key للـ frontend
 // ============================================================
-exports.askAiAssistant = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'us-central1' }, async (request) => {
+exports.askAiAssistant = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { context, question, history = [] } = request.data;
 
     if (!question) throw new HttpsError('invalid-argument', 'السؤال مطلوب');
