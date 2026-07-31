@@ -7,7 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0b2545">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -247,6 +247,19 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
 .menu-sec-body.closed { max-height:0 !important; }
 .menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
+.skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
+.skeleton-circle { width:50px; height:50px; border-radius:50%; }
 
 </style>
 </head>
@@ -740,6 +753,19 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .menu-sec-body.closed { max-height:0 !important; }
 .menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
 
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
+.skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
+.skeleton-circle { width:50px; height:50px; border-radius:50%; }
+
 </style>
     `;
     document.body.appendChild(overlay);
@@ -996,6 +1022,19 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .menu-sec-body.closed { max-height:0 !important; }
 .menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
 
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
+.skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
+.skeleton-circle { width:50px; height:50px; border-radius:50%; }
+
 </style>${this.buildHeader(title, subtitle)}${contentHTML}${this.buildFooter()}`;
         document.body.appendChild(printEl);
 
@@ -1201,6 +1240,19 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .menu-sec-body.closed { max-height:0 !important; }
 .menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
 
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
+.skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
+.skeleton-circle { width:50px; height:50px; border-radius:50%; }
+
 </style></head><body>
         <div class="no-print" style="position:fixed;top:10px;right:10px;z-index:999;display:flex;gap:8px;">
             <button onclick="window.print()" style="background:#0b2545;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;font-size:14px;">🖨️ طباعة</button>
@@ -1357,6 +1409,21 @@ function toggleSec(titleEl) {
 })();
 </script>
 
+<script>
+// ══ Error Toast — يظهر للمستخدم بدل console.error ══
+window.addEventListener('unhandledrejection', function(e) {
+    var msg = e.reason?.message || e.reason || 'حدث خطأ غير متوقع';
+    if(msg.includes('Failed to fetch') || msg.includes('network'))
+        msg = '⚠️ تحقق من اتصال الإنترنت';
+    else if(msg.includes('permission') || msg.includes('PERMISSION'))
+        msg = '⚠️ لا توجد صلاحية لهذا الإجراء';
+    else if(msg.includes('not-found'))
+        msg = '⚠️ البيانات غير موجودة';
+    else
+        msg = '⚠️ ' + msg.substring(0, 80);
+    if(window.showToast) window.showToast(msg, 'error');
+});
+</script>
 </body></html>`);
         w.document.close();
         setTimeout(() => w.print(), 800);
@@ -1457,8 +1524,23 @@ window.switchTab('tab-index').finally(() => {
         .catch(e => console.warn('AI Assistant:', e));
 });
 
+// ══ Service Worker auto-update check ══
 if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW registration failed:', e));
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        reg.addEventListener('updatefound', function() {
+            var newWorker = reg.installing;
+            if(newWorker) {
+                newWorker.addEventListener('statechange', function() {
+                    if(newWorker.state === 'activated') {
+                        if(window.showToast) window.showToast('🔄 تم تحديث المنظومة — يُعاد التحميل...', 'info');
+                        setTimeout(function() { location.reload(); }, 2000);
+                    }
+                });
+            }
+        });
+        // تحقق من التحديثات كل 5 دقائق
+        setInterval(function() { reg.update(); }, 5 * 60 * 1000);
+    }).catch(function(e) {});
 }
 
 // ══ Dark Mode — iOS Safari Compatible ══
@@ -1635,5 +1717,20 @@ function toggleSec(titleEl) {
 })();
 </script>
 
+<script>
+// ══ Error Toast — يظهر للمستخدم بدل console.error ══
+window.addEventListener('unhandledrejection', function(e) {
+    var msg = e.reason?.message || e.reason || 'حدث خطأ غير متوقع';
+    if(msg.includes('Failed to fetch') || msg.includes('network'))
+        msg = '⚠️ تحقق من اتصال الإنترنت';
+    else if(msg.includes('permission') || msg.includes('PERMISSION'))
+        msg = '⚠️ لا توجد صلاحية لهذا الإجراء';
+    else if(msg.includes('not-found'))
+        msg = '⚠️ البيانات غير موجودة';
+    else
+        msg = '⚠️ ' + msg.substring(0, 80);
+    if(window.showToast) window.showToast(msg, 'error');
+});
+</script>
 </body>
 </html>
