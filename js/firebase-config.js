@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getFirestore, collection, query, where, getDocs, updateDoc, doc, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirestore, collection, query, where, getDocs, updateDoc, doc, persistentLocalCache, initializeFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getAuth, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
 import { getFunctions } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
@@ -20,11 +20,7 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 // ══ Offline Persistence — الصفحة تشتغل بدون نت بعد أول زيارة ══
-enableIndexedDbPersistence(db).catch(err => {
-    if(err.code === 'failed-precondition') {} // أكثر من tab مفتوح — طبيعي
-    else if(err.code === 'unimplemented') {}  // المتصفح لا يدعمه
-});
-export { onAuthStateChanged };
+// DEPRECATED: export { onAuthStateChanged };
 export const functions = getFunctions(app, 'me-central1');
 
 // 🔔 تفعيل وتصدير نظام المراسلات الفورية والإشعارات (FCM) للمتصفحات المتوافقة والهواتف
