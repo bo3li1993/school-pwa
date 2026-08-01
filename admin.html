@@ -389,8 +389,7 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
     <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people"></i> المستخدمون</div>
     <div class="menu-item" data-tab="tab-audit" onclick="window.switchTab('tab-audit')"><i class="bi bi-clock-history"></i> سجل العمليات</div>
     <div class="menu-item" data-tab="tab-backup" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-up"></i> النسخ الاحتياطي</div>
-    <div class="menu-item" data-tab="tab-school-settings" onclick="window.switchTab('tab-school-settings')"><i class="bi bi-palette-fill"></i> صفحة الدخول</div>
-      <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-circle"></i> حسابي</div>
+    <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-circle"></i> حسابي</div>
     <div class="menu-item" onclick="window.open('user_guide.html','_blank')"><i class="bi bi-book"></i> دليل المستخدم</div>
   </div>
 
@@ -455,51 +454,7 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
     <div id="tab-backup" class="tab-content"></div>
   <div id="tab-ai-insights" class="tab-content"></div>
   <div id="tab-warnings" class="tab-content"></div>
-    <div id="tab-school-settings" class="tab-content">
-    <div style="max-width:600px;margin:0 auto;padding:16px">
-      <h2 style="font-size:17px;font-weight:900;color:var(--navy);margin-bottom:4px">
-        <i class="bi bi-palette-fill" style="color:var(--sky)"></i> إعدادات صفحة الدخول
-      </h2>
-      <p style="font-size:12px;color:var(--mid);font-weight:700;margin-bottom:16px">تخصيص صفحة الدخول الخاصة بمدرستك — اللون والشعار والإعلانات</p>
-
-      <!-- اللون والشعار -->
-      <div style="background:var(--off);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--line)">
-        <h3 style="font-size:14px;font-weight:800;margin-bottom:12px">🎨 اللون والشعار</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-          <div>
-            <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">اللون الأساسي</label>
-            <input type="color" id="set-primary-color" value="#0b2545" style="width:100%;height:40px;border:1.5px solid var(--line);border-radius:8px;padding:3px;cursor:pointer">
-          </div>
-          <div>
-            <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">اللون الثانوي</label>
-            <input type="color" id="set-accent-color" value="#d4920a" style="width:100%;height:40px;border:1.5px solid var(--line);border-radius:8px;padding:3px;cursor:pointer">
-          </div>
-        </div>
-        <div>
-          <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">رابط الشعار (URL)</label>
-          <input type="text" id="set-logo-url" placeholder="https://example.com/logo.png" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;outline:none">
-        </div>
-        <button onclick="window.saveSchoolBranding()" style="width:100%;margin-top:12px;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer">
-          <i class="bi bi-check-circle-fill"></i> حفظ التغييرات
-        </button>
-      </div>
-
-      <!-- الإعلانات -->
-      <div style="background:var(--off);border-radius:12px;padding:16px;border:1px solid var(--line)">
-        <h3 style="font-size:14px;font-weight:800;margin-bottom:12px">📢 إعلانات صفحة الدخول</h3>
-        <p style="font-size:11px;color:var(--mid);font-weight:600;margin-bottom:10px">هذي الإعلانات تظهر لأولياء الأمور والمعلمين في صفحة تسجيل الدخول</p>
-        <div style="display:flex;gap:8px;margin-bottom:12px">
-          <input type="text" id="new-announcement" placeholder="اكتب إعلان جديد..." style="flex:1;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;outline:none">
-          <button onclick="window.addSchoolAnnouncement()" style="background:var(--sky);color:#fff;border:none;padding:10px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap">
-            <i class="bi bi-plus-lg"></i> إضافة
-          </button>
-        </div>
-        <div id="announcements-list" style="font-size:13px;color:var(--mid)">⏳ جاري التحميل...</div>
-      </div>
-    </div>
-  </div>
-
-  <div id="tab-myaccount" class="tab-content">
+    <div id="tab-myaccount" class="tab-content">
       <div class="card" style="max-width:520px;">
         <h2><i class="bi bi-person-gear"></i> بياناتي الشخصية</h2>
         <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">الاسم الكامل</label>
@@ -580,7 +535,6 @@ const moduleMap = {
         'tab-manager-visits':   { file: './js/modules/manager_visits.js',  init: 'initManagerVisitsModule' },
         'tab-daily-report':     { file: './js/modules/daily_report.js',    init: 'initDailyReportModule' },
         'tab-students-manage':  { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
-        'tab-school-settings': { file: null, init: null },
         'tab-ai-insights':      { file: './js/modules/ai_insights.js',    init: 'initAiInsightsModule' }
     };
 
@@ -1466,89 +1420,38 @@ window.addEventListener('unhandledrejection', function(e) {
 });
 </script>
 
-<script type="module">
-import { db, getActiveSchoolId } from './js/firebase-config.js';
-import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where, orderBy, serverTimestamp }
-    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
-// تحميل الإعدادات الحالية
-window.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const schoolId = getActiveSchoolId();
-        if(!schoolId) return;
-        const snap = await getDoc(doc(db,'schools',schoolId));
-        if(snap.exists()) {
-            const s = snap.data();
-            const pc = document.getElementById('set-primary-color');
-            const ac = document.getElementById('set-accent-color');
-            const lu = document.getElementById('set-logo-url');
-            if(pc && s.primaryColor) pc.value = s.primaryColor;
-            if(ac && s.accentColor)  ac.value = s.accentColor;
-            if(lu && s.logoUrl)      lu.value = s.logoUrl;
-        }
-        loadSchoolAnnouncements();
-    } catch(e) {}
-});
-
-// حفظ اللون والشعار
-window.saveSchoolBranding = async function() {
-    try {
-        const schoolId = getActiveSchoolId();
-        await updateDoc(doc(db,'schools',schoolId), {
-            primaryColor: document.getElementById('set-primary-color')?.value || '#0b2545',
-            accentColor:  document.getElementById('set-accent-color')?.value  || '#d4920a',
-            logoUrl:      document.getElementById('set-logo-url')?.value?.trim() || ''
+<script>
+// ══ تحديث Service Worker تلقائي — المستخدم ما يحتاج يسوي شيء ══
+if('serviceWorker' in navigator) {
+    // إلغاء كل SW القديمة وتسجيل الجديدة
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+        var needsReload = false;
+        regs.forEach(function(reg) {
+            if(reg.active && reg.active.scriptURL.indexOf('sw.js') > -1) {
+                reg.unregister().then(function() { needsReload = true; });
+            }
         });
-        window.showToast?.('✅ تم حفظ التغييرات — ستظهر في صفحة الدخول');
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-// إضافة إعلان
-window.addSchoolAnnouncement = async function() {
-    const text = document.getElementById('new-announcement')?.value?.trim();
-    if(!text) { window.showToast?.('اكتب الإعلان أولاً','warning'); return; }
-    try {
-        const schoolId = getActiveSchoolId();
-        await addDoc(collection(db,'school_announcements'), {
-            schoolId, text, active: true,
-            createdAt: serverTimestamp()
+        // بعد إلغاء القديم — سجّل الجديد
+        setTimeout(function() {
+            navigator.serviceWorker.register('./sw.js?v=4').then(function(reg) {
+                reg.addEventListener('updatefound', function() {
+                    var nw = reg.installing;
+                    if(nw) nw.addEventListener('statechange', function() {
+                        if(nw.state === 'activated' && needsReload) {
+                            location.reload();
+                        }
+                    });
+                });
+            });
+        }, 500);
+    });
+    // تحقق من التحديثات كل 3 دقائق
+    setInterval(function() {
+        navigator.serviceWorker.getRegistration().then(function(reg) {
+            if(reg) reg.update();
         });
-        document.getElementById('new-announcement').value = '';
-        window.showToast?.('✅ تم إضافة الإعلان');
-        loadSchoolAnnouncements();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-// تحميل الإعلانات
-async function loadSchoolAnnouncements() {
-    const list = document.getElementById('announcements-list');
-    if(!list) return;
-    try {
-        const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(
-            collection(db,'school_announcements'),
-            where('schoolId','==',schoolId)
-        ));
-        if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa">لا توجد إعلانات</div>'; return; }
-        list.innerHTML = snap.docs.map(d => {
-            const a = d.data();
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;background:#fff">
-                <span style="font-weight:700;color:#111">${a.text}</span>
-                <button onclick="window.deleteAnnouncement('${d.id}')" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">حذف</button>
-            </div>`;
-        }).join('');
-    } catch(e) { list.innerHTML = '❌ ' + e.message; }
+    }, 3 * 60 * 1000);
 }
-
-// حذف إعلان
-window.deleteAnnouncement = async function(id) {
-    if(!confirm('حذف هذا الإعلان؟')) return;
-    try {
-        await deleteDoc(doc(db,'school_announcements',id));
-        window.showToast?.('✅ تم الحذف');
-        loadSchoolAnnouncements();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
 </script>
 
 </body></html>`);
@@ -1860,89 +1763,38 @@ window.addEventListener('unhandledrejection', function(e) {
 });
 </script>
 
-<script type="module">
-import { db, getActiveSchoolId } from './js/firebase-config.js';
-import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where, orderBy, serverTimestamp }
-    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
-// تحميل الإعدادات الحالية
-window.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const schoolId = getActiveSchoolId();
-        if(!schoolId) return;
-        const snap = await getDoc(doc(db,'schools',schoolId));
-        if(snap.exists()) {
-            const s = snap.data();
-            const pc = document.getElementById('set-primary-color');
-            const ac = document.getElementById('set-accent-color');
-            const lu = document.getElementById('set-logo-url');
-            if(pc && s.primaryColor) pc.value = s.primaryColor;
-            if(ac && s.accentColor)  ac.value = s.accentColor;
-            if(lu && s.logoUrl)      lu.value = s.logoUrl;
-        }
-        loadSchoolAnnouncements();
-    } catch(e) {}
-});
-
-// حفظ اللون والشعار
-window.saveSchoolBranding = async function() {
-    try {
-        const schoolId = getActiveSchoolId();
-        await updateDoc(doc(db,'schools',schoolId), {
-            primaryColor: document.getElementById('set-primary-color')?.value || '#0b2545',
-            accentColor:  document.getElementById('set-accent-color')?.value  || '#d4920a',
-            logoUrl:      document.getElementById('set-logo-url')?.value?.trim() || ''
+<script>
+// ══ تحديث Service Worker تلقائي — المستخدم ما يحتاج يسوي شيء ══
+if('serviceWorker' in navigator) {
+    // إلغاء كل SW القديمة وتسجيل الجديدة
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+        var needsReload = false;
+        regs.forEach(function(reg) {
+            if(reg.active && reg.active.scriptURL.indexOf('sw.js') > -1) {
+                reg.unregister().then(function() { needsReload = true; });
+            }
         });
-        window.showToast?.('✅ تم حفظ التغييرات — ستظهر في صفحة الدخول');
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-// إضافة إعلان
-window.addSchoolAnnouncement = async function() {
-    const text = document.getElementById('new-announcement')?.value?.trim();
-    if(!text) { window.showToast?.('اكتب الإعلان أولاً','warning'); return; }
-    try {
-        const schoolId = getActiveSchoolId();
-        await addDoc(collection(db,'school_announcements'), {
-            schoolId, text, active: true,
-            createdAt: serverTimestamp()
+        // بعد إلغاء القديم — سجّل الجديد
+        setTimeout(function() {
+            navigator.serviceWorker.register('./sw.js?v=4').then(function(reg) {
+                reg.addEventListener('updatefound', function() {
+                    var nw = reg.installing;
+                    if(nw) nw.addEventListener('statechange', function() {
+                        if(nw.state === 'activated' && needsReload) {
+                            location.reload();
+                        }
+                    });
+                });
+            });
+        }, 500);
+    });
+    // تحقق من التحديثات كل 3 دقائق
+    setInterval(function() {
+        navigator.serviceWorker.getRegistration().then(function(reg) {
+            if(reg) reg.update();
         });
-        document.getElementById('new-announcement').value = '';
-        window.showToast?.('✅ تم إضافة الإعلان');
-        loadSchoolAnnouncements();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-// تحميل الإعلانات
-async function loadSchoolAnnouncements() {
-    const list = document.getElementById('announcements-list');
-    if(!list) return;
-    try {
-        const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(
-            collection(db,'school_announcements'),
-            where('schoolId','==',schoolId)
-        ));
-        if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa">لا توجد إعلانات</div>'; return; }
-        list.innerHTML = snap.docs.map(d => {
-            const a = d.data();
-            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;background:#fff">
-                <span style="font-weight:700;color:#111">${a.text}</span>
-                <button onclick="window.deleteAnnouncement('${d.id}')" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">حذف</button>
-            </div>`;
-        }).join('');
-    } catch(e) { list.innerHTML = '❌ ' + e.message; }
+    }, 3 * 60 * 1000);
 }
-
-// حذف إعلان
-window.deleteAnnouncement = async function(id) {
-    if(!confirm('حذف هذا الإعلان؟')) return;
-    try {
-        await deleteDoc(doc(db,'school_announcements',id));
-        window.showToast?.('✅ تم الحذف');
-        loadSchoolAnnouncements();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
 </script>
 
 </body>
