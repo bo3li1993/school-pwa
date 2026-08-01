@@ -342,6 +342,23 @@ tr:hover td{background:#fafafa}
             <label class="form-label">ملاحظات (اختياري)</label>
             <input class="form-input" id="f-notes" placeholder="أي ملاحظات عن المدرسة...">
           </div>
+          <div style="background:#f0f4f8;border-radius:12px;padding:16px;margin-top:8px">
+            <div style="font-size:13px;font-weight:800;color:#0b2545;margin-bottom:10px">🎨 تخصيص صفحة الدخول</div>
+            <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="form-group">
+                <label class="form-label">لون المدرسة الأساسي</label>
+                <input class="form-input" id="f-primary-color" type="color" value="#0b2545" style="height:42px;padding:4px">
+              </div>
+              <div class="form-group">
+                <label class="form-label">اللون الثانوي</label>
+                <input class="form-input" id="f-accent-color" type="color" value="#d4920a" style="height:42px;padding:4px">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">رابط شعار المدرسة (URL)</label>
+              <input class="form-input" id="f-logo-url" placeholder="https://example.com/logo.png">
+            </div>
+          </div>
         </div>
         <button class="submit-btn" onclick="createSchool()">
           <i class="bi bi-rocket-takeoff-fill"></i> إطلاق المنصة وتفعيلها فوراً
@@ -707,9 +724,9 @@ window.createSchool = async function() {
       name: schoolName, plan, status:'active',
       subscriptionEnd: subEnd, notes,
       region: document.getElementById('s-region')?.value?.trim() || '',
-      primaryColor: document.getElementById('s-primary-color')?.value || '#0b2545',
-      accentColor:  document.getElementById('s-accent-color')?.value  || '#d4920a',
-      logoUrl:      document.getElementById('s-logo-url')?.value?.trim() || '',
+      primaryColor: document.getElementById('f-primary-color')?.value || '#0b2545',
+      accentColor:  document.getElementById('f-accent-color')?.value  || '#d4920a',
+      logoUrl:      document.getElementById('f-logo-url')?.value?.trim() || '',
       createdAt: serverTimestamp()
     });
 
