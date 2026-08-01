@@ -502,6 +502,41 @@ window.exportTeachersPDF = async function() {
 <script>
 if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
 </script>
+
+<script>
+// ══ تحديث Service Worker تلقائي — المستخدم ما يحتاج يسوي شيء ══
+if('serviceWorker' in navigator) {
+    // إلغاء كل SW القديمة وتسجيل الجديدة
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+        var needsReload = false;
+        regs.forEach(function(reg) {
+            if(reg.active && reg.active.scriptURL.indexOf('sw.js') > -1) {
+                reg.unregister().then(function() { needsReload = true; });
+            }
+        });
+        // بعد إلغاء القديم — سجّل الجديد
+        setTimeout(function() {
+            navigator.serviceWorker.register('./sw.js?v=4').then(function(reg) {
+                reg.addEventListener('updatefound', function() {
+                    var nw = reg.installing;
+                    if(nw) nw.addEventListener('statechange', function() {
+                        if(nw.state === 'activated' && needsReload) {
+                            location.reload();
+                        }
+                    });
+                });
+            });
+        }, 500);
+    });
+    // تحقق من التحديثات كل 3 دقائق
+    setInterval(function() {
+        navigator.serviceWorker.getRegistration().then(function(reg) {
+            if(reg) reg.update();
+        });
+    }, 3 * 60 * 1000);
+}
+</script>
+
 </body></html>`);
         win.document.close();
         setTimeout(()=>win.print(), 600);
@@ -540,5 +575,40 @@ window.switchDeptView = function(viewId) {
 <script>
 if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
 </script>
+
+<script>
+// ══ تحديث Service Worker تلقائي — المستخدم ما يحتاج يسوي شيء ══
+if('serviceWorker' in navigator) {
+    // إلغاء كل SW القديمة وتسجيل الجديدة
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+        var needsReload = false;
+        regs.forEach(function(reg) {
+            if(reg.active && reg.active.scriptURL.indexOf('sw.js') > -1) {
+                reg.unregister().then(function() { needsReload = true; });
+            }
+        });
+        // بعد إلغاء القديم — سجّل الجديد
+        setTimeout(function() {
+            navigator.serviceWorker.register('./sw.js?v=4').then(function(reg) {
+                reg.addEventListener('updatefound', function() {
+                    var nw = reg.installing;
+                    if(nw) nw.addEventListener('statechange', function() {
+                        if(nw.state === 'activated' && needsReload) {
+                            location.reload();
+                        }
+                    });
+                });
+            });
+        }, 500);
+    });
+    // تحقق من التحديثات كل 3 دقائق
+    setInterval(function() {
+        navigator.serviceWorker.getRegistration().then(function(reg) {
+            if(reg) reg.update();
+        });
+    }, 3 * 60 * 1000);
+}
+</script>
+
 </body>
 </html>
