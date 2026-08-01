@@ -1,1037 +1,1947 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<link rel="stylesheet" href="style.css">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم المركزية — المنظومة الرقمية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>لوحة الإدارة — المنظومة الرقمية</title>
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0b2545">
 <meta name="mobile-web-app-capable" content="yes">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-:root {
-  --navy:#0b2545; --sky:#1a78c2; --ice:#eaf4fd;
-  --gold:#d4920a; --goldl:#f5c842;
-  --white:#fff; --off:#f8f9fc; --line:#e5e7eb;
-  --text:#111827; --mid:#6b7280;
-  --green:#059669; --red:#dc2626;
-  --warn:#d97706;
+:root{
+  --navy:#0b2545; --sky:#1a78c2; --ice:#eaf4fd; --gold:#d4920a;
+  --white:#fff; --off:#f8f9fc; --line:#e5e7eb; --text:#111827; --mid:#6b7280;
+  --green:#16a34a; --red:#dc2626;
+  --primary-color:var(--navy); --accent-color:var(--gold); --hover-color:var(--gold);
+  --danger-color:var(--red); --success-color:var(--green); --soft:var(--mid);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);min-height:100vh}
+body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);display:flex;min-height:100vh;font-size:15px}
 
-/* ===== LOGIN ===== */
-#login-screen{
-  position:fixed;inset:0;background:var(--navy);
-  display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;
-}
-.login-box{
-  background:var(--white);border-radius:20px;padding:40px 36px;
-  width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;
-}
-.login-logo{
-  width:56px;height:56px;background:var(--navy);border-radius:14px;
-  display:grid;place-items:center;color:#fff;font-size:26px;font-weight:900;margin:0 auto 16px;
-}
-.login-title{font-size:18px;font-weight:900;color:var(--navy);margin-bottom:4px}
-.login-sub{font-size:12px;color:var(--mid);margin-bottom:28px}
-.login-field{
-  width:100%;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;
-  font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;text-align:right;
-  outline:none;margin-bottom:12px;transition:border-color .2s;background:var(--white);
-}
-.login-field:focus{border-color:var(--sky)}
-.login-btn{
-  width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;
-  font-family:'Cairo',sans-serif;font-size:15px;font-weight:800;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;
-}
-.login-btn:hover{background:#134074}
-.login-err{
-  background:#fef2f2;color:var(--red);border:1px solid #fecaca;border-radius:8px;
-  padding:10px;font-size:13px;font-weight:700;margin-bottom:12px;display:none;
-}
+.sidebar{ padding-bottom:100px;width:260px;background:var(--navy);color:#fff;height:100vh;position:fixed;right:0;top:0;overflow-y:auto;z-index:40}
+.sidebar-head{padding:20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-head h2{font-size:17px;font-weight:900}
+.sidebar-head p{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;font-weight:600}
+.menu-item{padding:14px 18px;cursor:pointer;color:rgba(255,255,255,.7);font-weight:700;font-size:15px;display:flex;align-items:center;gap:10px;border-right:3px solid transparent;transition:all .15s}
+.menu-item:hover{color:#fff;background:rgba(255,255,255,.05)}
+.menu-item.active{color:#fff;background:rgba(255,255,255,.08);border-right-color:var(--gold)}
+.menu-item i{font-size:16px;}
+.menu-group-title{padding:16px 18px 7px;font-size:11.5px;color:rgba(255,255,255,.4);font-weight:800;letter-spacing:1px}
 
-/* ===== TOPBAR ===== */
-#main-screen{display:none}
-.topbar{
-  background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;height:60px;
-  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;
-}
-.topbar-brand{display:flex;align-items:center;gap:10px}
-.topbar-dot{width:34px;height:34px;background:var(--navy);border-radius:9px;display:grid;place-items:center;color:#fff;font-size:17px;font-weight:900;}
-.topbar-name{font-weight:800;font-size:15px;color:var(--navy)}
-.topbar-sub{font-size:11px;color:var(--mid);font-weight:600}
-.logout-btn{
-  background:transparent;border:1.5px solid var(--line);color:var(--mid);
-  padding:7px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;
-}
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.main{margin-right:260px;flex:1;min-height:100vh}
+.topbar{background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+.topbar-info{font-size:15px;font-weight:700;color:var(--navy)}
+.topbar-info span{color:var(--mid);font-size:11px;font-weight:600;display:block}
+.logout-btn{background:transparent;border:1.5px solid var(--line);color:var(--mid);padding:8px 18px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.logout-btn:hover{border-color:#dc2626;color:#dc2626}
 
-.page{max-width:1200px;margin:0 auto;padding:24px 20px}
-
-/* ===== STATS ===== */
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
-.stat-card{
-  background:var(--white);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
-}
-.stat-label{font-size:11px;color:var(--mid);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
-.stat-value{font-size:1.8rem;font-weight:900;color:var(--navy);line-height:1}
-.stat-value.green{color:var(--green)}
-.stat-value.gold{color:var(--gold)}
-.stat-value.red{color:var(--red)}
-.stat-value.warn{color:var(--warn)}
-
-/* ===== CARDS ===== */
-.card{background:var(--white);border:1px solid var(--line);border-radius:16px;margin-bottom:20px;overflow:hidden;}
-.card-header{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
-.card-header-icon{width:36px;height:36px;background:var(--ice);border-radius:9px;display:grid;place-items:center;font-size:16px;color:var(--sky);}
-.card-header h2{font-size:15px;font-weight:800;color:var(--navy)}
-.card-header p{font-size:12px;color:var(--mid);margin-top:1px}
-.card-body{padding:22px}
-
-/* ===== FORM ===== */
-.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-label{font-size:12px;font-weight:700;color:var(--text)}
-.form-input{
-  padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;
-  font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;text-align:right;
-  outline:none;transition:border-color .2s;background:var(--white);
-}
-.form-input:focus{border-color:var(--sky)}
-.form-full{grid-column:1/-1}
-.submit-btn{
-  width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;
-  font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;
-}
-.submit-btn:hover{background:#134074}
-
-/* ===== TABLE ===== */
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:var(--off);padding:11px 14px;text-align:right;font-weight:800;font-size:12px;color:var(--mid);border-bottom:1px solid var(--line)}
-td{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:600;vertical-align:middle}
-tr:last-child td{border:none}
-tr:hover td{background:#fafafa}
-
-/* ===== BADGES ===== */
-.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800}
-.badge.active{background:#dcfce7;color:var(--green)}
-.badge.suspended{background:#fee2e2;color:var(--red)}
-.badge.expired{background:#fef3c7;color:var(--warn)}
-.badge.trial{background:#ede9fe;color:#6d28d9}
-
-/* ===== PLAN BADGES ===== */
-.plan-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:800}
-.plan-basic{background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd}
-.plan-pro{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
-.plan-enterprise{background:#fdf4ff;color:#7e22ce;border:1px solid #e9d5ff}
-
-/* ===== ACTION BUTTONS ===== */
-.action-btn{
-  padding:5px 12px;border-radius:7px;font-family:'Cairo',sans-serif;
-  font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid;transition:all .2s;
-}
-.action-btn.stop{border-color:#fca5a5;color:var(--red);background:#fff}
-.action-btn.stop:hover{background:var(--red);color:#fff}
-.action-btn.go{border-color:#6ee7b7;color:var(--green);background:#fff}
-.action-btn.go:hover{background:var(--green);color:#fff}
-.action-btn.del{border-color:#fca5a5;color:var(--red);background:#fff}
-.action-btn.del:hover{background:var(--red);color:#fff}
-.action-btn.link{border-color:#93c5fd;color:var(--sky);background:#fff}
-.action-btn.link:hover{background:var(--sky);color:#fff}
-.action-btn.info{border-color:#fde68a;color:#92400e;background:#fff}
-.action-btn.info:hover{background:#f59e0b;color:#fff}
-.action-btn.renew{border-color:#6ee7b7;color:var(--green);background:#fff}
-.action-btn.renew:hover{background:var(--green);color:#fff}
-.action-btn.upgrade{border-color:#c4b5fd;color:#6d28d9;background:#fff}
-.action-btn.upgrade:hover{background:#6d28d9;color:#fff}
-
-.actions-wrap{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-
-/* ===== MODAL ===== */
-.modal-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
-  z-index:9999;align-items:center;justify-content:center;padding:20px;
-}
-.modal-overlay.show{display:flex}
-.modal-box{
-  background:#fff;border-radius:16px;padding:28px;max-width:480px;
-  width:100%;direction:rtl;font-family:'Cairo',sans-serif;max-height:90vh;overflow-y:auto;
-}
-.modal-title{font-size:16px;font-weight:900;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.modal-actions{display:flex;gap:8px;margin-top:20px}
-.modal-btn{
-  flex:1;padding:11px;border-radius:8px;font-weight:700;cursor:pointer;
-  font-family:'Cairo',sans-serif;font-size:13px;border:none;transition:all .2s;
-}
-.modal-btn.primary{background:var(--sky);color:#fff}
-.modal-btn.primary:hover{background:#1462a0}
-.modal-btn.danger{background:var(--red);color:#fff}
-.modal-btn.danger:hover{background:#b91c1c}
-.modal-btn.cancel{background:#fff;color:var(--mid);border:1.5px solid var(--line)}
-.modal-btn.cancel:hover{border-color:var(--sky);color:var(--sky)}
-.modal-err{color:var(--red);font-size:12px;font-weight:700;display:none;margin-bottom:10px;padding:8px;background:#fef2f2;border-radius:6px}
-
-/* ===== RENEWAL HISTORY ===== */
-.history-item{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 14px;background:var(--off);border-radius:8px;margin-bottom:6px;
-  font-size:13px;
-}
-.history-item .date{font-weight:700;color:var(--navy)}
-.history-item .plan{color:var(--sky);font-weight:700}
-.history-item .amount{color:var(--green);font-weight:800}
-
-/* ===== EXPIRY ALERT ===== */
-.expiry-alert{
-  background:#fef3c7;border:1px solid #fde68a;border-radius:10px;
-  padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:10px;
-  font-size:13px;font-weight:700;color:#92400e;
-}
-
-/* ===== FILTER BAR ===== */
-.filter-bar{
-  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;
-}
-.filter-btn{
-  padding:6px 16px;border-radius:20px;border:1.5px solid var(--line);
-  background:#fff;color:var(--mid);font-family:'Cairo',sans-serif;font-size:12px;
-  font-weight:700;cursor:pointer;transition:all .2s;
-}
-.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.search-input{
-  padding:8px 14px;border:1.5px solid var(--line);border-radius:20px;
-  font-family:'Cairo',sans-serif;font-size:13px;outline:none;flex:1;min-width:200px;
-}
-.search-input:focus{border-color:var(--sky)}
+.content{padding:24px;font-size:15px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+.card h2,.card h3{color:var(--navy);font-weight:900;margin-bottom:10px}
+.card input,.card select,.card textarea{width:100%;padding:10px 12px;margin-bottom:12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;outline:none}
+.card input:focus,.card select:focus,.card textarea:focus{border-color:var(--sky)}
+.card label{font-weight:700;font-size:12.5px;color:var(--text);display:block;margin-bottom:5px}
+.card table th{background:#f4f6f9;padding:8px;text-align:right}
+.card table td{padding:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;color:#fff}
+.badge.danger{background:var(--danger-color)}
+.badge.info{background:var(--sky)}
+.badge.success{background:var(--success-color)}
+.content label{font-size:14.5px!important}
+.content input,.content select,.content textarea{font-size:15px!important;padding:11px 13px!important}
+.content button{font-size:14px!important}
+.content table{font-size:14px!important}
+.content th{font-size:13px!important}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.loading-box{text-align:center;padding:60px;color:var(--mid);font-weight:700}
 
 @media(max-width:900px){
-  .stats{grid-template-columns:repeat(3,1fr)}
-  .form-grid{grid-template-columns:1fr 1fr}
+  .sidebar{ padding-bottom:100px;transform:translateX(100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-right:0}
+  .menu-toggle{display:inline-block!important}
+  .content{padding-bottom:84px}
 }
-@media(max-width:600px){
-  .stats{grid-template-columns:1fr 1fr}
-  .form-grid{grid-template-columns:1fr}
-  .topbar-sub{display:none}
+.menu-toggle{display:none;background:transparent;border:none;font-size:22px;color:var(--navy);cursor:pointer}
+
+/* شاشة الافتتاح */
+.splash{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s ease;}
+.splash.hide{opacity:0;pointer-events:none}
+.splash-mark{display:flex;flex-direction:column;align-items:center;gap:10px}
+.splash-badge{width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:var(--gold)}
+.splash-mark h1{color:#fff;font-size:16px;font-weight:900;letter-spacing:.3px}
+.splash-mark p{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600}
+@media(prefers-reduced-motion:reduce){.splash{transition:none}}
+
+/* شريط تنقل سفلي — موبايل فقط */
+.bottom-nav{display:none;position:fixed;right:0;left:0;bottom:0;background:var(--white);border-top:1px solid var(--line);z-index:45;padding-bottom:env(safe-area-inset-bottom)}
+@media(max-width:900px){.bottom-nav{display:flex}}
+.bn-item{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:11px 0 9px;color:var(--mid);font-family:'Cairo',sans-serif;font-size:12px;font-weight:800;cursor:pointer}
+.bn-item i{font-size:22px;width:40px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:10px;transition:background .15s,color .15s}
+.bn-item.active{color:var(--sky)}
+.bn-item.active i{background:var(--ice);color:var(--sky)}
+
+
+
+/* ══ DARK MODE ══ */
+body.dark-mode {
+  --navy:#1a2740; --sky:#4da3ff; --ice:#1e2d45; --gold:#f0a830;
+  --white:#1e2535; --off:#161e2e; --line:#2a3650; --text:#e2e8f0;
+  --mid:#94a3b8; --green:#34d399; --red:#f87171;
 }
+body.dark-mode .sidebar { background:#0f1928; }
+body.dark-mode .topbar  { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .card    { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .content { background:#161e2e; }
+body.dark-mode .main    { background:#161e2e; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535; color:#e2e8f0; border-color:#2a3650;
+}
+body.dark-mode table th { background:#0f1928; }
+body.dark-mode tr:hover td { background:#1e2535; }
+body.dark-mode .more-list { background:#1e2535; }
+body.dark-mode .bottom-nav { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .bn-item.active i { background:#1a2740; }
+
+/* Dark mode toggle button */
+.dark-toggle {
+  background:transparent; border:1.5px solid var(--line);
+  color:var(--mid); padding:7px 12px; border-radius:8px;
+  cursor:pointer; font-size:16px; transition:all .2s;
+  display:flex; align-items:center; gap:6px;
+}
+.dark-toggle:hover { border-color:var(--gold); color:var(--gold); }
+
+
+/* ══ وضع المدير البسيط ══ */
+.simple-mode .menu-group-title { display:none !important; }
+.simple-mode .sidebar > div > .menu-item { touch-action: manipulation; display:none !important; }
+.simple-mode .menu-item.pinned { display:flex !important; padding:18px 20px !important; font-size:15px !important; }
+.simple-mode .menu-item.pinned i { font-size:22px !important; }
+
+/* أزرار كبيرة في الوضع البسيط */
+.simple-shortcuts {
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:12px; padding:16px;
+}
+.simple-mode .simple-shortcuts { display:grid !important; }
+.shortcut-btn {
+    background:var(--white); border:2px solid var(--line);
+    border-radius:16px; padding:20px 16px;
+    text-align:center; cursor:pointer;
+    transition:all .2s; display:flex;
+    flex-direction:column; align-items:center; gap:10px;
+}
+.shortcut-btn:hover { border-color:var(--sky); transform:translateY(-2px); box-shadow:0 4px 16px rgba(26,120,194,.12); }
+.shortcut-btn i { font-size:32px; }
+.shortcut-btn span { font-size:13px; font-weight:800; color:var(--navy); }
+
+/* ══ تلميحات ══ */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position:absolute; bottom:110%; right:0;
+    background:#1e293b; color:#fff;
+    padding:6px 12px; border-radius:8px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap; z-index:9999;
+    pointer-events:none;
+    animation:tipIn .15s ease;
+}
+@keyframes tipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ شريط أدوات الإمكانية ══ */
+.a11y-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.a11y-btn {
+    background:rgba(255,255,255,.08); border:none;
+    color:rgba(255,255,255,.7); width:30px; height:30px;
+    border-radius:6px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-family:'Cairo',sans-serif;
+}
+.a11y-btn:hover { background:rgba(255,255,255,.18); color:#fff; }
+.a11y-btn.active { background:var(--gold); color:#fff; }
+
+/* ══ أحجام الخط ══ */
+body.font-lg  { font-size:16px !important; }
+body.font-xl  { font-size:18px !important; }
+body.font-lg .menu-item, body.font-xl .menu-item { touch-action: manipulation; font-size:15px !important; padding:16px 18px !important; }
+body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important; padding:18px 20px !important; }
+
+/* ══ دليل سريع ══ */
+.quick-guide {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:9990; display:none; align-items:center;
+    justify-content:center; padding:20px;
+}
+.quick-guide.show { display:flex; }
+.guide-card {
+    background:#fff; border-radius:20px; padding:28px;
+    max-width:480px; width:100%; direction:rtl;
+    font-family:'Cairo',sans-serif; max-height:85vh; overflow-y:auto;
+}
+.guide-step {
+    display:flex; gap:14px; margin-bottom:16px;
+    align-items:flex-start;
+}
+.guide-num {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; flex-shrink:0;
+}
+.guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+/* ══ قائمة أقسام قابلة للطي ══ */
+.menu-sec-title {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 16px 5px;
+    color:rgba(255,255,255,.45);
+    font-size:10px; font-weight:900;
+    letter-spacing:.8px;
+    cursor:pointer; user-select:none;
+    transition:color .2s;
+}
+.menu-sec-title:hover { color:rgba(255,255,255,.75); }
+.menu-sec-title .sec-chev { font-size:10px; transition:transform .25s; }
+.menu-sec-title.closed .sec-chev { transform:rotate(-90deg); }
+.menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
+.menu-sec-body.closed { max-height:0 !important; }
+.menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
+.skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
+.skeleton-circle { width:50px; height:50px; border-radius:50%; }
+
 </style>
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">م</div>
-    <div class="login-title">لوحة التحكم المركزية</div>
-    <div class="login-sub">للمطور المسؤول فقط — غير مرخص للدخول</div>
-    <div class="login-err" id="login-err"></div>
-    <input class="login-field" type="password" id="super-pass" placeholder="كلمة المرور السرية" autocomplete="off">
-    <button class="login-btn" onclick="checkSuperPass()">
-      <i class="bi bi-shield-lock-fill"></i> دخول آمن
-    </button>
+<div class="splash" id="splash">
+  <div class="splash-mark">
+    <div class="splash-badge">م</div>
+    <h1>المنظومة الرقمية</h1>
+    <p id="splash-school">جاري التحميل...</p>
   </div>
 </div>
 
-<!-- ===== MAIN ===== -->
-<div id="main-screen">
-
-  <div class="topbar">
-    <div class="topbar-brand">
-      <div class="topbar-dot">م</div>
-      <div>
-        <div class="topbar-name">المنظومة الرقمية</div>
-        <div class="topbar-sub">لوحة تحكم المطور</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button class="logout-btn" onclick="openModal('change-pass-modal')" style="background:var(--ice);color:var(--sky);border-color:var(--sky);">
-        <i class="bi bi-key-fill"></i> كلمة المرور
-      </button>
-      <button class="logout-btn" onclick="doLogout()">
-        <i class="bi bi-box-arrow-left"></i> خروج
-      </button>
-    </div>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay')?.classList.remove('show');this.classList.remove('show');"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-head">
+    <h2>المنظومة الرقمية</h2>
+    <p id="lbl-school-name">جاري التحميل...</p>
   </div>
 
-  <div class="page">
+      <div class="simple-shortcuts">
+    <div class="shortcut-btn" onclick="window.switchTab('tab-index')"><i class="bi bi-speedometer2" style="color:var(--sky)"></i><span>الرئيسية</span></div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-attendance')"><i class="bi bi-person-check-fill" style="color:var(--green)"></i><span>الغياب</span></div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-monthly')"><i class="bi bi-bar-chart-fill" style="color:var(--gold)"></i><span>التقارير</span></div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation" style="color:var(--red)"></i><span>السلوك</span></div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-users')"><i class="bi bi-people-fill" style="color:#7c3aed"></i><span>المستخدمون</span></div>
+    <div class="shortcut-btn" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill" style="color:#d97706"></i><span>الإنذارات</span></div>
+  </div>
 
-    <!-- تنبيه المدارس المنتهية -->
-    <div class="expiry-alert" id="expiry-alert" style="display:none">
-      <i class="bi bi-exclamation-triangle-fill" style="font-size:18px;flex-shrink:0"></i>
-      <span id="expiry-alert-text"></span>
+  <div class="a11y-bar">
+    <button class="a11y-btn" onclick="window.toggleSimpleMode()" id="btn-simple" data-tip="الوضع البسيط"><i class="bi bi-grid-2x2-fill"></i></button>
+    <button class="a11y-btn" onclick="window.cycleFontSize()" id="btn-font" data-tip="تكبير الخط"><i class="bi bi-fonts"></i></button>
+    <button class="a11y-btn" onclick="window.showQuickGuide()" data-tip="دليل الاستخدام"><i class="bi bi-question-circle"></i></button>
+  </div>
+
+  <div class="menu-divider"></div>
+
+  <div class="menu-item active" data-tab="tab-index" onclick="window.switchTab('tab-index')">
+    <i class="bi bi-speedometer2"></i> الرئيسية
+  </div>
+
+  <div class="menu-divider"></div>
+
+  <!-- الطلاب -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-people-fill" style="color:var(--sky);margin-left:6px"></i>الطلاب</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person-lines-fill"></i> ملف الطالب</div>
+    <div class="menu-item" data-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-person-gear"></i> إدارة الطلاب</div>
+    <div class="menu-item" data-tab="tab-classes" onclick="window.switchTab('tab-classes')"><i class="bi bi-grid-3x3"></i> الفصول والتوزيع</div>
+    <div class="menu-item" data-tab="tab-import" onclick="window.switchTab('tab-import')"><i class="bi bi-upload"></i> رفع كشف المدرسة</div>
+    <div class="menu-item" data-tab="tab-promotion" onclick="window.switchTab('tab-promotion')"><i class="bi bi-arrow-up-circle"></i> الترحيل السنوي</div>
+  </div>
+
+  <div class="menu-divider"></div>
+
+  <!-- الحضور والسلوك -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-clipboard-check-fill" style="color:#16a34a;margin-left:6px"></i>الحضور والسلوك</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-person-check"></i> تسجيل الغياب</div>
+    <div class="menu-item" data-tab="tab-date" onclick="window.switchTab('tab-date')"><i class="bi bi-calendar3"></i> بحث بتاريخ</div>
+    <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-circle"></i> الغياب المتكرر</div>
+    <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
+    <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
+    <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
+    <div class="menu-item" data-tab="tab-warnings" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill"></i> الإنذارات</div>
+  </div>
+
+  <div class="menu-divider"></div>
+
+  <!-- التقارير -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-bar-chart-fill" style="color:var(--gold);margin-left:6px"></i>التقارير</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-file-text"></i> الكشف اليومي</div>
+    <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-graph-up"></i> التقارير الأسبوعية</div>
+    <div class="menu-item" data-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-calendar-month"></i> التقارير الشهرية</div>
+    <div class="menu-item" data-tab="tab-archive" onclick="window.switchTab('tab-archive')"><i class="bi bi-archive"></i> الأرشيف</div>
+  </div>
+
+  <div class="menu-divider"></div>
+
+  <!-- المعلمون -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-person-workspace" style="color:#7c3aed;margin-left:6px"></i>المعلمون</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-teachers" onclick="window.switchTab('tab-teachers')"><i class="bi bi-person-badge"></i> دليل المعلمين</div>
+    <div class="menu-item" data-tab="tab-teacher-workload" onclick="window.switchTab('tab-teacher-workload')"><i class="bi bi-diagram-3-fill"></i> المشغول الفعلي</div>
+    <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> الزيارات الفنية</div>
+    <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-eye"></i> زيارات المدير</div>
+    <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-binoculars"></i> جولة الجناح</div>
+    <div class="menu-item" data-tab="tab-coverage" onclick="window.switchTab('tab-coverage')"><i class="bi bi-calendar-week"></i> توزيع الاحتياط</div>
+  </div>
+
+  <div class="menu-divider"></div>
+
+  <!-- التواصل والتحفيز -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-megaphone-fill" style="color:#0891b2;margin-left:6px"></i>التواصل والتحفيز</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-announcements" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone"></i> الإعلانات</div>
+    <div class="menu-item" data-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i> المراسلات</div>
+    <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
+    <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-star"></i> الحوافز</div>
+  </div>
+
+  <div class="menu-divider"></div>
+
+  <!-- الإدارة -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-gear-fill" style="color:var(--mid);margin-left:6px"></i>الإدارة والنظام</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people"></i> المستخدمون</div>
+    <div class="menu-item" data-tab="tab-audit" onclick="window.switchTab('tab-audit')"><i class="bi bi-clock-history"></i> سجل العمليات</div>
+    <div class="menu-item" data-tab="tab-backup" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-up"></i> النسخ الاحتياطي</div>
+    <div class="menu-item" data-tab="tab-school-settings" onclick="window.switchTab('tab-school-settings')"><i class="bi bi-palette-fill"></i> صفحة الدخول</div>
+      <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-circle"></i> حسابي</div>
+    <div class="menu-item" onclick="window.open('user_guide.html','_blank')"><i class="bi bi-book"></i> دليل المستخدم</div>
+  </div>
+
+  <div class="menu-divider"></div>
+
+  <!-- سجلات البوابات الأخرى -->
+  <div class="menu-sec-title" onclick="toggleSec(this)">
+    <span><i class="bi bi-grid" style="color:var(--mid);margin-left:6px"></i>البوابات الأخرى</span>
+    <i class="bi bi-chevron-down sec-chev"></i>
+  </div>
+  <div class="menu-sec-body">
+    <div class="menu-item" onclick="window.open('nurse.html','_blank')"><i class="bi bi-hospital"></i> بوابة الممرض</div>
+    <div class="menu-item" onclick="window.open('guard.html','_blank')"><i class="bi bi-shield"></i> بوابة الحارس</div>
+    <div class="menu-item" onclick="window.open('social.html','_blank')"><i class="bi bi-person-heart"></i> الأخصائي الاجتماعي</div>
+    <div class="menu-item" onclick="window.open('tv.html','_blank')"><i class="bi bi-display"></i> شاشة TV</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('show')">
+      <i class="bi bi-list"></i>
+    </button>
+    <div class="topbar-info">
+      <span id="lbl-admin-name">جاري التحميل...</span>
     </div>
+    <button class="dark-toggle" onclick="window.toggleDarkMode()" id="dark-btn" title="تبديل الوضع الليلي / النهاري" style="display:flex;align-items:center;gap:5px;font-size:13px"><span id="dark-icon">🌙</span><span id="dark-label" style="font-size:11px;font-weight:800">ليلي</span></button>
+    <button class="logout-btn" onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> خروج</button>
+  </div>
 
-    <!-- إحصائيات -->
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-buildings"></i> إجمالي المدارس</div>
-        <div class="stat-value" id="s-total">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-check-circle-fill" style="color:var(--green)"></i> فعالة</div>
-        <div class="stat-value green" id="s-active">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-exclamation-circle-fill" style="color:var(--warn)"></i> تنتهي قريباً</div>
-        <div class="stat-value warn" id="s-expiring">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-x-circle-fill" style="color:var(--red)"></i> موقوفة/منتهية</div>
-        <div class="stat-value red" id="s-suspended">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-currency-dollar" style="color:var(--gold)"></i> إيراد سنوي (KWD)</div>
-        <div class="stat-value gold" id="s-revenue">—</div>
-      </div>
-    </div>
+  <div class="content">
+    <div id="tab-index" class="tab-content active"><div class="loading-box">⏳ جاري التحميل...</div></div>
+    <div id="tab-student" class="tab-content"></div>
+    <div id="tab-date" class="tab-content"></div>
+    <div id="tab-students-manage" class="tab-content"></div>
+  <div id="tab-import" class="tab-content"></div>
+    <div id="tab-classes" class="tab-content"></div>
+    <div id="tab-attendance" class="tab-content"></div>
+    <div id="tab-daily-report" class="tab-content"></div>
+    <div id="tab-repeat" class="tab-content"></div>
+    <div id="tab-reports" class="tab-content"></div>
+    <div id="tab-monthly" class="tab-content"></div>
+    <div id="tab-promotion" class="tab-content"></div>
+    <div id="tab-archive" class="tab-content"></div>
+    <div id="tab-behavior" class="tab-content"></div>
+    <div id="tab-gatepass" class="tab-content"></div>
+    <div id="tab-clinic" class="tab-content"></div>
+    <div id="tab-teachers" class="tab-content"></div>
+    <div id="tab-teacher-perf" class="tab-content"></div>
+  <div id="tab-teacher-workload" class="tab-content"></div>
+    <div id="tab-visits" class="tab-content"></div>
+    <div id="tab-manager-visits" class="tab-content"></div>
+    <div id="tab-rounds" class="tab-content"></div>
+    <div id="tab-coverage" class="tab-content"></div>
+    <div id="tab-announcements" class="tab-content"></div>
+    <div id="tab-mailbox" class="tab-content"></div>
+    <div id="tab-honors" class="tab-content"></div>
+    <div id="tab-rewards" class="tab-content"></div>
+    <div id="tab-users" class="tab-content"></div>
 
-    <!-- نموذج إضافة مدرسة -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-header-icon"><i class="bi bi-building-add"></i></div>
+    <div id="tab-audit" class="tab-content"></div>
+    <div id="tab-backup" class="tab-content"></div>
+  <div id="tab-ai-insights" class="tab-content"></div>
+  <div id="tab-warnings" class="tab-content"></div>
+    <div id="tab-school-settings" class="tab-content">
+    <div style="max-width:600px;margin:0 auto;padding:16px">
+      <h2 style="font-size:17px;font-weight:900;color:var(--navy);margin-bottom:4px">
+        <i class="bi bi-palette-fill" style="color:var(--sky)"></i> إعدادات صفحة الدخول
+      </h2>
+      <p style="font-size:12px;color:var(--mid);font-weight:700;margin-bottom:16px">تخصيص صفحة الدخول الخاصة بمدرستك — اللون والشعار والإعلانات</p>
+
+      <!-- اللون والشعار -->
+      <div style="background:var(--off);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid var(--line)">
+        <h3 style="font-size:14px;font-weight:800;margin-bottom:12px">🎨 اللون والشعار</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">اللون الأساسي</label>
+            <input type="color" id="set-primary-color" value="#0b2545" style="width:100%;height:40px;border:1.5px solid var(--line);border-radius:8px;padding:3px;cursor:pointer">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">اللون الثانوي</label>
+            <input type="color" id="set-accent-color" value="#d4920a" style="width:100%;height:40px;border:1.5px solid var(--line);border-radius:8px;padding:3px;cursor:pointer">
+          </div>
+        </div>
         <div>
-          <h2>تسجيل مدرسة جديدة</h2>
-          <p>أضف المدرسة وبيانات مديرها — ستُفعَّل فوراً</p>
+          <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">رابط الشعار (URL)</label>
+          <input type="text" id="set-logo-url" placeholder="https://example.com/logo.png" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;outline:none">
         </div>
-      </div>
-      <div class="card-body">
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">كود المدرسة (إنجليزي)</label>
-            <input class="form-input" id="f-school-id" placeholder="مثال: alanwar">
-          </div>
-          <div class="form-group">
-            <label class="form-label">اسم المدرسة الرسمي</label>
-            <input class="form-input" id="f-school-name" placeholder="متوسطة الأنوار للبنين">
-          </div>
-          <div class="form-group">
-            <label class="form-label">باقة الاشتراك</label>
-            <select class="form-input" id="f-plan">
-              <option value="basic">🔵 الأساسي — 150 KWD</option>
-              <option value="pro" selected>🟢 الاحترافي — 250 KWD</option>
-              <option value="enterprise">🟣 المؤسسي — 400 KWD</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">تاريخ انتهاء الاشتراك</label>
-            <input class="form-input" type="date" id="f-sub-end">
-          </div>
-          <div class="form-group">
-            <label class="form-label">رقم مدير المدرسة (User ID)</label>
-            <input class="form-input" id="f-admin-id" placeholder="مثال: 1234">
-          </div>
-          <div class="form-group">
-            <label class="form-label">اسم المدير الكامل</label>
-            <input class="form-input" id="f-admin-name" placeholder="أحمد محمد الفلاني">
-          </div>
-          <div class="form-group">
-            <label class="form-label">كلمة مرور المدير</label>
-            <input class="form-input" id="f-admin-pass" placeholder="كلمة مرور قوية" type="password">
-          </div>
-          <div class="form-group">
-            <label class="form-label">رقم واتساب المدير</label>
-            <input class="form-input" id="f-admin-phone" placeholder="965XXXXXXXX">
-          </div>
-          <div class="form-group">
-            <label class="form-label">ملاحظات (اختياري)</label>
-            <input class="form-input" id="f-notes" placeholder="أي ملاحظات عن المدرسة...">
-          </div>
-          <div style="background:#f0f4f8;border-radius:12px;padding:16px;margin-top:8px">
-            <div style="font-size:13px;font-weight:800;color:#0b2545;margin-bottom:10px">🎨 تخصيص صفحة الدخول</div>
-            <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div class="form-group">
-                <label class="form-label">لون المدرسة الأساسي</label>
-                <input class="form-input" id="f-primary-color" type="color" value="#0b2545" style="height:42px;padding:4px">
-              </div>
-              <div class="form-group">
-                <label class="form-label">اللون الثانوي</label>
-                <input class="form-input" id="f-accent-color" type="color" value="#d4920a" style="height:42px;padding:4px">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">رابط شعار المدرسة (URL)</label>
-              <input class="form-input" id="f-logo-url" placeholder="https://example.com/logo.png">
-            </div>
-          </div>
-        </div>
-        <button class="submit-btn" onclick="createSchool()">
-          <i class="bi bi-rocket-takeoff-fill"></i> إطلاق المنصة وتفعيلها فوراً
+        <button onclick="window.saveSchoolBranding()" style="width:100%;margin-top:12px;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer">
+          <i class="bi bi-check-circle-fill"></i> حفظ التغييرات
         </button>
       </div>
-    </div>
 
-    <!-- قائمة المدارس -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-header-icon"><i class="bi bi-table"></i></div>
-        <div>
-          <h2>المدارس المشتركة</h2>
-          <p>قائمة لايف — تتحدث تلقائياً</p>
+      <!-- الإعلانات -->
+      <div style="background:var(--off);border-radius:12px;padding:16px;border:1px solid var(--line)">
+        <h3 style="font-size:14px;font-weight:800;margin-bottom:12px">📢 إعلانات صفحة الدخول</h3>
+        <p style="font-size:11px;color:var(--mid);font-weight:600;margin-bottom:10px">هذي الإعلانات تظهر لأولياء الأمور والمعلمين في صفحة تسجيل الدخول</p>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <input type="text" id="new-announcement" placeholder="اكتب إعلان جديد..." style="flex:1;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;outline:none">
+          <button onclick="window.addSchoolAnnouncement()" style="background:var(--sky);color:#fff;border:none;padding:10px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap">
+            <i class="bi bi-plus-lg"></i> إضافة
+          </button>
         </div>
+        <div id="announcements-list" style="font-size:13px;color:var(--mid)">⏳ جاري التحميل...</div>
       </div>
-      <div class="card-body" style="padding-bottom:8px">
-        <div class="filter-bar">
-          <button class="filter-btn active" onclick="setFilter('all',this)">الكل</button>
-          <button class="filter-btn" onclick="setFilter('active',this)">فعالة</button>
-          <button class="filter-btn" onclick="setFilter('expiring',this)">تنتهي قريباً</button>
-          <button class="filter-btn" onclick="setFilter('suspended',this)">موقوفة</button>
-          <button class="filter-btn" onclick="setFilter('expired',this)">منتهية</button>
-          <input class="search-input" id="school-search" placeholder="🔍 ابحث عن مدرسة..." oninput="renderSchools()">
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>المدرسة</th>
-              <th>الباقة</th>
-              <th>الحالة</th>
-              <th>انتهاء الاشتراك</th>
-              <th>الإجراءات</th>
-            </tr>
-          </thead>
-          <tbody id="schools-tbody">
-            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">⏳ جاري التحميل...</td></tr>
-          </tbody>
-        </table>
+    </div>
+  </div>
+
+  <div id="tab-myaccount" class="tab-content">
+      <div class="card" style="max-width:520px;">
+        <h2><i class="bi bi-person-gear"></i> بياناتي الشخصية</h2>
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">الاسم الكامل</label>
+        <input type="text" id="acc-name" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">البريد الإلكتروني</label>
+        <input type="email" id="acc-email" placeholder="example@email.com" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">القسم / المسمى الوظيفي</label>
+        <input type="text" id="acc-dept" placeholder="مثال: الإدارة، شؤون الطلبة..." style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">رقم الهاتف</label>
+        <input type="tel" id="acc-phone" placeholder="99887766" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <label style="font-weight:700;font-size:13px;display:block;margin:10px 0 5px;">كلمة مرور جديدة (اتركها فاضية لو ما تبي تغييرها)</label>
+        <input type="text" id="acc-pass" placeholder="••••••" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+        <button onclick="window.saveMyAccount()" style="margin-top:14px;width:100%;background:var(--sky);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;"><i class="bi bi-check-circle-fill"></i> حفظ التعديلات</button>
       </div>
     </div>
 
-  </div>
-</div>
-
-<!-- ===== MODAL: تغيير كلمة المرور ===== -->
-<div class="modal-overlay" id="change-pass-modal">
-  <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-shield-lock-fill" style="color:var(--sky)"></i> تغيير كلمة المرور السرية</div>
-    <p style="font-size:12px;color:var(--mid);margin-bottom:18px">بعد التغيير، احفظ الكلمة الجديدة في مكان آمن.</p>
-    <div class="modal-err" id="cp-error"></div>
-    <div class="form-group" style="margin-bottom:12px">
-      <label class="form-label">كلمة المرور الحالية</label>
-      <input type="password" class="form-input" id="cp-current" placeholder="أدخل كلمة المرور الحالية">
-    </div>
-    <div class="form-group" style="margin-bottom:12px">
-      <label class="form-label">كلمة المرور الجديدة</label>
-      <input type="password" class="form-input" id="cp-new" placeholder="6 أحرف على الأقل">
-    </div>
-    <div class="form-group" style="margin-bottom:6px">
-      <label class="form-label">تأكيد كلمة المرور الجديدة</label>
-      <input type="password" class="form-input" id="cp-confirm" placeholder="أعد كتابة كلمة المرور">
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitChangePassword()"><i class="bi bi-check-circle-fill"></i> حفظ</button>
-      <button class="modal-btn cancel" onclick="closeModal('change-pass-modal')">إلغاء</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: تجديد الاشتراك ===== -->
-<div class="modal-overlay" id="renew-modal">
-  <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-arrow-clockwise" style="color:var(--green)"></i> تجديد اشتراك <span id="renew-school-name"></span></div>
-    <div class="modal-err" id="renew-error"></div>
-    <div class="form-grid" style="grid-template-columns:1fr 1fr;margin-bottom:0">
-      <div class="form-group">
-        <label class="form-label">الباقة الجديدة</label>
-        <select class="form-input" id="renew-plan">
-          <option value="basic">🔵 الأساسي — 150 KWD</option>
-          <option value="pro" selected>🟢 الاحترافي — 250 KWD</option>
-          <option value="enterprise">🟣 المؤسسي — 400 KWD</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">تاريخ الانتهاء الجديد</label>
-        <input type="date" class="form-input" id="renew-end-date">
-      </div>
-      <div class="form-group form-full">
-        <label class="form-label">ملاحظات الدفع (اختياري)</label>
-        <input type="text" class="form-input" id="renew-notes" placeholder="مثال: تحويل بنكي، رقم الوصل...">
-      </div>
-    </div>
-    <!-- سجل التجديدات -->
-    <div id="renew-history-wrap" style="margin-top:16px;display:none">
-      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">📋 سجل الاشتراكات السابقة:</div>
-      <div id="renew-history"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitRenewal()"><i class="bi bi-arrow-clockwise"></i> تجديد الاشتراك</button>
-      <button class="modal-btn cancel" onclick="closeModal('renew-modal')">إلغاء</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: ترقية الباقة ===== -->
-<div class="modal-overlay" id="upgrade-modal">
-  <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-arrow-up-circle-fill" style="color:#6d28d9"></i> ترقية باقة <span id="upgrade-school-name"></span></div>
-    <div class="form-group" style="margin-bottom:14px">
-      <label class="form-label">الباقة الجديدة</label>
-      <select class="form-input" id="upgrade-plan">
-        <option value="basic">🔵 الأساسي — 150 KWD</option>
-        <option value="pro">🟢 الاحترافي — 250 KWD</option>
-        <option value="enterprise">🟣 المؤسسي — 400 KWD</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitUpgrade()"><i class="bi bi-check-circle-fill"></i> تطبيق الترقية</button>
-      <button class="modal-btn cancel" onclick="closeModal('upgrade-modal')">إلغاء</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== MODAL: بيانات المدير ===== -->
-<div class="modal-overlay" id="admin-modal">
-  <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-person-badge-fill" style="color:var(--sky)"></i> بيانات مدير <span id="admin-modal-school"></span></div>
-    <div id="admin-modal-content" style="font-size:14px;line-height:2"></div>
-    <div class="form-group" style="margin-top:14px;display:none" id="change-pass-wrap">
-      <label class="form-label">كلمة مرور جديدة للمدير</label>
-      <input type="text" class="form-input" id="admin-new-pass" placeholder="اتركها فارغة إذا ما تبي تغييرها">
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn primary" onclick="document.getElementById('change-pass-wrap').style.display='block'" id="change-admin-pass-btn">🔑 تغيير كلمة المرور</button>
-      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()" id="save-admin-pass-btn" style="display:none">💾 حفظ كلمة المرور</button>
-      <button class="modal-btn cancel" onclick="closeModal('admin-modal')">إغلاق</button>
-    </div>
-  </div>
+          <div class="bottom-nav" id="bottom-nav">
+  <button class="bn-item active" data-bn-tab="tab-index" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i>المؤشرات</button>
+  <button class="bn-item" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i>الغياب</button>
+  <button class="bn-item" data-bn-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-people"></i>الطلاب</button>
+  <button class="bn-item" data-bn-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i>المراسلات</button>
+  <button class="bn-item" data-bn-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-bar-chart-fill"></i><span>التقارير</span></button>
 </div>
 
 <script type="module">
-import { db, auth } from './js/firebase-config.js';
-import { signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, deleteDoc,
-         serverTimestamp, getDocs, query, where, orderBy, getDoc }
-  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from './js/firebase-config.js';
+import { collection, query, where, getDocs, updateDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// ===== الثوابت =====
-const PLANS = { basic: 150, pro: 250, enterprise: 400 };
-const PLAN_NAMES = { basic:'الأساسي', pro:'الاحترافي', enterprise:'المؤسسي' };
-const PLAN_ICONS = { basic:'🔵', pro:'🟢', enterprise:'🟣' };
-
-let allSchools = [];
-let currentFilter = 'all';
-let currentRenewId = null;
-let currentUpgradeId = null;
-let currentAdminDocId = null;
-
-// ===== Modal Helpers =====
-window.openModal = function(id) { document.getElementById(id).classList.add('show'); };
-window.closeModal = function(id) { document.getElementById(id).classList.remove('show'); };
-
-// ===== Login =====
-window.checkSuperPass = async function() {
-  const pass = document.getElementById('super-pass').value.trim();
-  const err  = document.getElementById('login-err');
-  const btn  = document.querySelector('.login-btn');
-  if(!pass) { err.textContent = 'أدخل كلمة المرور'; err.style.display='block'; return; }
-  btn.innerHTML = '⏳ جاري التحقق...'; btn.disabled = true; err.style.display='none';
-  try {
-    const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-    const fns = getFunctions(auth.app, 'me-central1');
-    const res = await httpsCallable(fns, 'loginUser')({ schoolId:null, userId:'superadmin', password:pass });
-    if(res.data?.token) {
-      await signInWithCustomToken(auth, res.data.token);
-      localStorage.setItem('hs_custom_token', res.data.token);
-      document.getElementById('login-screen').style.display='none';
-      document.getElementById('main-screen').style.display='block';
-      initDashboard();
+// حماية الجلسة والصلاحيات
+const savedUser = localStorage.getItem('hs_user');
+if(!savedUser) { window.location.replace('index.html'); }
+let currentUser = null;
+try {
+    currentUser = JSON.parse(savedUser);
+    const roleClean = String(currentUser.role||'').trim().toLowerCase();
+    const allowed = ['admin', 'assistant_manager', 'wing_supervisor'];
+    if(!allowed.includes(roleClean)) {
+        window.showToast('🔒 الوصول مرفوض — هذه اللوحة للإدارة فقط');
+        window.location.replace('index.html');
     }
-  } catch(e) {
-    err.textContent = '❌ ' + (e.message.includes('unauthenticated') ? 'كلمة المرور غير صحيحة' : e.message);
-    err.style.display='block';
-  } finally { btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> دخول آمن'; btn.disabled=false; document.getElementById('super-pass').value=''; }
-};
-document.getElementById('super-pass').addEventListener('keypress', e => { if(e.key==='Enter') window.checkSuperPass(); });
-window.doLogout = function() {
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('main-screen').style.display='none';
-};
+    document.getElementById('lbl-admin-name').textContent = `مرحباً، ${currentUser.name||'المسؤول'}`;
+    document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'لوحة الإدارة';
+    document.getElementById('splash-school').textContent = currentUser.schoolName || 'لوحة الإدارة';
+} catch(e) { window.location.replace('index.html'); }
 
-// ===== تاريخ انتهاء افتراضي =====
-const d = new Date(); d.setFullYear(d.getFullYear()+1);
-document.getElementById('f-sub-end').value = d.toISOString().slice(0,10);
+window.doLogout = function(){ localStorage.removeItem('hs_user'); localStorage.removeItem('hs_custom_token'); window.location.replace('index.html'); };
 
-// ===== تهيئة لوحة التحكم =====
-function initDashboard() {
-  onSnapshot(collection(db,'schools'), snap => {
-    allSchools = [];
-    snap.forEach(docSnap => allSchools.push({ id: docSnap.id, ...docSnap.data() }));
-    updateStats();
-    renderSchools();
-    checkExpiryAlerts();
-  });
-}
+// خريطة الموديلات
+const moduleMap = {
+        'tab-index':            { file: './js/modules/today.js',           init: 'initTodayModule' },
+        'tab-student':          { file: './js/modules/student.js',         init: 'initStudentModule' },
+        'tab-date':             { file: './js/modules/date_search.js',     init: 'initDateSearchModule' },
+        'tab-import':           { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
+        'tab-classes':          { file: './js/modules/classes.js',         init: 'initClassesModule' },
+        'tab-attendance':       { file: './js/modules/attendance.js',      init: 'initAttendanceModule' },
+        'tab-repeat':           { file: './js/modules/repeat.js',          init: 'initRepeatModule' },
+        'tab-reports':          { file: './js/modules/reports.js',         init: 'initReportsModule' },
+        'tab-monthly':          { file: './js/modules/monthly.js',         init: 'initMonthlyModule' },
+        'tab-promotion':        { file: './js/modules/promotion.js',       init: 'initPromotionModule' },
+        'tab-archive':          { file: './js/modules/archive.js',         init: 'initArchiveModule' },
+        'tab-behavior':         { file: './js/modules/behavior.js',        init: 'initBehaviorModule' },
+        'tab-gatepass':         { file: './js/modules/gatepass.js',        init: 'initGatepassModule' },
+        'tab-clinic':           { file: './js/modules/clinic.js',          init: 'initClinicModule' },
+        'tab-teachers':         { file: './js/modules/teachers.js',        init: 'initTeachersModule' },
+        'tab-visits':           { file: './js/modules/visits.js',          init: 'initVisitsModule' },
+        'tab-rounds':           { file: './js/modules/rounds.js',          init: 'initRoundsModule' },
+        'tab-coverage':         { file: './js/modules/distribution.js',    init: 'initDistributionModule' },
+        'tab-announcements':    { file: './js/modules/announcements.js',   init: 'initAnnouncementsModule' },
+        'tab-mailbox':          { file: './js/modules/mailbox.js',         init: 'initMailboxModule' },
+        'tab-honors':           { file: './js/modules/honors.js',          init: 'initHonorsModule' },
+        'tab-rewards':          { file: './js/modules/rewards.js',         init: 'initRewardsModule' },
+        'tab-users':            { file: './js/modules/users.js',           init: 'initUsersModule' },
+        'tab-audit':            { file: './js/modules/audit.js',           init: 'initAuditModule' },
+        'tab-backup':           { file: './js/modules/backup_manager.js',  init: 'initBackupModule' },
+        'tab-warnings':         { file: './js/modules/warnings.js',       init: 'initWarningsModule' },
+        'tab-teacher-workload': { file: './js/modules/teacher_workload.js', init: 'initTeacherWorkloadModule' },
+        'tab-teacher-perf':     { file: './js/modules/teacher_perf.js',    init: 'initTeacherPerfModule' },
+        'tab-manager-visits':   { file: './js/modules/manager_visits.js',  init: 'initManagerVisitsModule' },
+        'tab-daily-report':     { file: './js/modules/daily_report.js',    init: 'initDailyReportModule' },
+        'tab-students-manage':  { file: './js/modules/students_manage.js', init: 'initStudentsManageModule' },
+        'tab-school-settings': { file: null, init: null },
+        'tab-ai-insights':      { file: './js/modules/ai_insights.js',    init: 'initAiInsightsModule' }
+    };
 
-// ===== إحصائيات =====
-function updateStats() {
-  const today = new Date().toISOString().slice(0,10);
-  const soon  = new Date(); soon.setDate(soon.getDate()+30);
-  const soonStr = soon.toISOString().slice(0,10);
+const loadedTabs = new Set();
 
-  let active=0, expiring=0, suspended=0, revenue=0;
-  allSchools.forEach(s => {
-    const isActive = s.status === 'active';
-    const isExpired = s.subscriptionEnd && s.subscriptionEnd < today;
-    const isExpiring = s.subscriptionEnd && s.subscriptionEnd >= today && s.subscriptionEnd <= soonStr;
-    if(isActive && !isExpired) { active++; revenue += PLANS[s.plan||'pro']||250; }
-    if(isExpiring) expiring++;
-    if(!isActive || isExpired) suspended++;
-  });
-
-  document.getElementById('s-total').textContent    = allSchools.length;
-  document.getElementById('s-active').textContent   = active;
-  document.getElementById('s-expiring').textContent = expiring;
-  document.getElementById('s-suspended').textContent= suspended;
-  document.getElementById('s-revenue').textContent  = revenue;
-}
-
-// ===== تنبيهات الانتهاء =====
-function checkExpiryAlerts() {
-  const today = new Date().toISOString().slice(0,10);
-  const soon  = new Date(); soon.setDate(soon.getDate()+14);
-  const soonStr = soon.toISOString().slice(0,10);
-
-  const expiring = allSchools.filter(s =>
-    s.status==='active' && s.subscriptionEnd && s.subscriptionEnd >= today && s.subscriptionEnd <= soonStr
-  );
-
-  const alertEl = document.getElementById('expiry-alert');
-  if(expiring.length > 0) {
-    document.getElementById('expiry-alert-text').textContent =
-      `⚠️ ${expiring.length} مدرسة اشتراكها ينتهي خلال أسبوعين: ${expiring.map(s=>s.name||s.id).join('، ')}`;
-    alertEl.style.display = 'flex';
-  } else {
-    alertEl.style.display = 'none';
-  }
-}
-
-// ===== فلتر =====
-window.setFilter = function(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderSchools();
+// ===== Toast (متاحة عالمياً لكل الموديلات) =====
+window.showToast = function(msg, type='success') {
+    document.querySelectorAll('.toast-msg').forEach(t=>t.remove());
+    const t = document.createElement('div');
+    t.className = 'toast-msg';
+    const colors = {success:'#059669', error:'#dc2626', info:'#1a78c2', warning:'#d97706'};
+    t.style.cssText = `position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+        padding:11px 24px;border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;
+        font-weight:700;z-index:99999;color:#fff;background:${colors[type]||colors.success};
+        box-shadow:0 4px 16px rgba(0,0,0,.2);animation:toastIn .3s ease;white-space:nowrap;`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);}, 2500);
 };
 
-// ===== عرض المدارس =====
-window.renderSchools = function() {
-  const today   = new Date().toISOString().slice(0,10);
-  const soon    = new Date(); soon.setDate(soon.getDate()+30);
-  const soonStr = soon.toISOString().slice(0,10);
-  const search  = document.getElementById('school-search')?.value.toLowerCase() || '';
+// ===== نظام الطوارئ السحابي الحي واللحظي داخل لوحة المدير والمسؤولين =====
+function listenToEmergencyAlertsLive() {
+    const schoolId = getActiveSchoolId();
+    if (!schoolId) return;
 
-  let filtered = allSchools.filter(s => {
-    const matchSearch = !search || (s.name||'').toLowerCase().includes(search) || s.id.toLowerCase().includes(search);
-    if(!matchSearch) return false;
+    const q = query(
+        collection(db, 'emergency_alerts'),
+        where('schoolId', '==', schoolId),
+        where('status', '==', 'active')
+    );
 
-    const isExpired  = s.subscriptionEnd && s.subscriptionEnd < today;
-    const isExpiring = s.subscriptionEnd && s.subscriptionEnd >= today && s.subscriptionEnd <= soonStr;
-    const isActive   = s.status==='active' && !isExpired;
+    onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+                const data = change.doc.data();
+                triggerEmergencyVisualUI(change.doc.id, data);
+            }
+        });
+    });
+}
 
-    if(currentFilter==='active')   return isActive;
-    if(currentFilter==='expiring') return isExpiring;
-    if(currentFilter==='suspended')return s.status==='suspended';
-    if(currentFilter==='expired')  return isExpired;
-    return true;
-  });
+function triggerEmergencyVisualUI(docId, data) {
+    if (document.getElementById(`emergency-overlay-${docId}`)) return;
 
-  if(filtered.length === 0) {
-    document.getElementById('schools-tbody').innerHTML =
-      '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">لا توجد نتائج</td></tr>';
-    return;
-  }
-
-  document.getElementById('schools-tbody').innerHTML = filtered.map(s => {
-    const isExpired  = s.subscriptionEnd && s.subscriptionEnd < today;
-    const isExpiring = s.subscriptionEnd && s.subscriptionEnd >= today && s.subscriptionEnd <= soonStr;
-    const isActive   = s.status==='active' && !isExpired;
-    const daysLeft   = s.subscriptionEnd
-      ? Math.ceil((new Date(s.subscriptionEnd) - new Date()) / 864e5) : null;
-
-    let statusBadge, endColor;
-    if(isExpired) {
-      statusBadge = '<span class="badge expired">⏰ منتهي</span>';
-      endColor = 'color:var(--red)';
-    } else if(s.status==='suspended') {
-      statusBadge = '<span class="badge suspended">● موقوف</span>';
-      endColor = 'color:var(--mid)';
-    } else if(isExpiring) {
-      statusBadge = `<span class="badge" style="background:#fef3c7;color:var(--warn)">⚠️ ${daysLeft}ي</span>`;
-      endColor = 'color:var(--warn)';
-    } else {
-      statusBadge = '<span class="badge active">● فعال</span>';
-      endColor = 'color:var(--green)';
-    }
-
-    const planKey = s.plan||'pro';
-    const planBadge = `<span class="plan-badge plan-${planKey}">${PLAN_ICONS[planKey]} ${PLAN_NAMES[planKey]||planKey}</span>`;
-
-    return `<tr>
-      <td>
-        <b style="color:var(--navy)">${s.name||s.id}</b><br>
-        <span style="font-size:11px;color:var(--mid)">${s.id}</span>
-        ${s.notes ? `<br><span style="font-size:10px;color:var(--mid);font-style:italic">${s.notes}</span>` : ''}
-      </td>
-      <td>${planBadge}</td>
-      <td>${statusBadge}</td>
-      <td style="${endColor};font-weight:700;font-size:12px">
-        ${s.subscriptionEnd||'—'}
-        ${daysLeft!==null ? `<br><span style="font-size:10px">(${daysLeft>0?daysLeft+'ي متبقي':'منتهي'})</span>` : ''}
-      </td>
-      <td>
-        <div class="actions-wrap">
-          <button class="action-btn link" onclick="copySchoolLink('${s.id}')">🔗 رابط</button>
-          <button class="action-btn info" onclick="showAdminCreds('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">👤 المدير</button>
-          <button class="action-btn renew" onclick="openRenewModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')">🔄 تجديد</button>
-          <button class="action-btn upgrade" onclick="openUpgradeModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')">⬆️ ترقية</button>
-          <button class="action-btn ${isActive?'stop':'go'}" onclick="toggleSchool('${s.id}','${isActive?'suspended':'active'}')">
-            ${isActive?'إيقاف':'تفعيل'}
-          </button>
-          <button class="action-btn del" onclick="deleteSchool('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">حذف</button>
+    const overlay = document.createElement('div');
+    overlay.id = `emergency-overlay-${docId}`;
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:999999; direction:rtl; padding:20px;';
+    
+    overlay.innerHTML = `
+        <div style="background:#fff; border-top:10px solid #dc2626; border-radius:16px; padding:30px; max-width:500px; width:100%; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.5); font-family:Cairo,sans-serif;">
+            <div style="font-size:60px; color:#dc2626; animation: blinker 1s linear infinite;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <h2 style="color:#111; font-weight:900; font-size:22px; margin-top:10px;">🚨 نداء طوارئ عاجل جداً</h2>
+            <p style="color:#444; font-weight:700; font-size:15px; margin-top:14px; line-height:1.6;">
+                أطلق الحارس المسؤول: <span style="color:#dc2626; font-weight:900;">[ ${data.senderName || 'حارس الأمن'} ]</span> بلاغ طوارئ فوري من بوابة المدرسة الخارجية الآن!
+            </p>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-top:15px; font-size:13px; font-weight:bold; color:#555;">
+                ⏰ وقت النداء: ${data.timeStr || '-'} | التاريخ: ${data.dateStr || '-'}
+            </div>
+            <div style="margin-top:24px; display:flex; gap:10px;">
+                <button onclick="window.dismissEmergencyAlertLive('${docId}')" style="flex:1; background:#16a34a; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer;"><i class="bi bi-check-circle-fill"></i> تم الاستجابة والاحتواء (إغلاق)</button>
+            </div>
         </div>
-      </td>
-    </tr>`;
-  }).join('');
+        <style>@keyframes blinker { 50% { opacity: 0; } }
+/* ══ DARK MODE ══ */
+body.dark-mode {
+  --navy:#1a2740; --sky:#4da3ff; --ice:#1e2d45; --gold:#f0a830;
+  --white:#1e2535; --off:#161e2e; --line:#2a3650; --text:#e2e8f0;
+  --mid:#94a3b8; --green:#34d399; --red:#f87171;
+}
+body.dark-mode .sidebar { background:#0f1928; }
+body.dark-mode .topbar  { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .card    { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .content { background:#161e2e; }
+body.dark-mode .main    { background:#161e2e; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535; color:#e2e8f0; border-color:#2a3650;
+}
+body.dark-mode table th { background:#0f1928; }
+body.dark-mode tr:hover td { background:#1e2535; }
+body.dark-mode .more-list { background:#1e2535; }
+body.dark-mode .bottom-nav { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .bn-item.active i { background:#1a2740; }
+
+/* Dark mode toggle button */
+
+
+
+/* ══ وضع المدير البسيط ══ */
+.simple-mode .menu-group-title { display:none !important; }
+.simple-mode .sidebar > div > .menu-item { touch-action: manipulation; display:none !important; }
+.simple-mode .menu-item.pinned { display:flex !important; padding:18px 20px !important; font-size:15px !important; }
+.simple-mode .menu-item.pinned i { font-size:22px !important; }
+
+/* أزرار كبيرة في الوضع البسيط */
+.simple-shortcuts {
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:12px; padding:16px;
+}
+.simple-mode .simple-shortcuts { display:grid !important; }
+.shortcut-btn {
+    background:var(--white); border:2px solid var(--line);
+    border-radius:16px; padding:20px 16px;
+    text-align:center; cursor:pointer;
+    transition:all .2s; display:flex;
+    flex-direction:column; align-items:center; gap:10px;
+}
+.shortcut-btn:hover { border-color:var(--sky); transform:translateY(-2px); box-shadow:0 4px 16px rgba(26,120,194,.12); }
+.shortcut-btn i { font-size:32px; }
+.shortcut-btn span { font-size:13px; font-weight:800; color:var(--navy); }
+
+/* ══ تلميحات ══ */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position:absolute; bottom:110%; right:0;
+    background:#1e293b; color:#fff;
+    padding:6px 12px; border-radius:8px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap; z-index:9999;
+    pointer-events:none;
+    animation:tipIn .15s ease;
+}
+@keyframes tipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ شريط أدوات الإمكانية ══ */
+.a11y-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.a11y-btn {
+    background:rgba(255,255,255,.08); border:none;
+    color:rgba(255,255,255,.7); width:30px; height:30px;
+    border-radius:6px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-family:'Cairo',sans-serif;
+}
+.a11y-btn:hover { background:rgba(255,255,255,.18); color:#fff; }
+.a11y-btn.active { background:var(--gold); color:#fff; }
+
+/* ══ أحجام الخط ══ */
+body.font-lg  { font-size:16px !important; }
+body.font-xl  { font-size:18px !important; }
+body.font-lg .menu-item, body.font-xl .menu-item { touch-action: manipulation; font-size:15px !important; padding:16px 18px !important; }
+body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important; padding:18px 20px !important; }
+
+/* ══ دليل سريع ══ */
+.quick-guide {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:9990; display:none; align-items:center;
+    justify-content:center; padding:20px;
+}
+.quick-guide.show { display:flex; }
+.guide-card {
+    background:#fff; border-radius:20px; padding:28px;
+    max-width:480px; width:100%; direction:rtl;
+    font-family:'Cairo',sans-serif; max-height:85vh; overflow-y:auto;
+}
+.guide-step {
+    display:flex; gap:14px; margin-bottom:16px;
+    align-items:flex-start;
+}
+.guide-num {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; flex-shrink:0;
+}
+.guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+/* ══ قائمة أقسام قابلة للطي ══ */
+.menu-sec-title {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 16px 5px;
+    color:rgba(255,255,255,.45);
+    font-size:10px; font-weight:900;
+    letter-spacing:.8px;
+    cursor:pointer; user-select:none;
+    transition:color .2s;
+}
+.menu-sec-title:hover { color:rgba(255,255,255,.75); }
+.menu-sec-title .sec-chev { font-size:10px; transition:transform .25s; }
+.menu-sec-title.closed .sec-chev { transform:rotate(-90deg); }
+.menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
+.menu-sec-body.closed { max-height:0 !important; }
+.menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
+.skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
+.skeleton-circle { width:50px; height:50px; border-radius:50%; }
+
+</style>
+    `;
+    document.body.appendChild(overlay);
+    
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+    } catch(e) {}
+}
+
+window.dismissEmergencyAlertLive = async function(docId) {
+    try {
+        const docRef = doc(db, 'emergency_alerts', docId);
+        await updateDoc(docRef, { status: 'resolved', resolvedAt: new Date().toISOString() });
+        document.getElementById(`emergency-overlay-${docId}`)?.remove();
+        window.showToast('✓ تم إغلاق بلاغ الطوارئ بنجاح وتوثيق الاستجابة.');
+    } catch(err) { window.showToast('تعذر إغلاق البلاغ: ' + err.message, 'error'); }
 };
 
-// ===== إنشاء مدرسة =====
-window.createSchool = async function() {
-  const schoolId   = document.getElementById('f-school-id').value.trim().toLowerCase().replace(/\s+/g,'_');
-  const schoolName = document.getElementById('f-school-name').value.trim();
-  const plan       = document.getElementById('f-plan').value;
-  const subEnd     = document.getElementById('f-sub-end').value;
-  const adminId    = document.getElementById('f-admin-id').value.trim();
-  const adminName  = document.getElementById('f-admin-name').value.trim();
-  const adminPass  = document.getElementById('f-admin-pass').value.trim();
-  const adminPhone = document.getElementById('f-admin-phone').value.trim();
-  const notes      = document.getElementById('f-notes').value.trim();
+// ===== نظام الطباعة الرسمي المركزي =====
+window.ManzoumaReport = {
+    getSchoolInfo() {
+        const u = JSON.parse(localStorage.getItem('hs_user') || '{}');
+        return {
+            schoolName: u.schoolName || 'مدرسة سالم الحسينان المتوسطة بنين',
+            userName: u.name || '',
+            role: u.role || ''
+        };
+    },
 
-  if(!schoolId||!schoolName||!adminId||!adminName||!adminPass) {
-    alert('⚠️ يرجى تعبئة جميع الحقول المطلوبة'); return;
-  }
-
-  const btn = document.querySelector('.submit-btn');
-  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> جاري الإنشاء...';
-
-  try {
-    await setDoc(doc(db,'schools',schoolId), {
-      name: schoolName, plan, status:'active',
-      subscriptionEnd: subEnd, notes,
-      region: document.getElementById('s-region')?.value?.trim() || '',
-      primaryColor: document.getElementById('f-primary-color')?.value || '#0b2545',
-      accentColor:  document.getElementById('f-accent-color')?.value  || '#d4920a',
-      logoUrl:      document.getElementById('f-logo-url')?.value?.trim() || '',
-      createdAt: serverTimestamp()
-    });
-
-    await addDoc(collection(db,'users'), {
-      schoolId, userId:adminId, name:adminName,
-      plainPass: adminPass, phone:adminPhone,
-      role:'admin', createdAt: serverTimestamp()
-    });
-
-    // سجل الاشتراك الأول
-    await addDoc(collection(db,'subscription_logs'), {
-      schoolId, schoolName, plan, subEnd,
-      amount: PLANS[plan]||250, type:'new',
-      notes: 'اشتراك جديد', createdAt: serverTimestamp()
-    });
-
-    const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-    alert(`✅ تم تفعيل "${schoolName}" بنجاح!\n\n📋 بيانات المدير:\nرقم المستخدم: ${adminId}\nكلمة المرور: ${adminPass}\n\n🔗 رابط المدرسة:\n${link}`);
-    ['f-school-id','f-school-name','f-admin-id','f-admin-name','f-admin-pass','f-admin-phone','f-notes']
-      .forEach(id => document.getElementById(id).value='');
-    const nd=new Date(); nd.setFullYear(nd.getFullYear()+1);
-    document.getElementById('f-sub-end').value=nd.toISOString().slice(0,10);
-  } catch(err) { alert('❌ خطأ: '+err.message); }
-  finally { btn.disabled=false; btn.innerHTML='<i class="bi bi-rocket-takeoff-fill"></i> إطلاق المنصة وتفعيلها فوراً'; }
-};
-
-// ===== تجديد الاشتراك =====
-window.openRenewModal = async function(schoolId, schoolName, currentPlan) {
-  currentRenewId = schoolId;
-  document.getElementById('renew-school-name').textContent = schoolName;
-  document.getElementById('renew-plan').value = currentPlan;
-  document.getElementById('renew-notes').value = '';
-  document.getElementById('renew-error').style.display='none';
-
-  // تاريخ انتهاء جديد (سنة من اليوم)
-  const nd=new Date(); nd.setFullYear(nd.getFullYear()+1);
-  document.getElementById('renew-end-date').value = nd.toISOString().slice(0,10);
-
-  // جلب سجل الاشتراكات
-  try {
-    const snap = await getDocs(query(
-      collection(db,'subscription_logs'),
-      where('schoolId','==',schoolId)
-    ));
-    const histWrap = document.getElementById('renew-history-wrap');
-    const histEl   = document.getElementById('renew-history');
-    if(!snap.empty) {
-      const logs = [...snap.docs].sort((a,b)=>
-        (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0)
-      ).slice(0,5);
-      histEl.innerHTML = logs.map(d=>{
-        const v=d.data();
-        return `<div class="history-item">
-          <span class="date">${v.subEnd||'—'}</span>
-          <span class="plan">${PLAN_ICONS[v.plan]||''} ${PLAN_NAMES[v.plan]||v.plan}</span>
-          <span class="amount">${v.amount||0} KWD</span>
-          <span style="font-size:11px;color:var(--mid)">${v.type==='new'?'جديد':'تجديد'}</span>
+    buildHeader(title, subtitle = '') {
+        const { schoolName } = this.getSchoolInfo();
+        const today = new Date();
+        const dateAr = today.toLocaleDateString('ar-KW', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        return `
+        <div style="border-bottom:3px double #0b2545; padding-bottom:16px; margin-bottom:20px; text-align:center;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="text-align:right; font-size:11px; color:#555; line-height:1.8;">
+                    <div style="font-weight:900; font-size:13px; color:#0b2545;">دولة الكويت</div>
+                    <div style="font-weight:700;">وزارة التربية</div>
+                    <div>منطقة مبارك الكبير التعليمية</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="width:70px; height:70px; border:2px solid #0b2545; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 6px; font-size:28px;">🏫</div>
+                    <div style="font-size:10px; color:#888;">المنظومة الرقمية</div>
+                </div>
+                <div style="text-align:left; font-size:11px; color:#555; line-height:1.8;">
+                    <div style="font-weight:900; font-size:13px; color:#0b2545;">${schoolName}</div>
+                    <div>التاريخ: ${dateAr}</div>
+                    <div>السنة الدراسية: ${today.getFullYear()}/${today.getFullYear()+1}</div>
+                </div>
+            </div>
+            <div style="background:#0b2545; color:#fff; padding:10px 20px; border-radius:8px; display:inline-block; min-width:300px;">
+                <div style="font-size:17px; font-weight:900; letter-spacing:1px;">${title}</div>
+                ${subtitle ? `<div style="font-size:11px; opacity:.85; margin-top:3px;">${subtitle}</div>` : ''}
+            </div>
         </div>`;
-      }).join('');
-      histWrap.style.display='block';
+    },
+
+    buildFooter() {
+        const { userName, role } = this.getSchoolInfo();
+        const roleLabel = role === 'admin' ? 'مدير المدرسة' : role === 'assistant_manager' ? 'مساعد المدير' : 'المسؤول';
+        return `
+        <div style="margin-top:30px; border-top:1px solid #ddd; padding-top:15px; display:flex; justify-content:space-between; font-size:11px; color:#555;">
+            <div style="text-align:right;">
+                <div style="font-weight:700; margin-bottom:20px;">أعدّه: ${userName} — ${roleLabel}</div>
+                <div style="border-top:1px solid #999; padding-top:4px; width:150px; text-align:center;">التوقيع</div>
+            </div>
+            <div style="text-align:center; font-size:10px; color:#aaa; align-self:flex-end;">
+                صدر بتاريخ ${new Date().toLocaleDateString('ar-KW')}<br>
+                المنظومة الرقمية © ${new Date().getFullYear()}
+            </div>
+            <div style="text-align:left;">
+                <div style="font-weight:700; margin-bottom:20px;">الختم الرسمي</div>
+                <div style="border:1px solid #999; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#ccc; font-size:11px; text-align:center;">ختم<br>المدرسة</div>
+            </div>
+        </div>`;
+    },
+
+    getPrintCSS() {
+        return `
+        body { font-family: 'Cairo', Arial, sans-serif; direction: rtl; text-align: right; background: #fff; color: #000; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+        th { background: #0b2545; color: #fff; padding: 8px 10px; font-weight: 700; text-align: right; font-size: 11px; }
+        td { padding: 7px 10px; border-bottom: 1px solid #e0e0e0; font-size: 11.5px; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        tr:last-child td { border-bottom: none; }
+        .badge-absent { background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-weight: 700; border: 1px solid #fca5a5; }
+        .badge-late { background: #fffbeb; color: #d97706; padding: 2px 8px; border-radius: 4px; font-weight: 700; border: 1px solid #fcd34d; }
+        .section-title { background: #f1f5f9; border-right: 4px solid #0b2545; padding: 6px 12px; font-weight: 900; font-size: 13px; color: #0b2545; margin: 16px 0 8px; border-radius: 0 6px 6px 0; }
+        @media print { body { margin: 0; } }`;
+    },
+
+    async exportPDF(contentHTML, filename, title, subtitle = '') {
+        const printEl = document.createElement('div');
+        printEl.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:794px;background:#fff;padding:30px;font-family:Cairo,Arial,sans-serif;direction:rtl;';
+        printEl.innerHTML = `<style>${this.getPrintCSS()}
+/* ══ DARK MODE ══ */
+body.dark-mode {
+  --navy:#1a2740; --sky:#4da3ff; --ice:#1e2d45; --gold:#f0a830;
+  --white:#1e2535; --off:#161e2e; --line:#2a3650; --text:#e2e8f0;
+  --mid:#94a3b8; --green:#34d399; --red:#f87171;
+}
+body.dark-mode .sidebar { background:#0f1928; }
+body.dark-mode .topbar  { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .card    { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .content { background:#161e2e; }
+body.dark-mode .main    { background:#161e2e; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535; color:#e2e8f0; border-color:#2a3650;
+}
+body.dark-mode table th { background:#0f1928; }
+body.dark-mode tr:hover td { background:#1e2535; }
+body.dark-mode .more-list { background:#1e2535; }
+body.dark-mode .bottom-nav { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .bn-item.active i { background:#1a2740; }
+
+/* Dark mode toggle button */
+
+
+
+/* ══ وضع المدير البسيط ══ */
+.simple-mode .menu-group-title { display:none !important; }
+.simple-mode .sidebar > div > .menu-item { touch-action: manipulation; display:none !important; }
+.simple-mode .menu-item.pinned { display:flex !important; padding:18px 20px !important; font-size:15px !important; }
+.simple-mode .menu-item.pinned i { font-size:22px !important; }
+
+/* أزرار كبيرة في الوضع البسيط */
+.simple-shortcuts {
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:12px; padding:16px;
+}
+.simple-mode .simple-shortcuts { display:grid !important; }
+.shortcut-btn {
+    background:var(--white); border:2px solid var(--line);
+    border-radius:16px; padding:20px 16px;
+    text-align:center; cursor:pointer;
+    transition:all .2s; display:flex;
+    flex-direction:column; align-items:center; gap:10px;
+}
+.shortcut-btn:hover { border-color:var(--sky); transform:translateY(-2px); box-shadow:0 4px 16px rgba(26,120,194,.12); }
+.shortcut-btn i { font-size:32px; }
+.shortcut-btn span { font-size:13px; font-weight:800; color:var(--navy); }
+
+/* ══ تلميحات ══ */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position:absolute; bottom:110%; right:0;
+    background:#1e293b; color:#fff;
+    padding:6px 12px; border-radius:8px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap; z-index:9999;
+    pointer-events:none;
+    animation:tipIn .15s ease;
+}
+@keyframes tipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ شريط أدوات الإمكانية ══ */
+.a11y-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.a11y-btn {
+    background:rgba(255,255,255,.08); border:none;
+    color:rgba(255,255,255,.7); width:30px; height:30px;
+    border-radius:6px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-family:'Cairo',sans-serif;
+}
+.a11y-btn:hover { background:rgba(255,255,255,.18); color:#fff; }
+.a11y-btn.active { background:var(--gold); color:#fff; }
+
+/* ══ أحجام الخط ══ */
+body.font-lg  { font-size:16px !important; }
+body.font-xl  { font-size:18px !important; }
+body.font-lg .menu-item, body.font-xl .menu-item { touch-action: manipulation; font-size:15px !important; padding:16px 18px !important; }
+body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important; padding:18px 20px !important; }
+
+/* ══ دليل سريع ══ */
+.quick-guide {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:9990; display:none; align-items:center;
+    justify-content:center; padding:20px;
+}
+.quick-guide.show { display:flex; }
+.guide-card {
+    background:#fff; border-radius:20px; padding:28px;
+    max-width:480px; width:100%; direction:rtl;
+    font-family:'Cairo',sans-serif; max-height:85vh; overflow-y:auto;
+}
+.guide-step {
+    display:flex; gap:14px; margin-bottom:16px;
+    align-items:flex-start;
+}
+.guide-num {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; flex-shrink:0;
+}
+.guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+/* ══ قائمة أقسام قابلة للطي ══ */
+.menu-sec-title {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 16px 5px;
+    color:rgba(255,255,255,.45);
+    font-size:10px; font-weight:900;
+    letter-spacing:.8px;
+    cursor:pointer; user-select:none;
+    transition:color .2s;
+}
+.menu-sec-title:hover { color:rgba(255,255,255,.75); }
+.menu-sec-title .sec-chev { font-size:10px; transition:transform .25s; }
+.menu-sec-title.closed .sec-chev { transform:rotate(-90deg); }
+.menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
+.menu-sec-body.closed { max-height:0 !important; }
+.menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
+.skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
+.skeleton-circle { width:50px; height:50px; border-radius:50%; }
+
+</style>${this.buildHeader(title, subtitle)}${contentHTML}${this.buildFooter()}`;
+        document.body.appendChild(printEl);
+
+        try {
+            showToast('⏳ جاري تجهيز التقرير...', 'info');
+            await new Promise(r => setTimeout(r, 400));
+            const canvas = await html2canvas(printEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff', logging: false });
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageW = 210, pageH = 297, margin = 8;
+            const imgW = pageW - margin * 2;
+            const imgH = (canvas.height * imgW) / canvas.width;
+            let y = margin;
+            const pageImgH = pageH - margin * 2;
+
+            if (imgH <= pageImgH) {
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', margin, y, imgW, imgH);
+            } else {
+                let remaining = imgH;
+                let srcY = 0;
+                while (remaining > 0) {
+                    const sliceH = Math.min(pageImgH, remaining);
+                    const sliceCanvas = document.createElement('canvas');
+                    sliceCanvas.width = canvas.width;
+                    sliceCanvas.height = (sliceH / imgW) * canvas.width;
+                    const ctx = sliceCanvas.getContext('2d');
+                    ctx.drawImage(canvas, 0, srcY * canvas.width / imgW, canvas.width, sliceCanvas.height, 0, 0, canvas.width, sliceCanvas.height);
+                    if (srcY > 0) pdf.addPage();
+                    pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgW, sliceH);
+                    srcY += sliceH;
+                    remaining -= sliceH;
+                }
+            }
+
+            pdf.save(`${filename}_${new Date().toISOString().slice(0,10)}.pdf`);
+            showToast('✅ تم تصدير التقرير بنجاح');
+        } catch(e) {
+            showToast('❌ خطأ في تصدير التقرير: ' + e.message, 'error');
+        } finally {
+            document.body.removeChild(printEl);
+        }
+    },
+
+    printDirect(contentHTML, title, subtitle = '') {
+        const w = window.open('', '_blank', 'width=900,height=700');
+        w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+        <meta charset="UTF-8">
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+        <title>${title}</title>
+        <style>
+            ${this.getPrintCSS()}
+            body { padding: 20mm; margin: 0; }
+            @page { size: A4; margin: 15mm; }
+            @media print { .no-print { display: none; } }
+        
+/* ══ DARK MODE ══ */
+body.dark-mode {
+  --navy:#1a2740; --sky:#4da3ff; --ice:#1e2d45; --gold:#f0a830;
+  --white:#1e2535; --off:#161e2e; --line:#2a3650; --text:#e2e8f0;
+  --mid:#94a3b8; --green:#34d399; --red:#f87171;
+}
+body.dark-mode .sidebar { background:#0f1928; }
+body.dark-mode .topbar  { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .card    { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .content { background:#161e2e; }
+body.dark-mode .main    { background:#161e2e; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535; color:#e2e8f0; border-color:#2a3650;
+}
+body.dark-mode table th { background:#0f1928; }
+body.dark-mode tr:hover td { background:#1e2535; }
+body.dark-mode .more-list { background:#1e2535; }
+body.dark-mode .bottom-nav { background:#1e2535; border-color:#2a3650; }
+body.dark-mode .bn-item.active i { background:#1a2740; }
+
+/* Dark mode toggle button */
+
+
+
+/* ══ وضع المدير البسيط ══ */
+.simple-mode .menu-group-title { display:none !important; }
+.simple-mode .sidebar > div > .menu-item { touch-action: manipulation; display:none !important; }
+.simple-mode .menu-item.pinned { display:flex !important; padding:18px 20px !important; font-size:15px !important; }
+.simple-mode .menu-item.pinned i { font-size:22px !important; }
+
+/* أزرار كبيرة في الوضع البسيط */
+.simple-shortcuts {
+    display:none;
+    grid-template-columns:1fr 1fr;
+    gap:12px; padding:16px;
+}
+.simple-mode .simple-shortcuts { display:grid !important; }
+.shortcut-btn {
+    background:var(--white); border:2px solid var(--line);
+    border-radius:16px; padding:20px 16px;
+    text-align:center; cursor:pointer;
+    transition:all .2s; display:flex;
+    flex-direction:column; align-items:center; gap:10px;
+}
+.shortcut-btn:hover { border-color:var(--sky); transform:translateY(-2px); box-shadow:0 4px 16px rgba(26,120,194,.12); }
+.shortcut-btn i { font-size:32px; }
+.shortcut-btn span { font-size:13px; font-weight:800; color:var(--navy); }
+
+/* ══ تلميحات ══ */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+    content: attr(data-tip);
+    position:absolute; bottom:110%; right:0;
+    background:#1e293b; color:#fff;
+    padding:6px 12px; border-radius:8px;
+    font-size:11px; font-weight:700;
+    white-space:nowrap; z-index:9999;
+    pointer-events:none;
+    animation:tipIn .15s ease;
+}
+@keyframes tipIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ شريط أدوات الإمكانية ══ */
+.a11y-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:6px 16px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.a11y-btn {
+    background:rgba(255,255,255,.08); border:none;
+    color:rgba(255,255,255,.7); width:30px; height:30px;
+    border-radius:6px; cursor:pointer; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-family:'Cairo',sans-serif;
+}
+.a11y-btn:hover { background:rgba(255,255,255,.18); color:#fff; }
+.a11y-btn.active { background:var(--gold); color:#fff; }
+
+/* ══ أحجام الخط ══ */
+body.font-lg  { font-size:16px !important; }
+body.font-xl  { font-size:18px !important; }
+body.font-lg .menu-item, body.font-xl .menu-item { touch-action: manipulation; font-size:15px !important; padding:16px 18px !important; }
+body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important; padding:18px 20px !important; }
+
+/* ══ دليل سريع ══ */
+.quick-guide {
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    z-index:9990; display:none; align-items:center;
+    justify-content:center; padding:20px;
+}
+.quick-guide.show { display:flex; }
+.guide-card {
+    background:#fff; border-radius:20px; padding:28px;
+    max-width:480px; width:100%; direction:rtl;
+    font-family:'Cairo',sans-serif; max-height:85vh; overflow-y:auto;
+}
+.guide-step {
+    display:flex; gap:14px; margin-bottom:16px;
+    align-items:flex-start;
+}
+.guide-num {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; font-weight:900; flex-shrink:0;
+}
+.guide-text { font-size:13px; font-weight:600; color:#374151; line-height:1.6; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+/* ══ قائمة أقسام قابلة للطي ══ */
+.menu-sec-title {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 16px 5px;
+    color:rgba(255,255,255,.45);
+    font-size:10px; font-weight:900;
+    letter-spacing:.8px;
+    cursor:pointer; user-select:none;
+    transition:color .2s;
+}
+.menu-sec-title:hover { color:rgba(255,255,255,.75); }
+.menu-sec-title .sec-chev { font-size:10px; transition:transform .25s; }
+.menu-sec-title.closed .sec-chev { transform:rotate(-90deg); }
+.menu-sec-body { overflow:hidden; transition:max-height .28s ease; }
+.menu-sec-body.closed { max-height:0 !important; }
+.menu-divider { height:1px; background:rgba(255,255,255,.07); margin:5px 14px; }
+
+
+/* ══ Skeleton Loading ══ */
+.skeleton {
+    background: linear-gradient(90deg, #f0f4f8 25%, #e2e8f0 50%, #f0f4f8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:14px; }
+.skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
+.skeleton-circle { width:50px; height:50px; border-radius:50%; }
+
+</style></head><body>
+        <div class="no-print" style="position:fixed;top:10px;right:10px;z-index:999;display:flex;gap:8px;">
+            <button onclick="window.print()" style="background:#0b2545;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;font-size:14px;">🖨️ طباعة</button>
+            <button onclick="window.close()" style="background:#dc2626;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;font-size:14px;">✕</button>
+        </div>
+        ${this.buildHeader(title, subtitle)}
+        ${contentHTML}
+        ${this.buildFooter()}
+        
+<div class="quick-guide" id="quick-guide" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="guide-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <h3 style="font-size:17px;font-weight:900;color:var(--navy)">📖 دليل الاستخدام السريع</h3>
+            <button onclick="document.getElementById('quick-guide').classList.remove('show')"
+                style="background:none;border:none;font-size:22px;cursor:pointer;color:#6b7280">✕</button>
+        </div>
+
+        <div class="guide-step">
+            <div class="guide-num">1</div>
+            <div class="guide-text"><b>تسجيل الغياب يومياً</b><br>من القائمة ← الحضور والسلوك ← تسجيل الغياب ← اختر الفصل والطلاب الغائبين ← اضغط حفظ</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">2</div>
+            <div class="guide-text"><b>إرسال واتساب للغائبين</b><br>من الرئيسية ← اختر الفصل من قائمة واتساب ← اضغط "إرسال للغائبين"</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">3</div>
+            <div class="guide-text"><b>إصدار تقرير شهري</b><br>من القائمة ← التقارير الشهرية ← اختر الشهر ← اضغط "تصدير PDF"</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">4</div>
+            <div class="guide-text"><b>إضافة مستخدم جديد</b><br>من القائمة ← إدارة المستخدمين ← أضف مستخدم ← أدخل البيانات ← حفظ</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">5</div>
+            <div class="guide-text"><b>إصدار إنذار غياب</b><br>من القائمة ← الإنذارات الرسمية ← اختر الفصل والطالب ← حدد المستوى ← احفظ وطبع</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">6</div>
+            <div class="guide-text"><b>المساعد الذكي 🤖</b><br>اضغط الزر الأزرق في أسفل يسار الشاشة واسأل أي سؤال بالعربي</div>
+        </div>
+
+        <div style="background:var(--ice);border-radius:10px;padding:14px;margin-top:8px;font-size:13px;font-weight:700;color:var(--navy)">
+            💡 نصيحة: لو ضغطت على شيء خطأ — اضغط زر الرجوع في المتصفح أو اضغط على "الرئيسية" في القائمة
+        </div>
+    </div>
+</div>
+
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// دوال عامة — تشتغل مع onclick في HTML
+// لازم تكون خارج type="module" عشان Safari والآيفون
+// ══════════════════════════════════════════════════════════════
+
+// ══ Dark Mode ══
+window.toggleDarkMode = function() {
+    var isDark = document.body.classList.toggle('dark-mode');
+    try { localStorage.setItem('hs_dark_mode', isDark ? '1' : '0'); } catch(e) {}
+    var icon  = document.getElementById('dark-icon');
+    var label = document.getElementById('dark-label');
+    if(icon)  icon.textContent  = isDark ? '☀️' : '🌙';
+    if(label) label.textContent = isDark ? 'نهاري' : 'ليلي';
+};
+
+// ══ وضع المدير البسيط ══
+window.toggleSimpleMode = function() {
+    var isSimple = document.body.classList.toggle('simple-mode');
+    try { localStorage.setItem('hs_simple_mode', isSimple ? '1' : '0'); } catch(e) {}
+    var btn = document.getElementById('btn-simple');
+    if(btn) btn.classList.toggle('active', isSimple);
+};
+
+// ══ تكبير الخط ══
+var _fontSizes = ['', 'font-lg', 'font-xl'];
+var _fontIdx   = 0;
+window.cycleFontSize = function() {
+    document.body.classList.remove('font-lg', 'font-xl');
+    _fontIdx = (_fontIdx + 1) % _fontSizes.length;
+    if(_fontSizes[_fontIdx]) document.body.classList.add(_fontSizes[_fontIdx]);
+    try { localStorage.setItem('hs_font_size', _fontIdx); } catch(e) {}
+    var btn = document.getElementById('btn-font');
+    if(btn) btn.classList.toggle('active', _fontIdx > 0);
+};
+
+// ══ الدليل السريع ══
+window.showQuickGuide = function() {
+    var guide = document.getElementById('quick-guide');
+    if(guide) guide.classList.add('show');
+};
+
+// ══ طي/فتح أقسام القائمة ══
+function toggleSec(titleEl) {
+    var body = titleEl.nextElementSibling;
+    if(!body) return;
+    var isOpen = !body.classList.contains('closed');
+    if(isOpen) {
+        body.style.maxHeight = body.scrollHeight + 'px';
+        setTimeout(function() {
+            body.style.maxHeight = '0';
+            body.classList.add('closed');
+            titleEl.classList.add('closed');
+        }, 10);
     } else {
-      histWrap.style.display='none';
+        body.classList.remove('closed');
+        titleEl.classList.remove('closed');
+        body.style.maxHeight = body.scrollHeight + 'px';
+        setTimeout(function() {
+            if(!body.classList.contains('closed')) body.style.maxHeight = 'none';
+        }, 300);
     }
-  } catch(e) {}
+}
 
-  openModal('renew-modal');
-};
+// ══ استعادة الإعدادات عند التحميل ══
+(function() {
+    try {
+        // Dark Mode
+        if(localStorage.getItem('hs_dark_mode') === '1') {
+            document.body.classList.add('dark-mode');
+            var i = document.getElementById('dark-icon');
+            var l = document.getElementById('dark-label');
+            if(i) i.textContent = '☀️';
+            if(l) l.textContent = 'نهاري';
+        }
+        // Simple Mode
+        if(localStorage.getItem('hs_simple_mode') === '1') {
+            document.body.classList.add('simple-mode');
+            var btn = document.getElementById('btn-simple');
+            if(btn) btn.classList.add('active');
+        }
+        // Font Size
+        var fi = parseInt(localStorage.getItem('hs_font_size') || '0');
+        if(fi > 0 && _fontSizes[fi]) {
+            document.body.classList.add(_fontSizes[fi]);
+            _fontIdx = fi;
+            var fb = document.getElementById('btn-font');
+            if(fb) fb.classList.add('active');
+        }
+    } catch(e) {}
 
-window.submitRenewal = async function() {
-  if(!currentRenewId) return;
-  const plan    = document.getElementById('renew-plan').value;
-  const endDate = document.getElementById('renew-end-date').value;
-  const notes   = document.getElementById('renew-notes').value.trim();
-  const errEl   = document.getElementById('renew-error');
-
-  if(!endDate) { errEl.textContent='⚠️ اختر تاريخ الانتهاء'; errEl.style.display='block'; return; }
-  errEl.style.display='none';
-
-  try {
-    const school = allSchools.find(s=>s.id===currentRenewId);
-    await updateDoc(doc(db,'schools',currentRenewId), {
-      plan, status:'active', subscriptionEnd: endDate,
-      lastRenewed: serverTimestamp()
+    // فتح أول قسمين وأغلق الباقي
+    document.addEventListener('DOMContentLoaded', function() {
+        var bodies = document.querySelectorAll('.menu-sec-body');
+        for(var i = 0; i < bodies.length; i++) {
+            if(i >= 2) {
+                bodies[i].style.maxHeight = '0';
+                bodies[i].classList.add('closed');
+                if(bodies[i].previousElementSibling) bodies[i].previousElementSibling.classList.add('closed');
+            } else {
+                bodies[i].style.maxHeight = 'none';
+            }
+        }
     });
+})();
+</script>
 
-    await addDoc(collection(db,'subscription_logs'), {
-      schoolId: currentRenewId, schoolName: school?.name||currentRenewId,
-      plan, subEnd: endDate, amount: PLANS[plan]||250,
-      type:'renewal', notes, createdAt: serverTimestamp()
-    });
-
-    closeModal('renew-modal');
-    alert(`✅ تم تجديد اشتراك "${school?.name||currentRenewId}" حتى ${endDate}`);
-  } catch(e) { errEl.textContent='❌ '+e.message; errEl.style.display='block'; }
-};
-
-// ===== ترقية الباقة =====
-window.openUpgradeModal = function(schoolId, schoolName, currentPlan) {
-  currentUpgradeId = schoolId;
-  document.getElementById('upgrade-school-name').textContent = schoolName;
-  document.getElementById('upgrade-plan').value = currentPlan;
-  openModal('upgrade-modal');
-};
-
-window.submitUpgrade = async function() {
-  if(!currentUpgradeId) return;
-  const plan = document.getElementById('upgrade-plan').value;
-  try {
-    const school = allSchools.find(s=>s.id===currentUpgradeId);
-    await updateDoc(doc(db,'schools',currentUpgradeId), { plan });
-    await addDoc(collection(db,'subscription_logs'), {
-      schoolId: currentUpgradeId, schoolName: school?.name||currentUpgradeId,
-      plan, amount: PLANS[plan]||250, type:'upgrade',
-      notes:`ترقية إلى ${PLAN_NAMES[plan]}`, createdAt: serverTimestamp()
-    });
-    closeModal('upgrade-modal');
-    alert(`✅ تم ترقية باقة "${school?.name||currentUpgradeId}" إلى ${PLAN_NAMES[plan]}`);
-  } catch(e) { alert('❌ '+e.message); }
-};
-
-// ===== بيانات المدير =====
-window.showAdminCreds = async function(schoolId, schoolName) {
-  document.getElementById('admin-modal-school').textContent = schoolName;
-  document.getElementById('change-pass-wrap').style.display='none';
-  document.getElementById('admin-new-pass').value='';
-  currentAdminDocId = null;
-
-  try {
-    const snap = await getDocs(query(collection(db,'users'),
-      where('schoolId','==',schoolId), where('role','==','admin')));
-    if(snap.empty) { alert(`⚠️ لا يوجد مدير لمدرسة "${schoolName}"`); return; }
-
-    const admins=[];
-    snap.forEach(d => admins.push({ docId:d.id, ...d.data() }));
-    currentAdminDocId = admins[0].docId;
-
-    document.getElementById('admin-modal-content').innerHTML = admins.map(a=>`
-      <div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:8px">
-        <div>👤 <b>${a.name||'—'}</b></div>
-        <div>🔢 رقم المستخدم: <b>${a.userId||'—'}</b></div>
-        <div>📱 الهاتف: <b>${a.phone||'—'}</b></div>
-        <div>🔑 كلمة المرور: <b style="color:var(--red)">${a.plainPass||'(مشفّرة)'}</b></div>
-      </div>
-    `).join('');
-    openModal('admin-modal');
-  } catch(e) { alert('❌ '+e.message); }
-};
-
-window.saveAdminPass = async function() {
-  if(!currentAdminDocId) return;
-  const newPass = document.getElementById('admin-new-pass').value.trim();
-  if(!newPass) { alert('أدخل كلمة المرور الجديدة'); return; }
-  try {
-    await updateDoc(doc(db,'users',currentAdminDocId), { plainPass: newPass });
-    alert(`✅ تم تغيير كلمة المرور إلى: ${newPass}`);
-    closeModal('admin-modal');
-  } catch(e) { alert('❌ '+e.message); }
-};
-
-// ===== نسخ الرابط =====
-window.copySchoolLink = function(schoolId) {
-  const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-  navigator.clipboard?.writeText(link).then(()=>alert(`✅ تم نسخ الرابط:\n${link}`)).catch(()=>prompt('انسخ الرابط:',link));
-};
-
-// ===== تفعيل/إيقاف =====
-window.toggleSchool = async function(schoolId, newStatus) {
-  const school = allSchools.find(s=>s.id===schoolId);
-  const msg = newStatus==='suspended' ? `إيقاف "${school?.name||schoolId}"؟` : `تفعيل "${school?.name||schoolId}"؟`;
-  if(!confirm(msg)) return;
-  await updateDoc(doc(db,'schools',schoolId), { status: newStatus });
-};
-
-// ===== حذف =====
-window.deleteSchool = async function(schoolId, schoolName) {
-  if(!confirm(`⚠️ حذف "${schoolName}" نهائياً؟\n\nسيُحذف سجل المدرسة فقط.`)) return;
-  const code = prompt(`اكتب كود المدرسة "${schoolId}" للتأكيد:`);
-  if(code !== schoolId) { alert('❌ الكود غير صحيح'); return; }
-  try { await deleteDoc(doc(db,'schools',schoolId)); alert(`✅ تم حذف "${schoolName}"`); }
-  catch(e) { alert('❌ '+e.message); }
-};
-
-// ===== تغيير كلمة مرور السوبر أدمن =====
-window.submitChangePassword = async function() {
-  const current  = document.getElementById('cp-current').value;
-  const newPass  = document.getElementById('cp-new').value;
-  const confirm_ = document.getElementById('cp-confirm').value;
-  const errEl    = document.getElementById('cp-error');
-  errEl.style.display='none';
-
-  if(!current||!newPass||!confirm_) { errEl.textContent='⚠️ يرجى تعبئة كل الحقول'; errEl.style.display='block'; return; }
-  if(newPass.length<6) { errEl.textContent='⚠️ كلمة المرور قصيرة جداً (6 أحرف على الأقل)'; errEl.style.display='block'; return; }
-  if(newPass!==confirm_) { errEl.textContent='⚠️ كلمة المرور وتأكيدها غير متطابقين'; errEl.style.display='block'; return; }
-
-  try {
-    const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-    await httpsCallable(getFunctions(auth.app, 'me-central1'), 'changeSuperPassword')({ currentPassword:current, newPassword:newPass });
-    closeModal('change-pass-modal');
-    alert('✅ تم تغيير كلمة المرور بنجاح.');
-  } catch(e) {
-    errEl.textContent = '❌ '+(e.message.includes('unauthenticated')?'كلمة المرور الحالية غير صحيحة':e.message);
-    errEl.style.display='block';
-  }
-};
-
-// ===== إغلاق Modal بالضغط خارجه =====
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('show'); });
+<script>
+// ══ Error Toast — يظهر للمستخدم بدل console.error ══
+window.addEventListener('unhandledrejection', function(e) {
+    var msg = e.reason?.message || e.reason || 'حدث خطأ غير متوقع';
+    if(msg.includes('Failed to fetch') || msg.includes('network'))
+        msg = '⚠️ تحقق من اتصال الإنترنت';
+    else if(msg.includes('permission') || msg.includes('PERMISSION'))
+        msg = '⚠️ لا توجد صلاحية لهذا الإجراء';
+    else if(msg.includes('not-found'))
+        msg = '⚠️ البيانات غير موجودة';
+    else
+        msg = '⚠️ ' + msg.substring(0, 80);
+    if(window.showToast) window.showToast(msg, 'error');
 });
 </script>
-<script>
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+<script type="module">
+import { db, getActiveSchoolId } from './js/firebase-config.js';
+import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where, orderBy, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// تحميل الإعدادات الحالية
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const schoolId = getActiveSchoolId();
+        if(!schoolId) return;
+        const snap = await getDoc(doc(db,'schools',schoolId));
+        if(snap.exists()) {
+            const s = snap.data();
+            const pc = document.getElementById('set-primary-color');
+            const ac = document.getElementById('set-accent-color');
+            const lu = document.getElementById('set-logo-url');
+            if(pc && s.primaryColor) pc.value = s.primaryColor;
+            if(ac && s.accentColor)  ac.value = s.accentColor;
+            if(lu && s.logoUrl)      lu.value = s.logoUrl;
+        }
+        loadSchoolAnnouncements();
+    } catch(e) {}
+});
+
+// حفظ اللون والشعار
+window.saveSchoolBranding = async function() {
+    try {
+        const schoolId = getActiveSchoolId();
+        await updateDoc(doc(db,'schools',schoolId), {
+            primaryColor: document.getElementById('set-primary-color')?.value || '#0b2545',
+            accentColor:  document.getElementById('set-accent-color')?.value  || '#d4920a',
+            logoUrl:      document.getElementById('set-logo-url')?.value?.trim() || ''
+        });
+        window.showToast?.('✅ تم حفظ التغييرات — ستظهر في صفحة الدخول');
+    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
+};
+
+// إضافة إعلان
+window.addSchoolAnnouncement = async function() {
+    const text = document.getElementById('new-announcement')?.value?.trim();
+    if(!text) { window.showToast?.('اكتب الإعلان أولاً','warning'); return; }
+    try {
+        const schoolId = getActiveSchoolId();
+        await addDoc(collection(db,'school_announcements'), {
+            schoolId, text, active: true,
+            createdAt: serverTimestamp()
+        });
+        document.getElementById('new-announcement').value = '';
+        window.showToast?.('✅ تم إضافة الإعلان');
+        loadSchoolAnnouncements();
+    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
+};
+
+// تحميل الإعلانات
+async function loadSchoolAnnouncements() {
+    const list = document.getElementById('announcements-list');
+    if(!list) return;
+    try {
+        const schoolId = getActiveSchoolId();
+        const snap = await getDocs(query(
+            collection(db,'school_announcements'),
+            where('schoolId','==',schoolId)
+        ));
+        if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa">لا توجد إعلانات</div>'; return; }
+        list.innerHTML = snap.docs.map(d => {
+            const a = d.data();
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;background:#fff">
+                <span style="font-weight:700;color:#111">${a.text}</span>
+                <button onclick="window.deleteAnnouncement('${d.id}')" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">حذف</button>
+            </div>`;
+        }).join('');
+    } catch(e) { list.innerHTML = '❌ ' + e.message; }
+}
+
+// حذف إعلان
+window.deleteAnnouncement = async function(id) {
+    if(!confirm('حذف هذا الإعلان؟')) return;
+    try {
+        await deleteDoc(doc(db,'school_announcements',id));
+        window.showToast?.('✅ تم الحذف');
+        loadSchoolAnnouncements();
+    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
+};
 </script>
 
-<!-- Modal الإعلانات -->
-<div id="ann-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
-    <div style="background:#fff;border-radius:16px;padding:24px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">📢 إعلانات: <span id="ann-school-name"></span></h3>
-            <button onclick="document.getElementById('ann-modal').style.display='none'"
-                style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>
+</body></html>`);
+        w.document.close();
+        setTimeout(() => w.print(), 800);
+    }
+};
+
+window.exportAsManzoumaPDF = async function(containerId, filename) {
+    const container = document.getElementById(containerId);
+    if (!container) { showToast('⚠️ التبويب غير موجود', 'info'); return; }
+    const title = containerId === 'tab-absent' ? 'كشف الغياب اليومي' : 'تقرير كفاءة الأداء التعليمي';
+    await window.ManzoumaReport.exportPDF(container.innerHTML, filename, title);
+};
+
+window.switchTab = async function(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.bn-item').forEach(el => el.classList.remove('active'));
+
+    const target = document.getElementById(tabId);
+    if(target) target.classList.add('active');
+
+    const btn = document.querySelector(`.menu-item[data-tab="${tabId}"]`);
+    if(btn) btn.classList.add('active');
+
+    const bnBtn = document.querySelector(`.bn-item[data-bn-tab="${tabId}"]`);
+    if(bnBtn) bnBtn.classList.add('active');
+
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay')?.classList.remove('show');
+
+    if(loadedTabs.has(tabId)) return;
+
+    if(tabId === 'tab-myaccount') { loadMyAccount(); loadedTabs.add(tabId); return; }
+
+    const mapEntry = moduleMap[tabId];
+    if(!mapEntry) return;
+
+    try {
+        const mod = await import(mapEntry.file);
+        if(mod[mapEntry.init]) {
+            mod[mapEntry.init]();
+            loadedTabs.add(tabId);
+        }
+    } catch(err) {
+        document.getElementById(tabId).innerHTML =
+            `<div class="loading-box" style="color:#dc2626">❌ خطأ تحميل الموديل: ${err.message}</div>`;
+        console.error(`فشل تحميل ${tabId}:`, err);
+    }
+};
+
+async function loadMyAccount() {
+    try {
+        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
+        const snap = await getDocs(q);
+        if(snap.empty) return;
+        const d = snap.docs[0].data();
+        document.getElementById('acc-name').value = d.name || '';
+        document.getElementById('acc-email').value = d.email || '';
+        document.getElementById('acc-dept').value = d.department || '';
+        document.getElementById('acc-phone').value = d.phone || '';
+    } catch(e) {}
+}
+
+window.saveMyAccount = async function() {
+    const newName = document.getElementById('acc-name').value.trim();
+    const newEmail = document.getElementById('acc-email').value.trim();
+    const newDept = document.getElementById('acc-dept').value.trim();
+    const newPhone = document.getElementById('acc-phone').value.trim();
+    const newPass = document.getElementById('acc-pass').value.trim();
+    if(!newName) { window.showToast('الاسم مطلوب', 'error'); return; }
+
+    try {
+        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
+        const snap = await getDocs(q);
+        if(snap.empty) { window.showToast('⚠️ تعذر إيجاد حسابك بقاعدة البيانات', 'error'); return; }
+
+        const updateData = { name: newName, email: newEmail, department: newDept, phone: newPhone };
+        // ⚠️ كلمة المرور تُحفظ مشفرة عبر Cloud Function فقط
+        // if(newPass) updateData.plainPass = newPass; // مُعطَّل لأسباب أمنية
+
+        await updateDoc(snap.docs[0].ref, updateData);
+
+        currentUser.name = newName;
+        localStorage.setItem('hs_user', JSON.stringify(currentUser));
+        document.getElementById('lbl-admin-name').textContent = `مرحباً، ${newName}`;
+        document.getElementById('acc-pass').value = '';
+
+        window.showToast('✅ تم حفظ بياناتك بنجاح.');
+    } catch(e) { window.showToast('❌ خطأ في الحفظ: ' + e.message, 'error'); }
+};
+
+window.switchTab('tab-index').finally(() => {
+    document.getElementById('splash').classList.add('hide');
+    listenToEmergencyAlertsLive();
+    // ══ تحميل المساعد الذكي ══
+    import('./js/modules/ai_assistant.js')
+        .then(m => { if(m.initAiAssistant) m.initAiAssistant(); })
+        .catch(e => console.warn('AI Assistant:', e));
+});
+
+// ══ Service Worker auto-update check ══
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        reg.addEventListener('updatefound', function() {
+            var newWorker = reg.installing;
+            if(newWorker) {
+                newWorker.addEventListener('statechange', function() {
+                    if(newWorker.state === 'activated') {
+                        if(window.showToast) window.showToast('🔄 تم تحديث المنظومة — يُعاد التحميل...', 'info');
+                        setTimeout(function() { location.reload(); }, 2000);
+                    }
+                });
+            }
+        });
+        // تحقق من التحديثات كل 5 دقائق
+        setInterval(function() { reg.update(); }, 5 * 60 * 1000);
+    }).catch(function(e) {});
+}
+
+// ══ Dark Mode — iOS Safari Compatible ══
+window.toggleDarkMode = function() {
+    const body   = document.body;
+    const isDark = body.classList.toggle('dark-mode');
+    try { localStorage.setItem('hs_dark_mode', isDark ? '1' : '0'); } catch(e) {}
+    const icon  = document.getElementById('dark-icon');
+    const label = document.getElementById('dark-label');
+    if(icon)  icon.textContent  = isDark ? '☀️' : '🌙';
+    if(label) label.textContent = isDark ? 'نهاري' : 'ليلي';
+};
+
+// استعادة عند التحميل
+(function() {
+    var isDark = false;
+    try { isDark = localStorage.getItem('hs_dark_mode') === '1'; } catch(e) {}
+    if(isDark) {
+        document.body.classList.add('dark-mode');
+        document.addEventListener('DOMContentLoaded', function() {
+            var i = document.getElementById('dark-icon');
+            var l = document.getElementById('dark-label');
+            if(i) i.textContent = '☀️';
+            if(l) l.textContent = 'نهاري';
+        });
+    }
+})();
+</script>
+
+<div class="quick-guide" id="quick-guide" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="guide-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+            <h3 style="font-size:17px;font-weight:900;color:var(--navy)">📖 دليل الاستخدام السريع</h3>
+            <button onclick="document.getElementById('quick-guide').classList.remove('show')"
+                style="background:none;border:none;font-size:22px;cursor:pointer;color:#6b7280">✕</button>
         </div>
 
-        <!-- إضافة إعلان -->
-        <div style="background:#f8f9fc;border-radius:10px;padding:16px;margin-bottom:16px">
-            <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:6px">إضافة إعلان جديد</label>
-            <textarea id="ann-new-text" rows="3" placeholder="نص الإعلان..."
-                style="width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;outline:none;resize:none;margin-bottom:10px"></textarea>
-            <button onclick="addAnnouncement()"
-                style="background:#0b2545;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer;width:100%">
-                <i class="bi bi-plus-circle-fill"></i> إضافة الإعلان
-            </button>
+        <div class="guide-step">
+            <div class="guide-num">1</div>
+            <div class="guide-text"><b>تسجيل الغياب يومياً</b><br>من القائمة ← الحضور والسلوك ← تسجيل الغياب ← اختر الفصل والطلاب الغائبين ← اضغط حفظ</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">2</div>
+            <div class="guide-text"><b>إرسال واتساب للغائبين</b><br>من الرئيسية ← اختر الفصل من قائمة واتساب ← اضغط "إرسال للغائبين"</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">3</div>
+            <div class="guide-text"><b>إصدار تقرير شهري</b><br>من القائمة ← التقارير الشهرية ← اختر الشهر ← اضغط "تصدير PDF"</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">4</div>
+            <div class="guide-text"><b>إضافة مستخدم جديد</b><br>من القائمة ← إدارة المستخدمين ← أضف مستخدم ← أدخل البيانات ← حفظ</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">5</div>
+            <div class="guide-text"><b>إصدار إنذار غياب</b><br>من القائمة ← الإنذارات الرسمية ← اختر الفصل والطالب ← حدد المستوى ← احفظ وطبع</div>
+        </div>
+        <div class="guide-step">
+            <div class="guide-num">6</div>
+            <div class="guide-text"><b>المساعد الذكي 🤖</b><br>اضغط الزر الأزرق في أسفل يسار الشاشة واسأل أي سؤال بالعربي</div>
         </div>
 
-        <!-- قائمة الإعلانات -->
-        <div id="ann-list-super">⏳ جاري التحميل...</div>
+        <div style="background:var(--ice);border-radius:10px;padding:14px;margin-top:8px;font-size:13px;font-weight:700;color:var(--navy)">
+            💡 نصيحة: لو ضغطت على شيء خطأ — اضغط زر الرجوع في المتصفح أو اضغط على "الرئيسية" في القائمة
+        </div>
     </div>
 </div>
 
-<script type="module">
-import { db } from './js/firebase-config.js';
-import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, serverTimestamp }
-  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-let currentAnnSchoolId = '';
+<script>
+// ══════════════════════════════════════════════════════════════
+// دوال عامة — تشتغل مع onclick في HTML
+// لازم تكون خارج type="module" عشان Safari والآيفون
+// ══════════════════════════════════════════════════════════════
 
-window.openAnnouncementsModal = async function(schoolId, schoolName) {
-    currentAnnSchoolId = schoolId;
-    document.getElementById('ann-school-name').textContent = schoolName;
-    document.getElementById('ann-modal').style.display = 'flex';
-    document.getElementById('ann-new-text').value = '';
-    await loadAnnouncementsSuper(schoolId);
+// ══ Dark Mode ══
+window.toggleDarkMode = function() {
+    var isDark = document.body.classList.toggle('dark-mode');
+    try { localStorage.setItem('hs_dark_mode', isDark ? '1' : '0'); } catch(e) {}
+    var icon  = document.getElementById('dark-icon');
+    var label = document.getElementById('dark-label');
+    if(icon)  icon.textContent  = isDark ? '☀️' : '🌙';
+    if(label) label.textContent = isDark ? 'نهاري' : 'ليلي';
 };
 
-async function loadAnnouncementsSuper(schoolId) {
-    const el = document.getElementById('ann-list-super');
-    try {
-        const snap = await getDocs(query(
-            collection(db,'school_announcements'),
-            where('schoolId','==',schoolId),
-            orderBy('createdAt','desc')
-        ));
-        if(snap.empty) {
-            el.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-weight:700">لا توجد إعلانات بعد</div>';
-            return;
-        }
-        el.innerHTML = snap.docs.map(d => {
-            const a = d.data();
-            const date = a.createdAt?.toDate?.()?.toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'}) || '';
-            return `<div style="background:${a.active?'#fff':'#f8f8f8'};border:1px solid #e5e7eb;border-right:4px solid ${a.active?'#0b2545':'#ccc'};border-radius:10px;padding:12px 16px;margin-bottom:10px">
-                <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:6px">${a.text||''}</div>
-                <div style="display:flex;justify-content:space-between;align-items:center">
-                    <span style="font-size:11px;color:#aaa">${date}</span>
-                    <div style="display:flex;gap:6px">
-                        <button onclick="toggleAnnouncement('${d.id}',${!a.active})"
-                            style="background:${a.active?'#f0fdf4':'#fef2f2'};color:${a.active?'#16a34a':'#dc2626'};border:1px solid ${a.active?'#bbf7d0':'#fecaca'};border-radius:6px;padding:4px 10px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">
-                            ${a.active?'✅ نشط':'⏸ موقوف'}
-                        </button>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
-    } catch(e) { el.innerHTML = '❌ خطأ في التحميل'; }
+// ══ وضع المدير البسيط ══
+window.toggleSimpleMode = function() {
+    var isSimple = document.body.classList.toggle('simple-mode');
+    try { localStorage.setItem('hs_simple_mode', isSimple ? '1' : '0'); } catch(e) {}
+    var btn = document.getElementById('btn-simple');
+    if(btn) btn.classList.toggle('active', isSimple);
+};
+
+// ══ تكبير الخط ══
+var _fontSizes = ['', 'font-lg', 'font-xl'];
+var _fontIdx   = 0;
+window.cycleFontSize = function() {
+    document.body.classList.remove('font-lg', 'font-xl');
+    _fontIdx = (_fontIdx + 1) % _fontSizes.length;
+    if(_fontSizes[_fontIdx]) document.body.classList.add(_fontSizes[_fontIdx]);
+    try { localStorage.setItem('hs_font_size', _fontIdx); } catch(e) {}
+    var btn = document.getElementById('btn-font');
+    if(btn) btn.classList.toggle('active', _fontIdx > 0);
+};
+
+// ══ الدليل السريع ══
+window.showQuickGuide = function() {
+    var guide = document.getElementById('quick-guide');
+    if(guide) guide.classList.add('show');
+};
+
+// ══ طي/فتح أقسام القائمة ══
+function toggleSec(titleEl) {
+    var body = titleEl.nextElementSibling;
+    if(!body) return;
+    var isOpen = !body.classList.contains('closed');
+    if(isOpen) {
+        body.style.maxHeight = body.scrollHeight + 'px';
+        setTimeout(function() {
+            body.style.maxHeight = '0';
+            body.classList.add('closed');
+            titleEl.classList.add('closed');
+        }, 10);
+    } else {
+        body.classList.remove('closed');
+        titleEl.classList.remove('closed');
+        body.style.maxHeight = body.scrollHeight + 'px';
+        setTimeout(function() {
+            if(!body.classList.contains('closed')) body.style.maxHeight = 'none';
+        }, 300);
+    }
 }
 
-window.addAnnouncement = async function() {
-    const text = document.getElementById('ann-new-text').value.trim();
-    if(!text) { alert('أدخل نص الإعلان'); return; }
+// ══ استعادة الإعدادات عند التحميل ══
+(function() {
     try {
-        await addDoc(collection(db,'school_announcements'), {
-            schoolId: currentAnnSchoolId,
-            text, active: true,
-            createdAt: serverTimestamp()
+        // Dark Mode
+        if(localStorage.getItem('hs_dark_mode') === '1') {
+            document.body.classList.add('dark-mode');
+            var i = document.getElementById('dark-icon');
+            var l = document.getElementById('dark-label');
+            if(i) i.textContent = '☀️';
+            if(l) l.textContent = 'نهاري';
+        }
+        // Simple Mode
+        if(localStorage.getItem('hs_simple_mode') === '1') {
+            document.body.classList.add('simple-mode');
+            var btn = document.getElementById('btn-simple');
+            if(btn) btn.classList.add('active');
+        }
+        // Font Size
+        var fi = parseInt(localStorage.getItem('hs_font_size') || '0');
+        if(fi > 0 && _fontSizes[fi]) {
+            document.body.classList.add(_fontSizes[fi]);
+            _fontIdx = fi;
+            var fb = document.getElementById('btn-font');
+            if(fb) fb.classList.add('active');
+        }
+    } catch(e) {}
+
+    // فتح أول قسمين وأغلق الباقي
+    document.addEventListener('DOMContentLoaded', function() {
+        var bodies = document.querySelectorAll('.menu-sec-body');
+        for(var i = 0; i < bodies.length; i++) {
+            if(i >= 2) {
+                bodies[i].style.maxHeight = '0';
+                bodies[i].classList.add('closed');
+                if(bodies[i].previousElementSibling) bodies[i].previousElementSibling.classList.add('closed');
+            } else {
+                bodies[i].style.maxHeight = 'none';
+            }
+        }
+    });
+})();
+</script>
+
+<script>
+// ══ Error Toast — يظهر للمستخدم بدل console.error ══
+window.addEventListener('unhandledrejection', function(e) {
+    var msg = e.reason?.message || e.reason || 'حدث خطأ غير متوقع';
+    if(msg.includes('Failed to fetch') || msg.includes('network'))
+        msg = '⚠️ تحقق من اتصال الإنترنت';
+    else if(msg.includes('permission') || msg.includes('PERMISSION'))
+        msg = '⚠️ لا توجد صلاحية لهذا الإجراء';
+    else if(msg.includes('not-found'))
+        msg = '⚠️ البيانات غير موجودة';
+    else
+        msg = '⚠️ ' + msg.substring(0, 80);
+    if(window.showToast) window.showToast(msg, 'error');
+});
+</script>
+
+<script type="module">
+import { db, getActiveSchoolId } from './js/firebase-config.js';
+import { doc, getDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where, orderBy, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+// تحميل الإعدادات الحالية
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const schoolId = getActiveSchoolId();
+        if(!schoolId) return;
+        const snap = await getDoc(doc(db,'schools',schoolId));
+        if(snap.exists()) {
+            const s = snap.data();
+            const pc = document.getElementById('set-primary-color');
+            const ac = document.getElementById('set-accent-color');
+            const lu = document.getElementById('set-logo-url');
+            if(pc && s.primaryColor) pc.value = s.primaryColor;
+            if(ac && s.accentColor)  ac.value = s.accentColor;
+            if(lu && s.logoUrl)      lu.value = s.logoUrl;
+        }
+        loadSchoolAnnouncements();
+    } catch(e) {}
+});
+
+// حفظ اللون والشعار
+window.saveSchoolBranding = async function() {
+    try {
+        const schoolId = getActiveSchoolId();
+        await updateDoc(doc(db,'schools',schoolId), {
+            primaryColor: document.getElementById('set-primary-color')?.value || '#0b2545',
+            accentColor:  document.getElementById('set-accent-color')?.value  || '#d4920a',
+            logoUrl:      document.getElementById('set-logo-url')?.value?.trim() || ''
         });
-        document.getElementById('ann-new-text').value = '';
-        await loadAnnouncementsSuper(currentAnnSchoolId);
-        alert('✅ تم إضافة الإعلان');
-    } catch(e) { alert('❌ ' + e.message); }
+        window.showToast?.('✅ تم حفظ التغييرات — ستظهر في صفحة الدخول');
+    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
 };
 
-window.toggleAnnouncement = async function(docId, newStatus) {
+// إضافة إعلان
+window.addSchoolAnnouncement = async function() {
+    const text = document.getElementById('new-announcement')?.value?.trim();
+    if(!text) { window.showToast?.('اكتب الإعلان أولاً','warning'); return; }
     try {
-        await updateDoc(doc(db,'school_announcements',docId), { active: newStatus });
-        await loadAnnouncementsSuper(currentAnnSchoolId);
-    } catch(e) { alert('❌ ' + e.message); }
+        const schoolId = getActiveSchoolId();
+        await addDoc(collection(db,'school_announcements'), {
+            schoolId, text, active: true,
+            createdAt: serverTimestamp()
+        });
+        document.getElementById('new-announcement').value = '';
+        window.showToast?.('✅ تم إضافة الإعلان');
+        loadSchoolAnnouncements();
+    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
+};
+
+// تحميل الإعلانات
+async function loadSchoolAnnouncements() {
+    const list = document.getElementById('announcements-list');
+    if(!list) return;
+    try {
+        const schoolId = getActiveSchoolId();
+        const snap = await getDocs(query(
+            collection(db,'school_announcements'),
+            where('schoolId','==',schoolId)
+        ));
+        if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:16px;color:#aaa">لا توجد إعلانات</div>'; return; }
+        list.innerHTML = snap.docs.map(d => {
+            const a = d.data();
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;background:#fff">
+                <span style="font-weight:700;color:#111">${a.text}</span>
+                <button onclick="window.deleteAnnouncement('${d.id}')" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">حذف</button>
+            </div>`;
+        }).join('');
+    } catch(e) { list.innerHTML = '❌ ' + e.message; }
+}
+
+// حذف إعلان
+window.deleteAnnouncement = async function(id) {
+    if(!confirm('حذف هذا الإعلان؟')) return;
+    try {
+        await deleteDoc(doc(db,'school_announcements',id));
+        window.showToast?.('✅ تم الحذف');
+        loadSchoolAnnouncements();
+    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
 };
 </script>
 
