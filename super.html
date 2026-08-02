@@ -969,7 +969,7 @@ if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').cat
 
 <script type="module">
 import { db } from './js/firebase-config.js';
-import { collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc, serverTimestamp }
+import { collection, addDoc, getDocs, getDoc, query, where, orderBy, updateDoc, deleteDoc, doc, serverTimestamp }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentAnnSchoolId = '';
