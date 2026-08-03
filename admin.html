@@ -1675,14 +1675,23 @@ window.saveMyAccount = async function() {
     } catch(e) { window.showToast('❌ خطأ في الحفظ: ' + e.message, 'error'); }
 };
 
-window.switchTab('tab-index').finally(() => {
-    document.getElementById('splash').classList.add('hide');
+// إخفاء splash بعد 3 ثواني كحد أقصى
+setTimeout(function() {
+    document.getElementById('splash')?.classList.add('hide');
+}, 3000);
+
+window.switchTab('tab-index').then(function() {
+    document.getElementById('splash')?.classList.add('hide');
     listenToEmergencyAlertsLive();
-    // ══ تحميل المساعد الذكي ══
-    import('./js/modules/ai_assistant.js')
-        .then(m => { if(m.initAiAssistant) m.initAiAssistant(); })
-        .catch(e => console.warn('AI Assistant:', e));
+}).catch(function(e) {
+    console.warn('switchTab error:', e);
+    document.getElementById('splash')?.classList.add('hide');
 });
+
+// تحميل المساعد الذكي
+import('./js/modules/ai_assistant.js')
+    .then(m => { if(m.initAiAssistant) m.initAiAssistant(); })
+    .catch(e => console.warn('AI Assistant:', e));
 
 // ══ Service Worker auto-update check ══
 if('serviceWorker' in navigator) {
