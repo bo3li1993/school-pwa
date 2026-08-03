@@ -1069,10 +1069,15 @@ window.openEditSchoolModal = async function(schoolId) {
                 </div>
             </div>
 
-            <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">رابط الشعار (URL)</label>
-            <input id="edit-logo-url" type="text" value="${s.logoUrl||''}" placeholder="https://example.com/logo.png" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
-
-            ${s.logoUrl ? '<div style="text-align:center;margin-bottom:12px"><img src="'+s.logoUrl+'" style="max-height:60px;border-radius:8px" onerror="this.style.display=\'none\'"></div>' : ''}
+            <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">شعار المدرسة</label>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+                <label style="flex:1;padding:10px;background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:8px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:#64748b">
+                    📷 تغيير الشعار
+                    <input type="file" accept="image/*" onchange="window.previewLogo(this,'edit-logo-preview')" style="display:none">
+                </label>
+                <img id="edit-logo-preview" src="${s.logoUrl||''}" style="width:55px;height:55px;border-radius:8px;object-fit:contain;${s.logoUrl?'':'display:none'}">
+            </div>
+            <input type="hidden" id="edit-logo-url" value="${s.logoUrl||''}">
 
             <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ملاحظات</label>
             <input id="edit-notes" type="text" value="${s.notes||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:16px">
@@ -1130,6 +1135,28 @@ if('serviceWorker' in navigator) {
         });
     }, 3 * 60 * 1000);
 }
+
+
+// ===== رفع شعار كصورة =====
+window.previewLogo = function(input, previewId) {
+    const file = input.files[0];
+    if(!file) return;
+    if(file.size > 500000) { alert('⚠️ حجم الصورة كبير — اختر صورة أقل من 500KB'); return; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result;
+        const preview = document.getElementById(previewId);
+        if(preview) { preview.src = base64; preview.style.display = 'block'; }
+        // حفظ الـ base64 في hidden input
+        if(previewId === 'f-logo-preview') {
+            document.getElementById('f-logo-url').value = base64;
+        } else if(previewId === 'edit-logo-preview') {
+            document.getElementById('edit-logo-url').value = base64;
+        }
+    };
+    reader.readAsDataURL(file);
+};
+
 </script>
 
 </body>
