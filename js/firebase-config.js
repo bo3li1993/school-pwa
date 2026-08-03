@@ -20,7 +20,7 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 // ══ Offline Persistence — الصفحة تشتغل بدون نت بعد أول زيارة ══
-// DEPRECATED: export { onAuthStateChanged };
+export { onAuthStateChanged };
 export const functions = getFunctions(app, 'me-central1');
 
 // 🔔 تفعيل وتصدير نظام المراسلات الفورية والإشعارات (FCM) للمتصفحات المتوافقة والهواتف
