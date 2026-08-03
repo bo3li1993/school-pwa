@@ -476,8 +476,15 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
           </div>
         </div>
         <div>
-          <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">رابط الشعار (URL)</label>
-          <input type="text" id="set-logo-url" placeholder="https://example.com/logo.png" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;outline:none">
+          <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">شعار المدرسة</label>
+          <div style="display:flex;gap:10px;align-items:center">
+            <label style="flex:1;padding:10px;background:var(--off);border:1.5px dashed var(--line);border-radius:8px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:var(--mid)">
+              📷 اختر صورة الشعار
+              <input type="file" accept="image/*" onchange="window.previewAdminLogo(this)" style="display:none">
+            </label>
+            <img id="set-logo-preview" style="width:50px;height:50px;border-radius:8px;object-fit:contain;display:none">
+          </div>
+          <input type="hidden" id="set-logo-url">
         </div>
         <button onclick="window.saveSchoolBranding()" style="width:100%;margin-top:12px;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer">
           <i class="bi bi-check-circle-fill"></i> حفظ التغييرات
@@ -1349,6 +1356,20 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 // لازم تكون خارج type="module" عشان Safari والآيفون
 // ══════════════════════════════════════════════════════════════
 
+
+window.previewAdminLogo = function(input) {
+    var file = input.files[0];
+    if(!file) return;
+    if(file.size > 500000) { window.showToast('⚠️ الصورة كبيرة — اختر أقل من 500KB','warning'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('set-logo-url').value = e.target.result;
+        var p = document.getElementById('set-logo-preview');
+        if(p) { p.src = e.target.result; p.style.display = 'block'; }
+    };
+    reader.readAsDataURL(file);
+};
+
 // ══ Dark Mode ══
 window.toggleDarkMode = function() {
     var isDark = document.body.classList.toggle('dark-mode');
@@ -1771,6 +1792,20 @@ window.toggleDarkMode = function() {
 // دوال عامة — تشتغل مع onclick في HTML
 // لازم تكون خارج type="module" عشان Safari والآيفون
 // ══════════════════════════════════════════════════════════════
+
+
+window.previewAdminLogo = function(input) {
+    var file = input.files[0];
+    if(!file) return;
+    if(file.size > 500000) { window.showToast('⚠️ الصورة كبيرة — اختر أقل من 500KB','warning'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('set-logo-url').value = e.target.result;
+        var p = document.getElementById('set-logo-preview');
+        if(p) { p.src = e.target.result; p.style.display = 'block'; }
+    };
+    reader.readAsDataURL(file);
+};
 
 // ══ Dark Mode ══
 window.toggleDarkMode = function() {
