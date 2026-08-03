@@ -1134,54 +1134,15 @@ window.saveEditSchool = async function(schoolId) {
 </script>
 
 
+
 <script>
+// ══ Service Worker — تسجيل بسيط بدون reload ══
 if('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(regs) {
-        var needsReload = false;
-        regs.forEach(function(reg) {
-            if(reg.active && reg.active.scriptURL.indexOf('sw.js') > -1) {
-                reg.unregister().then(function() { needsReload = true; });
-            }
-        });
-        setTimeout(function() {
-            navigator.serviceWorker.register('./sw.js?v=4').then(function(reg) {
-                reg.addEventListener('updatefound', function() {
-                    var nw = reg.installing;
-                    if(nw) nw.addEventListener('statechange', function() {
-                        if(nw.state === 'activated' && needsReload) location.reload();
-                    });
-                });
-            });
-        }, 500);
-    });
-    setInterval(function() {
-        navigator.serviceWorker.getRegistration().then(function(reg) {
-            if(reg) reg.update();
-        });
-    }, 3 * 60 * 1000);
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        // تحقق من التحديثات كل 5 دقائق
+        setInterval(function() { reg.update(); }, 5 * 60 * 1000);
+    }).catch(function() {});
 }
-
-
-// ===== رفع شعار كصورة =====
-window.previewLogo = function(input, previewId) {
-    const file = input.files[0];
-    if(!file) return;
-    if(file.size > 500000) { alert('⚠️ حجم الصورة كبير — اختر صورة أقل من 500KB'); return; }
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const base64 = e.target.result;
-        const preview = document.getElementById(previewId);
-        if(preview) { preview.src = base64; preview.style.display = 'block'; }
-        // حفظ الـ base64 في hidden input
-        if(previewId === 'f-logo-preview') {
-            document.getElementById('f-logo-url').value = base64;
-        } else if(previewId === 'edit-logo-preview') {
-            document.getElementById('edit-logo-url').value = base64;
-        }
-    };
-    reader.readAsDataURL(file);
-};
-
 </script>
 
 </body>
