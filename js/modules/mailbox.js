@@ -1,129 +1,392 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, getDocs, addDoc, deleteDoc, doc, query, where, orderBy, onSnapshot, serverTimestamp, updateDoc }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// Toast helper (يعتمد على admin.html الذي يعرّفها عالمياً)
-const showToast = window.showToast || ((msg, type='success') => {
-    const t=document.createElement('div');
-    t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:10px;font-family:Cairo;font-size:13px;font-weight:700;z-index:9999;color:#fff;background:'+(type==='error'?'#dc2626':type==='info'?'#1a78c2':'#059669')+';box-shadow:0 4px 12px rgba(0,0,0,.2)';
-    t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500);
-});
+// ══════════════════════════════════════════════════════════════
+// نظام المراسلات — واجهة مثل واتساب
+// المدير ↔ أي شخص | المعلم ↔ ولي أمر طلابه + المدير
+// ولي الأمر ↔ المدير + رئيس القسم + الأخصائي
+// ══════════════════════════════════════════════════════════════
 
-import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+let _msgUnsub = null;
+let _currentChatId = null;
+
+function cleanupMsgListeners() {
+    if(_msgUnsub) { try { _msgUnsub(); } catch(e) {} _msgUnsub = null; }
+}
+
+// من يقدر يراسل من
+function getAllowedContacts(myRole) {
+    // المدير والمساعد والمشرف — يراسلون الكل
+    if(['admin','assistant_manager'].includes(myRole)) return 'all';
+    if(myRole === 'wing_supervisor') return ['admin','assistant_manager','social_worker'];
+    // رئيس القسم والأخصائي — يراسلون المدير والمعلمين وأولياء الأمور
+    if(['department_head','social_worker'].includes(myRole)) return ['admin','assistant_manager','teacher','parent'];
+    // المعلم — يراسل المدير وأولياء أمور طلابه
+    if(myRole === 'teacher') return ['admin','assistant_manager'];
+    // ولي الأمر — يراسل المدير ورئيس القسم والأخصائي
+    if(myRole === 'parent') return ['admin','assistant_manager','department_head','social_worker'];
+    return [];
+}
 
 export async function initMailboxModule() {
     const container = document.getElementById('tab-mailbox');
-    if (!container) return;
+    if(!container) return;
 
-    try {
-        container.innerHTML = `
-        <div class="card" style="border-top: 5px solid var(--accent-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
-            <h2><i class="bi bi-megaphone-fill" style="color:var(--accent-color);"></i> نشر إعلان وتعميم رسمي لأولياء الأمور</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">التعاميم المنشورة هني تظهر فوراً في لوحة تحكم ولي الأمر عند فتح البوابة.</p>
-            <form id="announcement-form" onsubmit="window.handlePublishAnnouncementLive(event)">
-                <label style="font-weight:700; font-size:12px; color:#444;">نص التعميم والخبر المدرسي المعتمد</label>
-                <textarea id="ann-text" placeholder="اكتب نص التعميم الإداري هنا..." rows="3" required style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:10px;"></textarea>
-                <button type="submit" style="background:var(--accent-color); width:100%; font-weight:bold; border:none; padding:12px; border-radius:8px; cursor:pointer; color:#fff;"><i class="bi bi-send-check-fill"></i> بث وتعميم الخبر سحابياً</button>
-            </form>
+    container.innerHTML = `
+    <style>
+        .msg-container { max-width:600px; margin:0 auto; height:calc(100vh - 160px); display:flex; flex-direction:column; }
+        .msg-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--line); }
+        .msg-header h2 { font-size:16px; font-weight:900; color:var(--navy); margin:0; }
+        .msg-list { flex:1; overflow-y:auto; }
+        .msg-conv { display:flex; align-items:center; padding:14px 16px; border-bottom:1px solid #f0f2f5; cursor:pointer; gap:12px; transition:background .15s; }
+        .msg-conv:hover, .msg-conv:active { background:#f0f4f8; }
+        .msg-avatar { width:46px; height:46px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; flex-shrink:0; }
+        .msg-info { flex:1; min-width:0; }
+        .msg-name { font-size:14px; font-weight:800; color:#111; }
+        .msg-role-tag { font-size:10px; font-weight:700; color:var(--mid); }
+        .msg-last { font-size:12px; color:#666; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+        .msg-meta { text-align:left; flex-shrink:0; }
+        .msg-time { font-size:10px; color:#aaa; font-weight:700; }
+        .msg-badge { display:inline-block; background:var(--sky); color:#fff; font-size:10px; font-weight:900; min-width:18px; height:18px; line-height:18px; text-align:center; border-radius:50%; margin-top:4px; }
+
+        /* المحادثة */
+        .chat-header { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--line); background:#fff; }
+        .chat-back { background:none; border:none; font-size:20px; cursor:pointer; padding:4px; }
+        .chat-name { font-size:15px; font-weight:800; color:var(--navy); }
+        .chat-messages { flex:1; overflow-y:auto; padding:12px 16px; display:flex; flex-direction:column; gap:6px; }
+        .chat-bubble { max-width:80%; padding:10px 14px; border-radius:16px; font-size:13px; line-height:1.5; word-wrap:break-word; }
+        .chat-bubble.sent { background:var(--navy); color:#fff; border-bottom-right-radius:4px; align-self:flex-start; }
+        .chat-bubble.received { background:#f0f2f5; color:#111; border-bottom-left-radius:4px; align-self:flex-end; }
+        .chat-bubble .bubble-time { font-size:9px; opacity:.6; margin-top:4px; display:block; }
+        .chat-input-bar { display:flex; gap:8px; padding:10px 16px; border-top:1px solid var(--line); background:#fff; }
+        .chat-input { flex:1; padding:10px 14px; border:1.5px solid var(--line); border-radius:22px; font-family:'Cairo',sans-serif; font-size:13px; outline:none; resize:none; }
+        .chat-send { background:var(--navy); color:#fff; border:none; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; }
+        .chat-send:active { opacity:.7; }
+        .chat-empty { text-align:center; padding:40px; color:#aaa; font-size:13px; font-weight:700; }
+
+        /* محادثة جديدة */
+        .new-chat-list { flex:1; overflow-y:auto; }
+        .new-chat-item { display:flex; align-items:center; padding:12px 16px; border-bottom:1px solid #f0f2f5; cursor:pointer; gap:12px; }
+        .new-chat-item:hover { background:#f0f4f8; }
+    </style>
+
+    <div class="msg-container" id="msg-container">
+        <!-- شاشة قائمة المحادثات -->
+        <div id="msg-screen-list">
+            <div class="msg-header">
+                <h2><i class="bi bi-chat-dots-fill" style="color:var(--sky)"></i> المراسلات</h2>
+                <button onclick="window.showNewChat()" style="background:var(--sky);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:800;cursor:pointer">
+                    <i class="bi bi-plus-lg"></i> محادثة جديدة
+                </button>
+            </div>
+            <div class="msg-list" id="msg-conversations-list">
+                <div class="chat-empty">⏳ جاري التحميل...</div>
+            </div>
         </div>
 
-        <div class="card" style="border-top: 5px solid var(--success-color); text-align: right; background:#fff; padding:20px; border-radius:12px; margin-top:20px;">
-            <h2><i class="bi bi-chat-left-heart-fill" style="color:var(--success-color);"></i> صندوق الرسائل والطلبات الواردة من أولياء الأمور</h2>
-            <div style="overflow-x:auto; margin-top:10px;">
-                <table style="width:100%; border-collapse:collapse; font-size:13px;">
-                    <thead>
-                        <tr style="background:#f4f6f9;">
-                            <th style="padding:10px;">الطالب المستعلم</th>
-                            <th style="text-align:center; width:80px; padding:10px;">الفصل</th>
-                            <th style="padding:10px;">نص رسالة ولي الأمر الواردة</th>
-                            <th style="text-align:center; width:120px; padding:10px;">الإجراء المتبع</th>
-                        </tr>
-                    </thead>
-                    <tbody id="parent-messages-tbody">
-                        <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">جاري مراجعة البريد الوارد السحابي...</td></tr>
-                    </tbody>
-                </table>
+        <!-- شاشة المحادثة -->
+        <div id="msg-screen-chat" style="display:none;flex-direction:column;height:100%">
+            <div class="chat-header">
+                <button class="chat-back" onclick="window.backToList()">→</button>
+                <div>
+                    <div class="chat-name" id="chat-partner-name"></div>
+                    <div class="msg-role-tag" id="chat-partner-role"></div>
+                </div>
             </div>
-        </div>`;
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-bar">
+                <button class="chat-send" onclick="window.sendMessage()"><i class="bi bi-send-fill"></i></button>
+                <input class="chat-input" id="chat-input" placeholder="اكتب رسالة..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();window.sendMessage()}">
+            </div>
+        </div>
 
-        loadParentMailboxLive();
+        <!-- شاشة محادثة جديدة -->
+        <div id="msg-screen-new" style="display:none;flex-direction:column;height:100%">
+            <div class="chat-header">
+                <button class="chat-back" onclick="window.backToList()">→</button>
+                <div class="chat-name">محادثة جديدة</div>
+            </div>
+            <div style="padding:12px 16px">
+                <input id="new-chat-search" placeholder="🔍 ابحث بالاسم..." oninput="window.filterNewChatList(this.value)" style="width:100%;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;outline:none">
+            </div>
+            <div class="new-chat-list" id="new-chat-list">
+                <div class="chat-empty">⏳ جاري التحميل...</div>
+            </div>
+        </div>
+    </div>`;
+
+    loadConversations();
+}
+
+// ══ تحميل المحادثات ══
+async function loadConversations() {
+    const schoolId = getActiveSchoolId();
+    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    const myId = me.odId || me.odId || me.odId || (me.odId + '_' + me.role);
+    const myUserId = me.userId || '';
+    const list = document.getElementById('msg-conversations-list');
+    if(!list) return;
+
+    try {
+        // جلب كل المحادثات اللي أنا طرف فيها
+        const snap = await getDocs(query(
+            collection(db, 'conversations'),
+            where('schoolId', '==', schoolId),
+            where('participants', 'array-contains', myUserId)
+        ));
+
+        if(snap.empty) {
+            list.innerHTML = '<div class="chat-empty">📭 لا توجد محادثات بعد<br><br>اضغط "محادثة جديدة" للبدء</div>';
+            return;
+        }
+
+        // ترتيب بآخر رسالة
+        const convs = snap.docs.map(d => ({id: d.id, ...d.data()}))
+            .sort((a,b) => (b.lastMessageAt?.toMillis?.() || 0) - (a.lastMessageAt?.toMillis?.() || 0));
+
+        const roleLabels = {
+            admin:'المدير', assistant_manager:'مساعد المدير', teacher:'معلم',
+            department_head:'رئيس قسم', social_worker:'أخصائي',
+            parent:'ولي أمر', nurse:'ممرض', guard:'حارس'
+        };
+
+        list.innerHTML = convs.map(c => {
+            const partner = c.participantNames?.find(n => n.userId !== myUserId) || {};
+            const unread = c.unreadBy?.[myUserId] || 0;
+            const time = c.lastMessageAt?.toDate?.();
+            const timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '';
+            const initial = (partner.name || '؟').charAt(0);
+
+            return '<div class="msg-conv" onclick="window.openChat(\''+c.id+'\',\''+( partner.name||'').replace(/'/g,"")+'\',\''+( partner.role||'')+'\')">'+
+                '<div class="msg-avatar">'+initial+'</div>'+
+                '<div class="msg-info">'+
+                    '<div class="msg-name">'+(partner.name||'مستخدم')+'</div>'+
+                    '<div class="msg-role-tag">'+(roleLabels[partner.role]||'')+'</div>'+
+                    '<div class="msg-last">'+(c.lastMessage||'')+'</div>'+
+                '</div>'+
+                '<div class="msg-meta">'+
+                    '<div class="msg-time">'+timeStr+'</div>'+
+                    (unread > 0 ? '<div class="msg-badge">'+unread+'</div>' : '')+
+                '</div>'+
+            '</div>';
+        }).join('');
+
     } catch(e) {
-        container.innerHTML = `<div class="card" style="color:red; text-align:center;">⚠️ خطأ في موديل المراسلات: ${e.message}</div>`;
+        list.innerHTML = '<div class="chat-empty">❌ '+e.message+'</div>';
     }
 }
 
-window.handlePublishAnnouncementLive = async function(e) {
-    e.preventDefault();
-    const text = document.getElementById('ann-text').value.trim();
-    const schoolId = getActiveSchoolId(); // 🏢 ربط مركزي
+// ══ فتح محادثة ══
+window.openChat = async function(convId, partnerName, partnerRole) {
+    _currentChatId = convId;
+    const roleLabels = {
+        admin:'المدير', assistant_manager:'مساعد المدير', teacher:'معلم',
+        department_head:'رئيس قسم', social_worker:'أخصائي',
+        parent:'ولي أمر', nurse:'ممرض', guard:'حارس'
+    };
 
+    document.getElementById('msg-screen-list').style.display = 'none';
+    document.getElementById('msg-screen-new').style.display = 'none';
+    const chatScreen = document.getElementById('msg-screen-chat');
+    chatScreen.style.display = 'flex';
+    document.getElementById('chat-partner-name').textContent = partnerName;
+    document.getElementById('chat-partner-role').textContent = roleLabels[partnerRole] || '';
+
+    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    const myUserId = me.userId || '';
+
+    // mark as read
     try {
-        await addDoc(collection(db, 'announcements'), {
-            schoolId: schoolId, // 🔑 الحماية الأمنية
-            message: text,
-            createdAt: serverTimestamp()
-        });
-        showToast('✓ تم نشر التعميم بنجاح');
-        document.getElementById('announcement-form').reset();
-    } catch(err) { showToast('خطأ في النشر: ' + err.message, 'error'); }
+        const convRef = doc(db, 'conversations', convId);
+        const updates = {};
+        updates['unreadBy.'+myUserId] = 0;
+        await updateDoc(convRef, updates);
+    } catch(e) {}
+
+    // listen to messages
+    cleanupMsgListeners();
+    const msgContainer = document.getElementById('chat-messages');
+
+    _msgUnsub = onSnapshot(
+        query(collection(db, 'conversations', convId, 'messages'), orderBy('createdAt', 'asc')),
+        snap => {
+            msgContainer.innerHTML = snap.docs.map(d => {
+                const m = d.data();
+                const isMine = m.senderId === myUserId;
+                const time = m.createdAt?.toDate?.();
+                const timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '';
+                return '<div class="chat-bubble '+(isMine?'sent':'received')+'">'+
+                    m.text+
+                    '<span class="bubble-time">'+timeStr+'</span>'+
+                '</div>';
+            }).join('');
+
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+        }
+    );
+
+    document.getElementById('chat-input').focus();
 };
 
-async function loadParentMailboxLive() {
-    const tbody = document.getElementById('parent-messages-tbody');
-    if (!tbody) return;
+// ══ إرسال رسالة ══
+window.sendMessage = async function() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if(!text || !_currentChatId) return;
+    input.value = '';
 
-    const schoolId = getActiveSchoolId();
-
-    try {
-        // فلترة الرسائل الخاصة بالمدرسة الحالية فقط
-        const q = query(collection(db, 'school_threads'), where('schoolId', '==', schoolId));
-        let snap = await getDocs(q);
-        
-        // التوافقية للداتا القديمة
-        if (snap.empty && schoolId === 'hosainan') {
-            snap = await getDocs(getActiveSchoolId() ? query(collection(db, 'school_threads'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'school_threads'));
-        }
-
-        let html = '';
-        snap.forEach(doc => {
-            const data = doc.data();
-            // تصفية أمنية إضافية للداتا القديمة
-            if(data.senderRole === 'parent' && (!data.schoolId || data.schoolId === schoolId)) {
-                const safeName = data.studentName ? data.studentName.replace(/'/g, "\\'") : '';
-                const safeClass = data.classId ? data.classId.replace(/'/g, "\\'") : '';
-
-                html += `
-                    <tr style="border-bottom:1px solid #eee;">
-                        <td style="padding:10px;"><b>👤 ${data.studentName || '-'}</b></td>
-                        <td style="padding:10px; text-align:center;"><span class="badge info">${data.classId || '-'}</span></td>
-                        <td style="padding:10px; color:#333; font-weight:700;">${data.message || '-'}</td>
-                        <td style="padding:10px; text-align:center;">
-                            <button onclick="window.sendAdminReplyLive('${safeName}', '${safeClass}')" style="padding:5px 12px; font-size:11px; background:var(--success-color); border:none; color:#fff; font-weight:bold; cursor:pointer; border-radius:4px;"><i class="bi bi-reply-fill"></i> رد رسمي حّي</button>
-                        </td>
-                    </tr>`;
-            }
-        });
-
-        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; color:#999; padding:15px; font-weight:bold;">💡 الصندوق الوارد خالي من رسائل أولياء الأمور حالياً.</td></tr>';
-    } catch(e) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666; padding:15px;">💡 بانتظار قيد أولى المراسلات لتفعيل الصندوق.</td></tr>'; }
-}
-
-window.sendAdminReplyLive = async function(studentName, classId) {
-    const replyText = prompt(`اكتب الرد الرسمي المعتمد الموجه لولي أمر الطالب:\n(${studentName}):`);
-    if(!replyText || !replyText.trim()) return;
-
-    const schoolId = getActiveSchoolId();
+    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    const myUserId = me.userId || '';
+    const myName = me.name || '';
 
     try {
-        await addDoc(collection(db, 'school_threads'), {
-            schoolId: schoolId, // 🔑 البصمة الأمنية للرد
-            studentName: studentName,
-            classId: classId,
-            message: replyText.trim(),
-            senderRole: 'admin',
+        // أضف الرسالة
+        await addDoc(collection(db, 'conversations', _currentChatId, 'messages'), {
+            text,
+            senderId: myUserId,
+            senderName: myName,
             createdAt: serverTimestamp()
         });
-        showToast('✅ تم إرسال الرد بنجاح');
-        loadParentMailboxLive(); 
-    } catch(err) {
-        showToast('❌ فشل الإرسال: ' + err.message, 'error');
+
+        // حدّث المحادثة
+        const convRef = doc(db, 'conversations', _currentChatId);
+        const convSnap = await getDocs(query(collection(db, 'conversations'), where('__name__', '==', _currentChatId)));
+
+        // جلب المشاركين لتحديث unread
+        if(!convSnap.empty) {
+            const conv = convSnap.docs[0].data();
+            const updates = {
+                lastMessage: text,
+                lastMessageAt: serverTimestamp()
+            };
+            // زيادة unread للطرف الآخر
+            (conv.participants || []).forEach(uid => {
+                if(uid !== myUserId) updates['unreadBy.'+uid] = (conv.unreadBy?.[uid] || 0) + 1;
+            });
+            await updateDoc(convRef, updates);
+        }
+    } catch(e) {
+        window.showToast?.('❌ ' + e.message, 'error');
+    }
+};
+
+// ══ رجوع للقائمة ══
+window.backToList = function() {
+    cleanupMsgListeners();
+    _currentChatId = null;
+    document.getElementById('msg-screen-chat').style.display = 'none';
+    document.getElementById('msg-screen-new').style.display = 'none';
+    document.getElementById('msg-screen-list').style.display = 'block';
+    loadConversations();
+};
+
+// ══ محادثة جديدة ══
+let _allContacts = [];
+
+window.showNewChat = async function() {
+    document.getElementById('msg-screen-list').style.display = 'none';
+    document.getElementById('msg-screen-chat').style.display = 'none';
+    const newScreen = document.getElementById('msg-screen-new');
+    newScreen.style.display = 'flex';
+
+    const schoolId = getActiveSchoolId();
+    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    const myRole = me.role || '';
+    const myUserId = me.userId || '';
+    const allowed = getAllowedContacts(myRole);
+
+    try {
+        const snap = await getDocs(query(collection(db, 'users'), where('schoolId', '==', schoolId)));
+        const roleLabels = {
+            admin:'المدير', assistant_manager:'مساعد المدير', teacher:'معلم',
+            department_head:'رئيس قسم', social_worker:'أخصائي',
+            nurse:'ممرض', guard:'حارس'
+        };
+
+        _allContacts = snap.docs
+            .map(d => ({id: d.id, ...d.data()}))
+            .filter(u => {
+                if(u.userId === myUserId) return false;
+                if(allowed === 'all') return true;
+                return allowed.includes(u.role);
+            })
+            .sort((a,b) => (a.name||'').localeCompare(b.name||'', 'ar'));
+
+        renderContactList(_allContacts, roleLabels);
+    } catch(e) {
+        document.getElementById('new-chat-list').innerHTML = '<div class="chat-empty">❌ '+e.message+'</div>';
+    }
+};
+
+function renderContactList(contacts, roleLabels) {
+    const list = document.getElementById('new-chat-list');
+    if(!contacts.length) {
+        list.innerHTML = '<div class="chat-empty">لا يوجد جهات اتصال متاحة</div>';
+        return;
+    }
+    roleLabels = roleLabels || {admin:'المدير',assistant_manager:'مساعد المدير',teacher:'معلم',department_head:'رئيس قسم',social_worker:'أخصائي',nurse:'ممرض',guard:'حارس'};
+
+    list.innerHTML = contacts.map(u => {
+        const initial = (u.name || '؟').charAt(0);
+        return '<div class="new-chat-item" onclick="window.startNewChat(\''+u.userId+'\',\''+( u.name||'').replace(/'/g,"")+'\',\''+u.role+'\')">'+
+            '<div class="msg-avatar" style="width:40px;height:40px;font-size:16px">'+initial+'</div>'+
+            '<div>'+
+                '<div class="msg-name">'+(u.name||'مستخدم')+'</div>'+
+                '<div class="msg-role-tag">'+(roleLabels[u.role]||u.role)+'</div>'+
+            '</div>'+
+        '</div>';
+    }).join('');
+}
+
+window.filterNewChatList = function(val) {
+    const roleLabels = {admin:'المدير',assistant_manager:'مساعد المدير',teacher:'معلم',department_head:'رئيس قسم',social_worker:'أخصائي',nurse:'ممرض',guard:'حارس'};
+    const filtered = val ? _allContacts.filter(u => (u.name||'').includes(val)) : _allContacts;
+    renderContactList(filtered, roleLabels);
+};
+
+// ══ بدء محادثة جديدة ══
+window.startNewChat = async function(partnerId, partnerName, partnerRole) {
+    const schoolId = getActiveSchoolId();
+    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    const myUserId = me.userId || '';
+    const myName = me.name || '';
+    const myRole = me.role || '';
+
+    try {
+        // تحقق: هل في محادثة موجودة مع هذا الشخص
+        const existing = await getDocs(query(
+            collection(db, 'conversations'),
+            where('schoolId', '==', schoolId),
+            where('participants', 'array-contains', myUserId)
+        ));
+
+        let convId = null;
+        existing.forEach(d => {
+            const data = d.data();
+            if(data.participants?.includes(partnerId)) convId = d.id;
+        });
+
+        if(!convId) {
+            // إنشاء محادثة جديدة
+            const convRef = await addDoc(collection(db, 'conversations'), {
+                schoolId,
+                participants: [myUserId, partnerId],
+                participantNames: [
+                    {userId: myUserId, name: myName, role: myRole},
+                    {userId: partnerId, name: partnerName, role: partnerRole}
+                ],
+                lastMessage: '',
+                lastMessageAt: serverTimestamp(),
+                unreadBy: {},
+                createdAt: serverTimestamp()
+            });
+            convId = convRef.id;
+        }
+
+        window.openChat(convId, partnerName, partnerRole);
+
+    } catch(e) {
+        window.showToast?.('❌ ' + e.message, 'error');
     }
 };
