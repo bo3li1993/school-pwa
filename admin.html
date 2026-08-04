@@ -942,12 +942,7 @@ if('serviceWorker' in navigator) {
 }
 </script>
 
-</body></html>`);
-        w.document.close();
-        setTimeout(() => w.print(), 800);
-    }
-};
-
+<script>
 window.exportAsManzoumaPDF = async function(containerId, filename) {
     const container = document.getElementById(containerId);
     if (!container) { showToast('⚠️ التبويب غير موجود', 'info'); return; }
@@ -1071,6 +1066,8 @@ if('serviceWorker' in navigator) {
 }
 
 // Dark Mode — في early script
+
+</script>
 
 <div class="quick-guide" id="quick-guide" onclick="if(event.target===this)this.classList.remove('show')">
     <div class="guide-card">
