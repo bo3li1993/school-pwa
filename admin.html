@@ -262,6 +262,10 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .skeleton-circle { width:50px; height:50px; border-radius:50%; }
 
 </style>
+<script>
+function toggleSec(t){var b=t.nextElementSibling;if(!b)return;if(!b.classList.contains('closed')){b.style.maxHeight=b.scrollHeight+'px';setTimeout(function(){b.style.maxHeight='0';b.classList.add('closed');t.classList.add('closed')},10)}else{b.classList.remove('closed');t.classList.remove('closed');b.style.maxHeight=b.scrollHeight+'px';setTimeout(function(){if(!b.classList.contains('closed'))b.style.maxHeight='none'},300)}}
+setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.add('hide')},3000);
+</script>
 </head>
 <body>
 <script>
@@ -1320,7 +1324,11 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .skeleton-line { height:14px; margin-bottom:10px; border-radius:6px; }
 .skeleton-circle { width:50px; height:50px; border-radius:50%; }
 
-</style></head><body>
+</style><script>
+function toggleSec(t){var b=t.nextElementSibling;if(!b)return;if(!b.classList.contains('closed')){b.style.maxHeight=b.scrollHeight+'px';setTimeout(function(){b.style.maxHeight='0';b.classList.add('closed');t.classList.add('closed')},10)}else{b.classList.remove('closed');t.classList.remove('closed');b.style.maxHeight=b.scrollHeight+'px';setTimeout(function(){if(!b.classList.contains('closed'))b.style.maxHeight='none'},300)}}
+setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.add('hide')},3000);
+</script>
+</head><body>
 <script>
 setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.add('hide');},3000);
 window.addEventListener('error',function(){var s=document.getElementById('splash');if(s)s.classList.add('hide');});
@@ -1388,126 +1396,7 @@ window.addEventListener('error', function() {
 </div>
 
 
-<script>
-// ══════════════════════════════════════════════════════════════
-// دوال عامة — تشتغل مع onclick في HTML
-// لازم تكون خارج type="module" عشان Safari والآيفون
-// ══════════════════════════════════════════════════════════════
 
-
-window.previewAdminLogo = function(input) {
-    var file = input.files[0];
-    if(!file) return;
-    if(file.size > 500000) { window.showToast('⚠️ الصورة كبيرة — اختر أقل من 500KB','warning'); return; }
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('set-logo-url').value = e.target.result;
-        var p = document.getElementById('set-logo-preview');
-        if(p) { p.src = e.target.result; p.style.display = 'block'; }
-    };
-    reader.readAsDataURL(file);
-};
-
-// ══ Dark Mode ══
-window.toggleDarkMode = function() {
-    var isDark = document.body.classList.toggle('dark-mode');
-    try { localStorage.setItem('hs_dark_mode', isDark ? '1' : '0'); } catch(e) {}
-    var icon  = document.getElementById('dark-icon');
-    var label = document.getElementById('dark-label');
-    if(icon)  icon.textContent  = isDark ? '☀️' : '🌙';
-    if(label) label.textContent = isDark ? 'نهاري' : 'ليلي';
-};
-
-// ══ وضع المدير البسيط ══
-window.toggleSimpleMode = function() {
-    var isSimple = document.body.classList.toggle('simple-mode');
-    try { localStorage.setItem('hs_simple_mode', isSimple ? '1' : '0'); } catch(e) {}
-    var btn = document.getElementById('btn-simple');
-    if(btn) btn.classList.toggle('active', isSimple);
-};
-
-// ══ تكبير الخط ══
-var _fontSizes = ['', 'font-lg', 'font-xl'];
-var _fontIdx   = 0;
-window.cycleFontSize = function() {
-    document.body.classList.remove('font-lg', 'font-xl');
-    _fontIdx = (_fontIdx + 1) % _fontSizes.length;
-    if(_fontSizes[_fontIdx]) document.body.classList.add(_fontSizes[_fontIdx]);
-    try { localStorage.setItem('hs_font_size', _fontIdx); } catch(e) {}
-    var btn = document.getElementById('btn-font');
-    if(btn) btn.classList.toggle('active', _fontIdx > 0);
-};
-
-// ══ الدليل السريع ══
-window.showQuickGuide = function() {
-    var guide = document.getElementById('quick-guide');
-    if(guide) guide.classList.add('show');
-};
-
-// ══ طي/فتح أقسام القائمة ══
-function toggleSec(titleEl) {
-    var body = titleEl.nextElementSibling;
-    if(!body) return;
-    var isOpen = !body.classList.contains('closed');
-    if(isOpen) {
-        body.style.maxHeight = body.scrollHeight + 'px';
-        setTimeout(function() {
-            body.style.maxHeight = '0';
-            body.classList.add('closed');
-            titleEl.classList.add('closed');
-        }, 10);
-    } else {
-        body.classList.remove('closed');
-        titleEl.classList.remove('closed');
-        body.style.maxHeight = body.scrollHeight + 'px';
-        setTimeout(function() {
-            if(!body.classList.contains('closed')) body.style.maxHeight = 'none';
-        }, 300);
-    }
-}
-
-// ══ استعادة الإعدادات عند التحميل ══
-(function() {
-    try {
-        // Dark Mode
-        if(localStorage.getItem('hs_dark_mode') === '1') {
-            document.body.classList.add('dark-mode');
-            var i = document.getElementById('dark-icon');
-            var l = document.getElementById('dark-label');
-            if(i) i.textContent = '☀️';
-            if(l) l.textContent = 'نهاري';
-        }
-        // Simple Mode
-        if(localStorage.getItem('hs_simple_mode') === '1') {
-            document.body.classList.add('simple-mode');
-            var btn = document.getElementById('btn-simple');
-            if(btn) btn.classList.add('active');
-        }
-        // Font Size
-        var fi = parseInt(localStorage.getItem('hs_font_size') || '0');
-        if(fi > 0 && _fontSizes[fi]) {
-            document.body.classList.add(_fontSizes[fi]);
-            _fontIdx = fi;
-            var fb = document.getElementById('btn-font');
-            if(fb) fb.classList.add('active');
-        }
-    } catch(e) {}
-
-    // فتح أول قسمين وأغلق الباقي
-    document.addEventListener('DOMContentLoaded', function() {
-        var bodies = document.querySelectorAll('.menu-sec-body');
-        for(var i = 0; i < bodies.length; i++) {
-            if(i >= 2) {
-                bodies[i].style.maxHeight = '0';
-                bodies[i].classList.add('closed');
-                if(bodies[i].previousElementSibling) bodies[i].previousElementSibling.classList.add('closed');
-            } else {
-                bodies[i].style.maxHeight = 'none';
-            }
-        }
-    });
-})();
-</script>
 
 <script>
 // ══ Error Toast — يظهر للمستخدم بدل console.error ══
@@ -1817,126 +1706,7 @@ window.toggleDarkMode = function() {
 </div>
 
 
-<script>
-// ══════════════════════════════════════════════════════════════
-// دوال عامة — تشتغل مع onclick في HTML
-// لازم تكون خارج type="module" عشان Safari والآيفون
-// ══════════════════════════════════════════════════════════════
 
-
-window.previewAdminLogo = function(input) {
-    var file = input.files[0];
-    if(!file) return;
-    if(file.size > 500000) { window.showToast('⚠️ الصورة كبيرة — اختر أقل من 500KB','warning'); return; }
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('set-logo-url').value = e.target.result;
-        var p = document.getElementById('set-logo-preview');
-        if(p) { p.src = e.target.result; p.style.display = 'block'; }
-    };
-    reader.readAsDataURL(file);
-};
-
-// ══ Dark Mode ══
-window.toggleDarkMode = function() {
-    var isDark = document.body.classList.toggle('dark-mode');
-    try { localStorage.setItem('hs_dark_mode', isDark ? '1' : '0'); } catch(e) {}
-    var icon  = document.getElementById('dark-icon');
-    var label = document.getElementById('dark-label');
-    if(icon)  icon.textContent  = isDark ? '☀️' : '🌙';
-    if(label) label.textContent = isDark ? 'نهاري' : 'ليلي';
-};
-
-// ══ وضع المدير البسيط ══
-window.toggleSimpleMode = function() {
-    var isSimple = document.body.classList.toggle('simple-mode');
-    try { localStorage.setItem('hs_simple_mode', isSimple ? '1' : '0'); } catch(e) {}
-    var btn = document.getElementById('btn-simple');
-    if(btn) btn.classList.toggle('active', isSimple);
-};
-
-// ══ تكبير الخط ══
-var _fontSizes = ['', 'font-lg', 'font-xl'];
-var _fontIdx   = 0;
-window.cycleFontSize = function() {
-    document.body.classList.remove('font-lg', 'font-xl');
-    _fontIdx = (_fontIdx + 1) % _fontSizes.length;
-    if(_fontSizes[_fontIdx]) document.body.classList.add(_fontSizes[_fontIdx]);
-    try { localStorage.setItem('hs_font_size', _fontIdx); } catch(e) {}
-    var btn = document.getElementById('btn-font');
-    if(btn) btn.classList.toggle('active', _fontIdx > 0);
-};
-
-// ══ الدليل السريع ══
-window.showQuickGuide = function() {
-    var guide = document.getElementById('quick-guide');
-    if(guide) guide.classList.add('show');
-};
-
-// ══ طي/فتح أقسام القائمة ══
-function toggleSec(titleEl) {
-    var body = titleEl.nextElementSibling;
-    if(!body) return;
-    var isOpen = !body.classList.contains('closed');
-    if(isOpen) {
-        body.style.maxHeight = body.scrollHeight + 'px';
-        setTimeout(function() {
-            body.style.maxHeight = '0';
-            body.classList.add('closed');
-            titleEl.classList.add('closed');
-        }, 10);
-    } else {
-        body.classList.remove('closed');
-        titleEl.classList.remove('closed');
-        body.style.maxHeight = body.scrollHeight + 'px';
-        setTimeout(function() {
-            if(!body.classList.contains('closed')) body.style.maxHeight = 'none';
-        }, 300);
-    }
-}
-
-// ══ استعادة الإعدادات عند التحميل ══
-(function() {
-    try {
-        // Dark Mode
-        if(localStorage.getItem('hs_dark_mode') === '1') {
-            document.body.classList.add('dark-mode');
-            var i = document.getElementById('dark-icon');
-            var l = document.getElementById('dark-label');
-            if(i) i.textContent = '☀️';
-            if(l) l.textContent = 'نهاري';
-        }
-        // Simple Mode
-        if(localStorage.getItem('hs_simple_mode') === '1') {
-            document.body.classList.add('simple-mode');
-            var btn = document.getElementById('btn-simple');
-            if(btn) btn.classList.add('active');
-        }
-        // Font Size
-        var fi = parseInt(localStorage.getItem('hs_font_size') || '0');
-        if(fi > 0 && _fontSizes[fi]) {
-            document.body.classList.add(_fontSizes[fi]);
-            _fontIdx = fi;
-            var fb = document.getElementById('btn-font');
-            if(fb) fb.classList.add('active');
-        }
-    } catch(e) {}
-
-    // فتح أول قسمين وأغلق الباقي
-    document.addEventListener('DOMContentLoaded', function() {
-        var bodies = document.querySelectorAll('.menu-sec-body');
-        for(var i = 0; i < bodies.length; i++) {
-            if(i >= 2) {
-                bodies[i].style.maxHeight = '0';
-                bodies[i].classList.add('closed');
-                if(bodies[i].previousElementSibling) bodies[i].previousElementSibling.classList.add('closed');
-            } else {
-                bodies[i].style.maxHeight = 'none';
-            }
-        }
-    });
-})();
-</script>
 
 <script>
 // ══ Error Toast — يظهر للمستخدم بدل console.error ══
