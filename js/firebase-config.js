@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getAuth, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js';
+// messaging يُحمَّل ديناميكياً لتوافق iOS
 import { getFunctions } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
 
 // 🏢 بيانات الاتصال السحابية للمنظومة الموحدة
@@ -24,7 +24,15 @@ export { onAuthStateChanged };
 export const functions = getFunctions(app, 'me-central1');
 
 // 🔔 تفعيل وتصدير نظام المراسلات الفورية والإشعارات (FCM) للمتصفحات المتوافقة والهواتف
-export const messaging = typeof window !== 'undefined' && 'serviceWorker' in navigator ? getMessaging(app) : null;
+// messaging يُحمَّل ديناميكياً — لو فشل ما يأثر على باقي النظام
+export let messaging = null;
+try {
+    if(typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window) {
+        import('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js').then(m => {
+            messaging = m.getMessaging(app);
+        }).catch(() => {});
+    }
+} catch(e) {}
 
 // 🔐 استعادة جلسة الـ Custom Token تلقائياً فور تحميل أي صفحة بالخلفية لضمان استقرار الصلاحيات
 const savedToken = localStorage.getItem('hs_custom_token');
@@ -88,7 +96,8 @@ export async function requestNotificationPermission(db, schoolId, userId) {
         }
 
         // جلب التوكن الفريد للجهاز من خوادم جوجل
-        const token = await getToken(messaging, {
+        const { getToken: gt } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js');
+        const token = await gt(messaging, {
             vapidKey: 'BFN-D_Bbs7e12_OK7Em0RikolvNwRcgTBr45IZIZ2mQOMZh7-hCtvSVbjT6xUZCAYpwBZtp1yWvEUHKsY1luiB0'
         });
 
