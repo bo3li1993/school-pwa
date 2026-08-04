@@ -842,6 +842,130 @@ window.ManzoumaReport = {
 };
 
 
+window.exportAsManzoumaPDF = async function(containerId, filename) {
+    const container = document.getElementById(containerId);
+    if (!container) { showToast('⚠️ التبويب غير موجود', 'info'); return; }
+    const title = containerId === 'tab-absent' ? 'كشف الغياب اليومي' : 'تقرير كفاءة الأداء التعليمي';
+    await window.ManzoumaReport.exportPDF(container.innerHTML, filename, title);
+};
+
+window.switchTab = async function(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.bn-item').forEach(el => el.classList.remove('active'));
+
+    const target = document.getElementById(tabId);
+    if(target) target.classList.add('active');
+
+    const btn = document.querySelector(`.menu-item[data-tab="${tabId}"]`);
+    if(btn) btn.classList.add('active');
+
+    const bnBtn = document.querySelector(`.bn-item[data-bn-tab="${tabId}"]`);
+    if(bnBtn) bnBtn.classList.add('active');
+
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay')?.classList.remove('show');
+
+    if(loadedTabs.has(tabId)) return;
+
+    if(tabId === 'tab-myaccount') { loadMyAccount(); loadedTabs.add(tabId); return; }
+
+    const mapEntry = moduleMap[tabId];
+    if(!mapEntry) return;
+
+    try {
+        const mod = await import(mapEntry.file);
+        if(mod[mapEntry.init]) {
+            mod[mapEntry.init]();
+            loadedTabs.add(tabId);
+        }
+    } catch(err) {
+        document.getElementById(tabId).innerHTML =
+            `<div class="loading-box" style="color:#dc2626">❌ خطأ تحميل الموديل: ${err.message}</div>`;
+        console.error(`فشل تحميل ${tabId}:`, err);
+    }
+};
+
+async function loadMyAccount() {
+    try {
+        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
+        const snap = await getDocs(q);
+        if(snap.empty) return;
+        const d = snap.docs[0].data();
+        document.getElementById('acc-name').value = d.name || '';
+        document.getElementById('acc-email').value = d.email || '';
+        document.getElementById('acc-dept').value = d.department || '';
+        document.getElementById('acc-phone').value = d.phone || '';
+    } catch(e) {}
+}
+
+window.saveMyAccount = async function() {
+    const newName = document.getElementById('acc-name').value.trim();
+    const newEmail = document.getElementById('acc-email').value.trim();
+    const newDept = document.getElementById('acc-dept').value.trim();
+    const newPhone = document.getElementById('acc-phone').value.trim();
+    const newPass = document.getElementById('acc-pass').value.trim();
+    if(!newName) { window.showToast('الاسم مطلوب', 'error'); return; }
+
+    try {
+        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
+        const snap = await getDocs(q);
+        if(snap.empty) { window.showToast('⚠️ تعذر إيجاد حسابك بقاعدة البيانات', 'error'); return; }
+
+        const updateData = { name: newName, email: newEmail, department: newDept, phone: newPhone };
+        // ⚠️ كلمة المرور تُحفظ مشفرة عبر Cloud Function فقط
+        // if(newPass) updateData.plainPass = newPass; // مُعطَّل لأسباب أمنية
+
+        await updateDoc(snap.docs[0].ref, updateData);
+
+        currentUser.name = newName;
+        localStorage.setItem('hs_user', JSON.stringify(currentUser));
+        document.getElementById('lbl-admin-name').textContent = `مرحباً، ${newName}`;
+        document.getElementById('acc-pass').value = '';
+
+        window.showToast('✅ تم حفظ بياناتك بنجاح.');
+    } catch(e) { window.showToast('❌ خطأ في الحفظ: ' + e.message, 'error'); }
+};
+
+// إخفاء splash بعد 3 ثواني كحد أقصى
+setTimeout(function() {
+    document.getElementById('splash')?.classList.add('hide');
+}, 3000);
+
+window.switchTab('tab-index').then(function() {
+    document.getElementById('splash')?.classList.add('hide');
+    if(typeof listenToEmergencyAlertsLive === 'function') listenToEmergencyAlertsLive();
+}).catch(function(e) {
+    console.warn('switchTab error:', e);
+    document.getElementById('splash')?.classList.add('hide');
+});
+
+// تحميل المساعد الذكي
+import('./js/modules/ai_assistant.js')
+    .then(m => { if(m.initAiAssistant) m.initAiAssistant(); })
+    .catch(e => console.warn('AI Assistant:', e));
+
+// ══ Service Worker auto-update check ══
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        reg.addEventListener('updatefound', function() {
+            var newWorker = reg.installing;
+            if(newWorker) {
+                newWorker.addEventListener('statechange', function() {
+                    if(newWorker.state === 'activated') {
+                        if(window.showToast) window.showToast('🔄 تم تحديث المنظومة — يُعاد التحميل...', 'info');
+                        setTimeout(function() { location.reload(); }, 2000);
+                    }
+                });
+            }
+        });
+        // تحقق من التحديثات كل 5 دقائق
+        setInterval(function() { reg.update(); }, 5 * 60 * 1000);
+    }).catch(function(e) {});
+}
+
+// Dark Mode — في early script
+
 </script>
 
 <script type="module">
@@ -942,132 +1066,6 @@ if('serviceWorker' in navigator) {
 }
 </script>
 
-<script>
-window.exportAsManzoumaPDF = async function(containerId, filename) {
-    const container = document.getElementById(containerId);
-    if (!container) { showToast('⚠️ التبويب غير موجود', 'info'); return; }
-    const title = containerId === 'tab-absent' ? 'كشف الغياب اليومي' : 'تقرير كفاءة الأداء التعليمي';
-    await window.ManzoumaReport.exportPDF(container.innerHTML, filename, title);
-};
-
-window.switchTab = async function(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.bn-item').forEach(el => el.classList.remove('active'));
-
-    const target = document.getElementById(tabId);
-    if(target) target.classList.add('active');
-
-    const btn = document.querySelector(`.menu-item[data-tab="${tabId}"]`);
-    if(btn) btn.classList.add('active');
-
-    const bnBtn = document.querySelector(`.bn-item[data-bn-tab="${tabId}"]`);
-    if(bnBtn) bnBtn.classList.add('active');
-
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebar-overlay')?.classList.remove('show');
-
-    if(loadedTabs.has(tabId)) return;
-
-    if(tabId === 'tab-myaccount') { loadMyAccount(); loadedTabs.add(tabId); return; }
-
-    const mapEntry = moduleMap[tabId];
-    if(!mapEntry) return;
-
-    try {
-        const mod = await import(mapEntry.file);
-        if(mod[mapEntry.init]) {
-            mod[mapEntry.init]();
-            loadedTabs.add(tabId);
-        }
-    } catch(err) {
-        document.getElementById(tabId).innerHTML =
-            `<div class="loading-box" style="color:#dc2626">❌ خطأ تحميل الموديل: ${err.message}</div>`;
-        console.error(`فشل تحميل ${tabId}:`, err);
-    }
-};
-
-async function loadMyAccount() {
-    try {
-        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
-        const snap = await getDocs(q);
-        if(snap.empty) return;
-        const d = snap.docs[0].data();
-        document.getElementById('acc-name').value = d.name || '';
-        document.getElementById('acc-email').value = d.email || '';
-        document.getElementById('acc-dept').value = d.department || '';
-        document.getElementById('acc-phone').value = d.phone || '';
-    } catch(e) {}
-}
-
-window.saveMyAccount = async function() {
-    const newName = document.getElementById('acc-name').value.trim();
-    const newEmail = document.getElementById('acc-email').value.trim();
-    const newDept = document.getElementById('acc-dept').value.trim();
-    const newPhone = document.getElementById('acc-phone').value.trim();
-    const newPass = document.getElementById('acc-pass').value.trim();
-    if(!newName) { window.showToast('الاسم مطلوب', 'error'); return; }
-
-    try {
-        const q = query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId));
-        const snap = await getDocs(q);
-        if(snap.empty) { window.showToast('⚠️ تعذر إيجاد حسابك بقاعدة البيانات', 'error'); return; }
-
-        const updateData = { name: newName, email: newEmail, department: newDept, phone: newPhone };
-        // ⚠️ كلمة المرور تُحفظ مشفرة عبر Cloud Function فقط
-        // if(newPass) updateData.plainPass = newPass; // مُعطَّل لأسباب أمنية
-
-        await updateDoc(snap.docs[0].ref, updateData);
-
-        currentUser.name = newName;
-        localStorage.setItem('hs_user', JSON.stringify(currentUser));
-        document.getElementById('lbl-admin-name').textContent = `مرحباً، ${newName}`;
-        document.getElementById('acc-pass').value = '';
-
-        window.showToast('✅ تم حفظ بياناتك بنجاح.');
-    } catch(e) { window.showToast('❌ خطأ في الحفظ: ' + e.message, 'error'); }
-};
-
-// إخفاء splash بعد 3 ثواني كحد أقصى
-setTimeout(function() {
-    document.getElementById('splash')?.classList.add('hide');
-}, 3000);
-
-window.switchTab('tab-index').then(function() {
-    document.getElementById('splash')?.classList.add('hide');
-    listenToEmergencyAlertsLive();
-}).catch(function(e) {
-    console.warn('switchTab error:', e);
-    document.getElementById('splash')?.classList.add('hide');
-});
-
-// تحميل المساعد الذكي
-import('./js/modules/ai_assistant.js')
-    .then(m => { if(m.initAiAssistant) m.initAiAssistant(); })
-    .catch(e => console.warn('AI Assistant:', e));
-
-// ══ Service Worker auto-update check ══
-if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(function(reg) {
-        reg.addEventListener('updatefound', function() {
-            var newWorker = reg.installing;
-            if(newWorker) {
-                newWorker.addEventListener('statechange', function() {
-                    if(newWorker.state === 'activated') {
-                        if(window.showToast) window.showToast('🔄 تم تحديث المنظومة — يُعاد التحميل...', 'info');
-                        setTimeout(function() { location.reload(); }, 2000);
-                    }
-                });
-            }
-        });
-        // تحقق من التحديثات كل 5 دقائق
-        setInterval(function() { reg.update(); }, 5 * 60 * 1000);
-    }).catch(function(e) {});
-}
-
-// Dark Mode — في early script
-
-</script>
 
 <div class="quick-guide" id="quick-guide" onclick="if(event.target===this)this.classList.remove('show')">
     <div class="guide-card">
