@@ -265,6 +265,21 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 </head>
 <body>
 
+<script>
+// ══ إخفاء splash بعد 3 ثواني حتى لو فيه خطأ ══
+setTimeout(function() {
+    var s = document.getElementById('splash');
+    if(s) s.classList.add('hide');
+}, 3000);
+
+// التقاط أي خطأ في الصفحة
+window.addEventListener('error', function() {
+    var s = document.getElementById('splash');
+    if(s) s.classList.add('hide');
+});
+</script>
+
+
 <div class="splash" id="splash">
   <div class="splash-mark">
     <div class="splash-badge">م</div>
@@ -1302,6 +1317,21 @@ body.font-xl .menu-item { touch-action: manipulation; font-size:17px !important;
 .skeleton-circle { width:50px; height:50px; border-radius:50%; }
 
 </style></head><body>
+
+<script>
+// ══ إخفاء splash بعد 3 ثواني حتى لو فيه خطأ ══
+setTimeout(function() {
+    var s = document.getElementById('splash');
+    if(s) s.classList.add('hide');
+}, 3000);
+
+// التقاط أي خطأ في الصفحة
+window.addEventListener('error', function() {
+    var s = document.getElementById('splash');
+    if(s) s.classList.add('hide');
+});
+</script>
+
         <div class="no-print" style="position:fixed;top:10px;right:10px;z-index:999;display:flex;gap:8px;">
             <button onclick="window.print()" style="background:#0b2545;color:#fff;border:none;padding:8px 18px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;font-size:14px;">🖨️ طباعة</button>
             <button onclick="window.close()" style="background:#dc2626;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-family:Cairo;font-weight:700;cursor:pointer;font-size:14px;">✕</button>
