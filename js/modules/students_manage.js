@@ -1,6 +1,25 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, writeBatch, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// ترتيب ذكي: بالفصل (6/1 → 6/2 → 7/1...) ثم أبجدي بالاسم
+function smartSort(a, b) {
+    var ca = a.classId || '', cb = b.classId || '';
+    var pa = ca.split('/'), pb = cb.split('/');
+    var ga = parseInt(pa[0]) || 0, gb = parseInt(pb[0]) || 0;
+    if(ga !== gb) return ga - gb;
+    var sa = parseInt(pa[1]) || 0, sb = parseInt(pb[1]) || 0;
+    if(sa !== sb) return sa - sb;
+    return (a.name || '').localeCompare(b.name || '', 'ar');
+}
+
+function smartClassSort(a, b) {
+    var pa = a.split('/'), pb = b.split('/');
+    var ga = parseInt(pa[0]) || 0, gb = parseInt(pb[0]) || 0;
+    if(ga !== gb) return ga - gb;
+    return (parseInt(pa[1]) || 0) - (parseInt(pb[1]) || 0);
+}
+
+
 let localStudentsMap = {};
 let allClassesCache = [];
 let currentClassStudents = [];
@@ -169,8 +188,8 @@ async function loadAllStudents() {
             if (data.classId) classesSet.add(data.classId.trim());
         });
 
-        allStudentsCache.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
-        allClassesCache = Array.from(classesSet).sort((a, b) => a.localeCompare(b));
+        allStudentsCache.sort(smartSort);
+        allClassesCache = Array.from(classesSet).sort(smartClassSort);
 
         // تعبئة فلتر الفصول
         const classOpts = '<option value="">كل الفصول</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -311,14 +330,14 @@ window.saveStudentModal = async function() {
             // تحديث الفصول لو جديد
             if (!allClassesCache.includes(classId)) {
                 allClassesCache.push(classId);
-                allClassesCache.sort((a, b) => a.localeCompare(b));
+                allClassesCache.sort(smartClassSort);
                 const newOpts = '<option value="">كل الفصول</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
                 document.getElementById('st-filter-class').innerHTML = newOpts;
             }
             window.showToast('✅ تم إضافة الطالب بنجاح');
         }
         window.closeStudentModal();
-        allStudentsCache.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+        allStudentsCache.sort(smartSort);
         window.applyStudentFilters();
     } catch (e) { window.showToast('❌ خطأ: ' + e.message, 'error'); }
 };
