@@ -102,6 +102,39 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 </head>
 <body>
 
+<div id="first-login-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;border-radius:16px;padding:28px;max-width:450px;width:100%;font-family:'Cairo',sans-serif;direction:rtl">
+        <h2 style="font-size:18px;font-weight:900;color:#0b2545;text-align:center;margin-bottom:6px">👋 مرحباً بك في المنظومة</h2>
+        <p style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:20px">أكمل بياناتك للبدء</p>
+        
+        <label style="font-size:12px;font-weight:800;color:#374151;display:block;margin-bottom:4px">الاسم الكامل</label>
+        <input id="fl-name" type="text" placeholder="الاسم الثلاثي" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;margin-bottom:12px">
+        
+        <label style="font-size:12px;font-weight:800;color:#374151;display:block;margin-bottom:4px">رقم الهاتف</label>
+        <input id="fl-phone" type="tel" placeholder="965XXXXXXXX" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;margin-bottom:12px">
+        
+        <label style="font-size:12px;font-weight:800;color:#374151;display:block;margin-bottom:4px">القسم / التخصص</label>
+        <input id="fl-dept" type="text" placeholder="مثال: رياضيات، علوم..." style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;margin-bottom:12px">
+
+        <label style="font-size:12px;font-weight:800;color:#374151;display:block;margin-bottom:4px">الرقم المدني</label>
+        <input id="fl-civil" type="text" placeholder="مثال: 123456789012" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;margin-bottom:12px">
+
+        <label style="font-size:12px;font-weight:800;color:#374151;display:block;margin-bottom:4px">رقم الملف</label>
+        <input id="fl-filenum" type="text" placeholder="رقم الملف الوظيفي" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;margin-bottom:12px">
+
+        <label style="font-size:12px;font-weight:800;color:#374151;display:block;margin-bottom:4px">تاريخ التعيين</label>
+        <input id="fl-hiredate" type="date" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;margin-bottom:12px">
+
+        <label style="font-size:12px;font-weight:800;color:#374151;display:block;margin-bottom:4px">البريد الإلكتروني (اختياري)</label>
+        <input id="fl-email" type="email" placeholder="example@email.com" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;margin-bottom:20px">
+        
+        <button onclick="window.saveFirstLogin()" style="width:100%;padding:12px;background:#0b2545;color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:800;cursor:pointer">
+            ✅ حفظ والبدء
+        </button>
+    </div>
+</div>
+
+
 <div class="splash" id="splash">
   <div class="splash-mark">
     <div class="splash-badge">م</div>
@@ -166,7 +199,7 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
     </div>
   </div>
 
-  <div id="tab-records" class="hidden">
+  <div id="tab-records" style="display:none" class="hidden">
     <div class="card">
       <h3>📋 سجلات الغياب المسجلة</h3>
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">اختر الفصل</label>
@@ -190,7 +223,7 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
     </div>
   </div>
 
-  <div id="tab-behavior" class="hidden">
+  <div id="tab-behavior" style="display:none" class="hidden">
     <div class="card" style="border-top-color:var(--danger);">
       <h3>🛡️ رصد ومتابعة سلوك الطالب</h3>
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">الفصل</label>
@@ -252,7 +285,7 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
     </div>
   </div>
 
-  <div id="tab-messages" class="hidden">
+  <div id="tab-messages" style="display:none" class="hidden">
     <div class="card">
       <h3>💬 التواصل مع ولي الأمر</h3>
       <label style="font-weight:700;font-size:13px;display:block;margin-bottom:4px;">الفصل</label>
@@ -508,7 +541,8 @@ window.saveAttendance = async function() {
 
     try {
         const batch = writeBatch(db);
-        allStudentsLoaded.forEach(name => {
+        // نسجّل الغائبين والمتأخرين فقط — أسرع بكثير
+        allStudentsLoaded.filter(n => studentStatuses[n] && studentStatuses[n] !== 'present').forEach(name => {
             const ref = doc(collection(db,'attendance'));
             batch.set(ref, {
                 schoolId:   schoolId,
@@ -516,7 +550,7 @@ window.saveAttendance = async function() {
                 period:     period,
                 studentName: name,
                 date:       todayISO,
-                status:     studentStatuses[name] || 'present',
+                status:     studentStatuses[name],
                 recordedBy: currentUser.name || '',
                 createdAt:  serverTimestamp()
             });
@@ -872,6 +906,83 @@ if('serviceWorker' in navigator) {
         setInterval(function() { reg.update(); }, 5 * 60 * 1000);
     }).catch(function() {});
 }
+</script>
+
+
+<script>
+// ══ أول دخول — أكمل بياناتك ══
+(function() {
+    try {
+        var user = JSON.parse(localStorage.getItem('hs_user') || '{}');
+        // لو الاسم فاضي أو "معلم" أو المعلم ما أكمل بياناته
+        if(user.role === 'teacher' && (!user.profileCompleted)) {
+            var overlay = document.getElementById('first-login-overlay');
+            if(overlay) {
+                overlay.style.display = 'flex';
+                // تعبئة الاسم الموجود
+                var nameInput = document.getElementById('fl-name');
+                if(nameInput && user.name) nameInput.value = user.name;
+            }
+        }
+    } catch(e) {}
+})();
+
+window.saveFirstLogin = async function() {
+    var name     = document.getElementById('fl-name').value.trim();
+    var phone    = document.getElementById('fl-phone').value.trim();
+    var dept     = document.getElementById('fl-dept').value.trim();
+    var email    = document.getElementById('fl-email').value.trim();
+    var civilId  = document.getElementById('fl-civil').value.trim();
+    var fileNum  = document.getElementById('fl-filenum').value.trim();
+    var hireDate = document.getElementById('fl-hiredate').value.trim();
+
+    if(!name) { alert('الاسم مطلوب'); return; }
+    if(!phone) { alert('رقم الهاتف مطلوب'); return; }
+    if(!civilId) { alert('الرقم المدني مطلوب'); return; }
+
+    try {
+        var { db, getActiveSchoolId } = await import('./js/firebase-config.js');
+        var { collection, query, where, getDocs, updateDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        
+        var user = JSON.parse(localStorage.getItem('hs_user') || '{}');
+        var snap = await getDocs(query(collection(db, 'users'), where('schoolId', '==', getActiveSchoolId()), where('userId', '==', user.userId)));
+        
+        if(!snap.empty) {
+            await updateDoc(snap.docs[0].ref, {
+                name: name,
+                phone: phone,
+                department: dept,
+                email: email,
+                civilId: civilId,
+                fileNumber: fileNum,
+                hireDate: hireDate,
+                profileCompleted: true
+            });
+        }
+
+        // حدّث localStorage
+        user.name = name;
+        user.phone = phone;
+        user.department = dept;
+        user.email = email;
+        user.civilId = civilId;
+        user.fileNumber = fileNum;
+        user.hireDate = hireDate;
+        user.profileCompleted = true;
+        localStorage.setItem('hs_user', JSON.stringify(user));
+
+        // أخفِ الـ overlay
+        document.getElementById('first-login-overlay').style.display = 'none';
+        
+        // حدّث اسم المعلم في الصفحة
+        var lbl = document.getElementById('lbl-teacher-name');
+        if(lbl) lbl.textContent = name;
+
+        if(window.showToast) window.showToast('✅ تم حفظ بياناتك');
+    } catch(e) {
+        alert('❌ خطأ: ' + e.message);
+    }
+};
 </script>
 
 </body>
