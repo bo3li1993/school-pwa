@@ -102,7 +102,7 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 </head>
 <body>
 
-<div id="first-login-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px">
+<div id="first-login-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99999;align-items:center;justify-content:center;padding:16px">
     <div style="background:#fff;border-radius:16px;padding:28px;max-width:450px;width:100%;font-family:'Cairo',sans-serif;direction:rtl">
         <h2 style="font-size:18px;font-weight:900;color:#0b2545;text-align:center;margin-bottom:6px">👋 مرحباً بك في المنظومة</h2>
         <p style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:20px">أكمل بياناتك للبدء</p>
@@ -325,9 +325,6 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 
 <div class="bottom-nav">
   <button class="bn-item active" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance', this)"><i class="bi bi-pencil-square"></i>الغياب</button>
-  <button class="bn-item" data-bn-tab="tab-behavior" onclick="window.switchTab('tab-behavior', this)"><i class="bi bi-shield-exclamation"></i>السلوك</button>
-  <button class="bn-item" data-bn-tab="tab-messages" onclick="window.switchTab('tab-messages', this)"><i class="bi bi-chat-left-text"></i>الرسائل</button>
-  <button class="bn-item" data-bn-tab="tab-records" onclick="window.switchTab('tab-records', this)"><i class="bi bi-clipboard-data"></i>سجلاتي</button>
   <button class="bn-item" data-bn-tab="tab-more" onclick="window.switchTab('tab-more', this)"><i class="bi bi-grid-3x3-gap"></i>المزيد</button>
 </div>
 
@@ -915,10 +912,12 @@ if('serviceWorker' in navigator) {
     try {
         var user = JSON.parse(localStorage.getItem('hs_user') || '{}');
         // لو الاسم فاضي أو "معلم" أو المعلم ما أكمل بياناته
-        if(user.role === 'teacher' && (!user.profileCompleted)) {
+        if(user.role === 'teacher' && !user.profileCompleted) {
             var overlay = document.getElementById('first-login-overlay');
             if(overlay) {
                 overlay.style.display = 'flex';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
                 // تعبئة الاسم الموجود
                 var nameInput = document.getElementById('fl-name');
                 if(nameInput && user.name) nameInput.value = user.name;
