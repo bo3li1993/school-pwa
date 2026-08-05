@@ -333,7 +333,7 @@ let currentUser = null;
         // 📡 تشغيل رادار استدعاء وبث الإعلانات المدرسية لايف فور التأكد من الهوية
         listenToSchoolAnnouncementsLive();
 
-    } catch(e) { window.location.replace('index.html'); }
+    } catch(e) { console.error('Teacher init error:', e); }
 })();
 document.getElementById('splash').classList.add('hide');
 
