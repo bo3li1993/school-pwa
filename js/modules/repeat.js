@@ -1,127 +1,135 @@
-import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
-import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initRepeatModule() {
-    const container = document.getElementById('tab-repeat') || document.querySelector('.tab-content.active');
-    if (!container) return;
+    const container = document.getElementById('tab-repeat');
+    if(!container) return;
 
     container.innerHTML = `
-        <div class="card" style="background: #fff; border-radius: 14px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); direction: rtl; text-align: right;">
-            <h2 style="color: #1a1a2e; font-weight: 900; border-bottom: 2px solid #f4f6f9; padding-bottom: 15px; margin-bottom: 20px;">
-                <i class="bi bi-exclamation-triangle-fill" style="color: #e74c3c;"></i> تقرير الغياب التراكمي (آخر 30 يوماً) وإنذارات الواتساب
-            </h2>
-            <div id="repeat-loading" style="text-align:center; padding:20px; font-weight:bold; color:#666;">⏳ جاري فحص سجلات المدرسة الذكية...</div>
-            <div id="repeat-results"></div>
-        </div>
-    `;
+    <div style="max-width:800px;margin:0 auto;padding:16px">
+        <h2 style="font-size:17px;font-weight:900;color:var(--navy);margin-bottom:4px">
+            <i class="bi bi-exclamation-circle-fill" style="color:#dc2626"></i> الغياب المتكرر
+        </h2>
+        <p style="font-size:12px;color:var(--mid);font-weight:700;margin-bottom:16px">الطلاب اللي غابوا أكثر من 3 أيام</p>
 
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    if (!user || !user.schoolId) {
-        document.getElementById('repeat-loading').innerText = "❌ خطأ: لم يتم التعرف على هوية المدرسة.";
-        return;
-    }
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+            <select id="rep-class" onchange="window.loadRepeatAbsent()" style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700">
+                <option value="all">كل الفصول</option>
+            </select>
+            <select id="rep-min" onchange="window.loadRepeatAbsent()" style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px">
+                <option value="3">3+ أيام</option>
+                <option value="5">5+ أيام</option>
+                <option value="10">10+ أيام</option>
+                <option value="15">15+ أيام</option>
+            </select>
+            <button onclick="window.printRepeatReport()" style="background:var(--navy);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:800;cursor:pointer">
+                <i class="bi bi-printer-fill"></i> طباعة
+            </button>
+        </div>
+
+        <div id="rep-content" style="background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden">
+            <div style="text-align:center;padding:40px;color:#aaa;font-weight:700">⏳ جاري التحميل...</div>
+        </div>
+    </div>`;
+
+    await loadRepeatClasses();
+    window.loadRepeatAbsent();
+}
+
+async function loadRepeatClasses() {
+    try {
+        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId())));
+        const classes = [...new Set(snap.docs.map(d=>d.data().classId).filter(Boolean))].sort((a,b)=>{
+            var pa=a.split('/'),pb=b.split('/');
+            return (parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0);
+        });
+        var sel = document.getElementById('rep-class');
+        if(sel) sel.innerHTML = '<option value="all">كل الفصول</option>' + classes.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+    } catch(e) {}
+}
+
+window.loadRepeatAbsent = async function() {
+    var content = document.getElementById('rep-content');
+    var classFilter = document.getElementById('rep-class')?.value || 'all';
+    var minDays = parseInt(document.getElementById('rep-min')?.value || '3');
+
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-weight:700">⏳ جاري التحميل...</div>';
 
     try {
-        // جلب سجلات الغياب للمدرسة الحالية
-        // فلتر آخر 30 يوم بالاستعلام نفسه (لا نجلب كل البيانات ثم نفلتر)
-        const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - 30);
-        const cutoffISO = cutoffDate.toISOString().slice(0, 10); // e.g. 2026-06-13
+        var q = classFilter === 'all'
+            ? query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('status','==','absent'))
+            : query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('status','==','absent'), where('classId','==',classFilter));
 
-        const q = query(
-            collection(db, 'attendance'),
-            where('schoolId', '==', user.schoolId),
-            where('status', '==', 'absent'),
-            where('date', '>=', cutoffISO)
-        );
-        const snap = await getDocs(q);
-        
-        const absences = {};
-        
-        snap.forEach(docSnap => {
-            const d = docSnap.data();
-            if (d.studentName) {
-                if (!absences[d.studentName]) {
-                    absences[d.studentName] = { name: d.studentName, classId: d.classId, count: 0 };
-                }
-                absences[d.studentName].count++;
-            }
+        var snap = await getDocs(q);
+
+        // عدّ الغياب لكل طالب
+        var counts = {};
+        snap.docs.forEach(d => {
+            var r = d.data();
+            var key = r.studentName + '|' + r.classId;
+            if(!counts[key]) counts[key] = { name: r.studentName, classId: r.classId, days: new Set(), records: [] };
+            counts[key].days.add(r.date);
+            counts[key].records.push(r);
         });
 
-        // تصفية الطلاب الذين غابوا 3 مرات فأكثر خلال الـ 30 يوماً وترتيبهم تنازلياً
-        const repeatedStudents = Object.values(absences)
-            .filter(s => s.count >= 3)
-            .sort((a, b) => b.count - a.count);
+        // فلتر بالحد الأدنى وترتيب
+        var results = Object.values(counts)
+            .map(c => ({...c, totalDays: c.days.size}))
+            .filter(c => c.totalDays >= minDays)
+            .sort((a,b) => b.totalDays - a.totalDays);
 
-        document.getElementById('repeat-loading').style.display = 'none';
-        const resultsDiv = document.getElementById('repeat-results');
-
-        if (repeatedStudents.length === 0) {
-            resultsDiv.innerHTML = `<div style="padding:20px; text-align:center; background:#e8f5e9; color:#2e7d32; border-radius:8px; font-weight: bold;">✅ لا يوجد طلاب تجاوزوا حد الغياب خلال الـ 30 يوماً الماضية.</div>`;
+        if(!results.length) {
+            content.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-weight:700">✅ لا يوجد طلاب متجاوزين الحد</div>';
             return;
         }
 
-        let html = '';
-        repeatedStudents.forEach(student => {
-            let cardBg = "#f8fafc";
-            let borderColor = "#e2e8f0";
-            let warningButton = "";
+        content.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+            '<tr style="background:#f0f4f8"><th style="padding:10px 12px;text-align:right;font-weight:800">#</th>' +
+            '<th style="padding:10px 12px;text-align:right;font-weight:800">الطالب</th>' +
+            '<th style="padding:10px 12px;text-align:center;font-weight:800">الفصل</th>' +
+            '<th style="padding:10px 12px;text-align:center;font-weight:800">عدد أيام الغياب</th>' +
+            '<th style="padding:10px 12px;text-align:center;font-weight:800">تفاصيل</th></tr>' +
+            results.map((r,idx) => {
+                var color = r.totalDays >= 15 ? '#dc2626' : r.totalDays >= 10 ? '#ea580c' : r.totalDays >= 5 ? '#d97706' : '#6b7280';
+                return '<tr style="border-bottom:1px solid #f0f2f5">' +
+                    '<td style="padding:10px 12px;font-weight:700;color:var(--mid)">'+(idx+1)+'</td>' +
+                    '<td style="padding:10px 12px;font-weight:800">'+r.name+'</td>' +
+                    '<td style="padding:10px 12px;text-align:center;font-weight:700">'+r.classId+'</td>' +
+                    '<td style="padding:10px 12px;text-align:center"><span style="background:'+color+'22;color:'+color+';padding:4px 12px;border-radius:8px;font-weight:900;font-size:14px">'+r.totalDays+'</span></td>' +
+                    '<td style="padding:10px 12px;text-align:center"><button onclick="window.showStudentAbsentHistory(\''+r.name.replace(/'/g,"\\'")+'\',\''+r.classId+'\')" style="background:var(--ice);color:var(--sky);border:none;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer"><i class="bi bi-eye"></i> عرض</button></td></tr>';
+            }).join('') + '</table>';
 
-            // ⚠️ ميزة التطوير التجاري: إذا وصل الغياب 5 أيام فأكثر، يتم تفعيل جرس الإنذار وتوليد زر الواتساب
-            if (student.count >= 5) {
-                cardBg = "#fff1f2";
-                borderColor = "#e74c3c";
-                warningButton = `
-                    <button onclick="window.notifyAbsence('${student.name}', '${student.classId}', ${student.count})" 
-                        style="background: #e74c3c; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; font-family: 'Cairo'; font-size: 12px;">
-                        <i class="bi bi-whatsapp"></i> إشعار ولي الأمر
-                    </button>
-                `;
-            }
-
-            html += `
-                <div style="background: ${cardBg}; border: 1px solid ${borderColor}; border-right: 5px solid ${borderColor}; padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #0f172a; font-weight: 700;">${student.name}</h3>
-                        <span style="font-size: 12px; color: #475569; background: #e2e8f0; padding: 2px 8px; border-radius: 4px; font-weight: 600;">فصل ${student.classId}</span>
-                        <span style="font-size: 12px; color: ${student.count >= 5 ? '#e74c3c' : '#e67e22'}; font-weight: 900; margin-right: 10px;">
-                            أيام الغياب (آخر 30 يوم): ${student.count} يوم
-                        </span>
-                    </div>
-                    <div>
-                        ${warningButton}
-                    </div>
-                </div>
-            `;
-        });
-
-        resultsDiv.innerHTML = html;
-
-    } catch (error) {
-        document.getElementById('repeat-loading').innerText = "❌ حدث خطأ سحابي: " + error.message;
+    } catch(e) {
+        content.innerHTML = '<div style="text-align:center;padding:40px;color:#dc2626;font-weight:700">❌ '+e.message+'</div>';
     }
-}
-
-// دالة بث إشعار إنذار الغياب التراكمي لولي الأمر مجاناً عبر الواتساب
-window.notifyAbsence = function(studentName, classId, daysCount) {
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    const schoolName = user?.schoolName || 'المدرسة';
-    
-    const msg = `*إنذار غياب رسمي عاجل ⚠️*\n*الملف الإداري لـ ${schoolName}*\n\nنحيطكم علماً بأن الطالب: *${studentName}* (فصل ${classId})\nقد تكرر غيابه خلال الـ 30 يوماً الماضية وبلغ إجمالي الغياب المتفرق: *${daysCount} أيام*.\n\nيرجى مراجعة مكتب الأخصائي الاجتماعي بالمدرسة فوراً لتبرير الغياب وتجنب تطبيق اللوائح المدرسية الخاصة بالدرجات.\n\n_المنظومة الرقمية الشاملة_`;
-    
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-};
-// ===== طباعة السجل =====
-window.printRepeatPDF = async function() {
-    const tbody = document.getElementById('repeat-tbody');
-    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
-    const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>أيام الغياب</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
-    await window.ManzoumaReport.exportPDF(contentHTML, 'تقرير_الغياب_المتكرر', 'تقرير الغياب المتكرر');
 };
 
-window.printRepeatDirect = function() {
-    const tbody = document.getElementById('repeat-tbody');
-    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
-    const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>أيام الغياب</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
-    window.ManzoumaReport.printDirect(contentHTML, 'تقرير الغياب المتكرر');
+// تفاصيل غياب طالب معين
+window.showStudentAbsentHistory = async function(name, classId) {
+    try {
+        var snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('studentName','==',name), where('classId','==',classId)));
+        var records = snap.docs.map(d=>d.data()).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+
+        var html = '<div style="padding:16px"><h3 style="font-size:15px;font-weight:900;margin-bottom:12px">📋 سجل غياب: '+name+' — '+classId+'</h3>' +
+            '<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px;text-align:center">الحالة</th><th style="padding:8px;text-align:center">الحصة</th><th style="padding:8px;text-align:right">سجّلها</th></tr>' +
+            records.map(r => {
+                var statusLabel = r.status==='absent'?'غائب':r.status==='late'?'متأخر':r.status;
+                var statusColor = r.status==='absent'?'#dc2626':'#d97706';
+                return '<tr style="border-bottom:1px solid #f0f2f5"><td style="padding:8px">'+r.date+'</td><td style="padding:8px;text-align:center;color:'+statusColor+';font-weight:800">'+statusLabel+'</td><td style="padding:8px;text-align:center">'+(r.period||'-')+'</td><td style="padding:8px;font-size:11px;color:var(--mid)">'+(r.recordedBy||'-')+'</td></tr>';
+            }).join('') + '</table>' +
+            '<div style="margin-top:12px;display:flex;gap:8px"><button onclick="window.loadRepeatAbsent()" style="background:var(--navy);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer">← رجوع</button>' +
+            '<button onclick="window.printStudentHistory(\''+name.replace(/'/g,"\\'")+'\',\''+classId+'\')" style="background:#d97706;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer"><i class="bi bi-printer"></i> طباعة</button></div></div>';
+
+        document.getElementById('rep-content').innerHTML = html;
+    } catch(e) {}
+};
+
+window.printStudentHistory = function(name, classId) {
+    var content = document.getElementById('rep-content')?.innerHTML || '';
+    if(window.ManzoumaReport) window.ManzoumaReport.printDirect(content, 'تقرير غياب طالب', name + ' — ' + classId);
+};
+
+window.printRepeatReport = function() {
+    var content = document.getElementById('rep-content')?.innerHTML || '';
+    if(window.ManzoumaReport) window.ManzoumaReport.printDirect(content, 'تقرير الغياب المتكرر', '');
 };
