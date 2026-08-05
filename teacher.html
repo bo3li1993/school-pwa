@@ -372,7 +372,7 @@ document.getElementById('splash').classList.add('hide');
 
 // ===== التبويبات =====
 window.switchTab = function(tabId, btn) {
-    document.querySelectorAll('#tab-attendance, #tab-records, #tab-students, #tab-behavior, #tab-profile, #tab-messages, #tab-more')
+    document.querySelectorAll('#tab-attendance, #tab-students, #tab-profile, #tab-more')
         .forEach(el => el.classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
     document.querySelectorAll('.bn-item').forEach(t => t.classList.remove('active'));
@@ -983,6 +983,19 @@ window.saveFirstLogin = async function() {
         alert('❌ خطأ: ' + e.message);
     }
 };
+</script>
+
+
+<script>
+// تحميل مسبق للطلاب عشان يكون جاهز لما المعلم يضغط
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var selClass = document.getElementById('sel-class') || document.getElementById('view-class');
+        if(selClass && selClass.value && window.loadStudentsList) {
+            window.loadStudentsList(selClass.value);
+        }
+    }, 1500);
+});
 </script>
 
 </body>
