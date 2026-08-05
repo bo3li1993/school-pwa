@@ -230,7 +230,7 @@ window.executeResetPassword = async function(userDocId, newPass, userName) {
     try {
         const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
         const { auth } = await import('../firebase-config.js');
-        const functions = getFunctions(auth.app);
+        const functions = getFunctions(auth.app, 'me-central1');
         const resetFn = httpsCallable(functions, 'resetUserPassword');
 
         await resetFn({ userDocId, newPassword: newPass });
@@ -291,4 +291,18 @@ window.saveUserEdit = async function(docId) {
         document.getElementById('edit-user-modal')?.remove();
         setTimeout(() => window.loadSystemUsersDirectoryLive?.(), 500);
     } catch(e) { window.showToast?.('❌ '+e.message,'error'); }
+};
+
+// ══ حذف مستخدم ══
+window.deleteUser = async function(docId, userName) {
+    if(!confirm('هل أنت متأكد من حذف المستخدم: ' + userName + '؟\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
+    try {
+        const { db } = await import('../firebase-config.js');
+        const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        await deleteDoc(doc(db, 'users', docId));
+        window.showToast('✅ تم حذف ' + userName);
+        loadSystemUsersDirectoryLive();
+    } catch(e) {
+        window.showToast('❌ خطأ: ' + e.message, 'error');
+    }
 };
