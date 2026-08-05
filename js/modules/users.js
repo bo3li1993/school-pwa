@@ -206,6 +206,10 @@ async function loadSystemUsersDirectoryLive() {
                                 style="background:var(--sky);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px">
                                 <i class="bi bi-key-fill"></i> كلمة المرور
                             </button>
+                            <button onclick="window.deleteUser('${docSnap.id}', '${(u.name||"").replace(/'/g,"\\'")}')"
+                                style="background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">
+                                <i class="bi bi-trash-fill"></i> حذف
+                            </button>
                         </div>
                     </td>
                 </tr>`;
@@ -306,3 +310,4 @@ window.deleteUser = async function(docId, userName) {
         window.showToast('❌ خطأ: ' + e.message, 'error');
     }
 };
+
