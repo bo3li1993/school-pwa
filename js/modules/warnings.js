@@ -1,452 +1,181 @@
 import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
-import { collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, doc, updateDoc }
-  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-
-// ══ Cache غياب الطالب — يحسبه مرة وحدة ══
-const _absenceCountCache = {};
-
-async function getCachedAbsenceCount(schoolId, classId, studentName) {
-    const key = `${schoolId}_${classId}_${studentName}`;
-    if(_absenceCountCache[key] !== undefined) return _absenceCountCache[key];
-    const snap = await getDocs(query(collection(db,'attendance'),
-        where('schoolId','==',schoolId),
-        where('classId','==',classId),
-        where('status','==','absent')));
-    let count = 0;
-    snap.forEach(d => { if((d.data().studentName||d.data().name)===studentName) count++; });
-    _absenceCountCache[key] = count;
-    return count;
-}
-
-
-// ══════════════════════════════════════════════════════
-// موديل الإنذارات والتحذيرات الرسمية
-// وزارة التربية الكويتية — متوسطة سالم الحسينان
-// ══════════════════════════════════════════════════════
+import { collection, getDocs, addDoc, query, where, orderBy, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initWarningsModule() {
     const container = document.getElementById('tab-warnings');
     if(!container) return;
 
-    const schoolId = getActiveSchoolId();
-
     container.innerHTML = `
-    <style>
-        .warn-card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:16px}
-        .warn-title{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--off);padding-bottom:10px}
-        .warn-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
-        .warn-label{font-size:12px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
-        .warn-input{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;text-align:right;outline:none;transition:border-color .2s;background:var(--white);color:var(--text)}
-        .warn-input:focus{border-color:var(--sky)}
-        .warn-btn{padding:11px 22px;border-radius:10px;border:none;font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
-        .warn-btn.primary{background:var(--navy);color:#fff;width:100%;justify-content:center}
-        .warn-btn.primary:hover{background:#134074}
-        .warn-btn.print{background:var(--red);color:#fff}
-        .warn-btn.wa{background:#25d366;color:#fff}
-        .level-badge{display:inline-block;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:800;color:#fff}
-        .level-1{background:#6b7280} .level-2{background:#d97706} .level-3{background:#dc2626} .level-4{background:#7c3aed}
-        .status-badge{padding:3px 10px;border-radius:8px;font-size:11px;font-weight:800}
-        .status-open{background:#fef2f2;color:var(--red)} .status-done{background:#f0fdf4;color:var(--green)}
-    </style>
-
-    <!-- إصدار إنذار جديد -->
-    <div class="warn-card" style="border-top:4px solid var(--red)">
-        <div class="warn-title"><i class="bi bi-exclamation-triangle-fill" style="color:var(--red)"></i> إصدار إنذار / تحذير رسمي</div>
-
-        <div class="warn-form-grid">
-            <div>
-                <label class="warn-label">الفصل</label>
-                <select class="warn-input" id="warn-class" onchange="loadWarnStudents(this.value)">
-                    <option value="">-- اختر الفصل --</option>
-                </select>
-            </div>
-            <div>
-                <label class="warn-label">الطالب</label>
-                <select class="warn-input" id="warn-student" disabled>
-                    <option value="">-- اختر الفصل أولاً --</option>
-                </select>
-            </div>
-            <div>
-                <label class="warn-label">مستوى الإنذار</label>
-                <select class="warn-input" id="warn-level">
-                    <option value="1">📢 المستوى الأول — تنبيه (3 غيابات)</option>
-                    <option value="2">👪 المستوى الثاني — استدعاء ولي الأمر (5 غيابات)</option>
-                    <option value="3">📄 المستوى الثالث — إنذار رسمي (8 غيابات)</option>
-                    <option value="4">❌ المستوى الرابع — حرمان من الاختبارات (10 غيابات)</option>
-                </select>
-            </div>
-            <div>
-                <label class="warn-label">سبب الإنذار</label>
-                <select class="warn-input" id="warn-reason">
-                    <option value="غياب متكرر بدون عذر">غياب متكرر بدون عذر</option>
-                    <option value="تأخر متكرر">تأخر متكرر</option>
-                    <option value="سلوك غير لائق">سلوك غير لائق</option>
-                    <option value="إهمال واجبات مدرسية">إهمال واجبات مدرسية</option>
-                    <option value="أخرى">أخرى</option>
-                </select>
-            </div>
-            <div>
-                <label class="warn-label">عدد الغيابات المسجلة</label>
-                <input type="number" class="warn-input" id="warn-absence-count" placeholder="مثال: 5" min="0">
-            </div>
-            <div>
-                <label class="warn-label">تاريخ الإنذار</label>
-                <input type="date" class="warn-input" id="warn-date" value="${getTodayISO()}">
-            </div>
-            <div style="grid-column:1/-1">
-                <label class="warn-label">ملاحظات إضافية</label>
-                <textarea class="warn-input" id="warn-notes" rows="2" placeholder="أي ملاحظات للإنذار..."></textarea>
-            </div>
-        </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="warn-btn primary" style="flex:2" onclick="saveWarning()">
-                <i class="bi bi-cloud-plus-fill"></i> حفظ الإنذار
-            </button>
-            <button class="warn-btn print" onclick="printWarningForm()">
-                <i class="bi bi-printer-fill"></i> طباعة النموذج
-            </button>
-            <button class="warn-btn wa" onclick="sendWarningWhatsApp()">
-                <i class="bi bi-whatsapp"></i> إبلاغ واتساب
+    <div style="max-width:800px;margin:0 auto;padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+            <h2 style="font-size:17px;font-weight:900;color:var(--navy);margin:0">
+                <i class="bi bi-exclamation-triangle-fill" style="color:#d97706"></i> الإنذارات الرسمية
+            </h2>
+            <button onclick="window.showNewWarning()" style="background:#d97706;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:800;cursor:pointer">
+                <i class="bi bi-plus-lg"></i> إصدار إنذار
             </button>
         </div>
-    </div>
 
-    <!-- سجل الإنذارات -->
-    <div class="warn-card">
-        <div class="warn-title">
-            <i class="bi bi-journal-text"></i> سجل الإنذارات
-            <div style="margin-right:auto;display:flex;gap:8px">
-                <select class="warn-input" style="max-width:150px;padding:6px 10px" id="warn-filter-level" onchange="filterWarnings()">
-                    <option value="">كل المستويات</option>
-                    <option value="1">تنبيه</option>
-                    <option value="2">استدعاء</option>
-                    <option value="3">إنذار رسمي</option>
-                    <option value="4">حرمان</option>
-                </select>
-                <button class="warn-btn print" style="padding:7px 14px;font-size:12px" onclick="printAllWarnings()">
-                    <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+        <!-- إصدار إنذار جديد -->
+        <div id="warn-new-form" style="display:none;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:900;margin-bottom:14px">📋 إصدار إنذار غياب</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+                <div>
+                    <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">الفصل</label>
+                    <select id="warn-class" onchange="window.loadWarningStudents()" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px">
+                        <option value="">اختر الفصل</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">الطالب</label>
+                    <select id="warn-student" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px">
+                        <option value="">اختر الطالب</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+                <div>
+                    <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">مستوى الإنذار</label>
+                    <select id="warn-level" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px">
+                        <option value="1">إنذار أول</option>
+                        <option value="2">إنذار ثاني</option>
+                        <option value="3">إنذار نهائي</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">عدد أيام الغياب</label>
+                    <input type="number" id="warn-days" value="5" min="1" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px">
+                </div>
+            </div>
+            <div style="margin-bottom:12px">
+                <label style="font-size:11px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px">ملاحظات (اختياري)</label>
+                <textarea id="warn-notes" rows="2" placeholder="أي ملاحظات إضافية..." style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;resize:none"></textarea>
+            </div>
+            <div style="display:flex;gap:8px">
+                <button onclick="window.saveWarning()" style="flex:1;background:var(--navy);color:#fff;border:none;padding:11px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer">
+                    <i class="bi bi-check-circle-fill"></i> حفظ الإنذار
+                </button>
+                <button onclick="window.saveAndPrintWarning()" style="flex:1;background:#d97706;color:#fff;border:none;padding:11px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer">
+                    <i class="bi bi-printer-fill"></i> حفظ وطباعة
                 </button>
             </div>
         </div>
-        <div style="overflow-x:auto">
-            <table style="width:100%;border-collapse:collapse;font-size:13px">
-                <thead>
-                    <tr style="background:var(--off)">
-                        <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">الطالب</th>
-                        <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">الفصل</th>
-                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">المستوى</th>
-                        <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">السبب</th>
-                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">الغيابات</th>
-                        <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">التاريخ</th>
-                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">إجراء</th>
-                    </tr>
-                </thead>
-                <tbody id="warnings-tbody">
-                    <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--mid)">⏳ جاري التحميل...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    `;
 
-    loadClasses();
-    loadWarningsLive(schoolId);
+        <!-- قائمة الإنذارات -->
+        <div id="warn-list" style="background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden">
+            <div style="text-align:center;padding:40px;color:#aaa;font-weight:700">⏳ جاري التحميل...</div>
+        </div>
+    </div>`;
+
+    loadWarnings();
+    loadWarningClasses();
 }
 
-// ══ تحميل الفصول ══
-async function loadClasses() {
-    const sel = document.getElementById('warn-class');
-    if(!sel) return;
-    const schoolId = getActiveSchoolId();
+async function loadWarningClasses() {
     try {
-        const snap = await getDocs(query(collection(db,'students'),where('schoolId','==',schoolId)));
-        const classes = [...new Set(snap.docs.map(d=>d.data().classId).filter(Boolean))].sort();
-        sel.innerHTML = '<option value="">-- اختر الفصل --</option>' +
-            classes.map(c=>`<option value="${c}">${c}</option>`).join('');
+        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId())));
+        const classes = [...new Set(snap.docs.map(d => d.data().classId).filter(Boolean))].sort((a,b) => {
+            var pa=a.split('/'),pb=b.split('/');
+            return (parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0);
+        });
+        var sel = document.getElementById('warn-class');
+        if(sel) sel.innerHTML = '<option value="">اختر الفصل</option>' + classes.map(c => '<option value="'+c+'">'+c+'</option>').join('');
     } catch(e) {}
 }
 
-// ══ تحميل الطلاب ══
-window.loadWarnStudents = async function(classId) {
-    const sel = document.getElementById('warn-student');
-    if(!classId) { sel.innerHTML='<option value="">-- اختر الفصل أولاً --</option>'; sel.disabled=true; return; }
-    sel.innerHTML='<option value="">⏳...</option>'; sel.disabled=true;
+window.loadWarningStudents = async function() {
+    var classId = document.getElementById('warn-class')?.value;
+    var sel = document.getElementById('warn-student');
+    if(!classId || !sel) return;
     try {
-        const snap = await getDocs(query(collection(db,'students'),
-            where('schoolId','==',getActiveSchoolId()), where('classId','==',classId)));
-        const names = snap.docs.map(d=>d.data().name).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ar'));
-        sel.innerHTML = '<option value="">-- اختر الطالب --</option>' +
-            names.map(n=>`<option value="${n}">${n}</option>`).join('');
-        sel.disabled = false;
-
-        // حساب غيابات الطالب تلقائياً
-        sel.onchange = async function() {
-            const name = this.value;
-            if(!name) return;
-            const absSnap = await getDocs(query(collection(db,'attendance'),
-                where('schoolId','==',getActiveSchoolId()),
-                where('classId','==',classId),
-                where('status','==','absent')));
-            let count = 0;
-            absSnap.forEach(d => { if((d.data().studentName||d.data().name)===name) count++; });
-            document.getElementById('warn-absence-count').value = count;
-            // اقتراح المستوى تلقائياً
-            const level = count >= 10 ? 4 : count >= 8 ? 3 : count >= 5 ? 2 : count >= 3 ? 1 : 1;
-            document.getElementById('warn-level').value = level;
-        };
-    } catch(e) { sel.innerHTML='<option value="">❌ خطأ</option>'; }
+        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId)));
+        var students = snap.docs.map(d=>d.data().name).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ar'));
+        sel.innerHTML = '<option value="">اختر الطالب</option>' + students.map(n => '<option value="'+n+'">'+n+'</option>').join('');
+    } catch(e) {}
 };
 
-// ══ حفظ الإنذار ══
-window.saveWarning = async function() {
-    const student = document.getElementById('warn-student').value;
-    const classId = document.getElementById('warn-class').value;
-    const level   = document.getElementById('warn-level').value;
-    const reason  = document.getElementById('warn-reason').value;
-    const count   = document.getElementById('warn-absence-count').value;
-    const date    = document.getElementById('warn-date').value;
-    const notes   = document.getElementById('warn-notes').value.trim();
-    const user    = JSON.parse(localStorage.getItem('hs_user')||'{}');
+window.showNewWarning = function() {
+    var form = document.getElementById('warn-new-form');
+    if(form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+};
 
-    if(!student || !classId) { window.showToast('⚠️ اختر الفصل والطالب','warning'); return; }
+window.saveWarning = async function(andPrint) {
+    var student = document.getElementById('warn-student')?.value;
+    var classId = document.getElementById('warn-class')?.value;
+    var level   = document.getElementById('warn-level')?.value;
+    var days    = document.getElementById('warn-days')?.value;
+    var notes   = document.getElementById('warn-notes')?.value?.trim();
+    var me = JSON.parse(localStorage.getItem('hs_user')||'{}');
 
-    const levelNames = {1:'تنبيه',2:'استدعاء ولي الأمر',3:'إنذار رسمي',4:'حرمان من الاختبارات'};
+    if(!student || !classId) { window.showToast?.('اختر الفصل والطالب','warning'); return; }
 
     try {
-        await addDoc(collection(db,'warnings'), {
-            schoolId:      getActiveSchoolId(),
-            studentName:   student,
-            classId,
-            level:         parseInt(level),
-            levelName:     levelNames[level],
-            reason,
-            absenceCount:  parseInt(count)||0,
-            notes,
-            date,
-            issuedBy:      user.name || '',
-            status:        'open',
-            createdAt:     serverTimestamp()
-        });
-        window.showToast('✅ تم حفظ الإنذار بنجاح');
-        document.getElementById('warn-notes').value = '';
-    } catch(e) { window.showToast('❌ '+e.message,'error'); }
+        var data = {
+            schoolId: getActiveSchoolId(),
+            studentName: student,
+            classId: classId,
+            level: parseInt(level),
+            absentDays: parseInt(days),
+            notes: notes || '',
+            issuedBy: me.name || '',
+            issuedAt: serverTimestamp(),
+            date: getTodayISO()
+        };
+        await addDoc(collection(db,'warnings'), data);
+        window.showToast?.('✅ تم إصدار الإنذار');
+        document.getElementById('warn-new-form').style.display = 'none';
+        loadWarnings();
+
+        if(andPrint) printWarningDoc(data);
+    } catch(e) { window.showToast?.('❌ '+e.message,'error'); }
 };
 
-// ══ طباعة نموذج الإنذار ══
-window.printWarningForm = function() {
-    const student = document.getElementById('warn-student').value;
-    const classId = document.getElementById('warn-class').value;
-    const level   = document.getElementById('warn-level').value;
-    const reason  = document.getElementById('warn-reason').value;
-    const count   = document.getElementById('warn-absence-count').value;
-    const date    = document.getElementById('warn-date').value;
-    const notes   = document.getElementById('warn-notes').value;
+window.saveAndPrintWarning = function() { window.saveWarning(true); };
 
-    if(!student) { window.showToast('⚠️ اختر الطالب أولاً','warning'); return; }
+function printWarningDoc(data) {
+    var levelText = data.level===1?'الأول':data.level===2?'الثاني':'النهائي';
+    var content = '<div style="text-align:center;margin:30px 0 20px"><h2 style="font-size:20px;color:#d97706">⚠️ إنذار غياب '+levelText+'</h2></div>' +
+        '<table style="width:100%;border-collapse:collapse;margin:20px 0"><tr><td style="padding:10px;border:1px solid #ddd;font-weight:800;width:30%">اسم الطالب</td><td style="padding:10px;border:1px solid #ddd">'+data.studentName+'</td></tr>' +
+        '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">الفصل</td><td style="padding:10px;border:1px solid #ddd">'+data.classId+'</td></tr>' +
+        '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">عدد أيام الغياب</td><td style="padding:10px;border:1px solid #ddd">'+data.absentDays+' يوم</td></tr>' +
+        '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">مستوى الإنذار</td><td style="padding:10px;border:1px solid #ddd;color:#d97706;font-weight:900">'+levelText+'</td></tr>' +
+        '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">التاريخ</td><td style="padding:10px;border:1px solid #ddd">'+data.date+'</td></tr>' +
+        (data.notes ? '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">ملاحظات</td><td style="padding:10px;border:1px solid #ddd">'+data.notes+'</td></tr>' : '') +
+        '</table>' +
+        '<div style="margin-top:40px;display:flex;justify-content:space-between;font-size:12px"><div>توقيع ولي الأمر: ______________</div><div>توقيع المدير: ______________</div></div>';
 
-    const levelNames = {1:'تنبيه',2:'استدعاء ولي الأمر',3:'إنذار رسمي',4:'حرمان من الاختبارات'};
-    const user = JSON.parse(localStorage.getItem('hs_user')||'{}');
-    const dateAr = new Date(date+'T00:00:00').toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+    if(window.ManzoumaReport) window.ManzoumaReport.printDirect(content, 'إنذار غياب '+levelText, data.studentName+' — '+data.classId);
+}
 
-    const _warnHtml = `<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-<meta charset="UTF-8">
-<title>نموذج إنذار — ${student}</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-<style>
-  body{font-family:'Cairo',sans-serif;direction:rtl;padding:30px;color:#000;font-size:13px}
-  .header{text-align:center;margin-bottom:20px;border-bottom:3px double #000;padding-bottom:16px}
-  .header h1{font-size:16px;font-weight:900;margin-bottom:4px}
-  .header p{font-size:12px;color:#555}
-  .title-box{text-align:center;margin:16px 0;font-size:18px;font-weight:900;border:2px solid #000;padding:10px;border-radius:4px}
-  .info-table{width:100%;border-collapse:collapse;margin-bottom:16px}
-  .info-table td{border:1px solid #999;padding:8px 12px}
-  .info-table .lbl{background:#f0f0f0;font-weight:800;width:140px}
-  .content-box{border:1px solid #999;padding:14px;min-height:80px;margin-bottom:16px;border-radius:4px}
-  .sig-row{display:flex;justify-content:space-between;margin-top:40px}
-  .sig-box{text-align:center;width:30%}
-  .sig-box .line{border-top:1px solid #000;margin-top:30px;padding-top:6px;font-size:12px}
-  .stamp-box{border:2px dashed #999;height:80px;width:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;color:#999;font-size:11px;border-radius:50%}
-  @media print{@page{margin:1.5cm}}
-</style>
-</head>
-<body>
-<div class="header">
-  <h1>وزارة التربية — الإدارة العامة لمنطقة العاصمة التعليمية</h1>
-  <p>${user.schoolName||'مدرسة سالم الحسينان المتوسطة'}</p>
-</div>
-
-<div class="title-box">نموذج ${levelNames[level]}</div>
-
-<table class="info-table">
-  <tr><td class="lbl">اسم الطالب</td><td>${student}</td><td class="lbl">الفصل</td><td>${classId}</td></tr>
-  <tr><td class="lbl">سبب الإنذار</td><td>${reason}</td><td class="lbl">عدد الغيابات</td><td>${count} يوم</td></tr>
-  <tr><td class="lbl">التاريخ</td><td>${dateAr}</td><td class="lbl">أصدره</td><td>${user.name||''}</td></tr>
-</table>
-
-<div style="font-weight:900;margin-bottom:8px;font-size:14px">نص الإنذار:</div>
-<div class="content-box">
-بناءً على ما أُفيد به، وعلى ضوء سجلات الحضور والغياب، فإن الطالب / ${student} من الفصل ${classId} 
-قد تجاوز الحد المسموح به من الغيابات إذ بلغت ${count} يوماً، وذلك يستوجب إجراء 
-"${levelNames[level]}" وفق لوائح وزارة التربية والتعليم.
-${notes ? `\n\nملاحظات: ${notes}` : ''}
-</div>
-
-<div class="sig-row">
-  <div class="sig-box">
-    <div class="stamp-box">ختم<br>المدرسة</div>
-    <div class="line">مدير المدرسة</div>
-  </div>
-  <div class="sig-box">
-    <div class="line">ولي الأمر (بالعلم)</div>
-  </div>
-  <div class="sig-box">
-    <div class="line">الطالب (بالعلم)</div>
-  </div>
-</div>
-</body>
-</html>`;
-    printHtmlIos(_warnHtml);
-};
-
-// ══ واتساب ══
-window.sendWarningWhatsApp = async function() {
-    const student = document.getElementById('warn-student').value;
-    const classId = document.getElementById('warn-class').value;
-    const level   = document.getElementById('warn-level').value;
-    const count   = document.getElementById('warn-absence-count').value;
-    if(!student) { window.showToast('⚠️ اختر الطالب أولاً','warning'); return; }
-
-    const levelNames = {1:'تنبيه',2:'استدعاء ولي الأمر',3:'إنذار رسمي',4:'حرمان من الاختبارات'};
+async function loadWarnings() {
+    var list = document.getElementById('warn-list');
+    if(!list) return;
     try {
-        const snap = await getDocs(query(collection(db,'students'),
-            where('schoolId','==',getActiveSchoolId()),
-            where('classId','==',classId),
-            where('name','==',student)));
-        const phone = snap.docs[0]?.data()?.parentPhone?.replace(/\D/g,'');
-        if(!phone) { window.showToast('⚠️ لا يوجد رقم لولي الأمر','warning'); return; }
-        const user = JSON.parse(localStorage.getItem('hs_user')||'{}');
-        const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-        const msg = encodeURIComponent(
-            `السلام عليكم ولي أمر الطالب ${student}،\n` +
-            `نُعلمكم بأن مدرسة ${user.schoolName||''} قد أصدرت بحق ابنكم:\n` +
-            `📋 ${levelNames[level]}\n` +
-            `السبب: غياب متكرر (${count} يوم)\n` +
-            `التاريخ: ${today}\n` +
-            `يرجى مراجعة إدارة المدرسة في أقرب وقت.`
-        );
-        window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
-    } catch(e) { window.showToast('❌ '+e.message,'error'); }
-};
+        var snap = await getDocs(query(collection(db,'warnings'), where('schoolId','==',getActiveSchoolId())));
+        if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-weight:700">📭 لا توجد إنذارات</div>'; return; }
 
+        var warnings = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.issuedAt?.toMillis?.()||0)-(a.issuedAt?.toMillis?.()||0));
+        var levelColors = {1:'#d97706',2:'#ea580c',3:'#dc2626'};
+        var levelText = {1:'أول',2:'ثاني',3:'نهائي'};
 
-// ══ دالة طباعة متوافقة مع iOS Safari ══
-function printHtmlIos(htmlContent) {
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
-
-    // محاولة window.open أولاً
-    const printWin = window.open(blobUrl, '_blank');
-
-    if (!printWin || printWin.closed || typeof printWin.closed === 'undefined') {
-        // iOS Safari يحجب window.open — نستخدم iframe
-        const overlay = document.createElement('div');
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column';
-        overlay.innerHTML = `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#0b2545;color:#fff;font-family:Cairo,sans-serif">
-                <span style="font-weight:800;font-size:14px">معاينة الطباعة</span>
-                <div style="display:flex;gap:8px">
-                    <button id="_print-btn" style="background:#25d366;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-weight:800;cursor:pointer">🖨️ طباعة</button>
-                    <button id="_close-btn" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">✕ إغلاق</button>
-                </div>
-            </div>
-            <iframe id="_print-frame" src="${blobUrl}" style="flex:1;border:none;width:100%"></iframe>`;
-        document.body.appendChild(overlay);
-
-        document.getElementById('_print-btn').onclick = () => {
-            document.getElementById('_print-frame').contentWindow?.print();
-        };
-        document.getElementById('_close-btn').onclick = () => {
-            overlay.remove();
-            URL.revokeObjectURL(blobUrl);
-        };
-    } else {
-        setTimeout(() => {
-            try { printWin.print(); } catch(e) {}
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
-        }, 700);
-    }
+        list.innerHTML = warnings.map(w => {
+            var time = w.issuedAt?.toDate?.();
+            var timeStr = time ? time.toLocaleDateString('ar-KW') : w.date||'';
+            return '<div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #f0f2f5;gap:12px">' +
+                '<div style="width:40px;height:40px;border-radius:10px;background:'+(levelColors[w.level]||'#d97706')+'22;color:'+(levelColors[w.level]||'#d97706')+';display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px">'+w.level+'</div>' +
+                '<div style="flex:1"><div style="font-weight:800;font-size:13px;color:#111">'+w.studentName+' — '+w.classId+'</div>' +
+                '<div style="font-size:11px;color:var(--mid)">إنذار '+(levelText[w.level]||'')+' | '+w.absentDays+' يوم غياب | '+timeStr+'</div></div>' +
+                '<button onclick="window.reprintWarning(\''+w.id+'\')" style="background:none;border:1px solid var(--line);padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer"><i class="bi bi-printer"></i></button>' +
+                '</div>';
+        }).join('');
+    } catch(e) { list.innerHTML = '<div style="text-align:center;padding:40px;color:#dc2626;font-weight:700">❌ '+e.message+'</div>'; }
 }
 
-// ══ سجل الإنذارات لايف ══
-let allWarnings   = [];
-let _warningsUnsub = null;
-
-function cleanupWarningsListeners() {
-    if(_warningsUnsub) { try { _warningsUnsub(); } catch(e) {} _warningsUnsub = null; }
-}
-
-function loadWarningsLive(schoolId) {
-    const tbody = document.getElementById('warnings-tbody');
-    const q = query(collection(db,'warnings'), where('schoolId','==',schoolId));
-    cleanupWarningsListeners();
-    _warningsUnsub = onSnapshot(q, snap => {
-        allWarnings = [];
-        snap.forEach(d => allWarnings.push({ id:d.id, ...d.data() }));
-        allWarnings.sort((a,b) => (b.date||'').localeCompare(a.date||''));
-        filterWarnings();
-    });
-}
-
-window.filterWarnings = function() {
-    const tbody   = document.getElementById('warnings-tbody');
-    const filter  = document.getElementById('warn-filter-level')?.value || '';
-    const filtered = filter ? allWarnings.filter(w=>w.level==filter) : allWarnings;
-    const levelColors = {1:'#6b7280',2:'#d97706',3:'#dc2626',4:'#7c3aed'};
-
-    if(!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--mid)">لا توجد إنذارات</td></tr>';
-        return;
-    }
-
-    tbody.innerHTML = filtered.map(w => `
-        <tr style="border-bottom:1px solid var(--line)">
-            <td style="padding:9px 12px;font-weight:700">${w.studentName||'—'}</td>
-            <td style="padding:9px 12px">${w.classId||'—'}</td>
-            <td style="padding:9px 12px;text-align:center">
-                <span class="level-badge level-${w.level||1}" style="background:${levelColors[w.level||1]}">${w.levelName||'—'}</span>
-            </td>
-            <td style="padding:9px 12px;font-size:12px">${w.reason||'—'}</td>
-            <td style="padding:9px 12px;text-align:center;font-weight:800;color:var(--red)">${w.absenceCount||0}</td>
-            <td style="padding:9px 12px;color:var(--mid);font-size:12px">${w.date||'—'}</td>
-            <td style="padding:9px 12px;text-align:center">
-                <span class="status-badge ${w.status==='done'?'status-done':'status-open'}">${w.status==='done'?'✅ مُعالَج':'🔴 مفتوح'}</span>
-            </td>
-        </tr>`).join('');
-};
-
-// ══ طباعة كل الإنذارات PDF ══
-window.printAllWarnings = async function() {
-    if(!allWarnings.length) { window.showToast('⚠️ لا توجد إنذارات','warning'); return; }
-    const levelColors = {1:'#6b7280',2:'#d97706',3:'#dc2626',4:'#7c3aed'};
-    const content = `<table style="width:100%;border-collapse:collapse;font-size:12px">
-        <thead><tr style="background:#0b2545;color:#fff">
-            <th style="padding:8px">الطالب</th><th style="padding:8px">الفصل</th>
-            <th style="padding:8px">المستوى</th><th style="padding:8px">السبب</th>
-            <th style="padding:8px">الغيابات</th><th style="padding:8px">التاريخ</th>
-        </tr></thead>
-        <tbody>${allWarnings.map(w=>`<tr>
-            <td style="padding:7px;border-bottom:1px solid #eee;font-weight:700">${w.studentName||'—'}</td>
-            <td style="padding:7px;border-bottom:1px solid #eee">${w.classId||'—'}</td>
-            <td style="padding:7px;border-bottom:1px solid #eee;color:${levelColors[w.level||1]};font-weight:800">${w.levelName||'—'}</td>
-            <td style="padding:7px;border-bottom:1px solid #eee;font-size:11px">${w.reason||'—'}</td>
-            <td style="padding:7px;border-bottom:1px solid #eee;text-align:center;font-weight:800;color:#dc2626">${w.absenceCount||0}</td>
-            <td style="padding:7px;border-bottom:1px solid #eee;color:#666">${w.date||'—'}</td>
-        </tr>`).join('')}</tbody>
-    </table>`;
-    if(window.ManzoumaReport?.exportPDF) {
-        await window.ManzoumaReport.exportPDF(content,'سجل_الإنذارات_الرسمية','سجل الإنذارات والتحذيرات الرسمية','متوسطة سالم الحسينان');
-    }
+window.reprintWarning = async function(id) {
+    try {
+        var { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var snap = await getDoc(doc(db,'warnings',id));
+        if(snap.exists()) printWarningDoc(snap.data());
+    } catch(e) {}
 };
