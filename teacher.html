@@ -323,9 +323,64 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 
 </div>
 
+
+    <!-- إحصائياتي -->
+    <div id="tab-stats" class="hidden">
+        <div style="max-width:600px;margin:0 auto;padding:16px">
+            <h2 style="font-size:17px;font-weight:900;color:#0b2545;margin-bottom:14px"><i class="bi bi-graph-up" style="color:#1a78c2"></i> إحصائياتي اليوم</h2>
+            <div id="stats-content" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center">
+                    <div style="font-size:28px;font-weight:900;color:#0b2545" id="st-classes-done">-</div>
+                    <div style="font-size:11px;color:#6b7280;font-weight:700">فصول سجّلت غيابها</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center">
+                    <div style="font-size:28px;font-weight:900;color:#dc2626" id="st-absent-count">-</div>
+                    <div style="font-size:11px;color:#6b7280;font-weight:700">طالب غائب</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center">
+                    <div style="font-size:28px;font-weight:900;color:#d97706" id="st-late-count">-</div>
+                    <div style="font-size:11px;color:#6b7280;font-weight:700">طالب متأخر</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center">
+                    <div style="font-size:28px;font-weight:900;color:#16a34a" id="st-present-rate">-</div>
+                    <div style="font-size:11px;color:#6b7280;font-weight:700">نسبة الحضور</div>
+                </div>
+            </div>
+            <div id="st-announcements" style="margin-top:16px"></div>
+        </div>
+    </div>
+
+    <!-- سجلّي -->
+    <div id="tab-mylog" class="hidden">
+        <div style="max-width:600px;margin:0 auto;padding:16px">
+            <h2 style="font-size:17px;font-weight:900;color:#0b2545;margin-bottom:14px"><i class="bi bi-journal-check" style="color:#1a78c2"></i> سجل الغياب اللي سجّلته</h2>
+            <input type="date" id="mylog-date" onchange="window.loadMyLog()" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
+            <div id="mylog-content"><div style="text-align:center;padding:40px;color:#aaa;font-weight:700">اختر تاريخ لعرض السجل</div></div>
+        </div>
+    </div>
+
+    <!-- ملاحظات على الطلاب -->
+    <div id="tab-notes" class="hidden">
+        <div style="max-width:600px;margin:0 auto;padding:16px">
+            <h2 style="font-size:17px;font-weight:900;color:#0b2545;margin-bottom:14px"><i class="bi bi-pencil-square" style="color:#d97706"></i> ملاحظات على الطلاب</h2>
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+                    <select id="note-class" onchange="window.loadNoteStudents()" style="padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px"><option value="">اختر الفصل</option></select>
+                    <select id="note-student" style="padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px"><option value="">اختر الطالب</option></select>
+                </div>
+                <textarea id="note-text" rows="3" placeholder="اكتب ملاحظتك..." style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;resize:none;margin-bottom:8px"></textarea>
+                <button onclick="window.saveStudentNote()" style="width:100%;padding:10px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer"><i class="bi bi-check-circle-fill"></i> حفظ الملاحظة</button>
+            </div>
+            <div id="notes-list"><div style="text-align:center;padding:20px;color:#aaa;font-size:13px">لا توجد ملاحظات</div></div>
+        </div>
+    </div>
+
 <div class="bottom-nav">
-  <button class="bn-item active" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance', this)"><i class="bi bi-pencil-square"></i>الغياب</button>
-  <button class="bn-item" data-bn-tab="tab-more" onclick="window.switchTab('tab-more', this)"><i class="bi bi-grid-3x3-gap"></i>المزيد</button>
+  <button class="bn-item" data-bn-tab="tab-stats" onclick="window.switchTab('tab-stats', this)"><i class="bi bi-graph-up"></i><span>إحصائياتي</span></button>
+    <button class="bn-item active" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance', this)"><i class="bi bi-pencil-square"></i>الغياب</button>
+  <button class="bn-item" data-bn-tab="tab-mylog" onclick="window.switchTab('tab-mylog', this)"><i class="bi bi-journal-check"></i><span>سجلّي</span></button>
+    <button class="bn-item" data-bn-tab="tab-notes" onclick="window.switchTab('tab-notes', this)"><i class="bi bi-pencil-square"></i><span>ملاحظات</span></button>
+    <button class="bn-item" data-bn-tab="tab-more" onclick="window.switchTab('tab-more', this)"><i class="bi bi-grid-3x3-gap"></i>المزيد</button>
 </div>
 
 <script type="module">
@@ -573,33 +628,7 @@ window.saveAttendance = async function() {
             });
         } catch(e) {}
 
-        if (absentList.length > 0) {
-            const wantWA = confirm(`👥 يوجد ${absentList.length} طالب غائب\nهل تريد إرسال إشعارات واتساب لأولياء الأمور؟`);
-            if (wantWA) {
-                const q = query(collection(db,'students'),
-                    where('schoolId','==',schoolId), where('classId','==',classId));
-                const snap = await getDocs(q);
-                const phoneMap = {};
-                snap.forEach(d => { if(d.data().parentPhone) phoneMap[d.data().name.trim()] = d.data().parentPhone; });
-
-                // ✅ واتساب جماعي — رسالة واحدة بدل popups متعددة
-                const absentWithPhones = absentList
-                    .filter(name => phoneMap[name])
-                    .map(name => ({name, phone: phoneMap[name].replace(/\D/g,'')}));
-
-                if (absentWithPhones.length === 0) {
-                    showToast('⚠️ لا توجد أرقام مسجّلة لأولياء الأمور', 'info');
-                } else {
-                    // نبني رسالة واحدة تحتوي كل الأسماء
-                    const names = absentWithPhones.map(s=>s.name).join('، ');
-                    const msg = encodeURIComponent(
-                        `السلام عليكم،\nيُعلَم أولياء أمور الطلاب الغائبين اليوم ${todayISO} — الحصة ${period}:\n${names}\nمدرسة ${currentUser.schoolName||''}`
-                    );
-                    // نفتح واتساب لأول ولي أمر برسالة جماعية
-                    window.open(`https://wa.me/965${absentWithPhones[0].phone}?text=${msg}`, '_blank');
-                    showToast(`✅ تم فتح واتساب — ${absentWithPhones.length} غائب`);
-                }
-            }
+        showToast("✅ تم حفظ الغياب بنجاح");
         }
 
         document.getElementById('sel-class').value = '';
@@ -918,6 +947,8 @@ if('serviceWorker' in navigator) {
                 overlay.style.display = 'flex';
                 overlay.style.alignItems = 'center';
                 overlay.style.justifyContent = 'center';
+                overlay.style.alignItems = 'center';
+                overlay.style.justifyContent = 'center';
                 // تعبئة الاسم الموجود
                 var nameInput = document.getElementById('fl-name');
                 if(nameInput && user.name) nameInput.value = user.name;
@@ -995,6 +1026,185 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 1500);
 });
+</script>
+
+
+<script>
+// ══ إحصائياتي ══
+window.loadMyStats = async function() {
+    try {
+        var { db, getActiveSchoolId, getTodayISO } = await import('./js/firebase-config.js');
+        var { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var me = JSON.parse(localStorage.getItem('hs_user')||'{}');
+        var today = getTodayISO();
+
+        var snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('date','==',today), where('recordedBy','==',me.name||'')));
+        var records = snap.docs.map(function(d){return d.data()});
+        var classes = {};
+        var absent = 0, late = 0;
+        records.forEach(function(r) {
+            classes[r.classId] = 1;
+            if(r.status==='absent') absent++;
+            if(r.status==='late') late++;
+        });
+
+        document.getElementById('st-classes-done').textContent = Object.keys(classes).length;
+        document.getElementById('st-absent-count').textContent = absent;
+        document.getElementById('st-late-count').textContent = late;
+
+        // إعلانات المدرسة
+        var annSnap = await getDocs(query(collection(db,'school_announcements'), where('schoolId','==',getActiveSchoolId()), where('active','==',true)));
+        var annDiv = document.getElementById('st-announcements');
+        if(annSnap.size > 0 && annDiv) {
+            annDiv.innerHTML = '<div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:12px;padding:14px;margin-top:8px"><div style="font-weight:800;font-size:13px;color:#92400e;margin-bottom:6px">📢 إعلانات المدرسة</div>' +
+                annSnap.docs.map(function(d){return '<div style="font-size:12px;color:#78350f;padding:4px 0;border-bottom:1px solid #fde68a">'+d.data().text+'</div>'}).join('') + '</div>';
+        }
+    } catch(e) { console.error('Stats:', e); }
+};
+
+// ══ سجلّي — الغياب اللي سجّلته ══
+window.loadMyLog = async function() {
+    var date = document.getElementById('mylog-date')?.value;
+    if(!date) return;
+    var content = document.getElementById('mylog-content');
+    content.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa">⏳ جاري التحميل...</div>';
+
+    try {
+        var { db, getActiveSchoolId } = await import('./js/firebase-config.js');
+        var { collection, getDocs, query, where, deleteDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var me = JSON.parse(localStorage.getItem('hs_user')||'{}');
+
+        var snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('date','==',date), where('recordedBy','==',me.name||'')));
+
+        if(snap.empty) { content.innerHTML = '<div style="text-align:center;padding:30px;color:#aaa;font-weight:700">📭 لا يوجد سجلات لهذا اليوم</div>'; return; }
+
+        var records = snap.docs.map(function(d){return {id:d.id,...d.data()}}).sort(function(a,b){
+            var pa=(a.classId||'').split('/'),pb=(b.classId||'').split('/');
+            return (parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0)||(a.studentName||'').localeCompare(b.studentName||'','ar');
+        });
+
+        var statusLabels = {absent:'غائب',late:'متأخر',excused:'مستأذن'};
+        var statusColors = {absent:'#dc2626',late:'#d97706',excused:'#2563eb'};
+
+        content.innerHTML = '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">' +
+            '<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">الطالب</th><th style="padding:8px;text-align:center">الفصل</th><th style="padding:8px;text-align:center">الحالة</th><th style="padding:8px;text-align:center">الحصة</th><th style="padding:8px;text-align:center">إجراء</th></tr>' +
+            records.map(function(r) {
+                return '<tr style="border-bottom:1px solid #f0f2f5"><td style="padding:8px;font-weight:700">'+r.studentName+'</td>' +
+                    '<td style="padding:8px;text-align:center">'+r.classId+'</td>' +
+                    '<td style="padding:8px;text-align:center"><span style="color:'+(statusColors[r.status]||'#666')+';font-weight:800;font-size:11px">'+(statusLabels[r.status]||r.status)+'</span></td>' +
+                    '<td style="padding:8px;text-align:center">'+(r.period||'-')+'</td>' +
+                    '<td style="padding:8px;text-align:center"><button onclick="window.deleteMyRecord(''+r.id+'')" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer">حذف</button></td></tr>';
+            }).join('') + '</table></div>';
+
+    } catch(e) { content.innerHTML = '<div style="color:#dc2626;padding:20px">❌ '+e.message+'</div>'; }
+};
+
+window.deleteMyRecord = async function(id) {
+    if(!confirm('حذف هذا السجل؟')) return;
+    try {
+        var { db } = await import('./js/firebase-config.js');
+        var { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        await deleteDoc(doc(db,'attendance',id));
+        if(window.showToast) window.showToast('✅ تم الحذف');
+        window.loadMyLog();
+    } catch(e) { if(window.showToast) window.showToast('❌ '+e.message,'error'); }
+};
+
+// ══ ملاحظات على الطلاب ══
+window.loadNoteStudents = async function() {
+    var classId = document.getElementById('note-class')?.value;
+    var sel = document.getElementById('note-student');
+    if(!classId||!sel) return;
+    try {
+        var { db, getActiveSchoolId } = await import('./js/firebase-config.js');
+        var { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId)));
+        var students = snap.docs.map(function(d){return d.data().name}).filter(Boolean).sort(function(a,b){return a.localeCompare(b,'ar')});
+        sel.innerHTML = '<option value="">اختر الطالب</option>' + students.map(function(n){return '<option value="'+n+'">'+n+'</option>'}).join('');
+    } catch(e) {}
+};
+
+window.saveStudentNote = async function() {
+    var classId = document.getElementById('note-class')?.value;
+    var student = document.getElementById('note-student')?.value;
+    var text = document.getElementById('note-text')?.value?.trim();
+    if(!classId||!student||!text) { if(window.showToast) window.showToast('اختر الفصل والطالب واكتب الملاحظة','warning'); return; }
+
+    try {
+        var { db, getActiveSchoolId, getTodayISO } = await import('./js/firebase-config.js');
+        var { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var me = JSON.parse(localStorage.getItem('hs_user')||'{}');
+        await addDoc(collection(db,'student_notes'), {
+            schoolId: getActiveSchoolId(), classId: classId, studentName: student,
+            note: text, teacherName: me.name||'', teacherId: me.userId||'',
+            date: getTodayISO(), createdAt: serverTimestamp()
+        });
+        document.getElementById('note-text').value = '';
+        if(window.showToast) window.showToast('✅ تم حفظ الملاحظة');
+        window.loadMyNotes();
+    } catch(e) { if(window.showToast) window.showToast('❌ '+e.message,'error'); }
+};
+
+window.loadMyNotes = async function() {
+    var list = document.getElementById('notes-list');
+    if(!list) return;
+    try {
+        var { db, getActiveSchoolId } = await import('./js/firebase-config.js');
+        var { collection, getDocs, query, where, orderBy } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var me = JSON.parse(localStorage.getItem('hs_user')||'{}');
+        var snap = await getDocs(query(collection(db,'student_notes'), where('schoolId','==',getActiveSchoolId()), where('teacherId','==',me.userId||'')));
+        if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-size:13px">لا توجد ملاحظات</div>'; return; }
+        var notes = snap.docs.map(function(d){return {id:d.id,...d.data()}}).sort(function(a,b){return (b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0)});
+        list.innerHTML = notes.map(function(n) {
+            return '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px;margin-bottom:8px">' +
+                '<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-weight:800;font-size:13px;color:#111">'+n.studentName+' — '+n.classId+'</span><span style="font-size:10px;color:#aaa">'+n.date+'</span></div>' +
+                '<div style="font-size:12px;color:#555;line-height:1.5">'+n.note+'</div></div>';
+        }).join('');
+    } catch(e) {}
+};
+
+// ══ تحميل الفصول في الملاحظات ══
+(function() {
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            var { db, getActiveSchoolId } = await import('./js/firebase-config.js');
+            var { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+            var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId())));
+            var classes = [...new Set(snap.docs.map(function(d){return d.data().classId}).filter(Boolean))].sort(function(a,b){
+                var pa=a.split('/'),pb=b.split('/');
+                return (parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0);
+            });
+            var sel = document.getElementById('note-class');
+            if(sel) sel.innerHTML = '<option value="">اختر الفصل</option>' + classes.map(function(c){return '<option value="'+c+'">'+c+'</option>'}).join('');
+
+            // تاريخ اليوم في سجلّي
+            var { getTodayISO } = await import('./js/firebase-config.js');
+            var dateInput = document.getElementById('mylog-date');
+            if(dateInput) dateInput.value = getTodayISO();
+
+            // تحميل الإحصائيات
+            window.loadMyStats();
+            window.loadMyNotes();
+        } catch(e) {}
+    });
+})();
+
+// ══ switchTab يدعم التبويبات الجديدة ══
+var _origSwitchTab = window.switchTab;
+window.switchTab = function(tabId, btn) {
+    // أخفِ كل التبويبات
+    document.querySelectorAll('#tab-attendance, #tab-students, #tab-profile, #tab-more, #tab-stats, #tab-mylog, #tab-notes').forEach(function(el){el.classList.add('hidden')});
+    document.querySelectorAll('.bn-item').forEach(function(el){el.classList.remove('active')});
+
+    var target = document.getElementById(tabId);
+    if(target) target.classList.remove('hidden');
+    if(btn) btn.classList.add('active');
+
+    // تحميل البيانات
+    if(tabId === 'tab-stats') window.loadMyStats();
+    if(tabId === 'tab-mylog') window.loadMyLog();
+    if(tabId === 'tab-notes') window.loadMyNotes();
+};
 </script>
 
 </body>
