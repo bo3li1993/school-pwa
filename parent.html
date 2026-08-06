@@ -900,5 +900,49 @@ if('serviceWorker' in navigator) {
 }
 </script>
 
+
+    <!-- إعلانات المدرسة -->
+    <div id="parent-announcements" style="margin-top:16px"></div>
+
+    <!-- ملاحظات المعلمين -->
+    <div id="parent-notes" style="margin-top:16px"></div>
+
+
+<script>
+// ══ إعلانات المدرسة + ملاحظات المعلمين لولي الأمر ══
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        var { db, getActiveSchoolId } = await import('./js/firebase-config.js');
+        var { collection, getDocs, query, where } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var me = JSON.parse(localStorage.getItem('hs_parent')||'{}');
+        var schoolId = me.schoolId || getActiveSchoolId();
+
+        // إعلانات
+        var annSnap = await getDocs(query(collection(db,'school_announcements'), where('schoolId','==',schoolId), where('active','==',true)));
+        var annDiv = document.getElementById('parent-announcements');
+        if(annSnap.size > 0 && annDiv) {
+            annDiv.innerHTML = '<div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:14px;padding:16px;margin:0 16px">' +
+                '<h3 style="font-size:14px;font-weight:900;color:#92400e;margin-bottom:8px">📢 إعلانات المدرسة</h3>' +
+                annSnap.docs.map(function(d){return '<div style="font-size:13px;color:#78350f;padding:6px 0;border-bottom:1px solid #fde68a;font-weight:600">'+d.data().text+'</div>'}).join('') +
+                '</div>';
+        }
+
+        // ملاحظات المعلمين عن ابني
+        var studentName = me.studentName || '';
+        if(studentName) {
+            var notesSnap = await getDocs(query(collection(db,'student_notes'), where('schoolId','==',schoolId), where('studentName','==',studentName)));
+            var notesDiv = document.getElementById('parent-notes');
+            if(notesSnap.size > 0 && notesDiv) {
+                var notes = notesSnap.docs.map(function(d){return d.data()}).sort(function(a,b){return (b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0)});
+                notesDiv.innerHTML = '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin:0 16px">' +
+                    '<h3 style="font-size:14px;font-weight:900;color:#0b2545;margin-bottom:8px">📝 ملاحظات المعلمين</h3>' +
+                    notes.map(function(n){return '<div style="padding:8px 0;border-bottom:1px solid #f0f2f5"><div style="font-weight:800;font-size:12px;color:#111">'+n.teacherName+' <span style="color:#aaa;font-weight:600">'+n.date+'</span></div><div style="font-size:13px;color:#555;margin-top:2px">'+n.note+'</div></div>'}).join('') +
+                    '</div>';
+            }
+        }
+    } catch(e) { console.error('Parent extras:', e); }
+});
+</script>
+
 </body>
 </html>
