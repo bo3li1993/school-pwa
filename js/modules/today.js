@@ -1,516 +1,151 @@
 import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
-import { collection, query, where, getDocs, orderBy, limit, onSnapshot }
-  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initTodayModule() {
     const container = document.getElementById('tab-index');
-    if (!container) return;
-
-    const user     = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    if(!container) return;
     const schoolId = getActiveSchoolId();
-    const todayISO = getTodayISO();
-    const d        = new Date();
-    const dayName  = d.toLocaleDateString('ar-KW', { weekday:'long' });
-    const dateAr   = d.toLocaleDateString('ar-KW', { year:'numeric', month:'long', day:'numeric' });
+    const today = getTodayISO();
+    const me = JSON.parse(localStorage.getItem('hs_user')||'{}');
 
     container.innerHTML = `
-    <style>
-        .dash-greeting{background:linear-gradient(135deg,var(--navy) 0%,#1a4a8a 100%);border-radius:16px;padding:22px 24px;margin-bottom:18px;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-        .dash-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px}
-        .dash-kpi{background:var(--white);border-radius:12px;padding:16px;border-bottom:4px solid;box-shadow:0 1px 4px rgba(0,0,0,.07);cursor:default;transition:transform .2s}
-        .dash-kpi:hover{transform:translateY(-2px)}
-        .dash-kpi .lbl{font-size:11px;color:#999;font-weight:700;margin-bottom:4px}
-        .dash-kpi .num{font-size:32px;font-weight:900;line-height:1.2}
-        .dash-kpi .sub{font-size:10px;color:#aaa;margin-top:3px;font-weight:600}
-        .dash-two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
-        .dash-chart-box{background:var(--white);border-radius:14px;padding:20px;border:1px solid var(--line)}
-        .dash-chart-title{font-size:14px;font-weight:900;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-        .bar-chart{display:flex;flex-direction:column;gap:8px}
-        .bar-item{display:flex;align-items:center;gap:10px;font-size:12px}
-        .bar-label{width:60px;text-align:right;font-weight:700;color:var(--mid);flex-shrink:0}
-        .bar-track{flex:1;height:24px;background:#f0f4f8;border-radius:6px;overflow:hidden;position:relative}
-        .bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:11px;font-weight:800;color:#fff;transition:width 1s ease;min-width:28px}
-        .donut-wrap{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
-        .donut-svg{flex-shrink:0}
-        .donut-legend{display:flex;flex-direction:column;gap:8px}
-        .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700}
-        .legend-dot{width:10px;height:10px;border-radius:50%}
-        .dash-list{background:var(--white);border-radius:14px;padding:20px;border:1px solid var(--line);margin-bottom:16px}
-        .dash-list-title{font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--off);padding-bottom:8px}
-        .alert-card{background:linear-gradient(135deg,#fff5f5,#fff);border-right:4px solid var(--red);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;font-size:13px}
-        .alert-name{font-weight:800;color:var(--navy)}
-        .alert-count{background:var(--red);color:#fff;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:800}
-        .wa-btn{background:#25d366;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px}
-        .wa-btn:hover{background:#1da851}
-        .trend-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:8px;font-size:10px;font-weight:800}
-        .trend-up{background:#fee2e2;color:#dc2626}
-        .trend-down{background:#dcfce7;color:#16a34a}
-        @media(max-width:768px){.dash-two{grid-template-columns:1fr}.dash-kpi .num{font-size:26px}}
-    </style>
+    <div style="max-width:800px;margin:0 auto;padding:16px">
+        <h2 style="font-size:17px;font-weight:900;color:var(--navy);margin-bottom:14px">
+            <i class="bi bi-speedometer2" style="color:var(--sky)"></i> لوحة المؤشرات — ${new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}
+        </h2>
 
-    <!-- ترحيب -->
-    <div class="dash-greeting">
-        <div>
-            <div style="font-size:12px;opacity:.7;font-weight:600">${dayName}، ${dateAr}</div>
-            <h2 style="margin:4px 0 2px;font-size:19px;font-weight:900">مرحباً، ${user.name||'المدير'} 👋</h2>
-            <div style="font-size:12px;opacity:.6">${user.schoolName||''}</div>
-        </div>
-        <div style="text-align:center;background:rgba(255,255,255,.1);padding:12px 20px;border-radius:12px">
-            <div id="dash-attend-rate" style="font-size:30px;font-weight:900;color:var(--gold)">—%</div>
-            <div style="font-size:11px;opacity:.8">نسبة الحضور اليوم</div>
-        </div>
-    </div>
-
-    <!-- KPIs -->
-    <div class="dash-kpi-grid">
-        <div class="dash-kpi" style="border-color:#dc2626;cursor:pointer" onclick="window.showKpiDetail('absent')">
-            <div class="lbl">غياب اليوم</div>
-            <div class="num" id="kpi-absent" style="color:#dc2626">—</div>
-            <div class="sub" id="kpi-absent-trend"></div>
-        </div>
-        <div class="dash-kpi" style="border-color:#d97706;cursor:pointer" onclick="window.showKpiDetail('late')">
-            <div class="lbl">تأخير اليوم</div>
-            <div class="num" id="kpi-late" style="color:#d97706">—</div>
-        </div>
-        <div class="dash-kpi" style="border-color:#7c3aed;cursor:pointer" onclick="window.showKpiDetail('behavior')">
-            <div class="lbl">حوادث سلوكية</div>
-            <div class="num" id="kpi-behavior" style="color:#7c3aed">—</div>
-        </div>
-        <div class="dash-kpi" style="border-color:#0891b2;cursor:pointer" onclick="window.showKpiDetail('gatepass')">
-            <div class="lbl">استئذان اليوم</div>
-            <div class="num" id="kpi-gatepass" style="color:#0891b2">—</div>
-        </div>
-        <div class="dash-kpi" style="border-color:#16a34a">
-            <div class="lbl">إجمالي الطلاب</div>
-            <div class="num" id="kpi-total" style="color:#16a34a">—</div>
-        </div>
-        <div class="dash-kpi" style="border-color:#d4920a;cursor:pointer" onclick="window.showKpiDetail('clinic')">
-            <div class="lbl">عيادة اليوم</div>
-            <div class="num" id="kpi-clinic" style="color:#d4920a">—</div>
-        </div>
-    </div>
-
-    <!-- Charts -->
-    <div class="dash-two">
-        <div class="dash-chart-box">
-            <div class="dash-chart-title"><i class="bi bi-bar-chart-fill" style="color:var(--sky)"></i> أكثر الفصول غياباً اليوم</div>
-            <div class="bar-chart" id="chart-classes"></div>
-        </div>
-        <div class="dash-chart-box">
-            <div class="dash-chart-title"><i class="bi bi-pie-chart-fill" style="color:var(--gold)"></i> توزيع الغياب بالمرحلة</div>
-            <div class="donut-wrap">
-                <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140" id="donut-svg">
-                    <circle cx="70" cy="70" r="55" fill="none" stroke="#f0f4f8" stroke-width="22"/>
-                </svg>
-                <div class="donut-legend" id="donut-legend"></div>
+        <!-- KPI -->
+        <div id="kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+            <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:30px;font-weight:900;color:var(--navy)" id="kpi-students">-</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">إجمالي الطلاب</div>
+            </div>
+            <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:30px;font-weight:900;color:#dc2626" id="kpi-absent">-</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">غائب اليوم</div>
+            </div>
+            <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:30px;font-weight:900;color:#d97706" id="kpi-late">-</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">متأخر</div>
+            </div>
+            <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:30px;font-weight:900;color:var(--green)" id="kpi-rate">-</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">نسبة الحضور</div>
             </div>
         </div>
-    </div>
 
-    <!-- غياب أسبوعي -->
-    <div class="dash-chart-box" style="margin-bottom:16px">
-        <div class="dash-chart-title"><i class="bi bi-graph-up" style="color:var(--green)"></i> الغياب خلال آخر 7 أيام</div>
-        <div id="weekly-chart" style="display:flex;align-items:flex-end;gap:8px;height:100px;padding-top:10px"></div>
-    </div>
-
-    <!-- تنبيهات الغياب المتكرر -->
-    <div class="dash-list">
-        <div class="dash-list-title"><i class="bi bi-exclamation-triangle-fill" style="color:var(--red)"></i> طلاب يحتاجون متابعة (غياب متكرر)</div>
-        <div id="repeat-alerts">⏳ جاري التحميل...</div>
-    </div>
-
-    <!-- واتساب جماعي -->
-    <div class="dash-list">
-        <div class="dash-list-title"><i class="bi bi-whatsapp" style="color:#25d366"></i> إرسال إشعار غياب واتساب</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
-            <select id="whatsapp-class-select" style="flex:1;min-width:160px;padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;outline:none">
-                <option value="">-- اختر الفصل --</option>
-            </select>
-            <button onclick="window.triggerWhatsAppBroadcast()" class="wa-btn" style="padding:9px 18px;font-size:13px">
-                <i class="bi bi-whatsapp"></i> إرسال للغائبين
-            </button>
+        <!-- رسم بياني — الغياب بالفصول -->
+        <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">📊 الغياب حسب الفصل</h3>
+            <div id="chart-classes" style="display:flex;align-items:flex-end;gap:6px;height:160px;direction:ltr"></div>
         </div>
-        <div id="whatsapp-result" style="font-size:13px"></div>
-    </div>
-    `;
 
-    // تحميل البيانات
-    await loadDashboardData(schoolId, todayISO);
+        <!-- رسم بياني — الغياب آخر 7 أيام -->
+        <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">📈 الغياب — آخر 7 أيام</h3>
+            <div id="chart-week" style="display:flex;align-items:flex-end;gap:8px;height:140px;direction:ltr"></div>
+        </div>
+
+        <!-- أكثر طلاب غياب -->
+        <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">🔴 أكثر 5 طلاب غياباً</h3>
+            <div id="top-absent" style="font-size:13px">⏳ جاري التحميل...</div>
+        </div>
+
+        <!-- إعلانات -->
+        <div id="admin-announcements"></div>
+    </div>`;
+
+    loadDashboard(schoolId, today);
 }
 
-async function loadDashboardData(schoolId, todayISO) {
+async function loadDashboard(schoolId, today) {
     try {
-        // ══ كل الـ queries بالتوازي دفعة وحدة ══
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yISO = yesterday.toISOString().slice(0,10);
+        // إجمالي الطلاب
+        const studSnap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+        const totalStudents = studSnap.size;
+        document.getElementById('kpi-students').textContent = totalStudents;
 
-        const [abSnap, lateSnap, behSnap, gateSnap, clinicSnap, stuSnap, ySnap] = await Promise.all([
-            getDocs(query(collection(db,'attendance'),  where('schoolId','==',schoolId), where('date','==',todayISO), where('status','==','absent'))),
-            getDocs(query(collection(db,'attendance'),  where('schoolId','==',schoolId), where('date','==',todayISO), where('status','==','late'))),
-            getDocs(query(collection(db,'behavior'),    where('schoolId','==',schoolId), where('date','==',todayISO))),
-            getDocs(query(collection(db,'gatepass'),    where('schoolId','==',schoolId), where('dateStr','==',todayISO))),
-            getDocs(query(collection(db,'clinic'),      where('schoolId','==',schoolId), where('date','==',todayISO))),
-            getDocs(query(collection(db,'students'),    where('schoolId','==',schoolId))),
-            getDocs(query(collection(db,'attendance'),  where('schoolId','==',schoolId), where('date','==',yISO), where('status','==','absent'))),
-        ]);
+        // غياب اليوم
+        const attSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',today)));
+        const records = attSnap.docs.map(d=>d.data());
+        const absentNames = new Set(); const lateNames = new Set();
+        records.forEach(r => { if(r.status==='absent') absentNames.add(r.studentName); if(r.status==='late') lateNames.add(r.studentName); });
 
-        const totalStudents = stuSnap.size;
-        const absentCount   = abSnap.size;
-        const lateCount     = lateSnap.size;
-        const attendRate    = totalStudents > 0
-            ? Math.round(((totalStudents - absentCount) / totalStudents) * 100)
-            : null;
+        document.getElementById('kpi-absent').textContent = absentNames.size;
+        document.getElementById('kpi-late').textContent = lateNames.size;
+        const rate = totalStudents > 0 ? Math.round(((totalStudents - absentNames.size)/totalStudents)*100) : 0;
+        document.getElementById('kpi-rate').textContent = rate + '%';
 
-        // ══ KPIs ══
-        document.getElementById('kpi-absent').textContent    = absentCount;
-        document.getElementById('kpi-late').textContent      = lateCount;
-        document.getElementById('kpi-behavior').textContent  = behSnap.size;
-        document.getElementById('kpi-gatepass').textContent  = gateSnap.size;
-        document.getElementById('kpi-total').textContent     = totalStudents;
-        document.getElementById('kpi-clinic').textContent    = clinicSnap.size;
-        document.getElementById('dash-attend-rate').textContent = attendRate !== null ? attendRate + '%' : '—';
-
-        // ══ توزيع الغياب بالفصل ══
+        // رسم الغياب بالفصول
         const byClass = {};
-        abSnap.forEach(d => {
-            const c = d.data().classId || '—';
-            byClass[c] = (byClass[c]||0) + 1;
-        });
+        records.filter(r=>r.status==='absent').forEach(r => { byClass[r.classId] = (byClass[r.classId]||0)+1; });
+        const classes = Object.keys(byClass).sort((a,b)=>{var pa=a.split('/'),pb=b.split('/');return(parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0)});
+        const maxVal = Math.max(...Object.values(byClass), 1);
+        const chartDiv = document.getElementById('chart-classes');
+        chartDiv.innerHTML = classes.map(c => {
+            const pct = (byClass[c]/maxVal)*100;
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
+                <div style="font-size:10px;font-weight:900;color:#dc2626;margin-bottom:4px">${byClass[c]}</div>
+                <div style="width:100%;background:#dc262633;border-radius:6px 6px 0 0;height:${Math.max(pct,8)}%;min-height:8px;transition:height .5s"></div>
+                <div style="font-size:9px;font-weight:700;color:var(--mid);margin-top:4px;writing-mode:vertical-rl;transform:rotate(180deg)">${c}</div>
+            </div>`;
+        }).join('') || '<div style="color:#aaa;font-size:13px;padding:20px;text-align:center;width:100%">لا يوجد غياب اليوم ✅</div>';
 
-        buildClassesChart(byClass);
-        buildDonutChart(byClass);
-        loadWhatsAppClasses(byClass);
-
-        // ══ Trend مقارنة بالأمس ══
-        const diff    = absentCount - ySnap.size;
-        const trendEl = document.getElementById('kpi-absent-trend');
-        if(diff > 0)       trendEl.innerHTML = `<span class="trend-badge trend-up">▲ ${diff} أكثر من أمس</span>`;
-        else if(diff < 0)  trendEl.innerHTML = `<span class="trend-badge trend-down">▼ ${Math.abs(diff)} أقل من أمس</span>`;
-        else               trendEl.innerHTML = `<span style="color:#aaa;font-size:10px">نفس أمس</span>`;
-
-        // ══ Charts الثقيلة تُحمَّل بعد الـ KPIs عشان تظهر البيانات بسرعة ══
-        buildWeeklyChart(schoolId);
-        buildRepeatAlerts(schoolId);
-
-    } catch(e) {
-        console.error('Dashboard error:', e);
-        window.showToast?.('⚠️ خطأ في تحميل البيانات', 'error');
-    }
-}
-
-// ══ Chart: الفصول ══
-function buildClassesChart(byClass) {
-    const el = document.getElementById('chart-classes');
-    if(!el) return;
-    const sorted = Object.entries(byClass).sort((a,b)=>b[1]-a[1]).slice(0,7);
-    if(!sorted.length) { el.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد غياب اليوم 🎉</div>'; return; }
-    const max = sorted[0][1] || 1;
-    const colors = ['#dc2626','#ea580c','#d97706','#1a78c2','#7c3aed','#0891b2','#16a34a'];
-    el.innerHTML = sorted.map(([cls, cnt], i) => `
-        <div class="bar-item">
-            <span class="bar-label">${cls}</span>
-            <div class="bar-track">
-                <div class="bar-fill" style="width:${(cnt/max)*100}%;background:${colors[i%colors.length]}">${cnt}</div>
-            </div>
-        </div>`).join('');
-}
-
-// ══ Chart: Donut ══
-function buildDonutChart(byClass) {
-    const svg = document.getElementById('donut-svg');
-    const leg = document.getElementById('donut-legend');
-    if(!svg || !leg) return;
-
-    const grades = {6:0, 7:0, 8:0, 9:0};
-    let unknown = 0;
-    Object.entries(byClass).forEach(([cls, cnt]) => {
-        const g = parseInt(cls.split('/')[0]);
-        if(grades[g] !== undefined) grades[g] += cnt;
-        else unknown += cnt; // غياب بدون صف واضح
-    });
-
-    const total = Object.values(grades).reduce((a,b)=>a+b,0) + unknown;
-    const colors = ['#dc2626','#1a78c2','#16a34a','#d4920a'];
-    const names  = {6:'السادس',7:'السابع',8:'الثامن',9:'التاسع'};
-    const cx=70, cy=70, rad=55;
-    const circ = 2 * Math.PI * rad;
-
-    if(total === 0) {
-        svg.innerHTML = `
-            <circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#f0f4f8" stroke-width="22"/>
-            <text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="20" font-weight="900" fill="#0b2545">0</text>
-            <text x="${cx}" y="${cy+12}" text-anchor="middle" font-size="10" fill="#999">غائب</text>`;
-        leg.innerHTML = Object.entries(grades).map(([g],i) => `
-            <div class="legend-item">
-                <div class="legend-dot" style="background:${colors[i]}"></div>
-                الصف ${names[g]}: <b>0</b>
-            </div>`).join('');
-        return;
-    }
-
-    let offset = 0;
-    let circles = '';
-    Object.entries(grades).forEach(([g, cnt], i) => {
-        if(cnt === 0) { offset += cnt; return; }
-        const pct   = cnt / total;
-        const dash  = pct * circ;
-        const gap   = circ - dash;
-        const rot   = (offset / total) * 360 - 90;
-        circles += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none"
-            stroke="${colors[i]}" stroke-width="22"
-            stroke-dasharray="${dash} ${gap}"
-            stroke-dashoffset="${-(offset/total)*circ}"
-            transform="rotate(${rot} ${cx} ${cy})"
-            style="transition:stroke-dasharray 1s ease"/>`;
-        offset += cnt;
-    });
-
-    // لو فيه فصل وحيد — أضف دائرة خلفية
-    const activeGrades = Object.values(grades).filter(v=>v>0).length;
-    if(activeGrades === 1) {
-        circles = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#f0f4f8" stroke-width="22"/>` + circles;
-    }
-
-    // أضف دائرة للغياب غير المحدد الصف
-    if(unknown > 0) {
-        const pct   = unknown / total;
-        const dash  = pct * circ;
-        const gap   = circ - dash;
-        const rot   = (offset / total) * 360 - 90;
-        circles = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none"
-            stroke="#9ca3af" stroke-width="22"
-            stroke-dasharray="${dash} ${gap}"
-            stroke-dashoffset="${-(offset/total)*circ}"
-            transform="rotate(${rot} ${cx} ${cy})"
-            style="transition:stroke-dasharray 1s ease"/>` + circles;
-    }
-
-    svg.innerHTML = circles + `
-        <text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="20" font-weight="900" fill="#0b2545">${total}</text>
-        <text x="${cx}" y="${cy+12}" text-anchor="middle" font-size="10" fill="#999">غائب</text>`;
-
-    leg.innerHTML = Object.entries(grades).map(([g,cnt],i) => `
-        <div class="legend-item">
-            <div class="legend-dot" style="background:${colors[i]}"></div>
-            الصف ${names[g]}: <b>${cnt}</b>
-        </div>`).join('') + (unknown > 0 ? `
-        <div class="legend-item">
-            <div class="legend-dot" style="background:#9ca3af"></div>
-            غير محدد: <b>${unknown}</b>
-        </div>` : '');
-}
-
-// ══ Chart: أسبوعي ══
-async function buildWeeklyChart(schoolId) {
-    // نُحمّل الأسبوعي بعد 300ms عشان ما يبطّئ الـ KPIs
-    await new Promise(r => setTimeout(r, 300));
-    const el = document.getElementById('weekly-chart');
-    if(!el) return;
-
-    const days = [];
-    for(let i=6; i>=0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        days.push({
-            iso:   d.toISOString().slice(0,10),
-            label: d.toLocaleDateString('ar-KW',{weekday:'short'})
-        });
-    }
-
-    const counts = await Promise.all(days.map(async day => {
-        const snap = await getDocs(query(collection(db,'attendance'),
-            where('schoolId','==',schoolId), where('date','==',day.iso),
-            where('status','==','absent')));
-        return { ...day, count: snap.size };
-    }));
-
-    const max = Math.max(...counts.map(d=>d.count), 1);
-    el.innerHTML = counts.map(d => {
-        const h = Math.max((d.count/max)*80, d.count>0?8:0);
-        const today = d.iso === getTodayISO();
-        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
-            <span style="font-size:10px;font-weight:800;color:${today?'var(--red)':'var(--mid)'}">${d.count||''}</span>
-            <div style="width:100%;height:${h}px;background:${today?'var(--red)':'#bcd4ec'};border-radius:4px 4px 0 0;transition:height .8s ease"></div>
-            <span style="font-size:10px;font-weight:700;color:${today?'var(--navy)':'var(--mid)'}">${d.label}</span>
-        </div>`;
-    }).join('');
-}
-
-// ══ تنبيهات الغياب المتكرر ══
-async function buildRepeatAlerts(schoolId) {
-    const el = document.getElementById('repeat-alerts');
-    if(!el) return;
-
-    try {
-        const snap = await getDocs(query(collection(db,'attendance'),
-            where('schoolId','==',schoolId), where('status','==','absent')));
-
-        const byStudent = {};
-        snap.forEach(d => {
-            const name = d.data().studentName || d.data().name || '—';
-            const cls  = d.data().classId || '';
-            const phone= d.data().parentPhone || '';
-            const key  = `${name}__${cls}`;
-            if(!byStudent[key]) byStudent[key] = { name, cls, phone, count:0 };
-            byStudent[key].count++;
-        });
-
-        const alerts = Object.values(byStudent)
-            .filter(s => s.count >= 3)
-            .sort((a,b) => b.count - a.count)
-            .slice(0,10);
-
-        if(!alerts.length) {
-            el.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-weight:700">🎉 لا يوجد طلاب بغياب متكرر</div>';
-            return;
+        // آخر 7 أيام
+        const days = [];
+        for(let i=6;i>=0;i--) {
+            const d = new Date(); d.setDate(d.getDate()-i);
+            d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+            days.push(d.toISOString().slice(0,10));
         }
-
-        el.innerHTML = alerts.map(s => {
-            const level = s.count >= 10 ? '🔴 حرمان' : s.count >= 8 ? '🟠 إنذار' : s.count >= 5 ? '🟡 استدعاء' : '📢 تنبيه';
-            const phone = (s.phone||'').replace(/\D/g,'');
-            return `<div class="alert-card">
-                <div>
-                    <div class="alert-name">${s.name} — ${s.cls}</div>
-                    <div style="font-size:11px;color:var(--mid);margin-top:2px">${level}</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px">
-                    <span class="alert-count">${s.count} غياب</span>
-                    ${phone ? `<button class="wa-btn" onclick="window.sendAbsenceAlert('${s.name}','${s.cls}','${s.count}','${phone}')">
-                        <i class="bi bi-whatsapp"></i>
-                    </button>` : ''}
-                </div>
+        // جلب كل الغياب
+        const weekSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('status','==','absent')));
+        const weekData = {};
+        days.forEach(d => weekData[d] = 0);
+        weekSnap.docs.forEach(d => { const r=d.data(); if(weekData[r.date]!==undefined) weekData[r.date]++; });
+        const weekMax = Math.max(...Object.values(weekData), 1);
+        const weekChart = document.getElementById('chart-week');
+        weekChart.innerHTML = days.map(d => {
+            const val = weekData[d];
+            const pct = (val/weekMax)*100;
+            const dayName = new Date(d).toLocaleDateString('ar-KW',{weekday:'short'});
+            const isToday = d === today;
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
+                <div style="font-size:10px;font-weight:900;color:${isToday?'var(--sky)':'#666'};margin-bottom:4px">${val}</div>
+                <div style="width:100%;background:${isToday?'var(--sky)':'#e5e7eb'};border-radius:6px 6px 0 0;height:${Math.max(pct,5)}%;min-height:5px"></div>
+                <div style="font-size:9px;font-weight:${isToday?'900':'600'};color:${isToday?'var(--sky)':'var(--mid)'};margin-top:4px">${dayName}</div>
             </div>`;
         }).join('');
-    } catch(e) { el.innerHTML = '❌ تعذر التحميل'; }
-}
 
-// ══ تحميل فصول الواتساب ══
-function loadWhatsAppClasses(byClass) {
-    const sel = document.getElementById('whatsapp-class-select');
-    if(!sel) return;
-    const classes = Object.keys(byClass).filter(c => byClass[c] > 0);
-    sel.innerHTML = '<option value="">-- اختر الفصل --</option>' +
-        classes.map(c=>`<option value="${c}">${c} (${byClass[c]} غائب)</option>`).join('');
-}
+        // أكثر 5 طلاب غياباً
+        const studentCounts = {};
+        weekSnap.docs.forEach(d => { const r=d.data(); studentCounts[r.studentName+'|'+r.classId] = (studentCounts[r.studentName+'|'+r.classId]||0)+1; });
+        const topAbsent = Object.entries(studentCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+        const topDiv = document.getElementById('top-absent');
+        topDiv.innerHTML = topAbsent.length ? topAbsent.map((t,i) => {
+            const [key,count] = t; const [name,cls] = key.split('|');
+            const color = count>=10?'#dc2626':count>=5?'#d97706':'#6b7280';
+            return `<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #f0f2f5;gap:10px">
+                <span style="width:24px;height:24px;border-radius:50%;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900">${i+1}</span>
+                <span style="flex:1;font-weight:700">${name}</span>
+                <span style="font-size:11px;color:var(--mid)">${cls}</span>
+                <span style="background:${color}22;color:${color};padding:2px 10px;border-radius:6px;font-weight:900;font-size:12px">${count} يوم</span>
+            </div>`;
+        }).join('') : '<div style="color:#16a34a;font-weight:700">✅ لا يوجد طلاب متكرري الغياب</div>';
 
-// ══ إرسال واتساب ══
-window.triggerWhatsAppBroadcast = async function() {
-    const cls = document.getElementById('whatsapp-class-select')?.value;
-    const res = document.getElementById('whatsapp-result');
-    if(!cls) { res.innerHTML = '<span style="color:var(--red)">⚠️ اختر الفصل أولاً</span>'; return; }
-
-    res.innerHTML = '⏳ جاري تحضير الرسائل...';
-    const schoolId = getActiveSchoolId();
-    const todayISO = getTodayISO();
-
-    try {
-        const snap = await getDocs(query(collection(db,'attendance'),
-            where('schoolId','==',schoolId), where('date','==',todayISO),
-            where('classId','==',cls), where('status','==','absent')));
-
-        if(snap.empty) { res.innerHTML = '<span style="color:var(--green)">✅ لا يوجد غياب في هذا الفصل</span>'; return; }
-
-        const absentNames = [];
-        snap.forEach(d => { if(d.data().studentName) absentNames.push(d.data().studentName); });
-
-        const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-        const msg = encodeURIComponent(
-            `🏫 ${JSON.parse(localStorage.getItem('hs_user')||'{}').schoolName||'المدرسة'}\n` +
-            `السلام عليكم أولياء الأمور،\n` +
-            `نُعلمكم بغياب الطلاب التالية أسماؤهم اليوم ${today}:\n` +
-            absentNames.map((n,i)=>`${i+1}. ${n}`).join('\n') +
-            `\nيرجى التواصل مع الإدارة.`
-        );
-
-        window.open(`https://wa.me/?text=${msg}`, '_blank');
-        res.innerHTML = `<span style="color:var(--green)">✅ تم فتح واتساب — ${absentNames.length} غائب في ${cls}</span>`;
-    } catch(e) { res.innerHTML = `<span style="color:var(--red)">❌ ${e.message}</span>`; }
-};
-
-// ══ إرسال تنبيه غياب متكرر ══
-window.sendAbsenceAlert = function(name, cls, count, phone) {
-    const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-    const level = count >= 10 ? 'حرمان من الاختبارات' : count >= 8 ? 'إنذار رسمي' : count >= 5 ? 'استدعاء ولي الأمر' : 'تنبيه';
-    const msg = encodeURIComponent(
-        `السلام عليكم ولي أمر الطالب ${name} — فصل ${cls}،\n` +
-        `نُعلمكم بأن ابنكم بلغ عدد غياباته ${count} يوماً بتاريخ ${today}.\n` +
-        `الإجراء المترتب: ${level}.\n` +
-        `يرجى مراجعة الإدارة.`
-    );
-    window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
-};
-
-// ══ تفاصيل KPI بالنقر ══
-window.showKpiDetail = async function(type) {
-    const schoolId = getActiveSchoolId();
-    const todayISO = getTodayISO();
-    const cfg = {
-        absent:   { title:'غياب اليوم',         col:'attendance', color:'#dc2626', field:'status', val:'absent' },
-        late:     { title:'تأخير اليوم',         col:'attendance', color:'#d97706', field:'status', val:'late'   },
-        behavior: { title:'حوادث سلوكية اليوم',  col:'behavior',   color:'#7c3aed' },
-        gatepass: { title:'استئذان اليوم',        col:'gatepass',   color:'#0891b2' },
-        clinic:   { title:'مراجعات العيادة اليوم',col:'clinic',     color:'#d4920a' },
-    };
-    const c = cfg[type];
-    document.getElementById('kpi-modal')?.remove();
-
-    const modal = document.createElement('div');
-    modal.id = 'kpi-modal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
-    modal.innerHTML = `
-        <div style="background:#fff;border-radius:16px;padding:22px;max-width:460px;width:100%;max-height:80vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-                <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">
-                    <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${c.color};margin-left:6px"></span>
-                    ${c.title}
-                </h3>
-                <button onclick="document.getElementById('kpi-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#6b7280">✕</button>
-            </div>
-            <div id="kpi-detail-body" style="text-align:center;padding:20px;color:#aaa;font-weight:700">⏳ جاري التحميل...</div>
-        </div>`;
-    modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
-    document.body.appendChild(modal);
-
-    try {
-        let q;
-        const dateField = type==='gatepass' ? 'dateStr' : 'date';
-        if(type==='absent' || type==='late') {
-            q = query(collection(db,c.col), where('schoolId','==',schoolId), where(dateField,'==',todayISO), where('status','==',c.val));
-        } else {
-            q = query(collection(db,c.col), where('schoolId','==',schoolId), where(dateField,'==',todayISO));
+        // إعلانات
+        const annSnap = await getDocs(query(collection(db,'school_announcements'), where('schoolId','==',schoolId), where('active','==',true)));
+        const annDiv = document.getElementById('admin-announcements');
+        if(annSnap.size > 0 && annDiv) {
+            annDiv.innerHTML = `<div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:14px;padding:16px">
+                <h3 style="font-size:14px;font-weight:900;color:#92400e;margin-bottom:8px">📢 إعلانات المدرسة</h3>
+                ${annSnap.docs.map(d=>`<div style="font-size:13px;color:#78350f;padding:6px 0;border-bottom:1px solid #fde68a;font-weight:600">${d.data().text}</div>`).join('')}
+            </div>`;
         }
-
-        const snap = await getDocs(q);
-        const body = document.getElementById('kpi-detail-body');
-
-        if(snap.empty) {
-            body.innerHTML = '<div style="padding:24px;color:#aaa">✅ لا توجد سجلات اليوم</div>';
-            return;
-        }
-
-        const rows = [];
-        snap.forEach(d => {
-            const data = d.data();
-            const name   = data.studentName || data.name || '—';
-            const detail = type==='behavior' ? (data.behaviorType||data.type||'—')
-                         : type==='gatepass'  ? (data.reason||'—')
-                         : type==='clinic'    ? (data.complaint||'—')
-                         : (data.classId||'—');
-            rows.push(`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:13px">
-                <span style="font-weight:700">${name}</span>
-                <span style="color:${c.color};font-weight:700">${detail}</span>
-            </div>`);
-        });
-
-        body.innerHTML = `
-            <div style="font-size:11px;color:#aaa;font-weight:700;display:flex;justify-content:space-between;padding-bottom:6px;border-bottom:2px solid #f0f0f0;margin-bottom:4px">
-                <span>الاسم</span><span>التفصيل</span>
-            </div>
-            ${rows.join('')}
-            <div style="text-align:center;margin-top:10px;font-size:12px;color:#aaa;font-weight:700">إجمالي: ${rows.length}</div>`;
 
     } catch(e) {
-        document.getElementById('kpi-detail-body').innerHTML = '❌ ' + e.message;
+        console.error('Dashboard:', e);
+        document.getElementById('kpi-students').textContent = '!';
     }
-};
+}
