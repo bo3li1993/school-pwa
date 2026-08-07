@@ -585,6 +585,25 @@ try {
     document.getElementById('lbl-admin-name').textContent = `مرحباً، ${currentUser.name||'المسؤول'}`;
     document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'لوحة الإدارة';
     document.getElementById('splash-school').textContent = currentUser.schoolName || 'لوحة الإدارة';
+
+    // تحديث الـ role من Firestore
+    (async function() {
+        try {
+            const snap = await getDocs(query(collection(db,'users'), where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId)));
+            if(!snap.empty) {
+                const fresh = snap.docs[0].data();
+                const newRole = String(fresh.role||'').trim().toLowerCase();
+                if(newRole !== currentUser.role) {
+                    currentUser.role = newRole;
+                    currentUser.name = fresh.name || currentUser.name;
+                    localStorage.setItem('hs_user', JSON.stringify(currentUser));
+                    if(!['admin','assistant_manager','wing_supervisor'].includes(newRole)) {
+                        window.location.replace('teacher.html');
+                    }
+                }
+            }
+        } catch(e) {}
+    })();
 } catch(e) { window.location.replace('index.html'); }
 
 window.doLogout = function(){ localStorage.removeItem('hs_user'); localStorage.removeItem('hs_custom_token'); window.location.replace('index.html'); };
