@@ -114,7 +114,9 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);min-
         <label>رقم الهاتف</label>
         <input id="pf-phone" type="tel">
         <label>القسم / التخصص</label>
-        <input id="pf-dept" type="text" placeholder="مثال: رياضيات">
+        <select id="pf-dept" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;margin-bottom:10px">
+            <option value="">-- اختر القسم --</option>
+        </select>
         <label>الرقم المدني</label>
         <input id="pf-civil" type="text">
         <label>رقم الملف</label>
@@ -413,6 +415,18 @@ window.saveProfile = async function() {
         showToast('✅ تم حفظ بياناتك');
     } catch(e) { showToast('❌ '+e.message,'error'); }
 };
+
+// ── تحميل الأقسام ──
+(async function() {
+    try {
+        const deptSnap = await getDocs(query(collection(db,'departments'), where('schoolId','==',schoolId)));
+        const depts = deptSnap.docs.map(d=>d.data().name).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ar'));
+        const sel = document.getElementById('pf-dept');
+        if(sel && depts.length) {
+            sel.innerHTML = '<option value="">-- اختر القسم --</option>' + depts.map(d=>`<option value="${d}">${d}</option>`).join('');
+        }
+    } catch(e) {}
+})();
 
 // ── SW ──
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
