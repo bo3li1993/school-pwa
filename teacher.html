@@ -163,6 +163,30 @@ try {
 const schoolId = getActiveSchoolId();
 const today = getTodayISO();
 
+// تحديث الـ role من Firestore — لو المدير غيّره
+(async function() {
+    try {
+        const snap = await getDocs(query(collection(db,'users'), where('schoolId','==',schoolId), where('userId','==',me.userId)));
+        if(!snap.empty) {
+            const fresh = snap.docs[0].data();
+            const newRole = String(fresh.role||'').trim().toLowerCase();
+            if(newRole !== me.role) {
+                me.role = newRole;
+                me.name = fresh.name || me.name;
+                localStorage.setItem('hs_user', JSON.stringify(me));
+                // لو صار admin/مشرف → يروح admin.html
+                if(['admin','assistant_manager','wing_supervisor'].includes(newRole)) {
+                    window.location.replace('admin.html'); return;
+                }
+                // لو صار دور ثاني مو معلم
+                if(!['teacher','social_worker'].includes(newRole)) {
+                    window.location.replace('index.html'); return;
+                }
+            }
+        }
+    } catch(e) {}
+})();
+
 // ── Navigation ──
 window.switchPage = function(pageId, btn) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
