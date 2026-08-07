@@ -421,10 +421,15 @@ let currentUser = null;
     } catch(e) { console.error('Teacher init error:', e); }
 })();
 document.getElementById('splash').classList.add('hide');
+// تفعيل تبويب الغياب تلقائياً
+var attTab = document.getElementById('tab-attendance');
+if(attTab) attTab.classList.remove('hidden');
+var attBtn = document.querySelector('.bn-item[data-bn-tab="tab-attendance"]');
+if(attBtn) attBtn.classList.add('active');
 
 // ===== التبويبات =====
 window.switchTab = function(tabId, btn) {
-    document.querySelectorAll('#tab-attendance, #tab-students, #tab-profile, #tab-more')
+    document.querySelectorAll('#tab-attendance, #tab-students, #tab-profile, #tab-more, #tab-stats, #tab-mylog, #tab-notes')
         .forEach(el => el.classList.add('hidden'));
     document.getElementById(tabId).classList.remove('hidden');
     document.querySelectorAll('.bn-item').forEach(t => t.classList.remove('active'));
@@ -1003,6 +1008,9 @@ window.saveFirstLogin = async function() {
 
         // أخفِ الـ overlay
         document.getElementById('first-login-overlay').style.display = 'none';
+        // أفعّل الصفحة بعد الحفظ
+        var att = document.getElementById('tab-attendance');
+        if(att) att.classList.remove('hidden');
         
         // حدّث اسم المعلم في الصفحة
         var lbl = document.getElementById('lbl-teacher-name');
