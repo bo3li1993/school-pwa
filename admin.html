@@ -596,6 +596,26 @@ try {
             // أخفِ tab div
             var tabDiv = document.getElementById(tabId);
             if(tabDiv) tabDiv.style.display = 'none';
+            // أخفِ من bottom nav
+            var bnBtn = document.querySelector('.bn-item[data-bn-tab="'+tabId+'"]');
+            if(bnBtn) bnBtn.style.display = 'none';
+        });
+
+        // أخفِ البوابات الأخرى من القائمة
+        document.querySelectorAll('.menu-item').forEach(function(item) {
+            var text = item.textContent || '';
+            if(text.includes('بوابة') || text.includes('شاشة TV') || text.includes('دليل المستخدم')) {
+                item.style.display = 'none';
+            }
+        });
+
+        // أخفِ أقسام القائمة الفارغة
+        document.querySelectorAll('.menu-sec-body').forEach(function(body) {
+            var visible = body.querySelectorAll('.menu-item:not([style*="display: none"])');
+            if(visible.length === 0) {
+                body.style.display = 'none';
+                if(body.previousElementSibling) body.previousElementSibling.style.display = 'none';
+            }
         });
     }
 
