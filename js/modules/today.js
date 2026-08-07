@@ -74,7 +74,7 @@ async function loadDashboard(schoolId, today) {
 
         document.getElementById('kpi-absent').textContent = absentNames.size;
         document.getElementById('kpi-late').textContent = lateNames.size;
-        const rate = totalStudents > 0 ? Math.round(((totalStudents - absentNames.size)/totalStudents)*100) : 0;
+        const rate = totalStudents > 0 ? Math.floor(((totalStudents - absentNames.size)/totalStudents)*100*10)/10 : 0;
         document.getElementById('kpi-rate').textContent = rate + '%';
 
         // رسم الغياب بالفصول
