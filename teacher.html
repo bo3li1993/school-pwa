@@ -1045,8 +1045,8 @@ window.loadMyStats = async function() {
         var me = JSON.parse(localStorage.getItem('hs_user')||'{}');
         var today = getTodayISO();
 
-        var snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('date','==',today), where('recordedBy','==',me.name||'')));
-        var records = snap.docs.map(function(d){return d.data()});
+        var snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('date','==',today)));
+        var records = snap.docs.map(function(d){return d.data()}).filter(function(r){return r.recordedBy === (me.name||'')});
         var classes = {};
         var absent = 0, late = 0;
         records.forEach(function(r) {
@@ -1081,11 +1081,12 @@ window.loadMyLog = async function() {
         var { collection, getDocs, query, where, deleteDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
         var me = JSON.parse(localStorage.getItem('hs_user')||'{}');
 
-        var snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('date','==',date), where('recordedBy','==',me.name||'')));
+        var snap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',getActiveSchoolId()), where('date','==',date)));
 
-        if(snap.empty) { content.innerHTML = '<div style="text-align:center;padding:30px;color:#aaa;font-weight:700">📭 لا يوجد سجلات لهذا اليوم</div>'; return; }
+        var allRecs = snap.docs.map(function(d){return {id:d.id,...d.data()}}).filter(function(r){return r.recordedBy === (me.name||'')});
+        if(!allRecs.length) { content.innerHTML = '<div style="text-align:center;padding:30px;color:#aaa;font-weight:700">📭 لا يوجد سجلات لهذا اليوم</div>'; return; }
 
-        var records = snap.docs.map(function(d){return {id:d.id,...d.data()}}).sort(function(a,b){
+        var records = allRecs.sort(function(a,b){
             var pa=(a.classId||'').split('/'),pb=(b.classId||'').split('/');
             return (parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0)||(a.studentName||'').localeCompare(b.studentName||'','ar');
         });
