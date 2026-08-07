@@ -586,6 +586,20 @@ try {
     document.getElementById('lbl-school-name').textContent = currentUser.schoolName || 'لوحة الإدارة';
     document.getElementById('splash-school').textContent = currentUser.schoolName || 'لوحة الإدارة';
 
+    // ══ إخفاء تبويبات حسب الصلاحية ══
+    if(roleClean === 'wing_supervisor') {
+        const hiddenTabs = ['tab-students-manage', 'tab-import', 'tab-classes', 'tab-promotion', 'tab-attendance', 'tab-date', 'tab-behavior', 'tab-gatepass', 'tab-clinic', 'tab-reports', 'tab-monthly', 'tab-archive', 'tab-teachers', 'tab-teacher-workload', 'tab-teacher-perf', 'tab-manager-visits', 'tab-coverage', 'tab-announcements', 'tab-honors', 'tab-rewards', 'tab-users', 'tab-audit', 'tab-backup', 'tab-departments', 'tab-school-settings', 'tab-ai-insights'];
+        hiddenTabs.forEach(function(tabId) {
+            // أخفِ من القائمة الجانبية
+            var menuItem = document.querySelector('.menu-item[data-tab="'+tabId+'"]');
+            if(menuItem) menuItem.style.display = 'none';
+            // أخفِ tab div
+            var tabDiv = document.getElementById(tabId);
+            if(tabDiv) tabDiv.style.display = 'none';
+        });
+    }
+
+
     // تحديث الـ role من Firestore
     (async function() {
         try {
