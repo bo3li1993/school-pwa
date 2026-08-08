@@ -262,7 +262,7 @@ function renderStudentTable() {
     // أزرار التنقل
     let btns = '';
     if (currentPage > 1) btns += `<button onclick="window.goStudentPage(${currentPage - 1})" style="${paginBtnStyle()}"><i class="bi bi-chevron-right"></i></button>`;
-    for (let p = Math.max(1, currentPage - 2); p <= Math.min(totalPages, currentPage + 2); p++) {
+    for (var p = Math.max(1, currentPage - 2); p <= Math.min(totalPages, currentPage + 2); p++) {
         btns += `<button onclick="window.goStudentPage(${p})" style="${paginBtnStyle(p === currentPage)}">${p}</button>`;
     }
     if (currentPage < totalPages) btns += `<button onclick="window.goStudentPage(${currentPage + 1})" style="${paginBtnStyle()}"><i class="bi bi-chevron-left"></i></button>`;
