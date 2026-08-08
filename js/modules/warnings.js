@@ -174,8 +174,47 @@ async function loadWarnings() {
 
 window.reprintWarning = async function(id) {
     try {
+        const snap = await getDocs(query(collection(db,'warnings'), where('__name__','==',id)));
+        if(!snap.empty) {
+            const data = snap.docs[0].data();
+            var levelText = data.level===1?'الأول':data.level===2?'الثاني':'النهائي';
+            var content = '<div style="text-align:center;margin:30px 0 20px"><h2 style="font-size:20px;color:#d97706">⚠️ إنذار غياب '+levelText+'</h2></div>' +
+                '<table style="width:100%;border-collapse:collapse;margin:20px 0"><tr><td style="padding:10px;border:1px solid #ddd;font-weight:800;width:30%">اسم الطالب</td><td style="padding:10px;border:1px solid #ddd">'+data.studentName+'</td></tr>' +
+                '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">الفصل</td><td style="padding:10px;border:1px solid #ddd">'+data.classId+'</td></tr>' +
+                '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">عدد أيام الغياب</td><td style="padding:10px;border:1px solid #ddd">'+data.absentDays+' يوم</td></tr>' +
+                '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">مستوى الإنذار</td><td style="padding:10px;border:1px solid #ddd;color:#d97706;font-weight:900">'+levelText+'</td></tr>' +
+                '<tr><td style="padding:10px;border:1px solid #ddd;font-weight:800">التاريخ</td><td style="padding:10px;border:1px solid #ddd">'+(data.date||'')+'</td></tr></table>' +
+                '<div style="margin-top:40px;display:flex;justify-content:space-between;font-size:12px"><div>توقيع ولي الأمر: ______________</div><div>توقيع المدير: ______________</div></div>';
+            if(window.ManzoumaReport) window.ManzoumaReport.printDirect(content, 'إنذار غياب '+levelText, data.studentName+' — '+data.classId);
+        }
+    } catch(e) { if(window.showToast) window.showToast('❌ '+e.message,'error'); }
+};
+window._oldReprintWarning = async function(id) {
+    try {
         var { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
         var snap = await getDoc(doc(db,'warnings',id));
         if(snap.exists()) printWarningDoc(snap.data());
     } catch(e) {}
+};
+
+window.editWarning = async function(id) {
+    try {
+        const snap = await getDocs(query(collection(db,'warnings'), where('__name__','==',id)));
+        if(snap.empty) return;
+        const data = snap.docs[0].data();
+        const newDays = prompt('عدد أيام الغياب:', data.absentDays);
+        if(!newDays) return;
+        const newLevel = prompt('مستوى الإنذار (1=أول، 2=ثاني، 3=نهائي):', data.level);
+        if(!newLevel) return;
+        const newNotes = prompt('ملاحظات:', data.notes||'');
+        
+        const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        await updateDoc(doc(db,'warnings',id), {
+            absentDays: parseInt(newDays),
+            level: parseInt(newLevel),
+            notes: newNotes || ''
+        });
+        window.showToast?.('✅ تم التعديل');
+        loadWarnings();
+    } catch(e) { window.showToast?.('❌ '+e.message,'error'); }
 };
