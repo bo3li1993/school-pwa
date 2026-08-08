@@ -94,7 +94,7 @@ async function loadDashboard(schoolId, today) {
 
         // آخر 7 أيام
         const days = [];
-        for(let i=6;i>=0;i--) {
+        for(var i=6;i>=0;i--) {
             const d = new Date(); d.setDate(d.getDate()-i);
             d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
             days.push(d.toISOString().slice(0,10));
