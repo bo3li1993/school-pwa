@@ -160,11 +160,15 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     </div>
     <div id="tab-myaccount" class="tab-content">
       <div class="card" style="max-width:520px"><h2><i class="bi bi-person-gear"></i> بياناتي</h2>
-        <label>الاسم</label><input id="acc-name">
-        <label>البريد</label><input id="acc-email" type="email">
-        <label>القسم</label><input id="acc-dept">
-        <label>الهاتف</label><input id="acc-phone" type="tel">
-        <button onclick="window.saveMyAccount()" style="width:100%;padding:12px;background:var(--sky);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer"><i class="bi bi-check-circle-fill"></i> حفظ</button>
+        <label>الاسم الكامل</label><input id="acc-name">
+        <label>رقم الهاتف</label><input id="acc-phone" type="tel">
+        <label>القسم / التخصص</label><input id="acc-dept">
+        <label>الرقم المدني</label><input id="acc-civil">
+        <label>رقم الملف</label><input id="acc-filenum">
+        <label>تاريخ التعيين</label><input id="acc-hiredate" type="date">
+        <label>البريد الإلكتروني</label><input id="acc-email" type="email">
+        <label>كلمة مرور جديدة (اتركها فاضية لو ما تبي تغيير)</label><input id="acc-pass" type="password" placeholder="••••••">
+        <button onclick="window.saveMyAccount()" style="width:100%;padding:12px;background:var(--sky);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer"><i class="bi bi-check-circle-fill"></i> حفظ التعديلات</button>
       </div>
     </div>
     <div id="tab-ai-insights" class="tab-content"></div>
@@ -204,7 +208,7 @@ const schoolId = getActiveSchoolId();
 // صلاحيات المشرف
 const role = String(currentUser.role||'').trim().toLowerCase();
 if(role==='wing_supervisor'){
-    const hide=['tab-students-manage','tab-import','tab-classes','tab-promotion','tab-attendance','tab-date','tab-behavior','tab-gatepass','tab-clinic','tab-reports','tab-monthly','tab-archive','tab-teachers','tab-teacher-workload','tab-teacher-perf','tab-manager-visits','tab-coverage','tab-announcements','tab-honors','tab-rewards','tab-users','tab-audit','tab-backup','tab-departments','tab-school-settings','tab-ai-insights'];
+    const hide=['tab-students-manage','tab-import','tab-classes','tab-promotion','tab-attendance','tab-date','tab-behavior','tab-gatepass','tab-clinic','tab-reports','tab-monthly','tab-archive','tab-teachers','tab-teacher-workload','tab-teacher-perf','tab-manager-visits','tab-visits','tab-coverage','tab-announcements','tab-honors','tab-rewards','tab-users','tab-audit','tab-backup','tab-departments','tab-school-settings','tab-ai-insights'];
     hide.forEach(t=>{
         var m=document.querySelector('.menu-item[data-tab="'+t+'"]');if(m)m.style.display='none';
         var d=document.getElementById(t);if(d)d.style.display='none';
@@ -263,9 +267,12 @@ window.switchTab=async function(tabId){
     catch(err){document.getElementById(tabId).innerHTML='<div class="loading-box" style="color:#dc2626">❌ '+err.message+'</div>'}
 };
 
-async function loadMyAccount(){try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;var d=s.docs[0].data();document.getElementById('acc-name').value=d.name||'';document.getElementById('acc-email').value=d.email||'';document.getElementById('acc-dept').value=d.department||'';document.getElementById('acc-phone').value=d.phone||''}catch(e){}}
+async function loadMyAccount(){try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;var d=s.docs[0].data();document.getElementById('acc-name').value=d.name||'';document.getElementById('acc-email').value=d.email||'';document.getElementById('acc-dept').value=d.department||'';document.getElementById('acc-phone').value=d.phone||'';document.getElementById('acc-civil').value=d.civilId||'';document.getElementById('acc-filenum').value=d.fileNumber||'';document.getElementById('acc-hiredate').value=d.hireDate||''}catch(e){}}
 
-window.saveMyAccount=async function(){var n=document.getElementById('acc-name').value.trim();if(!n){showToast('الاسم مطلوب','error');return}try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;await updateDoc(s.docs[0].ref,{name:n,email:document.getElementById('acc-email').value.trim(),department:document.getElementById('acc-dept').value.trim(),phone:document.getElementById('acc-phone').value.trim()});currentUser.name=n;localStorage.setItem('hs_user',JSON.stringify(currentUser));document.getElementById('lbl-admin-name').textContent='مرحباً، '+n;showToast('✅ تم الحفظ')}catch(e){showToast('❌ '+e.message,'error')}};
+window.saveMyAccount=async function(){var n=document.getElementById('acc-name').value.trim();if(!n){showToast('الاسم مطلوب','error');return}try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;var updateData={name:n,email:document.getElementById('acc-email').value.trim(),department:document.getElementById('acc-dept').value.trim(),phone:document.getElementById('acc-phone').value.trim(),civilId:document.getElementById('acc-civil').value.trim(),fileNumber:document.getElementById('acc-filenum').value.trim(),hireDate:document.getElementById('acc-hiredate').value.trim()};
+        await updateDoc(s.docs[0].ref,updateData);
+        var newPass=document.getElementById('acc-pass').value.trim();
+        if(newPass){try{var{getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');var fns=getFunctions(undefined,'me-central1');var reset=httpsCallable(fns,'resetUserPassword');await reset({docId:s.docs[0].id,newPassword:newPass});document.getElementById('acc-pass').value='';showToast('✅ تم تغيير كلمة المرور')}catch(pe){showToast('⚠️ تم حفظ البيانات بس كلمة المرور ما تغيّرت','warning')}}currentUser.name=n;localStorage.setItem('hs_user',JSON.stringify(currentUser));document.getElementById('lbl-admin-name').textContent='مرحباً، '+n;showToast('✅ تم الحفظ')}catch(e){showToast('❌ '+e.message,'error')}};
 
 window.previewLogo=function(input){var f=input.files[0];if(!f)return;if(f.size>500000){showToast('الصورة كبيرة','warning');return}var r=new FileReader();r.onload=function(e){document.getElementById('set-logo-url').value=e.target.result;var p=document.getElementById('set-logo-preview');if(p){p.src=e.target.result;p.style.display='block'}};r.readAsDataURL(f)};
 
