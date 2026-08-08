@@ -7,7 +7,7 @@ export async function initMonthlyModule() {
 
     const months = [];
     const now = new Date();
-    for(let i=0;i<6;i++) {
+    for(var i=0;i<6;i++) {
         const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
         months.push({value:d.toISOString().slice(0,7), label:d.toLocaleDateString('ar-KW',{year:'numeric',month:'long'})});
     }
