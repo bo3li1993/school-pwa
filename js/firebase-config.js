@@ -19,7 +19,7 @@ export { onAuthStateChanged };
 export const functions = getFunctions(app, 'me-central1');
 
 // messaging — يُحمَّل لاحقاً لو المتصفح يدعمه
-export let messaging = null;
+export var messaging = null;
 
 // استعادة جلسة Custom Token
 try {
