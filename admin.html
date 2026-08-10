@@ -203,7 +203,7 @@ try {
 var schoolId = getActiveSchoolId();
 
 // تحديث role من Firestore
-(async()=>{try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(!s.empty){const f=s.docs[0].data();const nr=String(f.role||'').trim().toLowerCase();if(nr!==currentUser.role){currentUser.role=nr;currentUser.name=f.name||currentUser.name;localStorage.setItem('hs_user',JSON.stringify(currentUser));if(!['admin','assistant_manager','wing_supervisor'].includes(nr))window.location.replace('teacher.html')}}}catch(e){}})();
+(async()=>{try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(!s.empty){var f=s.docs[0].data();var nr=String(f.role||'').trim().toLowerCase();if(nr!==currentUser.role){currentUser.role=nr;currentUser.name=f.name||currentUser.name;localStorage.setItem('hs_user',JSON.stringify(currentUser));if(!['admin','assistant_manager','wing_supervisor'].includes(nr))window.location.replace('teacher.html')}}}catch(e){}})();
 
 // صلاحيات المشرف
 var _role2 = String(currentUser.role||'').trim().toLowerCase();
@@ -249,7 +249,7 @@ var moduleMap={
 };
 var loadedTabs=new Set();
 
-window.showToast=function(msg,type){document.querySelectorAll('.toast-msg').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast-msg';t.style.background=type==='error'?'#dc2626':type==='warning'?'#d97706':'#059669';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400)},2500)};
+window.showToast=function(msg,type){document.querySelectorAll('.toast-msg').forEach(t=>t.remove());var t=document.createElement('div');t.className='toast-msg';t.style.background=type==='error'?'#dc2626':type==='warning'?'#d97706':'#059669';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400)},2500)};
 
 window.switchTab=async function(tabId){
     document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
