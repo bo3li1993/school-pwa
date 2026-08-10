@@ -194,7 +194,7 @@ var currentUser = {};
 try {
     currentUser = JSON.parse(saved);
     var _role = String(currentUser.role||'').trim().toLowerCase();
-    if(!['admin','assistant_manager','wing_supervisor'].includes(role)) window.location.replace('teacher.html');
+    if(!['admin','assistant_manager','wing_supervisor'].includes(_role)) window.location.replace('teacher.html');
     document.getElementById('lbl-admin-name').textContent = 'مرحباً، '+(currentUser.name||'');
     document.getElementById('lbl-school-name').textContent = currentUser.schoolName||'';
     document.getElementById('splash-school').textContent = currentUser.schoolName||'';
