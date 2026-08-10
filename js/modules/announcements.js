@@ -13,7 +13,7 @@ let unsubscribeAnnouncements = null;
 
 // ⚡ الدالة الرئيسية لتشغيل الموديول عند فتح التبويب
 export function initAnnouncementsModule() {
-    const container = document.getElementById('tab-announcements');
+    var container = document.getElementById('tab-announcements');
     if (!container) return;
 
     // بناء الواجهة البرمجية الكاملة (نموذج الإضافة + قائمة العرض اللحظية)
@@ -76,7 +76,7 @@ export function initAnnouncementsModule() {
 
 // 🖼️ معالجة الصورة المرفوعة وضغطها محلياً لتفادي مشاكل سيرفرات الميديا
 window.processAnnouncementImage = function(event) {
-    const file = event.target.files[0];
+    var file = event.target.files[0];
     if (!file) return;
 
     if (file.size > 800 * 1024) { // حماية لمنع رفع صور عملاقة تستهلك الذاكرة
@@ -85,11 +85,11 @@ window.processAnnouncementImage = function(event) {
         return;
     }
 
-    const reader = new FileReader();
+    var reader = new FileReader();
     reader.onload = function(e) {
         window.currentAnnouncementBase64Image = e.target.result;
-        const previewDiv = document.getElementById('ann-image-preview');
-        const imgPreview = document.getElementById('img-preview-src');
+        var previewDiv = document.getElementById('ann-image-preview');
+        var imgPreview = document.getElementById('img-preview-src');
         if (previewDiv && imgPreview) {
             imgPreview.src = e.target.result;
             previewDiv.style.display = 'flex';
@@ -102,8 +102,8 @@ window.processAnnouncementImage = function(event) {
 // 🗑️ تصفير خانة الصورة
 window.clearAnnouncementImage = function() {
     window.currentAnnouncementBase64Image = "";
-    const fileInput = document.getElementById('ann-image-file');
-    const previewDiv = document.getElementById('ann-image-preview');
+    var fileInput = document.getElementById('ann-image-file');
+    var previewDiv = document.getElementById('ann-image-preview');
     if (fileInput) fileInput.value = "";
     if (previewDiv) previewDiv.style.display = "none";
 };
@@ -111,12 +111,12 @@ window.clearAnnouncementImage = function() {
 // 🚀 محرك ضخ وتوثيق الإعلان في الفايرستور ببصمة المنشأة الصارمة
 window.handlePublishAnnouncement = async function(event) {
     event.preventDefault();
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     if (!schoolId) return;
 
-    const titleEl = document.getElementById('ann-title');
-    const contentEl = document.getElementById('ann-content');
-    const btn = document.getElementById('btn-publish-ann');
+    var titleEl = document.getElementById('ann-title');
+    var contentEl = document.getElementById('ann-content');
+    var btn = document.getElementById('btn-publish-ann');
 
     if (!titleEl || !contentEl || !titleEl.value.trim() || !contentEl.value.trim()) {
         window.showToast("⚠️ يرجى تعبئة الحقول المطلوبة أولاً", "warning");
@@ -127,7 +127,7 @@ window.handlePublishAnnouncement = async function(event) {
     btn.innerHTML = "⏳ جاري نشر وتعميم البلاغ...";
 
     try {
-        const userSession = JSON.parse(localStorage.getItem('hs_user') || '{}');
+        var userSession = JSON.parse(localStorage.getItem('hs_user') || '{}');
         
         await addDoc(collection(db, 'announcements'), {
             schoolId: schoolId,
@@ -158,18 +158,18 @@ window.handlePublishAnnouncement = async function(event) {
 
 // 📡 مستمع رادار الإعلانات اللحظي والمؤمن بالبصمة لتأمين التعددية (Multi-tenant SaaS)
 function startLiveAnnouncementsListener() {
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     if (!schoolId) return;
 
     if (unsubscribeAnnouncements) unsubscribeAnnouncements();
 
-    const q = query(
+    var q = query(
         collection(db, 'announcements'),
         where('schoolId', '==', schoolId)
     );
 
     unsubscribeAnnouncements = onSnapshot(q, (snapshot) => {
-        const listContainer = document.getElementById('container-announcements-list');
+        var listContainer = document.getElementById('container-announcements-list');
         if (!listContainer) return;
 
         if (snapshot.empty) {
@@ -183,7 +183,7 @@ function startLiveAnnouncementsListener() {
         }
 
         // تجميع السجلات وفرزها محلياً من الأحدث للأقدم لعدم استهلاك فهارس مركبة معقدة
-        const announcementsArray = [];
+        var announcementsArray = [];
         snapshot.forEach(doc => {
             announcementsArray.push({ id: doc.id, ...doc.data() });
         });

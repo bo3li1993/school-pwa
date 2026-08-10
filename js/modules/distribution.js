@@ -12,7 +12,7 @@ window._cleanupDistribution = function() {
 const ALL_CLASSES = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'];
 
 export async function initDistributionModule() {
-    const container = document.getElementById('tab-coverage');
+    var container = document.getElementById('tab-coverage');
     if (!container) return;
 
     container.innerHTML = `
@@ -62,12 +62,12 @@ export async function initDistributionModule() {
 }
 
 async function loadTeacherDirectoryForDistribution() {
-    const sel = document.getElementById('dist-teacher-assign');
+    var sel = document.getElementById('dist-teacher-assign');
     try {
-        const schoolId = getActiveSchoolId();
-        const q = query(collection(db,'users'), where('schoolId','==',schoolId), where('role','==','teacher'));
-        const snap = await getDocs(q);
-        const names = [];
+        var schoolId = getActiveSchoolId();
+        var q = query(collection(db,'users'), where('schoolId','==',schoolId), where('role','==','teacher'));
+        var snap = await getDocs(q);
+        var names = [];
         snap.forEach(d => { if(d.data().name) names.push(d.data().name.trim()); });
         names.sort((a,b)=>a.localeCompare(b,'ar'));
         if(!names.length) { sel.innerHTML = '<option value="">⚠️ لا يوجد معلمين مسجّلين</option>'; return; }
@@ -76,15 +76,15 @@ async function loadTeacherDirectoryForDistribution() {
 }
 
 function listenToDistributionLogs() {
-    const schoolId = getActiveSchoolId();
-    const q = query(collection(db, 'class_distribution'), where('schoolId', '==', schoolId));
+    var schoolId = getActiveSchoolId();
+    var q = query(collection(db, 'class_distribution'), where('schoolId', '==', schoolId));
     onSnapshot(q, (snap) => {
-        const tbody = document.getElementById('dist-logs-tbody');
+        var tbody = document.getElementById('dist-logs-tbody');
         if (!tbody) return;
         var html = '';
-        const docs = snap.docs.sort((a,b) => (b.data().createdAt?.seconds||0) - (a.data().createdAt?.seconds||0));
+        var docs = snap.docs.sort((a,b) => (b.data().createdAt?.seconds||0) - (a.data().createdAt?.seconds||0));
         docs.forEach(d => {
-            const r = d.data();
+            var r = d.data();
             html += `<tr style="border-bottom:1px solid #eee;">
                 <td style="padding:8px;"><b>${r.classId || '-'}</b></td>
                 <td style="padding:8px;">أ. ${r.teacherName || '-'}</td>
@@ -97,10 +97,10 @@ function listenToDistributionLogs() {
 
 window.handleRegisterDistributionLive = async function(e) {
     e.preventDefault();
-    const cId = document.getElementById('dist-class-id').value.trim();
-    const tName = document.getElementById('dist-teacher-assign').value.trim();
-    const room = document.getElementById('dist-room-id').value.trim();
-    const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية للـ SaaS
+    var cId = document.getElementById('dist-class-id').value.trim();
+    var tName = document.getElementById('dist-teacher-assign').value.trim();
+    var room = document.getElementById('dist-room-id').value.trim();
+    var schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية للـ SaaS
 
     if(!cId || !tName) { window.showToast('⚠️ يرجى اختيار الفصل والمعلم'); return; }
     

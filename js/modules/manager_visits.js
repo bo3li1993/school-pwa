@@ -10,7 +10,7 @@ function cleanupMgrListeners() {
 
 export async function initManagerVisitsModule() {
 
-    const container = document.getElementById('tab-manager-visits');
+    var container = document.getElementById('tab-manager-visits');
     if (!container) return;
 
     container.innerHTML = `
@@ -34,15 +34,15 @@ export async function initManagerVisitsModule() {
             </table>
         </div>`;
 
-    const schoolId    = getActiveSchoolId();
-    const classSelect = document.getElementById('m-visit-class');
+    var schoolId    = getActiveSchoolId();
+    var classSelect = document.getElementById('m-visit-class');
 
     // ══ جلب الطلاب والمعلمين بالتوازي ══
-    const [studentsSnap, teachersSnap] = await Promise.all([
+    var [studentsSnap, teachersSnap] = await Promise.all([
         getDocs(query(collection(db,'students'), where('schoolId','==',schoolId))),
         getDocs(query(collection(db,'users'),    where('schoolId','==',schoolId), where('role','==','teacher')))
     ]);
-    const snap = studentsSnap;
+    var snap = studentsSnap;
     
     var html = '<option value="">-- اختر الفصل --</option>';
     new Set(snap.docs.map(d => d.data().classId)).forEach(c => { if(c) html += `<option value="${c}">${c}</option>`; });
@@ -54,12 +54,12 @@ export async function initManagerVisitsModule() {
 
 async function loadTeacherDirectoryForVisits(teachersSnap) {
     try {
-    const sel = document.getElementById('m-visit-teacher');
+    var sel = document.getElementById('m-visit-teacher');
     try {
         // استخدم البيانات المحملة مسبقاً إن وجدت
-        const snap = teachersSnap || await getDocs(query(collection(db,'users'),
+        var snap = teachersSnap || await getDocs(query(collection(db,'users'),
             where('schoolId','==',getActiveSchoolId()), where('role','==','teacher')));
-        const names = [];
+        var names = [];
         snap.forEach(d => { if(d.data().name) names.push(d.data().name.trim()); });
         names.sort((a,b)=>a.localeCompare(b,'ar'));
         sel.innerHTML = names.length
@@ -70,8 +70,8 @@ async function loadTeacherDirectoryForVisits(teachersSnap) {
 
 window.handleRegisterManagerVisitLive = async function(e) {
     e.preventDefault();
-    const schoolId = getActiveSchoolId();
-    const teacherName = document.getElementById('m-visit-teacher').value.trim();
+    var schoolId = getActiveSchoolId();
+    var teacherName = document.getElementById('m-visit-teacher').value.trim();
     if(!teacherName) { window.showToast('⚠️ يرجى اختيار المعلم'); return; }
 
     await addDoc(collection(db, 'manager_visits'), {
@@ -87,15 +87,15 @@ window.handleRegisterManagerVisitLive = async function(e) {
 
 async function loadManagerVisitsLogsLive() {
     try {
-    const tbody = document.getElementById('manager-visits-tbody');
-    const schoolId = getActiveSchoolId();
-    const q = query(collection(db, 'manager_visits'), where('schoolId', '==', schoolId));
+    var tbody = document.getElementById('manager-visits-tbody');
+    var schoolId = getActiveSchoolId();
+    var q = query(collection(db, 'manager_visits'), where('schoolId', '==', schoolId));
     
     cleanupMgrListeners();
     _mgrVisitUnsub = onSnapshot(q, (snap) => {
         var html = '';
         snap.forEach(doc => {
-            const d = doc.data();
+            var d = doc.data();
             html += `<tr style="border-bottom:1px solid #eee;"><td style="padding:8px;">${d.classId}</td><td style="padding:8px;">أ. ${d.teacherName}</td><td style="padding:8px;">${d.notes}</td></tr>`;
         });
         tbody.innerHTML = html || '<tr><td colspan="3" style="text-align:center; padding:15px; color:#999;">لا توجد زيارات مسجّلة بعد.</td></tr>';

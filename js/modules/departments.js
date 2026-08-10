@@ -3,9 +3,9 @@ import { collection, getDocs, addDoc, deleteDoc, doc, query, where, serverTimest
     from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initDepartmentsModule() {
-    const container = document.getElementById('tab-departments');
+    var container = document.getElementById('tab-departments');
     if(!container) return;
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     container.innerHTML = `
     <div style="max-width:600px;margin:0 auto;padding:16px">
@@ -26,12 +26,12 @@ export async function initDepartmentsModule() {
 }
 
 async function loadDepartments() {
-    const list = document.getElementById('dept-list');
+    var list = document.getElementById('dept-list');
     if(!list) return;
     try {
-        const snap = await getDocs(query(collection(db,'departments'), where('schoolId','==',getActiveSchoolId())));
+        var snap = await getDocs(query(collection(db,'departments'), where('schoolId','==',getActiveSchoolId())));
         if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:30px;color:#aaa;font-weight:700">لا توجد أقسام — أضف قسم جديد</div>'; return; }
-        const depts = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar'));
+        var depts = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar'));
         list.innerHTML = depts.map(d =>
             `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:6px">
                 <span style="font-weight:800;font-size:14px;color:#111"><i class="bi bi-bookmark-fill" style="color:var(--sky);margin-left:6px"></i>${d.name}</span>
@@ -42,7 +42,7 @@ async function loadDepartments() {
 }
 
 window.addDepartment = async function() {
-    const name = document.getElementById('dept-name')?.value?.trim();
+    var name = document.getElementById('dept-name')?.value?.trim();
     if(!name) { window.showToast?.('اكتب اسم القسم','warning'); return; }
     try {
         await addDoc(collection(db,'departments'), { schoolId: getActiveSchoolId(), name, createdAt: serverTimestamp() });
@@ -64,7 +64,7 @@ window.deleteDepartment = async function(id, name) {
 // دالة مساعدة — تُستدعى من صفحات أخرى لجلب الأقسام كقائمة
 export async function getSchoolDepartments() {
     try {
-        const snap = await getDocs(query(collection(db,'departments'), where('schoolId','==',getActiveSchoolId())));
+        var snap = await getDocs(query(collection(db,'departments'), where('schoolId','==',getActiveSchoolId())));
         return snap.docs.map(d=>d.data().name).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ar'));
     } catch(e) { return []; }
 }

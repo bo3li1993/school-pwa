@@ -8,10 +8,10 @@ window._cleanupRounds = function() {
 };
 
 export async function initRoundsModule() {
-    const container = document.getElementById('tab-rounds');
+    var container = document.getElementById('tab-rounds');
     if (!container) return;
 
-    const currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
 
     container.innerHTML = `
     <div style="max-width:600px;margin:0 auto;padding:16px">
@@ -43,14 +43,14 @@ export async function initRoundsModule() {
 }
 
 window.saveWingRound = async function() {
-    const name = document.getElementById('round-officer-name').value.trim();
-    const notes = document.getElementById('round-wing-notes').value.trim();
+    var name = document.getElementById('round-officer-name').value.trim();
+    var notes = document.getElementById('round-wing-notes').value.trim();
     if(!notes) { window.showToast?.('اكتب الملاحظة','warning'); return; }
 
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     try {
-        const data = {
+        var data = {
             schoolId,
             officerName: name,
             notes: notes,
@@ -58,12 +58,12 @@ window.saveWingRound = async function() {
         };
 
         // إرفاق صورة
-        const fileInput = document.getElementById('round-image');
+        var fileInput = document.getElementById('round-image');
         if(fileInput && fileInput.files[0]) {
-            const file = fileInput.files[0];
+            var file = fileInput.files[0];
             if(file.size > 500000) { window.showToast?.('الصورة كبيرة — أقل من 500KB','warning'); return; }
-            const base64 = await new Promise(res => {
-                const reader = new FileReader();
+            var base64 = await new Promise(res => {
+                var reader = new FileReader();
                 reader.onload = e => res(e.target.result);
                 reader.readAsDataURL(file);
             });
@@ -78,20 +78,20 @@ window.saveWingRound = async function() {
 };
 
 function loadWingRoundsLive() {
-    const list = document.getElementById('wing-rounds-list');
+    var list = document.getElementById('wing-rounds-list');
     if (!list) return;
 
-    const schoolId = getActiveSchoolId();
-    const q = query(collection(db, 'wing_rounds'), where('schoolId', '==', schoolId));
+    var schoolId = getActiveSchoolId();
+    var q = query(collection(db, 'wing_rounds'), where('schoolId', '==', schoolId));
 
-    const unsub = onSnapshot(q, snap => {
+    var unsub = onSnapshot(q, snap => {
         if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-weight:700">📭 لا توجد جولات مسجّلة</div>'; return; }
 
-        const rounds = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+        var rounds = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
 
         list.innerHTML = rounds.map(r => {
-            const time = r.createdAt?.toDate?.();
-            const timeStr = time ? time.toLocaleDateString('ar-KW') + ' ' + time.toLocaleTimeString('ar-KW',{hour:'2-digit',minute:'2-digit'}) : '';
+            var time = r.createdAt?.toDate?.();
+            var timeStr = time ? time.toLocaleDateString('ar-KW') + ' ' + time.toLocaleTimeString('ar-KW',{hour:'2-digit',minute:'2-digit'}) : '';
             return `<div style="padding:12px;border-bottom:1px solid var(--line)">
                 <div style="display:flex;justify-content:space-between;margin-bottom:4px">
                     <span style="font-weight:800;font-size:13px">👤 ${r.officerName||''}</span>

@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initDateSearchModule() {
-    const container = document.getElementById('tab-date');
+    var container = document.getElementById('tab-date');
     if (!container) return;
 
     container.innerHTML = `
@@ -37,8 +37,8 @@ export async function initDateSearchModule() {
 }
 
 window.setTodayAndSearch = function() {
-    const today = new Date();
-    const iso = today.toISOString().slice(0,10);
+    var today = new Date();
+    var iso = today.toISOString().slice(0,10);
     document.getElementById('search-date-input').value = iso;
     window.fetchHistoricAttendanceByClassLive();
 };
@@ -46,7 +46,7 @@ window.setTodayAndSearch = function() {
 window.resetHistoricSearch = function() {
     document.getElementById('search-date-input').value = '';
     document.getElementById('btn-historic-reset').style.display = 'none';
-    document.getElementById('btn-historic-pdf').style.display = 'none'; const _pbtn=document.getElementById('btn-historic-print'); if(_pbtn)_pbtn.style.display='none';
+    document.getElementById('btn-historic-pdf').style.display = 'none'; var _pbtn=document.getElementById('btn-historic-print'); if(_pbtn)_pbtn.style.display='none';
     document.getElementById('historic-results-display-area').innerHTML =
         `<p style="text-align:center; padding:30px; color:#999; font-weight:bold;">💡 اختر تاريخاً ثم اضغط "بحث" لعرض سجل الغياب الخاص بذلك اليوم.</p>`;
 };
@@ -54,15 +54,15 @@ window.resetHistoricSearch = function() {
 let lastSearchedDate = '';
 
 window.fetchHistoricAttendanceByClassLive = async function() {
-    const dateInput = document.getElementById('search-date-input').value;
-    const displayArea = document.getElementById('historic-results-display-area');
-    const resetBtn = document.getElementById('btn-historic-reset');
-    const pdfBtn = document.getElementById('btn-historic-pdf');
-    const schoolId = getActiveSchoolId(); // 🏢 البصمة الأمنية للمدرسة
+    var dateInput = document.getElementById('search-date-input').value;
+    var displayArea = document.getElementById('historic-results-display-area');
+    var resetBtn = document.getElementById('btn-historic-reset');
+    var pdfBtn = document.getElementById('btn-historic-pdf');
+    var schoolId = getActiveSchoolId(); // 🏢 البصمة الأمنية للمدرسة
 
     if (!dateInput) { window.showToast("⚠️ يرجى تحديد التاريخ أولاً للبدء!"); return; }
 
-    const isoDate = dateInput; // صيغة ISO المطابقة لما يحفظه attendance.js
+    var isoDate = dateInput; // صيغة ISO المطابقة لما يحفظه attendance.js
     lastSearchedDate = isoDate;
 
     displayArea.innerHTML = `<p style="text-align:center; padding:25px; font-weight:bold; color:var(--hover-color);">⏳ جاري فحص الكشوف السحابية الخاصة بمدرستك فقط...</p>`;
@@ -70,11 +70,11 @@ window.fetchHistoricAttendanceByClassLive = async function() {
     pdfBtn.style.display = 'none';
 
     try {
-        const q = query(collection(db, 'attendance'),
+        var q = query(collection(db, 'attendance'),
                         where('date', '==', isoDate),
                         where('schoolId', '==', schoolId));
 
-        const snap = await getDocs(q);
+        var snap = await getDocs(q);
 
         if (snap.empty) {
             displayArea.innerHTML = `
@@ -87,9 +87,9 @@ window.fetchHistoricAttendanceByClassLive = async function() {
 
         var groupedData = {};
         snap.forEach(doc => {
-            const d = doc.data();
+            var d = doc.data();
             if ((d.status === 'absent' || d.status === 'late') && d.schoolId === schoolId) {
-                const classKey = d.classId ? d.classId.trim() : "فصول غير معرفة";
+                var classKey = d.classId ? d.classId.trim() : "فصول غير معرفة";
                 if (!groupedData[classKey]) groupedData[classKey] = [];
                 groupedData[classKey].push({
                     name: d.studentName || d.name || "طالب غير مسجل",
@@ -100,7 +100,7 @@ window.fetchHistoricAttendanceByClassLive = async function() {
             }
         });
 
-        const sortedClasses = Object.keys(groupedData).sort();
+        var sortedClasses = Object.keys(groupedData).sort();
 
         if (sortedClasses.length === 0) {
             displayArea.innerHTML = `
@@ -119,7 +119,7 @@ window.fetchHistoricAttendanceByClassLive = async function() {
         </div>`;
 
         sortedClasses.forEach(classKey => {
-            const rows = groupedData[classKey];
+            var rows = groupedData[classKey];
             html += `
             <div class="card" style="margin-bottom:14px;">
                 <h3 style="font-size:14px; border-bottom:2px solid var(--line); padding-bottom:8px; margin-bottom:10px;">
@@ -156,7 +156,7 @@ window.fetchHistoricAttendanceByClassLive = async function() {
 
         displayArea.innerHTML = html;
         lastGroupedData = groupedData;
-        pdfBtn.style.display = 'inline-flex'; const _pb=document.getElementById('btn-historic-print'); if(_pb)_pb.style.display='inline-flex';
+        pdfBtn.style.display = 'inline-flex'; var _pb=document.getElementById('btn-historic-print'); if(_pb)_pb.style.display='inline-flex';
 
     } catch (err) {
         displayArea.innerHTML = `<p style="color:red; font-weight:bold;">❌ خطأ في عملية الفرز السحابي: ${err.message}</p>`;
@@ -166,14 +166,14 @@ window.fetchHistoricAttendanceByClassLive = async function() {
 let lastGroupedData = {};
 
 window.exportDateSearchPDF = async function() {
-    const sortedClasses = Object.keys(lastGroupedData).sort();
+    var sortedClasses = Object.keys(lastGroupedData).sort();
     if (!sortedClasses.length) { showToast('⚠️ لا توجد نتائج لتصديرها', 'info'); return; }
 
     var contentHTML = '';
     var totalAbsent = 0, totalLate = 0;
 
     sortedClasses.forEach(classKey => {
-        const rows = lastGroupedData[classKey];
+        var rows = lastGroupedData[classKey];
         totalAbsent += rows.filter(r => r.status === 'absent').length;
         totalLate += rows.filter(r => r.status === 'late').length;
 
@@ -193,18 +193,18 @@ window.exportDateSearchPDF = async function() {
         </table>`;
     });
 
-    const subtitle = `إجمالي: ${totalAbsent} غياب · ${totalLate} تأخير · ${sortedClasses.length} فصل — تاريخ ${lastSearchedDate}`;
+    var subtitle = `إجمالي: ${totalAbsent} غياب · ${totalLate} تأخير · ${sortedClasses.length} فصل — تاريخ ${lastSearchedDate}`;
     await window.ManzoumaReport.exportPDF(contentHTML, `كشف_الغياب_${lastSearchedDate.replace(/\//g,'-')}`, 'كشف الغياب والتأخير', subtitle);
 };
 
 // ===== طباعة مباشرة =====
 window.printDateSearchDirect = function() {
-    const sortedClasses = Object.keys(lastGroupedData).sort();
+    var sortedClasses = Object.keys(lastGroupedData).sort();
     if (!sortedClasses.length) { showToast('⚠️ لا توجد نتائج', 'info'); return; }
 
     var contentHTML = '';
     sortedClasses.forEach(classKey => {
-        const rows = lastGroupedData[classKey];
+        var rows = lastGroupedData[classKey];
         contentHTML += `
         <div class="section-title">فصل ${classKey}</div>
         <table>

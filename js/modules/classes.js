@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initClassesModule() {
-    const container = document.getElementById('tab-classes') || document.getElementById('tab-classes');
+    var container = document.getElementById('tab-classes') || document.getElementById('tab-classes');
     if (!container) return;
 
     // 🛡️ جدار حماية وعزل الأخطاء
@@ -39,14 +39,14 @@ export async function initClassesModule() {
 }
 
 async function loadSchoolClassesStatsLive() {
-    const tbody = document.getElementById('school-classes-tbody');
+    var tbody = document.getElementById('school-classes-tbody');
     if (!tbody) return;
 
-    const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية الديناميكية
+    var schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية الديناميكية
 
     try {
         // سحب كشف طلاب المدرسة الحالية فقط
-        const qStudents = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+        var qStudents = query(collection(db, 'students'), where('schoolId', '==', schoolId));
         var snap = await getDocs(qStudents);
         
         // دعم التوافقية للمدرسة القديمة (في حال وجود داتا قديمة بدون schoolId)
@@ -55,14 +55,14 @@ async function loadSchoolClassesStatsLive() {
         }
 
         var classCounts = {};
-        const defaultClasses = ["6/1", "6/2", "6/3", "6/4", "7/1", "7/2", "7/3", "7/4", "8/1", "8/2", "8/3", "8/4", "9/1", "9/2"];
+        var defaultClasses = ["6/1", "6/2", "6/3", "6/4", "7/1", "7/2", "7/3", "7/4", "8/1", "8/2", "8/3", "8/4", "9/1", "9/2"];
         defaultClasses.forEach(c => classCounts[c] = 0);
 
         snap.forEach(doc => {
-            const d = doc.data();
+            var d = doc.data();
             // فلترة أمنية إضافية لضمان عدم خلط داتا المدارس
             if ((!d.schoolId || d.schoolId === schoolId) && d.classId) {
-                const cId = d.classId.trim();
+                var cId = d.classId.trim();
                 if (classCounts[cId] !== undefined) {
                     classCounts[cId]++;
                 } else {
@@ -73,7 +73,7 @@ async function loadSchoolClassesStatsLive() {
 
         var html = '';
         Object.keys(classCounts).sort().forEach(cId => {
-            const count = classCounts[cId];
+            var count = classCounts[cId];
             html += `
                 <tr style="border-bottom:1px solid #eee;">
                     <td><b>🏫 صف ${cId}</b></td>
@@ -97,14 +97,14 @@ async function loadSchoolClassesStatsLive() {
 
 // ══ عرض طلاب الفصل مع إمكانية نقلهم ══
 window.showClassStudents = async function(classId) {
-    const { getDocs: gd, query: q, collection: col, where: wh, updateDoc, doc }
+    var { getDocs: gd, query: q, collection: col, where: wh, updateDoc, doc }
         = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-    const { db: database, getActiveSchoolId: getSchool }
+    var { db: database, getActiveSchoolId: getSchool }
         = await import('../firebase-config.js');
 
     document.getElementById('class-students-modal')?.remove();
 
-    const modal = document.createElement('div');
+    var modal = document.createElement('div');
     modal.id    = 'class-students-modal';
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
     modal.innerHTML = `
@@ -119,19 +119,19 @@ window.showClassStudents = async function(classId) {
     document.body.appendChild(modal);
 
     try {
-        const schoolId = getSchool();
-        const snap = await gd(q(col(database,'students'), wh('schoolId','==',schoolId), wh('classId','==',classId)));
-        const body = document.getElementById('class-students-body');
+        var schoolId = getSchool();
+        var snap = await gd(q(col(database,'students'), wh('schoolId','==',schoolId), wh('classId','==',classId)));
+        var body = document.getElementById('class-students-body');
 
         if(snap.empty) { body.innerHTML = '<div style="padding:20px;color:#aaa">لا يوجد طلاب في هذا الفصل</div>'; return; }
 
         // جلب كل الفصول للنقل
-        const allSnap = await gd(q(col(database,'students'), wh('schoolId','==',schoolId)));
-        const allClasses = [...new Set(allSnap.docs.map(d=>d.data().classId).filter(Boolean))].sort();
-        const classOpts  = allClasses.map(c=>`<option value="${c}">${c}</option>`).join('');
+        var allSnap = await gd(q(col(database,'students'), wh('schoolId','==',schoolId)));
+        var allClasses = [...new Set(allSnap.docs.map(d=>d.data().classId).filter(Boolean))].sort();
+        var classOpts  = allClasses.map(c=>`<option value="${c}">${c}</option>`).join('');
 
-        const rows = snap.docs.map(d => {
-            const s = d.data();
+        var rows = snap.docs.map(d => {
+            var s = d.data();
             return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f0f0;gap:8px">
                 <span style="font-weight:700;font-size:13px;flex:1">${s.name||'—'}</span>
                 <select id="move-${d.id}" style="padding:5px 8px;border:1.5px solid #e5e7eb;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:600">
@@ -154,12 +154,12 @@ window.showClassStudents = async function(classId) {
 };
 
 window.moveStudent = async function(studentId, currentClass) {
-    const newClass = document.getElementById(`move-${studentId}`)?.value;
+    var newClass = document.getElementById(`move-${studentId}`)?.value;
     if(!newClass || newClass === currentClass) { window.showToast?.('اختر فصلاً مختلفاً','warning'); return; }
 
     try {
-        const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-        const { db: database }   = await import('../firebase-config.js');
+        var { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var { db: database }   = await import('../firebase-config.js');
         await updateDoc(doc(database,'students',studentId), { classId: newClass });
         window.showToast?.(`✅ تم نقل الطالب إلى ${newClass}`);
         document.getElementById('class-students-modal')?.remove();

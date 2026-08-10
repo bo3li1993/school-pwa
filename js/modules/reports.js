@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initReportsModule() {
-    const container = document.getElementById('tab-reports');
+    var container = document.getElementById('tab-reports');
     if (!container) return;
 
     container.innerHTML = `
@@ -20,41 +20,41 @@ export async function initReportsModule() {
 }
 
 window.generateWeeklyPDFReportLive = async function() {
-    const btn = document.getElementById('btn-trigger-weekly-pdf');
-    const originalText = btn.innerHTML;
+    var btn = document.getElementById('btn-trigger-weekly-pdf');
+    var originalText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '⏳ جاري تجهيز التقرير...';
 
     try {
-        const schoolId = getActiveSchoolId();
-        const today = new Date();
-        const sevenDaysAgo = new Date();
+        var schoolId = getActiveSchoolId();
+        var today = new Date();
+        var sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(today.getDate() - 7);
 
-        const q = query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('status', '==', 'absent'));
-        const snap = await getDocs(q);
+        var q = query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('status', '==', 'absent'));
+        var snap = await getDocs(q);
 
-        const counts = {};
+        var counts = {};
         snap.forEach(docSnap => {
-            const d = docSnap.data();
-            const dateField = d.date || d.dateStr || '';
+            var d = docSnap.data();
+            var dateField = d.date || d.dateStr || '';
             if (!dateField) return;
             // دعم كلا الصيغتين ISO و كويتي
             var recordDate;
             if (dateField.includes('-')) {
                 recordDate = new Date(dateField);
             } else {
-                const p = dateField.split('/');
+                var p = dateField.split('/');
                 recordDate = new Date(p[0], p[1]-1, p[2]);
             }
             if (recordDate < sevenDaysAgo) return;
-            const key = `${d.studentName || d.name}|||${d.classId || '-'}`;
+            var key = `${d.studentName || d.name}|||${d.classId || '-'}`;
             counts[key] = (counts[key] || 0) + 1;
         });
 
-        const repeatedAbsentees = Object.entries(counts)
+        var repeatedAbsentees = Object.entries(counts)
             .filter(([, count]) => count >= 3)
-            .map(([key, count]) => { const [name, classId] = key.split('|||'); return { name, classId, count }; })
+            .map(([key, count]) => { var [name, classId] = key.split('|||'); return { name, classId, count }; })
             .sort((a, b) => b.count - a.count);
 
         if (!repeatedAbsentees.length) {
@@ -63,7 +63,7 @@ window.generateWeeklyPDFReportLive = async function() {
         }
 
         // تجميع بالفصول
-        const byClass = {};
+        var byClass = {};
         repeatedAbsentees.forEach(r => {
             if (!byClass[r.classId]) byClass[r.classId] = [];
             byClass[r.classId].push(r);
@@ -76,7 +76,7 @@ window.generateWeeklyPDFReportLive = async function() {
         </div>`;
 
         Object.keys(byClass).sort().forEach(cls => {
-            const rows = byClass[cls];
+            var rows = byClass[cls];
             contentHTML += `
             <div class="section-title">📚 فصل ${cls} — ${rows.length} طالب</div>
             <table>

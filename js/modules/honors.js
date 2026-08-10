@@ -12,7 +12,7 @@ window._cleanupHonors = function() {
 const ALL_CLASSES = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'];
 
 export async function initHonorsModule() {
-    const container = document.getElementById('tab-honors');
+    var container = document.getElementById('tab-honors');
     if (!container) return;
 
     container.innerHTML = `
@@ -63,14 +63,14 @@ export async function initHonorsModule() {
 }
 
 window.onHonorClassChange = async function(classId) {
-    const sel = document.getElementById('honor-std-name');
+    var sel = document.getElementById('honor-std-name');
     if(!classId) { sel.innerHTML = '<option value="">-- اختر الفصل أولاً --</option>'; sel.disabled = true; return; }
     sel.innerHTML = '<option value="">⏳ جاري التحميل...</option>';
     sel.disabled = true;
     try {
-        const q = query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId));
-        const snap = await getDocs(q);
-        const names = [];
+        var q = query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId));
+        var snap = await getDocs(q);
+        var names = [];
         snap.forEach(d => { if(d.data().name) names.push(d.data().name.trim()); });
         names.sort((a,b)=>a.localeCompare(b,'ar'));
         if(!names.length) { sel.innerHTML = '<option value="">⚠️ لا يوجد طلاب</option>'; return; }
@@ -81,10 +81,10 @@ window.onHonorClassChange = async function(classId) {
 
 window.handlePostToHonorsBoardLive = async function(e) {
     e.preventDefault();
-    const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
-    const classId = document.getElementById('honor-std-class').value.trim();
-    const name = document.getElementById('honor-std-name').value.trim();
-    const badge = document.getElementById('honor-badge-title').value.trim();
+    var schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
+    var classId = document.getElementById('honor-std-class').value.trim();
+    var name = document.getElementById('honor-std-name').value.trim();
+    var badge = document.getElementById('honor-badge-title').value.trim();
 
     if(!classId || !name || !badge) { window.showToast('⚠️ يرجى تعبئة جميع الحقول'); return; }
 
@@ -104,16 +104,16 @@ window.handlePostToHonorsBoardLive = async function(e) {
 };
 
 async function loadHonorsBoardCardsLive() {
-    const grid = document.getElementById('honors-board-display-grid');
+    var grid = document.getElementById('honors-board-display-grid');
     if(!grid) return;
     
-    const schoolId = getActiveSchoolId();
-    const q = query(collection(db, 'honors_board'), where('schoolId', '==', schoolId));
+    var schoolId = getActiveSchoolId();
+    var q = query(collection(db, 'honors_board'), where('schoolId', '==', schoolId));
     
     onSnapshot(q, (snap) => {
         var html = '';
         snap.forEach(doc => {
-            const d = doc.data();
+            var d = doc.data();
             html += `
             <div style="background:#fffcf5; border:1px solid var(--hover-color); padding:15px; border-radius:12px; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.02);">
                 <div style="font-size:30px; color:var(--hover-color);"><i class="bi bi-award-fill"></i></div>
@@ -128,15 +128,15 @@ async function loadHonorsBoardCardsLive() {
 
 // ===== طباعة السجل =====
 window.printHonorsPDF = async function() {
-    const tbody = document.getElementById('honors-board-display-grid');
+    var tbody = document.getElementById('honors-board-display-grid');
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
-    const contentHTML = `<table><thead><tr><th>الاسم</th><th>الفصل</th><th>الوسام</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    var contentHTML = `<table><thead><tr><th>الاسم</th><th>الفصل</th><th>الوسام</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     await window.ManzoumaReport.exportPDF(contentHTML, 'لوحة_الشرف', 'لوحة الشرف');
 };
 
 window.printHonorsDirect = function() {
-    const tbody = document.getElementById('honors-board-display-grid');
+    var tbody = document.getElementById('honors-board-display-grid');
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
-    const contentHTML = `<table><thead><tr><th>الاسم</th><th>الفصل</th><th>الوسام</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    var contentHTML = `<table><thead><tr><th>الاسم</th><th>الفصل</th><th>الوسام</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     window.ManzoumaReport.printDirect(contentHTML, 'لوحة الشرف');
 };

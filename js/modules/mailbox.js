@@ -30,7 +30,7 @@ function getAllowedContacts(myRole) {
 }
 
 export async function initMailboxModule() {
-    const container = document.getElementById('tab-mailbox');
+    var container = document.getElementById('tab-mailbox');
     if(!container) return;
 
     container.innerHTML = `
@@ -121,16 +121,16 @@ export async function initMailboxModule() {
 
 // ══ تحميل المحادثات ══
 async function loadConversations() {
-    const schoolId = getActiveSchoolId();
-    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const myId = me.odId || me.odId || me.odId || (me.odId + '_' + me.role);
-    const myUserId = me.userId || '';
-    const list = document.getElementById('msg-conversations-list');
+    var schoolId = getActiveSchoolId();
+    var me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var myId = me.odId || me.odId || me.odId || (me.odId + '_' + me.role);
+    var myUserId = me.userId || '';
+    var list = document.getElementById('msg-conversations-list');
     if(!list) return;
 
     try {
         // جلب كل المحادثات اللي أنا طرف فيها
-        const snap = await getDocs(query(
+        var snap = await getDocs(query(
             collection(db, 'conversations'),
             where('schoolId', '==', schoolId),
             where('participants', 'array-contains', myUserId)
@@ -142,21 +142,21 @@ async function loadConversations() {
         }
 
         // ترتيب بآخر رسالة
-        const convs = snap.docs.map(d => ({id: d.id, ...d.data()}))
+        var convs = snap.docs.map(d => ({id: d.id, ...d.data()}))
             .sort((a,b) => (b.lastMessageAt?.toMillis?.() || 0) - (a.lastMessageAt?.toMillis?.() || 0));
 
-        const roleLabels = {
+        var roleLabels = {
             admin:'المدير', assistant_manager:'مساعد المدير', teacher:'معلم',
             department_head:'رئيس قسم', social_worker:'أخصائي',
             parent:'ولي أمر', nurse:'ممرض', guard:'حارس'
         };
 
         list.innerHTML = convs.map(c => {
-            const partner = c.participantNames?.find(n => n.userId !== myUserId) || {};
-            const unread = c.unreadBy?.[myUserId] || 0;
-            const time = c.lastMessageAt?.toDate?.();
-            const timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '';
-            const initial = (partner.name || '؟').charAt(0);
+            var partner = c.participantNames?.find(n => n.userId !== myUserId) || {};
+            var unread = c.unreadBy?.[myUserId] || 0;
+            var time = c.lastMessageAt?.toDate?.();
+            var timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '';
+            var initial = (partner.name || '؟').charAt(0);
 
             return '<div class="msg-conv" onclick="window.openChat(\''+c.id+'\',\''+( partner.name||'').replace(/'/g,"")+'\',\''+( partner.role||'')+'\')">'+
                 '<div class="msg-avatar">'+initial+'</div>'+
@@ -180,7 +180,7 @@ async function loadConversations() {
 // ══ فتح محادثة ══
 window.openChat = async function(convId, partnerName, partnerRole) {
     _currentChatId = convId;
-    const roleLabels = {
+    var roleLabels = {
         admin:'المدير', assistant_manager:'مساعد المدير', teacher:'معلم',
         department_head:'رئيس قسم', social_worker:'أخصائي',
         parent:'ولي أمر', nurse:'ممرض', guard:'حارس'
@@ -188,34 +188,34 @@ window.openChat = async function(convId, partnerName, partnerRole) {
 
     document.getElementById('msg-screen-list').style.display = 'none';
     document.getElementById('msg-screen-new').style.display = 'none';
-    const chatScreen = document.getElementById('msg-screen-chat');
+    var chatScreen = document.getElementById('msg-screen-chat');
     chatScreen.style.display = 'flex';
     document.getElementById('chat-partner-name').textContent = partnerName;
     document.getElementById('chat-partner-role').textContent = roleLabels[partnerRole] || '';
 
-    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const myUserId = me.userId || '';
+    var me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var myUserId = me.userId || '';
 
     // mark as read
     try {
-        const convRef = doc(db, 'conversations', convId);
-        const updates = {};
+        var convRef = doc(db, 'conversations', convId);
+        var updates = {};
         updates['unreadBy.'+myUserId] = 0;
         await updateDoc(convRef, updates);
     } catch(e) {}
 
     // listen to messages
     cleanupMsgListeners();
-    const msgContainer = document.getElementById('chat-messages');
+    var msgContainer = document.getElementById('chat-messages');
 
     _msgUnsub = onSnapshot(
         query(collection(db, 'conversations', convId, 'messages'), orderBy('createdAt', 'asc')),
         snap => {
             msgContainer.innerHTML = snap.docs.map(d => {
-                const m = d.data();
-                const isMine = m.senderId === myUserId;
-                const time = m.createdAt?.toDate?.();
-                const timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '';
+                var m = d.data();
+                var isMine = m.senderId === myUserId;
+                var time = m.createdAt?.toDate?.();
+                var timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '';
                 return '<div class="chat-bubble '+(isMine?'sent':'received')+'">'+
                     m.text+
                     '<span class="bubble-time">'+timeStr+'</span>'+
@@ -231,14 +231,14 @@ window.openChat = async function(convId, partnerName, partnerRole) {
 
 // ══ إرسال رسالة ══
 window.sendMessage = async function() {
-    const input = document.getElementById('chat-input');
-    const text = input.value.trim();
+    var input = document.getElementById('chat-input');
+    var text = input.value.trim();
     if(!text || !_currentChatId) return;
     input.value = '';
 
-    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const myUserId = me.userId || '';
-    const myName = me.name || '';
+    var me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var myUserId = me.userId || '';
+    var myName = me.name || '';
 
     try {
         // أضف الرسالة
@@ -250,13 +250,13 @@ window.sendMessage = async function() {
         });
 
         // حدّث المحادثة
-        const convRef = doc(db, 'conversations', _currentChatId);
-        const convSnap = await getDocs(query(collection(db, 'conversations'), where('__name__', '==', _currentChatId)));
+        var convRef = doc(db, 'conversations', _currentChatId);
+        var convSnap = await getDocs(query(collection(db, 'conversations'), where('__name__', '==', _currentChatId)));
 
         // جلب المشاركين لتحديث unread
         if(!convSnap.empty) {
-            const conv = convSnap.docs[0].data();
-            const updates = {
+            var conv = convSnap.docs[0].data();
+            var updates = {
                 lastMessage: text,
                 lastMessageAt: serverTimestamp()
             };
@@ -287,18 +287,18 @@ let _allContacts = [];
 window.showNewChat = async function() {
     document.getElementById('msg-screen-list').style.display = 'none';
     document.getElementById('msg-screen-chat').style.display = 'none';
-    const newScreen = document.getElementById('msg-screen-new');
+    var newScreen = document.getElementById('msg-screen-new');
     newScreen.style.display = 'flex';
 
-    const schoolId = getActiveSchoolId();
-    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const myRole = me.role || '';
-    const myUserId = me.userId || '';
-    const allowed = getAllowedContacts(myRole);
+    var schoolId = getActiveSchoolId();
+    var me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var myRole = me.role || '';
+    var myUserId = me.userId || '';
+    var allowed = getAllowedContacts(myRole);
 
     try {
-        const snap = await getDocs(query(collection(db, 'users'), where('schoolId', '==', schoolId)));
-        const roleLabels = {
+        var snap = await getDocs(query(collection(db, 'users'), where('schoolId', '==', schoolId)));
+        var roleLabels = {
             admin:'المدير', assistant_manager:'مساعد المدير', teacher:'معلم',
             department_head:'رئيس قسم', social_worker:'أخصائي',
             nurse:'ممرض', guard:'حارس'
@@ -320,7 +320,7 @@ window.showNewChat = async function() {
 };
 
 function renderContactList(contacts, roleLabels) {
-    const list = document.getElementById('new-chat-list');
+    var list = document.getElementById('new-chat-list');
     if(!contacts.length) {
         list.innerHTML = '<div class="chat-empty">لا يوجد جهات اتصال متاحة</div>';
         return;
@@ -328,7 +328,7 @@ function renderContactList(contacts, roleLabels) {
     roleLabels = roleLabels || {admin:'المدير',assistant_manager:'مساعد المدير',teacher:'معلم',department_head:'رئيس قسم',social_worker:'أخصائي',nurse:'ممرض',guard:'حارس'};
 
     list.innerHTML = contacts.map(u => {
-        const initial = (u.name || '؟').charAt(0);
+        var initial = (u.name || '؟').charAt(0);
         return '<div class="new-chat-item" onclick="window.startNewChat(\''+u.userId+'\',\''+( u.name||'').replace(/'/g,"")+'\',\''+u.role+'\')">'+
             '<div class="msg-avatar" style="width:40px;height:40px;font-size:16px">'+initial+'</div>'+
             '<div>'+
@@ -340,22 +340,22 @@ function renderContactList(contacts, roleLabels) {
 }
 
 window.filterNewChatList = function(val) {
-    const roleLabels = {admin:'المدير',assistant_manager:'مساعد المدير',teacher:'معلم',department_head:'رئيس قسم',social_worker:'أخصائي',nurse:'ممرض',guard:'حارس'};
-    const filtered = val ? _allContacts.filter(u => (u.name||'').includes(val)) : _allContacts;
+    var roleLabels = {admin:'المدير',assistant_manager:'مساعد المدير',teacher:'معلم',department_head:'رئيس قسم',social_worker:'أخصائي',nurse:'ممرض',guard:'حارس'};
+    var filtered = val ? _allContacts.filter(u => (u.name||'').includes(val)) : _allContacts;
     renderContactList(filtered, roleLabels);
 };
 
 // ══ بدء محادثة جديدة ══
 window.startNewChat = async function(partnerId, partnerName, partnerRole) {
-    const schoolId = getActiveSchoolId();
-    const me = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const myUserId = me.userId || '';
-    const myName = me.name || '';
-    const myRole = me.role || '';
+    var schoolId = getActiveSchoolId();
+    var me = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var myUserId = me.userId || '';
+    var myName = me.name || '';
+    var myRole = me.role || '';
 
     try {
         // تحقق: هل في محادثة موجودة مع هذا الشخص
-        const existing = await getDocs(query(
+        var existing = await getDocs(query(
             collection(db, 'conversations'),
             where('schoolId', '==', schoolId),
             where('participants', 'array-contains', myUserId)
@@ -363,13 +363,13 @@ window.startNewChat = async function(partnerId, partnerName, partnerRole) {
 
         var convId = null;
         existing.forEach(d => {
-            const data = d.data();
+            var data = d.data();
             if(data.participants?.includes(partnerId)) convId = d.id;
         });
 
         if(!convId) {
             // إنشاء محادثة جديدة
-            const convRef = await addDoc(collection(db, 'conversations'), {
+            var convRef = await addDoc(collection(db, 'conversations'), {
                 schoolId,
                 participants: [myUserId, partnerId],
                 participantNames: [

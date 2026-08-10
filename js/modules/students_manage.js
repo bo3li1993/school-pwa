@@ -29,11 +29,11 @@ let currentPage = 1;
 const PAGE_SIZE = 20;
 
 export async function initStudentsManageModule() {
-    const container = document.getElementById('tab-students-manage');
+    var container = document.getElementById('tab-students-manage');
     if (!container) return;
 
-    const currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const isAdmin = currentUser.role === 'admin';
+    var currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var isAdmin = currentUser.role === 'admin';
 
     container.innerHTML = `
     <!-- ===== جدول الطلاب الكامل ===== -->
@@ -176,14 +176,14 @@ export async function initStudentsManageModule() {
 
 // ===== تحميل كل الطلاب =====
 async function loadAllStudents() {
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     try {
-        const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+        var snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
         allStudentsCache = [];
         var classesSet = new Set();
 
         snap.forEach(d => {
-            const data = d.data();
+            var data = d.data();
             allStudentsCache.push({ id: d.id, ...data });
             if (data.classId) classesSet.add(data.classId.trim());
         });
@@ -192,11 +192,11 @@ async function loadAllStudents() {
         allClassesCache = Array.from(classesSet).sort(smartClassSort);
 
         // تعبئة فلتر الفصول
-        const classOpts = '<option value="">كل الفصول</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
+        var classOpts = '<option value="">كل الفصول</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('st-filter-class').innerHTML = classOpts;
 
         // تعبئة dropdown ملف الطالب والإدارة الجماعية
-        const classOptsSelect = '<option value="">-- الرجاء اختيار الصف --</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
+        var classOptsSelect = '<option value="">-- الرجاء اختيار الصف --</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
         document.getElementById('prof-class-select').innerHTML = classOptsSelect;
         document.getElementById('bulk-class-select').innerHTML = classOptsSelect;
         document.getElementById('sm-class').innerHTML = '<option value="">-- اختر الصف --</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -211,12 +211,12 @@ async function loadAllStudents() {
 
 // ===== تطبيق الفلاتر =====
 window.applyStudentFilters = function() {
-    const search = document.getElementById('st-search').value.trim().toLowerCase();
-    const classFilter = document.getElementById('st-filter-class').value;
+    var search = document.getElementById('st-search').value.trim().toLowerCase();
+    var classFilter = document.getElementById('st-filter-class').value;
 
     filteredStudents = allStudentsCache.filter(s => {
-        const matchSearch = !search || (s.name || '').toLowerCase().includes(search) || (s.civilId || '').includes(search);
-        const matchClass = !classFilter || s.classId === classFilter;
+        var matchSearch = !search || (s.name || '').toLowerCase().includes(search) || (s.civilId || '').includes(search);
+        var matchClass = !classFilter || s.classId === classFilter;
         return matchSearch && matchClass;
     });
 
@@ -226,10 +226,10 @@ window.applyStudentFilters = function() {
 
 // ===== رسم الجدول =====
 function renderStudentTable() {
-    const tbody = document.getElementById('st-tbody');
-    const totalPages = Math.ceil(filteredStudents.length / PAGE_SIZE);
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const pageData = filteredStudents.slice(start, start + PAGE_SIZE);
+    var tbody = document.getElementById('st-tbody');
+    var totalPages = Math.ceil(filteredStudents.length / PAGE_SIZE);
+    var start = (currentPage - 1) * PAGE_SIZE;
+    var pageData = filteredStudents.slice(start, start + PAGE_SIZE);
 
     // badge العداد
     document.getElementById('st-count-badge').textContent = `${filteredStudents.length} طالب`;
@@ -291,7 +291,7 @@ window.openAddStudentModal = function() {
 };
 
 window.openEditStudentModal = function(docId) {
-    const s = allStudentsCache.find(x => x.id === docId);
+    var s = allStudentsCache.find(x => x.id === docId);
     if (!s) return;
     document.getElementById('student-modal-title').textContent = 'تعديل بيانات الطالب';
     document.getElementById('sm-name').value = s.name || '';
@@ -307,31 +307,31 @@ window.closeStudentModal = function() {
 };
 
 window.saveStudentModal = async function() {
-    const name = document.getElementById('sm-name').value.trim();
-    const classId = document.getElementById('sm-class').value.trim();
-    const civilId = document.getElementById('sm-civil').value.trim();
-    const parentPhone = document.getElementById('sm-phone').value.trim();
-    const docId = document.getElementById('sm-doc-id').value;
+    var name = document.getElementById('sm-name').value.trim();
+    var classId = document.getElementById('sm-class').value.trim();
+    var civilId = document.getElementById('sm-civil').value.trim();
+    var parentPhone = document.getElementById('sm-phone').value.trim();
+    var docId = document.getElementById('sm-doc-id').value;
 
     if (!name || !classId) { window.showToast('الاسم والصف مطلوبان', 'error'); return; }
 
-    const schoolId = getActiveSchoolId();
-    const data = { name, classId, civilId, parentPhone, schoolId };
+    var schoolId = getActiveSchoolId();
+    var data = { name, classId, civilId, parentPhone, schoolId };
 
     try {
         if (docId) {
             await updateDoc(doc(db, 'students', docId), data);
-            const idx = allStudentsCache.findIndex(x => x.id === docId);
+            var idx = allStudentsCache.findIndex(x => x.id === docId);
             if (idx !== -1) allStudentsCache[idx] = { id: docId, ...data };
             window.showToast('✅ تم تعديل بيانات الطالب');
         } else {
-            const ref = await addDoc(collection(db, 'students'), { ...data, createdAt: serverTimestamp() });
+            var ref = await addDoc(collection(db, 'students'), { ...data, createdAt: serverTimestamp() });
             allStudentsCache.push({ id: ref.id, ...data });
             // تحديث الفصول لو جديد
             if (!allClassesCache.includes(classId)) {
                 allClassesCache.push(classId);
                 allClassesCache.sort(smartClassSort);
-                const newOpts = '<option value="">كل الفصول</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
+                var newOpts = '<option value="">كل الفصول</option>' + allClassesCache.map(c => `<option value="${c}">${c}</option>`).join('');
                 document.getElementById('st-filter-class').innerHTML = newOpts;
             }
             window.showToast('✅ تم إضافة الطالب بنجاح');
@@ -354,16 +354,16 @@ window.deleteStudent = async function(docId, name) {
 
 // ===== Export Excel =====
 window.exportStudentsExcel = function() {
-    const data = filteredStudents.map((s, i) => ({
+    var data = filteredStudents.map((s, i) => ({
         '#': i + 1,
         'الاسم': s.name || '',
         'الصف': s.classId || '',
         'الرقم المدني': s.civilId || '',
         'هاتف ولي الأمر': s.parentPhone || ''
     }));
-    const ws = XLSX.utils.json_to_sheet(data, { header: ['#', 'الاسم', 'الصف', 'الرقم المدني', 'هاتف ولي الأمر'] });
+    var ws = XLSX.utils.json_to_sheet(data, { header: ['#', 'الاسم', 'الصف', 'الرقم المدني', 'هاتف ولي الأمر'] });
     ws['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 10 }, { wch: 18 }, { wch: 15 }];
-    const wb = XLSX.utils.book_new();
+    var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'الطلاب');
     XLSX.writeFile(wb, `قائمة_الطلاب_${new Date().toISOString().slice(0, 10)}.xlsx`);
     window.showToast('✅ تم تصدير Excel بنجاح');
@@ -371,9 +371,9 @@ window.exportStudentsExcel = function() {
 
 // ===== Export PDF =====
 window.exportStudentsPDF = function() {
-    const classFilter = document.getElementById('st-filter-class').value;
-    const subtitle = classFilter ? `الصف: ${classFilter}` : `إجمالي الطلاب: ${filteredStudents.length}`;
-    const rows = filteredStudents.map((s, i) => `
+    var classFilter = document.getElementById('st-filter-class').value;
+    var subtitle = classFilter ? `الصف: ${classFilter}` : `إجمالي الطلاب: ${filteredStudents.length}`;
+    var rows = filteredStudents.map((s, i) => `
         <tr>
             <td>${i + 1}</td>
             <td style="font-weight:700;">${s.name || '-'}</td>
@@ -381,7 +381,7 @@ window.exportStudentsPDF = function() {
             <td>${s.civilId || '-'}</td>
             <td>${s.parentPhone || '-'}</td>
         </tr>`).join('');
-    const html = `
+    var html = `
         <table>
             <thead><tr><th>#</th><th>الاسم</th><th>الصف</th><th>الرقم المدني</th><th>هاتف ولي الأمر</th></tr></thead>
             <tbody>${rows}</tbody>
@@ -391,17 +391,17 @@ window.exportStudentsPDF = function() {
 
 // ===== ملف الطالب الفردي =====
 window.handleStudentClassChange = async function(classId) {
-    const studentSelect = document.getElementById('prof-student-select');
+    var studentSelect = document.getElementById('prof-student-select');
     if (!studentSelect) return;
     if (!classId) { studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>'; studentSelect.disabled = true; return; }
     studentSelect.innerHTML = '<option value="">⏳ جاري سحب الأسماء...</option>';
     studentSelect.disabled = true;
     localStudentsMap = {};
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     try {
-        const snap = await getDocs(query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId)));
+        var snap = await getDocs(query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId)));
         var list = [];
-        snap.forEach(d => { const data = d.data(); if (data.name) { const n = data.name.trim(); list.push(n); localStudentsMap[n] = { id: d.id, ...data }; } });
+        snap.forEach(d => { var data = d.data(); if (data.name) { var n = data.name.trim(); list.push(n); localStudentsMap[n] = { id: d.id, ...data }; } });
         list.sort((a, b) => a.localeCompare(b, 'ar'));
         studentSelect.innerHTML = list.length === 0 ? '<option value="">⚠️ لا يوجد طلاب</option>' : '<option value="">-- اختر الطالب --</option>' + list.map(n => `<option value="${n}">${n}</option>`).join('');
         studentSelect.disabled = list.length === 0;
@@ -409,7 +409,7 @@ window.handleStudentClassChange = async function(classId) {
 };
 
 window.triggerStudentProfileFetch = function() {
-    const sName = document.getElementById('prof-student-select').value;
+    var sName = document.getElementById('prof-student-select').value;
     if (!sName || !localStudentsMap[sName]) { window.showToast('⚠️ يرجى اختيار الطالب!', 'info'); return; }
     document.getElementById('btn-student-reset').style.display = 'inline-block';
     window.loadStudentFullProfile(localStudentsMap[sName]);
@@ -422,20 +422,20 @@ window.resetStudentDashboardLiveView = function() {
 };
 
 window.loadStudentFullProfile = async function(student) {
-    const displayArea = document.getElementById('student-profile-display-area');
-    const schoolId = getActiveSchoolId();
+    var displayArea = document.getElementById('student-profile-display-area');
+    var schoolId = getActiveSchoolId();
     displayArea.innerHTML = `<div class="card" style="text-align:center;padding:30px;color:#999;font-weight:700;">⏳ جاري تحميل السجل الكامل...</div>`;
     try {
-        const name = student.name.trim();
-        const [attSnap, behSnap, rewSnap, gateSnap, clinicSnap] = await Promise.all([
+        var name = student.name.trim();
+        var [attSnap, behSnap, rewSnap, gateSnap, clinicSnap] = await Promise.all([
             getDocs(query(collection(db, 'attendance'), where('studentName', '==', name), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'behavior'), where('studentName', '==', name), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'rewards'), where('studentName', '==', name), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'gatepass'), where('studentName', '==', name), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'clinic'), where('studentName', '==', name), where('schoolId', '==', schoolId)))
         ]);
-        const absentCount = attSnap.docs.filter(d => d.data().status === 'absent').length;
-        const lateCount = attSnap.docs.filter(d => d.data().status === 'late').length;
+        var absentCount = attSnap.docs.filter(d => d.data().status === 'absent').length;
+        var lateCount = attSnap.docs.filter(d => d.data().status === 'late').length;
         var html = `
         <div class="card" style="border-right:5px solid var(--sky);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
             <div>
@@ -458,7 +458,7 @@ window.loadStudentFullProfile = async function(student) {
 
 function buildRecordsTable(title, snap, fields, labels) {
     var rows = '';
-    snap.forEach(d => { const data = d.data(); rows += '<tr>' + fields.map(f => `<td style="padding:7px;font-size:12.5px;">${data[f] || '-'}</td>`).join('') + '</tr>'; });
+    snap.forEach(d => { var data = d.data(); rows += '<tr>' + fields.map(f => `<td style="padding:7px;font-size:12.5px;">${data[f] || '-'}</td>`).join('') + '</tr>'; });
     return `<div class="card" style="margin-top:12px;"><h4 style="font-size:14px;margin-bottom:8px;">${title} <span style="color:#999;font-size:12px;">(${snap.size})</span></h4>
     <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">
     <thead><tr style="background:#f8fafc;">${labels.map(l => `<th style="padding:7px;font-size:12px;text-align:right;">${l}</th>`).join('')}</tr></thead>
@@ -468,13 +468,13 @@ function buildRecordsTable(title, snap, fields, labels) {
 
 // ===== الإدارة الجماعية =====
 window.loadBulkClassStudents = async function(classId) {
-    const listEl = document.getElementById('bulk-students-list');
-    const actionsBar = document.getElementById('bulk-actions-bar');
+    var listEl = document.getElementById('bulk-students-list');
+    var actionsBar = document.getElementById('bulk-actions-bar');
     actionsBar.style.display = 'none';
     if (!classId) { listEl.innerHTML = '<p style="text-align:center;color:#999;padding:20px;font-weight:700;">👆 اختر فصلاً لعرض طلابه</p>'; return; }
     listEl.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">⏳ جاري التحميل...</p>';
-    const schoolId = getActiveSchoolId();
-    const snap = await getDocs(query(collection(db, 'students'), where('classId', '==', classId), where('schoolId', '==', schoolId)));
+    var schoolId = getActiveSchoolId();
+    var snap = await getDocs(query(collection(db, 'students'), where('classId', '==', classId), where('schoolId', '==', schoolId)));
     currentClassStudents = [];
     snap.forEach(d => currentClassStudents.push({ id: d.id, ...d.data() }));
     currentClassStudents.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
@@ -489,7 +489,7 @@ window.loadBulkClassStudents = async function(classId) {
             <span style="color:#999;font-size:11px;margin-right:auto;">${s.parentPhone || ''}</span></div>`;
     });
     listEl.innerHTML = html;
-    const targetSelect = document.getElementById('bulk-target-class');
+    var targetSelect = document.getElementById('bulk-target-class');
     targetSelect.innerHTML = '<option value="">-- انقل إلى فصل --</option>' + allClassesCache.filter(c => c !== classId).map(c => `<option value="${c}">${c}</option>`).join('');
 };
 
@@ -499,20 +499,20 @@ window.toggleAllBulkStudents = function(checked) {
 };
 
 window.updateBulkSelectionCount = function() {
-    const checked = document.querySelectorAll('.bulk-student-cb:checked').length;
+    var checked = document.querySelectorAll('.bulk-student-cb:checked').length;
     document.getElementById('bulk-selected-count').textContent = `${checked} طالب محدد`;
     document.getElementById('bulk-actions-bar').style.display = checked > 0 ? 'flex' : 'none';
 };
 
 window.executeBulkTransfer = async function() {
-    const targetClass = document.getElementById('bulk-target-class').value;
+    var targetClass = document.getElementById('bulk-target-class').value;
     if (!targetClass) { window.showToast('⚠️ اختر الفصل المستهدف أولاً', 'info'); return; }
-    const selectedIdxs = [...document.querySelectorAll('.bulk-student-cb:checked')].map(cb => parseInt(cb.dataset.idx));
+    var selectedIdxs = [...document.querySelectorAll('.bulk-student-cb:checked')].map(cb => parseInt(cb.dataset.idx));
     if (!selectedIdxs.length) { window.showToast('⚠️ لم يتم تحديد أي طالب', 'info'); return; }
-    const selectedStudents = selectedIdxs.map(i => currentClassStudents[i]);
+    var selectedStudents = selectedIdxs.map(i => currentClassStudents[i]);
     if (!confirm(`نقل ${selectedStudents.length} طالب إلى الفصل ${targetClass}؟`)) return;
     try {
-        const batch = writeBatch(db);
+        var batch = writeBatch(db);
         selectedStudents.forEach(s => { batch.update(doc(db, 'students', s.id), { classId: targetClass }); });
         await batch.commit();
         window.showToast(`✅ تم نقل ${selectedStudents.length} طالب إلى ${targetClass}`);
@@ -523,9 +523,9 @@ window.executeBulkTransfer = async function() {
 
 // ===== حذف جميع الطلاب =====
 window.openDeleteAllModal = async function() {
-    const schoolId = getActiveSchoolId();
-    const currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+    var schoolId = getActiveSchoolId();
+    var currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
     document.getElementById('delete-all-count').textContent = snap.size;
     document.getElementById('delete-all-school-name').textContent = currentUser.schoolName || schoolId;
     document.getElementById('delete-all-confirm-input').value = '';
@@ -535,17 +535,17 @@ window.openDeleteAllModal = async function() {
 window.closeDeleteAllModal = function() { document.getElementById('delete-all-modal').style.display = 'none'; };
 
 window.executeDeleteAllStudents = async function() {
-    const currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const expectedName = (currentUser.schoolName || getActiveSchoolId() || '').trim();
-    const typedName = document.getElementById('delete-all-confirm-input').value.trim();
+    var currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var expectedName = (currentUser.schoolName || getActiveSchoolId() || '').trim();
+    var typedName = document.getElementById('delete-all-confirm-input').value.trim();
     if (typedName !== expectedName) { window.showToast('❌ الاسم المكتوب غير مطابق', 'error'); return; }
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     try {
-        const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
-        const batch = writeBatch(db);
+        var snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+        var batch = writeBatch(db);
         var count = 0;
         for (const d of snap.docs) {
-            const archiveRef = doc(collection(db, 'deleted_students'));
+            var archiveRef = doc(collection(db, 'deleted_students'));
             batch.set(archiveRef, { ...d.data(), originalId: d.id, deletedAt: serverTimestamp(), deletedBy: currentUser.name || 'unknown' });
             batch.delete(doc(db, 'students', d.id));
             count++;

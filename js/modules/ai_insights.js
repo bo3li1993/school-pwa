@@ -8,7 +8,7 @@ import { collection, query, where, getDocs }
 // ══════════════════════════════════════════════════════
 
 export async function initAiInsightsModule() {
-    const container = document.getElementById('tab-ai-insights');
+    var container = document.getElementById('tab-ai-insights');
     if (!container) return;
 
     container.innerHTML = `
@@ -130,8 +130,8 @@ window.selectPeriod = function(btn, period) {
 
 // ══ حساب نطاق التاريخ ══
 function getDateRange(period) {
-    const to   = getTodayISO();
-    const from = new Date();
+    var to   = getTodayISO();
+    var from = new Date();
     if(period==='week')     from.setDate(from.getDate()-7);
     else if(period==='month')    from.setMonth(from.getMonth()-1);
     else if(period==='semester') from.setMonth(from.getMonth()-5);
@@ -141,10 +141,10 @@ function getDateRange(period) {
 
 // ══ جلب بيانات التحليل ══
 async function fetchAnalysisData(period) {
-    const schoolId = getActiveSchoolId();
-    const { from, to } = getDateRange(period);
+    var schoolId = getActiveSchoolId();
+    var { from, to } = getDateRange(period);
 
-    const [attSnap, behSnap, clinicSnap] = await Promise.all([
+    var [attSnap, behSnap, clinicSnap] = await Promise.all([
         getDocs(query(collection(db,'attendance'),
             where('schoolId','==',schoolId), where('date','>=',from), where('date','<=',to))),
         getDocs(query(collection(db,'behavior'),
@@ -153,16 +153,16 @@ async function fetchAnalysisData(period) {
             where('schoolId','==',schoolId), where('date','>=',from), where('date','<=',to))),
     ]);
 
-    const byStudent = {}, byClass = {}, byDate = {}, byDay = {0:0,1:0,2:0,3:0,4:0};
+    var byStudent = {}, byClass = {}, byDate = {}, byDay = {0:0,1:0,2:0,3:0,4:0};
     var absentCount = 0, lateCount = 0;
 
     attSnap.forEach(d => {
-        const data = d.data();
+        var data = d.data();
         if(data.status==='absent') absentCount++;
         else if(data.status==='late') lateCount++;
 
-        const name = data.studentName||data.name||'—';
-        const cls  = data.classId||'—';
+        var name = data.studentName||data.name||'—';
+        var cls  = data.classId||'—';
         if(!byStudent[name]) byStudent[name] = { name, cls, absent:0, late:0 };
         if(data.status==='absent') byStudent[name].absent++;
         else if(data.status==='late') byStudent[name].late++;
@@ -173,17 +173,17 @@ async function fetchAnalysisData(period) {
         if(data.date) {
             if(!byDate[data.date]) byDate[data.date] = 0;
             if(data.status==='absent') byDate[data.date]++;
-            const day = new Date(data.date+'T00:00:00').getDay();
+            var day = new Date(data.date+'T00:00:00').getDay();
             if(data.status==='absent') byDay[day] = (byDay[day]||0)+1;
         }
     });
 
-    const topStudents = Object.values(byStudent).sort((a,b)=>b.absent-a.absent).slice(0,20);
-    const topClasses  = Object.entries(byClass).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
-    const worstDay = Object.entries(byDay).sort((a,b)=>b[1]-a[1])[0];
-    const atRisk = topStudents.filter(s=>s.absent>=5).length;
-    const studentsNeedWarning = topStudents.filter(s=>s.absent>=3).length;
+    var topStudents = Object.values(byStudent).sort((a,b)=>b.absent-a.absent).slice(0,20);
+    var topClasses  = Object.entries(byClass).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    var days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+    var worstDay = Object.entries(byDay).sort((a,b)=>b[1]-a[1])[0];
+    var atRisk = topStudents.filter(s=>s.absent>=5).length;
+    var studentsNeedWarning = topStudents.filter(s=>s.absent>=3).length;
 
     return {
         period, from, to, absentCount, lateCount,
@@ -201,8 +201,8 @@ async function fetchAnalysisData(period) {
 
 // ══ تشغيل التحليل الذكي ══
 window.runAiAnalysis = async function(type) {
-    const resultEl  = document.getElementById('ai-result');
-    const loadingEl = document.getElementById('ai-loading');
+    var resultEl  = document.getElementById('ai-result');
+    var loadingEl = document.getElementById('ai-loading');
 
     resultEl.classList.remove('show');
     loadingEl.classList.add('show');
@@ -211,8 +211,8 @@ window.runAiAnalysis = async function(type) {
     document.querySelectorAll('.ai-btn').forEach(b=>b.disabled=true);
 
     try {
-        const data = await fetchAnalysisData(selectedPeriod);
-        const periodLabel = {week:'آخر أسبوع',month:'آخر شهر',semester:'الفصل الدراسي',today:'اليوم'}[selectedPeriod];
+        var data = await fetchAnalysisData(selectedPeriod);
+        var periodLabel = {week:'آخر أسبوع',month:'آخر شهر',semester:'الفصل الدراسي',today:'اليوم'}[selectedPeriod];
 
         // بناء الـ prompt حسب نوع التحليل
         var prompt = '';
@@ -277,7 +277,7 @@ ${data.topStudents.slice(0,15).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.abs
         }
 
         // استدعاء Claude API
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        var response = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -287,8 +287,8 @@ ${data.topStudents.slice(0,15).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.abs
             })
         });
 
-        const result = await response.json();
-        const text = result.content?.[0]?.text || 'لم يتم الحصول على نتيجة';
+        var result = await response.json();
+        var text = result.content?.[0]?.text || 'لم يتم الحصول على نتيجة';
 
         loadingEl.classList.remove('show');
         resultEl.textContent = text;
@@ -306,23 +306,23 @@ ${data.topStudents.slice(0,15).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.abs
 
 // ══ ملخص سريع ══
 async function loadQuickStats() {
-    const el = document.getElementById('quick-stats');
-    const chips = document.getElementById('quick-chips');
-    const schoolId = getActiveSchoolId();
-    const todayISO = getTodayISO();
+    var el = document.getElementById('quick-stats');
+    var chips = document.getElementById('quick-chips');
+    var schoolId = getActiveSchoolId();
+    var todayISO = getTodayISO();
 
     try {
-        const [todayAbs, weekAbs, stuTotal] = await Promise.all([
+        var [todayAbs, weekAbs, stuTotal] = await Promise.all([
             getDocs(query(collection(db,'attendance'),
                 where('schoolId','==',schoolId), where('date','==',todayISO), where('status','==','absent'))),
             getDocs(query(collection(db,'attendance'),
                 where('schoolId','==',schoolId),
-                where('date','>=', (() => { const d=new Date(); d.setDate(d.getDate()-7); return d.toISOString().slice(0,10); })()),
+                where('date','>=', (() => { var d=new Date(); d.setDate(d.getDate()-7); return d.toISOString().slice(0,10); })()),
                 where('status','==','absent'))),
             getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)))
         ]);
 
-        const attendRate = stuTotal.size > 0
+        var attendRate = stuTotal.size > 0
             ? Math.round(((stuTotal.size - todayAbs.size) / stuTotal.size) * 100) : 100;
 
         el.innerHTML = `
@@ -332,7 +332,7 @@ async function loadQuickStats() {
             <div class="stat-mini"><div class="n" style="color:var(--navy)">${stuTotal.size}</div><div class="l">إجمالي الطلاب</div></div>`;
 
         // chips ذكية
-        const insightChips = [];
+        var insightChips = [];
         if(todayAbs.size > 20) insightChips.push(`<span class="insight-chip chip-danger">⚠️ غياب مرتفع اليوم: ${todayAbs.size}</span>`);
         if(attendRate >= 95) insightChips.push(`<span class="insight-chip chip-success">🎉 نسبة حضور ممتازة ${attendRate}%</span>`);
         if(attendRate < 85) insightChips.push(`<span class="insight-chip chip-warn">📉 نسبة الحضور أقل من 85%</span>`);
@@ -345,38 +345,38 @@ async function loadQuickStats() {
 
 // ══ أكثر الطلاب غياباً ══
 async function loadTopAbsentStudents() {
-    const tbody = document.getElementById('top-absent-tbody');
-    const schoolId = getActiveSchoolId();
+    var tbody = document.getElementById('top-absent-tbody');
+    var schoolId = getActiveSchoolId();
 
     try {
-        const snap = await getDocs(query(collection(db,'attendance'),
+        var snap = await getDocs(query(collection(db,'attendance'),
             where('schoolId','==',schoolId), where('status','==','absent')));
 
-        const byStudent = {};
+        var byStudent = {};
         snap.forEach(d => {
-            const data = d.data();
-            const name = data.studentName||data.name||'—';
-            const cls  = data.classId||'—';
-            const phone= data.parentPhone||'';
-            const key  = `${name}__${cls}`;
+            var data = d.data();
+            var name = data.studentName||data.name||'—';
+            var cls  = data.classId||'—';
+            var phone= data.parentPhone||'';
+            var key  = `${name}__${cls}`;
             if(!byStudent[key]) byStudent[key] = { name, cls, phone, count:0 };
             byStudent[key].count++;
         });
 
-        const sorted = Object.values(byStudent).sort((a,b)=>b.count-a.count).slice(0,20);
+        var sorted = Object.values(byStudent).sort((a,b)=>b.count-a.count).slice(0,20);
         if(!sorted.length) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mid)">لا توجد سجلات غياب</td></tr>';
             return;
         }
 
         tbody.innerHTML = sorted.map((s,i) => {
-            const level = s.count >= 10 ? ['🔴 حرمان','#dc2626']
+            var level = s.count >= 10 ? ['🔴 حرمان','#dc2626']
                 : s.count >= 8 ? ['🟠 إنذار رسمي','#ea580c']
                 : s.count >= 5 ? ['🟡 استدعاء','#d97706']
                 : s.count >= 3 ? ['📢 تنبيه','#6b7280']
                 : ['✅ طبيعي','#16a34a'];
 
-            const phone = (s.phone||'').replace(/\D/g,'');
+            var phone = (s.phone||'').replace(/\D/g,'');
             return `<tr style="border-bottom:1px solid var(--line)">
                 <td style="padding:9px 12px;font-weight:800;color:var(--mid)">${i+1}</td>
                 <td style="padding:9px 12px;font-weight:700">${s.name}</td>
@@ -399,9 +399,9 @@ async function loadTopAbsentStudents() {
 }
 
 window.sendAbsenceAlert = function(name, cls, count, phone) {
-    const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-    const level = count >= 10 ? 'حرمان من الاختبارات' : count >= 8 ? 'إنذار رسمي' : count >= 5 ? 'استدعاء ولي الأمر' : 'تنبيه';
-    const msg = encodeURIComponent(
+    var today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+    var level = count >= 10 ? 'حرمان من الاختبارات' : count >= 8 ? 'إنذار رسمي' : count >= 5 ? 'استدعاء ولي الأمر' : 'تنبيه';
+    var msg = encodeURIComponent(
         `السلام عليكم ولي أمر الطالب ${name} — فصل ${cls}،\n` +
         `نُعلمكم بأن ابنكم بلغ عدد غياباته ${count} يوماً حتى تاريخ ${today}.\n` +
         `الإجراء المترتب: ${level}.\n` +

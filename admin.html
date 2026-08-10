@@ -193,7 +193,7 @@ if(!saved) window.location.replace('index.html');
 var currentUser = {};
 try {
     currentUser = JSON.parse(saved);
-    const role = String(currentUser.role||'').trim().toLowerCase();
+    var role = String(currentUser.role||'').trim().toLowerCase();
     if(!['admin','assistant_manager','wing_supervisor'].includes(role)) window.location.replace('teacher.html');
     document.getElementById('lbl-admin-name').textContent = 'مرحباً، '+(currentUser.name||'');
     document.getElementById('lbl-school-name').textContent = currentUser.schoolName||'';
@@ -208,7 +208,7 @@ const schoolId = getActiveSchoolId();
 // صلاحيات المشرف
 const role = String(currentUser.role||'').trim().toLowerCase();
 if(role==='wing_supervisor'){
-    const hide=['tab-students-manage','tab-import','tab-classes','tab-promotion','tab-attendance','tab-date','tab-behavior','tab-gatepass','tab-clinic','tab-reports','tab-monthly','tab-archive','tab-teachers','tab-teacher-workload','tab-teacher-perf','tab-manager-visits','tab-visits','tab-coverage','tab-announcements','tab-honors','tab-rewards','tab-users','tab-audit','tab-backup','tab-departments','tab-school-settings','tab-ai-insights'];
+    var hide=['tab-students-manage','tab-import','tab-classes','tab-promotion','tab-attendance','tab-date','tab-behavior','tab-gatepass','tab-clinic','tab-reports','tab-monthly','tab-archive','tab-teachers','tab-teacher-workload','tab-teacher-perf','tab-manager-visits','tab-visits','tab-coverage','tab-announcements','tab-honors','tab-rewards','tab-users','tab-audit','tab-backup','tab-departments','tab-school-settings','tab-ai-insights'];
     hide.forEach(t=>{
         var m=document.querySelector('.menu-item[data-tab="'+t+'"]');if(m)m.style.display='none';
         var d=document.getElementById(t);if(d)d.style.display='none';

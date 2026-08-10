@@ -2,11 +2,11 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initTeachersModule() {
-    const container = document.getElementById('tab-teachers');
+    var container = document.getElementById('tab-teachers');
     if (!container) return;
 
     // 🏢 البصمة المدرسية للفلترة الأمنية
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     try {
         container.innerHTML = `
@@ -30,7 +30,7 @@ export async function initTeachersModule() {
         </div>`;
 
         // استعلام ذكي يفلتر المستخدمين حسب المدرسة
-        const q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
+        var q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
         var snap = await getDocs(q);
 
         // التوافقية للمدرسة الأم (سالم الحسينان) إذا كانت البيانات بدون حقل schoolId
@@ -40,7 +40,7 @@ export async function initTeachersModule() {
 
         var html = '';
         snap.forEach(doc => {
-            const d = doc.data();
+            var d = doc.data();
             // تصفية أمنية إضافية لضمان عدم خلط البيانات
             if(d.schoolId && d.schoolId !== schoolId) return;
             

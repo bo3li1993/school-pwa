@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, orderBy, limit, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initBackupModule() {
-    const container = document.getElementById('tab-backup');
+    var container = document.getElementById('tab-backup');
     if (!container) return;
 
     container.innerHTML = `
@@ -49,9 +49,9 @@ export async function initBackupModule() {
 let lastBackupData = null;
 
 async function loadBackupStats() {
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     try {
-        const [studSnap, attSnap, behSnap] = await Promise.all([
+        var [studSnap, attSnap, behSnap] = await Promise.all([
             getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId)))
@@ -61,7 +61,7 @@ async function loadBackupStats() {
         document.getElementById('backup-behavior-count').textContent = behSnap.size;
 
         // آخر نسخة
-        const backupSnap = await getDocs(query(
+        var backupSnap = await getDocs(query(
             collection(db, 'backups'),
             where('schoolId', '==', schoolId),
             orderBy('createdAt', 'desc'),
@@ -71,20 +71,20 @@ async function loadBackupStats() {
         if (backupSnap.empty) {
             document.getElementById('backup-last').textContent = '⚠️ لا توجد نسخ احتياطية سابقة';
         } else {
-            const last = backupSnap.docs[0].data();
+            var last = backupSnap.docs[0].data();
             document.getElementById('backup-last').innerHTML =
                 `✅ آخر نسخة: <b>${last.dateStr}</b> — ${last.studentsCount} طالب، ${last.attendanceCount} سجل حضور، بواسطة: ${last.createdBy}`;
         }
 
         // سجل النسخ
-        const historyEl = document.getElementById('backup-history');
+        var historyEl = document.getElementById('backup-history');
         if (backupSnap.empty) {
             historyEl.innerHTML = '<p style="color:#999;font-size:13px;text-align:center;padding:20px;">لا توجد نسخ سابقة</p>';
         } else {
             historyEl.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
                 <thead><tr style="background:#f8fafc;"><th style="padding:9px;text-align:right;">التاريخ</th><th style="padding:9px;">الطلاب</th><th style="padding:9px;">الحضور</th><th style="padding:9px;">المنشئ</th></tr></thead>
                 <tbody>${backupSnap.docs.map(d => {
-                    const b = d.data();
+                    var b = d.data();
                     return `<tr style="border-bottom:1px solid #f0f0f0;">
                         <td style="padding:9px;font-weight:700;">${b.dateStr}</td>
                         <td style="padding:9px;text-align:center;">${b.studentsCount}</td>
@@ -99,15 +99,15 @@ async function loadBackupStats() {
 }
 
 window.createFullBackup = async function() {
-    const btn = document.getElementById('btn-create-backup');
+    var btn = document.getElementById('btn-create-backup');
     btn.innerHTML = '⏳ جاري إنشاء النسخة...';
     btn.disabled = true;
 
-    const schoolId = getActiveSchoolId();
-    const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var schoolId = getActiveSchoolId();
+    var user = JSON.parse(localStorage.getItem('hs_user') || '{}');
 
     try {
-        const [studSnap, attSnap, behSnap, gateSnap, clinicSnap] = await Promise.all([
+        var [studSnap, attSnap, behSnap, gateSnap, clinicSnap] = await Promise.all([
             getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId))),
@@ -115,7 +115,7 @@ window.createFullBackup = async function() {
             getDocs(query(collection(db, 'clinic'), where('schoolId', '==', schoolId)))
         ]);
 
-        const backupData = {
+        var backupData = {
             meta: {
                 schoolId,
                 schoolName: user.schoolName,
@@ -133,7 +133,7 @@ window.createFullBackup = async function() {
         lastBackupData = backupData;
 
         // حفظ metadata بـ Firestore
-        const dateStr = getTodayISO();
+        var dateStr = getTodayISO();
         await addDoc(collection(db, 'backups'), {
             schoolId,
             createdAt: serverTimestamp(),
@@ -145,9 +145,9 @@ window.createFullBackup = async function() {
         });
 
         // تحميل ملف JSON
-        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        var blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
         a.href = url;
         a.download = `backup_${schoolId}_${new Date().toISOString().slice(0,10)}.json`;
         a.click();
@@ -165,9 +165,9 @@ window.createFullBackup = async function() {
 
 window.downloadLastBackup = function() {
     if (!lastBackupData) { window.showToast('⚠️ أنشئ نسخة أولاً لتحميلها', 'info'); return; }
-    const blob = new Blob([JSON.stringify(lastBackupData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    var blob = new Blob([JSON.stringify(lastBackupData, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
     a.href = url;
     a.download = `backup_${lastBackupData.meta.schoolId}_${new Date().toISOString().slice(0,10)}.json`;
     a.click();

@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initRepeatModule() {
-    const container = document.getElementById('tab-repeat');
+    var container = document.getElementById('tab-repeat');
     if(!container) return;
 
     container.innerHTML = `
@@ -38,8 +38,8 @@ export async function initRepeatModule() {
 
 async function loadRepeatClasses() {
     try {
-        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId())));
-        const classes = [...new Set(snap.docs.map(d=>d.data().classId).filter(Boolean))].sort((a,b)=>{
+        var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId())));
+        var classes = [...new Set(snap.docs.map(d=>d.data().classId).filter(Boolean))].sort((a,b)=>{
             var pa=a.split('/'),pb=b.split('/');
             return (parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0);
         });

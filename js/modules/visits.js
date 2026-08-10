@@ -257,7 +257,7 @@ const RATING_COLORS = {
 };
 
 export async function initVisitsModule() {
-    const container = document.getElementById('tab-visits');
+    var container = document.getElementById('tab-visits');
     if (!container) return;
 
     container.innerHTML = `
@@ -423,13 +423,13 @@ export async function initVisitsModule() {
 
 // ══ تحميل المعلمين ══
 async function loadTeacherDirectoryForVisits() {
-    const sel = document.getElementById('visit-teacher-name');
+    var sel = document.getElementById('visit-teacher-name');
     if(!sel) return;
     try {
-        const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(collection(db,'users'),
+        var schoolId = getActiveSchoolId();
+        var snap = await getDocs(query(collection(db,'users'),
             where('schoolId','==',schoolId), where('role','==','teacher')));
-        const names = [];
+        var names = [];
         snap.forEach(d => { if(d.data().name) names.push(d.data().name.trim()); });
         names.sort((a,b)=>a.localeCompare(b,'ar'));
         sel.innerHTML = names.length
@@ -440,9 +440,9 @@ async function loadTeacherDirectoryForVisits() {
 
 // ══ رسم جدول البنود ══
 window.renderVisitCriteria = function(subject) {
-    const area = document.getElementById('visit-criteria-area');
+    var area = document.getElementById('visit-criteria-area');
     if(!subject || !DEPT_CRITERIA[subject]) { area.innerHTML = ''; return; }
-    const items = DEPT_CRITERIA[subject];
+    var items = DEPT_CRITERIA[subject];
 
     area.innerHTML = `
     <div style="background:var(--off);border-radius:10px;padding:14px;border:1px solid var(--line)">
@@ -468,7 +468,7 @@ window.renderVisitCriteria = function(subject) {
                     <td style="text-align:center;font-weight:800;color:var(--mid)">${i+1}</td>
                     <td style="text-align:right;font-weight:600;font-size:12.5px">${item}</td>
                     ${['ممتاز','جيد جداً','جيد','مقبول','ضعيف'].map((r,ri) => {
-                        const cls = ['r-mmtaz','r-jayyid-jiddan','r-jayyid','r-maqbool','r-daif'][ri];
+                        var cls = ['r-mmtaz','r-jayyid-jiddan','r-jayyid','r-maqbool','r-daif'][ri];
                         return `<td>
                             <input type="radio" class="rating-radio ${cls}" name="crit_${i}" id="crit_${i}_${ri}" value="${r}" data-item="${item}" ${r==='جيد جداً'?'checked':''}>
                             <label class="rating-label" for="crit_${i}_${ri}">✓</label>
@@ -483,23 +483,23 @@ window.renderVisitCriteria = function(subject) {
 
 // ══ حفظ الزيارة ══
 window.handleRegisterTechVisitLive = async function() {
-    const teacherName   = document.getElementById('visit-teacher-name').value.trim();
-    const lessonTopic   = document.getElementById('visit-lesson-topic').value.trim();
-    const subject       = document.getElementById('visit-subject').value;
-    const classRoom     = document.getElementById('visit-class').value.trim();
-    const period        = document.getElementById('visit-period').value;
-    const visitorName   = document.getElementById('visit-visitor-name').value.trim();
-    const semester      = document.getElementById('visit-semester').value.trim();
-    const visitDate     = document.getElementById('visit-date').value || getTodayISO();
-    const notes         = document.getElementById('visit-notes').value.trim();
+    var teacherName   = document.getElementById('visit-teacher-name').value.trim();
+    var lessonTopic   = document.getElementById('visit-lesson-topic').value.trim();
+    var subject       = document.getElementById('visit-subject').value;
+    var classRoom     = document.getElementById('visit-class').value.trim();
+    var period        = document.getElementById('visit-period').value;
+    var visitorName   = document.getElementById('visit-visitor-name').value.trim();
+    var semester      = document.getElementById('visit-semester').value.trim();
+    var visitDate     = document.getElementById('visit-date').value || getTodayISO();
+    var notes         = document.getElementById('visit-notes').value.trim();
 
     if(!teacherName || !subject) {
         window.showToast('⚠️ اختر المعلم والمادة', 'warning'); return;
     }
 
     // جمع التقييمات
-    const criteriaResults = [];
-    const radios = document.querySelectorAll('.rating-radio:checked');
+    var criteriaResults = [];
+    var radios = document.querySelectorAll('.rating-radio:checked');
     radios.forEach(r => {
         criteriaResults.push({ item: r.getAttribute('data-item'), rating: r.value });
     });
@@ -509,16 +509,16 @@ window.handleRegisterTechVisitLive = async function() {
     }
 
     // حساب التقييم العام (الأكثر تكراراً)
-    const counts = {};
+    var counts = {};
     criteriaResults.forEach(c => counts[c.rating] = (counts[c.rating]||0)+1);
-    const overallRating = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
+    var overallRating = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '—';
 
     // حساب نسبة الممتاز
-    const excellentCount = counts['ممتاز']||0;
-    const goodCount = (counts['جيد جداً']||0) + (counts['جيد']||0);
-    const weakCount = (counts['مقبول']||0) + (counts['ضعيف']||0);
+    var excellentCount = counts['ممتاز']||0;
+    var goodCount = (counts['جيد جداً']||0) + (counts['جيد']||0);
+    var weakCount = (counts['مقبول']||0) + (counts['ضعيف']||0);
 
-    const btn = document.querySelector('.v-submit');
+    var btn = document.querySelector('.v-submit');
     if(btn) { btn.disabled=true; btn.innerHTML='⏳ جاري الحفظ...'; }
 
     try {
@@ -545,7 +545,7 @@ window.handleRegisterTechVisitLive = async function() {
 
         // تفريغ النموذج
         ['visit-teacher-name','visit-subject','visit-class','visit-notes','visit-lesson-topic','visit-semester'].forEach(id => {
-            const el = document.getElementById(id);
+            var el = document.getElementById(id);
             if(el) el.value = el.tagName==='SELECT' ? '' : '';
         });
         document.getElementById('visit-date').value = getTodayISO();
@@ -568,14 +568,14 @@ window.handleRegisterTechVisitLive = async function() {
 
 // ══ طباعة النموذج الرسمي ══
 window.printOfficialVisitForm = function(data) {
-    const { teacherName, lessonTopic, subject, classRoom, period,
+    var { teacherName, lessonTopic, subject, classRoom, period,
             visitorName, semester, notes, visitDate, criteriaResults } = data;
 
-    const today = new Date(visitDate + 'T00:00:00').toLocaleDateString('ar-KW', {
+    var today = new Date(visitDate + 'T00:00:00').toLocaleDateString('ar-KW', {
         year:'numeric', month:'long', day:'numeric'
     });
 
-    const tableRows = criteriaResults.map((c, i) => `
+    var tableRows = criteriaResults.map((c, i) => `
         <tr>
             <td style="text-align:center;font-weight:700;border:1px solid #999">${i+1}</td>
             <td style="text-align:right;padding:6px 10px;border:1px solid #999;font-size:12px">${c.item}</td>
@@ -586,11 +586,11 @@ window.printOfficialVisitForm = function(data) {
             ).join('')}
         </tr>`).join('');
 
-    const schoolUser = JSON.parse(localStorage.getItem('hs_user')||'{}');
-    const schoolName = schoolUser.schoolName || 'مدرسة سالم الحسينان المتوسطة — بنين';
+    var schoolUser = JSON.parse(localStorage.getItem('hs_user')||'{}');
+    var schoolName = schoolUser.schoolName || 'مدرسة سالم الحسينان المتوسطة — بنين';
 
     // ══ طباعة متوافقة مع iOS ══
-    const htmlContent = `<!DOCTYPE html>
+    var htmlContent = `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
 <head>
 <meta charset="UTF-8">
@@ -710,12 +710,12 @@ window.printOfficialVisitForm = function(data) {
 </table>
 </body>
 </html>`;
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
-    const printWin = window.open(blobUrl, '_blank');
+    var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    var blobUrl = URL.createObjectURL(blob);
+    var printWin = window.open(blobUrl, '_blank');
     if(!printWin) {
         // iOS Safari يمنع window.open — نستخدم iframe
-        const iframe = document.createElement('iframe');
+        var iframe = document.createElement('iframe');
         iframe.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;border:none;background:#fff';
         iframe.src = blobUrl;
         document.body.appendChild(iframe);
@@ -733,15 +733,15 @@ window.printOfficialVisitForm = function(data) {
 
 // ══ دالة طباعة متوافقة مع iOS Safari ══
 function printHtmlIos(htmlContent) {
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
+    var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    var blobUrl = URL.createObjectURL(blob);
 
     // محاولة window.open أولاً
-    const printWin = window.open(blobUrl, '_blank');
+    var printWin = window.open(blobUrl, '_blank');
 
     if (!printWin || printWin.closed || typeof printWin.closed === 'undefined') {
         // iOS Safari يحجب window.open — نستخدم iframe
-        const overlay = document.createElement('div');
+        var overlay = document.createElement('div');
         overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column';
         overlay.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#0b2545;color:#fff;font-family:Cairo,sans-serif">
@@ -778,9 +778,9 @@ function cleanupVisitsListeners() {
 }
 
 function loadTechVisitsLive() {
-    const tbody = document.getElementById('tech-visits-tbody');
-    const schoolId = getActiveSchoolId();
-    const q = query(collection(db,'technical_visits'), where('schoolId','==',schoolId));
+    var tbody = document.getElementById('tech-visits-tbody');
+    var schoolId = getActiveSchoolId();
+    var q = query(collection(db,'technical_visits'), where('schoolId','==',schoolId));
 
     cleanupVisitsListeners();
     _visitsUnsub = onSnapshot(q, snap => {
@@ -792,13 +792,13 @@ function loadTechVisitsLive() {
 }
 
 window.filterVisitsArchive = function() {
-    const tbody   = document.getElementById('tech-visits-tbody');
-    const subject = document.getElementById('archive-filter-subject')?.value || '';
-    const search  = (document.getElementById('archive-search')?.value || '').toLowerCase();
+    var tbody   = document.getElementById('tech-visits-tbody');
+    var subject = document.getElementById('archive-filter-subject')?.value || '';
+    var search  = (document.getElementById('archive-search')?.value || '').toLowerCase();
 
     var filtered = allVisitsDocs.filter(d => {
-        const matchSubject = !subject || d.subject === subject;
-        const matchSearch  = !search  || (d.teacherName||'').toLowerCase().includes(search);
+        var matchSubject = !subject || d.subject === subject;
+        var matchSearch  = !search  || (d.teacherName||'').toLowerCase().includes(search);
         return matchSubject && matchSearch;
     });
 
@@ -808,7 +808,7 @@ window.filterVisitsArchive = function() {
     }
 
     tbody.innerHTML = filtered.map(data => {
-        const color = RATING_COLORS[data.overallRating] || '#6b7280';
+        var color = RATING_COLORS[data.overallRating] || '#6b7280';
         return `<tr style="border-bottom:1px solid var(--line)">
             <td style="padding:10px 12px;font-weight:700">${data.teacherName||'—'}</td>
             <td style="padding:10px 12px">${data.subject||'—'}</td>
@@ -849,10 +849,10 @@ window.filterVisitsArchive = function() {
 
 // ══ تفاصيل الزيارة ══
 window.showVisitDetails = function(data) {
-    const existing = document.getElementById('visit-detail-modal');
+    var existing = document.getElementById('visit-detail-modal');
     if(existing) existing.remove();
 
-    const criteriaHTML = (data.criteria||[]).map((c,i) => `
+    var criteriaHTML = (data.criteria||[]).map((c,i) => `
         <div style="display:flex;justify-content:space-between;align-items:center;
             padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px">
             <span style="font-weight:600;color:#374151">${i+1}. ${c.item}</span>
@@ -862,7 +862,7 @@ window.showVisitDetails = function(data) {
             </span>
         </div>`).join('');
 
-    const modal = document.createElement('div');
+    var modal = document.createElement('div');
     modal.id = 'visit-detail-modal';
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
     modal.innerHTML = `
@@ -929,7 +929,7 @@ window.printVisitsPDF = async function() {
     if(!allVisitsDocs.length) {
         window.showToast('⚠️ لا توجد بيانات للتصدير','warning'); return;
     }
-    const contentHTML = `
+    var contentHTML = `
     <table style="width:100%;border-collapse:collapse;font-size:12px">
         <thead>
             <tr style="background:#0b2545;color:#fff">

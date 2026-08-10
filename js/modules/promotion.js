@@ -2,12 +2,12 @@ import { db, getActiveSchoolId, auth } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initPromotionModule() {
-    const container = document.getElementById('tab-promotion');
+    var container = document.getElementById('tab-promotion');
     if (!container) return;
 
-    const now = new Date();
-    const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
-    const currentYearLabel = `${startYear}-${startYear + 1}`;
+    var now = new Date();
+    var startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+    var currentYearLabel = `${startYear}-${startYear + 1}`;
 
     container.innerHTML = `
     <div class="card" style="border-top: 5px solid var(--gold);">
@@ -70,19 +70,19 @@ export async function initPromotionModule() {
 }
 
 async function loadPromotionPreview() {
-    const previewEl = document.getElementById('promotion-preview');
-    const schoolId = getActiveSchoolId();
+    var previewEl = document.getElementById('promotion-preview');
+    var schoolId = getActiveSchoolId();
 
     try {
-        const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+        var snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
         var promoted = 0, graduated = 0;
-        const byGrade = {};
+        var byGrade = {};
 
         snap.forEach(d => {
-            const classId = d.data().classId || '';
-            const parts = classId.split('/');
+            var classId = d.data().classId || '';
+            var parts = classId.split('/');
             if (parts.length !== 2) return;
-            const grade = parseInt(parts[0]);
+            var grade = parseInt(parts[0]);
             if (isNaN(grade)) return;
             byGrade[grade] = (byGrade[grade] || 0) + 1;
             if (grade >= 9) graduated++; else promoted++;
@@ -92,7 +92,7 @@ async function loadPromotionPreview() {
 
         var html = `<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px;">`;
         Object.keys(byGrade).sort().forEach(grade => {
-            const isGrad = parseInt(grade) >= 9;
+            var isGrad = parseInt(grade) >= 9;
             html += `
             <div style="text-align:center; background:${isGrad?'#fef2f2':'#f0fdf4'}; padding:12px; border-radius:8px;">
                 <div style="font-size:22px; font-weight:900; color:${isGrad?'var(--danger-color)':'var(--success-color)'};">${byGrade[grade]}</div>
@@ -107,21 +107,21 @@ async function loadPromotionPreview() {
 }
 
 async function loadPromotionLogs() {
-    const listEl = document.getElementById('promotion-logs-list');
-    const schoolId = getActiveSchoolId();
+    var listEl = document.getElementById('promotion-logs-list');
+    var schoolId = getActiveSchoolId();
 
     try {
-        const snap = await getDocs(query(collection(db, 'promotion_logs'), where('schoolId', '==', schoolId)));
+        var snap = await getDocs(query(collection(db, 'promotion_logs'), where('schoolId', '==', schoolId)));
         if (snap.empty) {
             listEl.innerHTML = '<p style="text-align:center; color:#999; padding:15px;">لا توجد عمليات ترحيل سابقة</p>';
             return;
         }
-        const docs = snap.docs.sort((a, b) => (b.data().performedAt?.seconds || 0) - (a.data().performedAt?.seconds || 0));
+        var docs = snap.docs.sort((a, b) => (b.data().performedAt?.seconds || 0) - (a.data().performedAt?.seconds || 0));
         var html = '<table style="width:100%; border-collapse:collapse; font-size:13px;">';
         html += '<thead><tr style="background:#f8fafc;"><th style="padding:8px;">السنة الدراسية</th><th style="padding:8px;">مُرحَّل</th><th style="padding:8px;">خريجون</th><th style="padding:8px;">التاريخ</th></tr></thead><tbody>';
         docs.forEach(d => {
-            const log = d.data();
-            const dateStr = log.performedAt?.toDate ? log.performedAt.toDate().toLocaleDateString('ar-KW') : '-';
+            var log = d.data();
+            var dateStr = log.performedAt?.toDate ? log.performedAt.toDate().toLocaleDateString('ar-KW') : '-';
             html += `<tr style="border-bottom:1px solid #eee;">
                 <td style="padding:8px; font-weight:700;">${log.yearLabel}</td>
                 <td style="padding:8px; text-align:center; color:var(--success-color); font-weight:700;">${log.promoted}</td>
@@ -137,8 +137,8 @@ async function loadPromotionLogs() {
 }
 
 window.openPromotionModal = function() {
-    const counts = window._promotionCounts || { promoted: 0, graduated: 0 };
-    const currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var counts = window._promotionCounts || { promoted: 0, graduated: 0 };
+    var currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
 
     document.getElementById('pm-student-count').textContent = counts.promoted;
     document.getElementById('pm-grad-count').textContent = counts.graduated;
@@ -154,9 +154,9 @@ window.closePromotionModal = function() {
 };
 
 window.executePromotion = async function() {
-    const currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    const expectedName = (currentUser.schoolName || getActiveSchoolId() || '').trim();
-    const typedName = document.getElementById('pm-confirm-input').value.trim();
+    var currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
+    var expectedName = (currentUser.schoolName || getActiveSchoolId() || '').trim();
+    var typedName = document.getElementById('pm-confirm-input').value.trim();
 
     if (typedName !== expectedName) {
         window.showToast('❌ الاسم المكتوب غير مطابق — تم إلغاء العملية', 'error');
@@ -167,12 +167,12 @@ window.executePromotion = async function() {
     document.getElementById('btn-confirm-promotion').style.display = 'none';
 
     try {
-        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const functions = getFunctions(auth.app);
-        const promoteFn = httpsCallable(functions, 'promoteStudents');
+        var { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        var functions = getFunctions(auth.app);
+        var promoteFn = httpsCallable(functions, 'promoteStudents');
 
-        const schoolId = getActiveSchoolId();
-        const result = await promoteFn({ schoolId });
+        var schoolId = getActiveSchoolId();
+        var result = await promoteFn({ schoolId });
 
         window.closePromotionModal();
         window.showToast(`✅ تم الترحيل بنجاح: ${result.data.promoted} طالب مُرحَّل، ${result.data.graduated} خريج`);

@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initGatepassModule() {
-    const container = document.getElementById('tab-gatepass');
+    var container = document.getElementById('tab-gatepass');
     if (!container) return;
 
     try {
@@ -76,13 +76,13 @@ export async function initGatepassModule() {
         </div>`;
 
         // تهيئة الفصول
-        const classSelect = document.getElementById('gate-class-select');
-        const schoolId = getActiveSchoolId();
+        var classSelect = document.getElementById('gate-class-select');
+        var schoolId = getActiveSchoolId();
         // جلب الطلاب والتصاريح بالتوازي
-    const [stuSnap] = await Promise.all([
+    var [stuSnap] = await Promise.all([
         getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)))
     ]);
-    const snap = stuSnap;
+    var snap = stuSnap;
         
         var classesSet = new Set();
         snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
@@ -98,7 +98,7 @@ export async function initGatepassModule() {
 }
 
 window.handleGateClassChange = async function(classId) {
-    const studentSelect = document.getElementById('gate-student-select');
+    var studentSelect = document.getElementById('gate-student-select');
     if (!studentSelect) return;
 
     if (!classId) {
@@ -107,12 +107,12 @@ window.handleGateClassChange = async function(classId) {
         return;
     }
 
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     studentSelect.innerHTML = '<option value="">⏳ جاري سحب الأسماء...</option>';
     
     try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
-        const snap = await getDocs(q);
+        var q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
+        var snap = await getDocs(q);
         
         var arr = [];
         snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
@@ -129,7 +129,7 @@ window.handleGateClassChange = async function(classId) {
 };
 
 window.handleGateReasonChange = function(value) {
-    const otherInput = document.getElementById('gate-reason-other');
+    var otherInput = document.getElementById('gate-reason-other');
     if (value === 'أخرى') {
         otherInput.style.display = 'block';
         otherInput.required = true;
@@ -141,9 +141,9 @@ window.handleGateReasonChange = function(value) {
 
 window.handleRegisterGatepassLive = async function(e) {
     e.preventDefault();
-    const schoolId = getActiveSchoolId();
-    const reasonSelect = document.getElementById('gate-reason').value;
-    const finalReason = reasonSelect === 'أخرى' ? document.getElementById('gate-reason-other').value.trim() : reasonSelect;
+    var schoolId = getActiveSchoolId();
+    var reasonSelect = document.getElementById('gate-reason').value;
+    var finalReason = reasonSelect === 'أخرى' ? document.getElementById('gate-reason-other').value.trim() : reasonSelect;
 
     if(!finalReason) { window.showToast('⚠️ يرجى تحديد سبب الاستئذان'); return; }
 
@@ -157,10 +157,10 @@ window.handleRegisterGatepassLive = async function(e) {
     });
     window.showToast('✓ تم حفظ واعتماد التصريح!');
         // إبلاغ تلقائي عبر واتساب
-        const studentSel = document.getElementById('gate-student-select');
-        const classSel   = document.getElementById('gate-class-select');
-        const reasonSel  = document.getElementById('gate-reason');
-        const now = new Date().toLocaleTimeString('ar-KW',{hour:'2-digit',minute:'2-digit'});
+        var studentSel = document.getElementById('gate-student-select');
+        var classSel   = document.getElementById('gate-class-select');
+        var reasonSel  = document.getElementById('gate-reason');
+        var now = new Date().toLocaleTimeString('ar-KW',{hour:'2-digit',minute:'2-digit'});
         window.sendGatepassWhatsApp(
             studentSel?.value||'',
             classSel?.value||'',
@@ -173,50 +173,50 @@ window.handleRegisterGatepassLive = async function(e) {
 };
 
 async function loadGatepassLogsLive() {
-    const tbody = document.getElementById('gatepass-logs-tbody');
+    var tbody = document.getElementById('gatepass-logs-tbody');
     if (!tbody) return;
 
-    const schoolId = getActiveSchoolId();
-    const snap = await getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId)));
+    var schoolId = getActiveSchoolId();
+    var snap = await getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId)));
     
     var html = '';
     snap.forEach(d => {
-        const data = d.data();
+        var data = d.data();
         html += `<tr><td style="padding:10px;">${data.studentName}</td><td style="padding:10px;">${data.classId}</td><td style="padding:10px;">${data.relative}</td><td style="padding:10px;">${data.reason}</td></tr>`;
     });
     tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;">لا يوجد استئذان اليوم.</td></tr>';
 }
 // ===== طباعة السجل =====
 window.printGatepassPDF = async function() {
-    const tbody = document.getElementById('gatepass-logs-tbody');
+    var tbody = document.getElementById('gatepass-logs-tbody');
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
-    const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    var contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     await window.ManzoumaReport.exportPDF(contentHTML, 'سجل_تصاريح_الاستئذان', 'سجل تصاريح الاستئذان');
 };
 
 window.printGatepassDirect = function() {
-    const tbody = document.getElementById('gatepass-logs-tbody');
+    var tbody = document.getElementById('gatepass-logs-tbody');
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
-    const contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    var contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     window.ManzoumaReport.printDirect(contentHTML, 'سجل تصاريح الاستئذان');
 };
 
 // ===== واتساب — إبلاغ ولي الأمر بالاستئذان =====
 window.sendGatepassWhatsApp = async function(studentName, classId, reason, time) {
     try {
-        const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(
+        var schoolId = getActiveSchoolId();
+        var snap = await getDocs(query(
             collection(db,'students'),
             where('schoolId','==',schoolId),
             where('name','==',studentName),
             where('classId','==',classId)
         ));
         if(snap.empty) { window.showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
-        const phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
+        var phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
         if(!phone) { window.showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
 
-        const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-        const msg = encodeURIComponent(
+        var today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+        var msg = encodeURIComponent(
             `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
             `نُعلمكم بأن ابنكم غادر المدرسة بتاريخ ${today} الساعة ${time||'—'}.\n` +
             `السبب: ${reason||'—'}`

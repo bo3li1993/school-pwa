@@ -7,7 +7,7 @@ import { collection, getDocs, query, where, orderBy } from 'https://www.gstatic.
 // ══════════════════════════════════════════════════════════════
 
 export async function initDailyReportModule() {
-    const container = document.getElementById('tab-daily-report');
+    var container = document.getElementById('tab-daily-report');
     if(!container) return;
 
     container.innerHTML = `
@@ -62,16 +62,16 @@ let _allRecords = [];
 let _allClasses = [];
 
 window.loadDailyReport = async function() {
-    const schoolId = getActiveSchoolId();
-    const date = document.getElementById('dr-date')?.value || getTodayISO();
-    const content = document.getElementById('dr-content');
-    const classFilter = document.getElementById('dr-class-filter');
+    var schoolId = getActiveSchoolId();
+    var date = document.getElementById('dr-date')?.value || getTodayISO();
+    var content = document.getElementById('dr-content');
+    var classFilter = document.getElementById('dr-class-filter');
 
     content.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-weight:700">⏳ جاري التحميل...</div>';
 
     try {
         // جلب الغياب
-        const snap = await getDocs(query(
+        var snap = await getDocs(query(
             collection(db, 'attendance'),
             where('schoolId', '==', schoolId),
             where('date', '==', date)
@@ -80,8 +80,8 @@ window.loadDailyReport = async function() {
         _allRecords = snap.docs.map(d => ({id: d.id, ...d.data()}));
 
         // جلب كل الطلاب لحساب الإحصائيات
-        const studSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
-        const totalStudents = studSnap.size;
+        var studSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+        var totalStudents = studSnap.size;
 
         // استخراج الفصول
         _allClasses = [...new Set(_allRecords.map(r => r.classId))].sort((a,b) => {
@@ -94,15 +94,15 @@ window.loadDailyReport = async function() {
             _allClasses.map(c => '<option value="'+c+'">'+c+'</option>').join('');
 
         // KPI
-        const absentRecords = _allRecords.filter(r => r.status === 'absent');
-        const lateRecords = _allRecords.filter(r => r.status === 'late');
-        const uniqueAbsent = [...new Set(absentRecords.map(r => r.studentName))];
-        const uniqueLate = [...new Set(lateRecords.map(r => r.studentName))];
+        var absentRecords = _allRecords.filter(r => r.status === 'absent');
+        var lateRecords = _allRecords.filter(r => r.status === 'late');
+        var uniqueAbsent = [...new Set(absentRecords.map(r => r.studentName))];
+        var uniqueLate = [...new Set(lateRecords.map(r => r.studentName))];
 
         document.getElementById('dr-total-students').textContent = totalStudents;
         document.getElementById('dr-total-absent').textContent = uniqueAbsent.length;
         document.getElementById('dr-total-late').textContent = uniqueLate.length;
-        const rate = totalStudents > 0 ? Math.round(((totalStudents - uniqueAbsent.length) / totalStudents) * 100) : 0;
+        var rate = totalStudents > 0 ? Math.round(((totalStudents - uniqueAbsent.length) / totalStudents) * 100) : 0;
         document.getElementById('dr-rate').textContent = rate + '%';
 
         renderDailyTable('all');
@@ -113,12 +113,12 @@ window.loadDailyReport = async function() {
 };
 
 window.filterDailyReport = function() {
-    const classId = document.getElementById('dr-class-filter')?.value || 'all';
+    var classId = document.getElementById('dr-class-filter')?.value || 'all';
     renderDailyTable(classId);
 };
 
 function renderDailyTable(filterClass) {
-    const content = document.getElementById('dr-content');
+    var content = document.getElementById('dr-content');
     var records = _allRecords;
     if(filterClass !== 'all') records = records.filter(r => r.classId === filterClass);
 
@@ -135,23 +135,23 @@ function renderDailyTable(filterClass) {
     });
 
     // تجميع بالفصل
-    const byClass = {};
+    var byClass = {};
     records.forEach(r => {
         if(!byClass[r.classId]) byClass[r.classId] = [];
         byClass[r.classId].push(r);
     });
 
-    const statusLabels = {absent:'غائب', late:'متأخر', excused:'مستأذن'};
-    const statusColors = {absent:'#dc2626', late:'#d97706', excused:'#2563eb'};
+    var statusLabels = {absent:'غائب', late:'متأخر', excused:'مستأذن'};
+    var statusColors = {absent:'#dc2626', late:'#d97706', excused:'#2563eb'};
 
     var html = '';
-    const classes = Object.keys(byClass).sort((a,b) => {
+    var classes = Object.keys(byClass).sort((a,b) => {
         var pa = a.split('/'), pb = b.split('/');
         return (parseInt(pa[0])||0) - (parseInt(pb[0])||0) || (parseInt(pa[1])||0) - (parseInt(pb[1])||0);
     });
 
     classes.forEach(cls => {
-        const classRecords = byClass[cls];
+        var classRecords = byClass[cls];
         html += '<div style="border-bottom:1px solid var(--line);padding:12px 16px;background:#f8fafc">' +
             '<div style="display:flex;justify-content:space-between;align-items:center">' +
             '<span style="font-weight:900;color:var(--navy);font-size:14px">📚 الفصل '+cls+'</span>' +
@@ -166,8 +166,8 @@ function renderDailyTable(filterClass) {
             '<th style="padding:8px 12px;text-align:center;font-weight:800;color:var(--navy)">الوقت</th></tr>';
 
         classRecords.forEach(r => {
-            const time = r.createdAt?.toDate?.();
-            const timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '-';
+            var time = r.createdAt?.toDate?.();
+            var timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '-';
             html += '<tr style="border-bottom:1px solid #f0f2f5">' +
                 '<td style="padding:8px 12px;font-weight:700">'+(r.studentName||'-')+'</td>' +
                 '<td style="padding:8px 12px;text-align:center"><span style="background:'+(statusColors[r.status]||'#666')+'22;color:'+(statusColors[r.status]||'#666')+';padding:3px 10px;border-radius:6px;font-size:11px;font-weight:800">'+(statusLabels[r.status]||r.status)+'</span></td>' +
@@ -183,12 +183,12 @@ function renderDailyTable(filterClass) {
 
 // ══ طباعة ══
 window.printDailyReport = function() {
-    const date = document.getElementById('dr-date')?.value || getTodayISO();
-    const classId = document.getElementById('dr-class-filter')?.value || 'all';
-    const subtitle = classId === 'all' ? 'جميع الفصول' : 'الفصل ' + classId;
+    var date = document.getElementById('dr-date')?.value || getTodayISO();
+    var classId = document.getElementById('dr-class-filter')?.value || 'all';
+    var subtitle = classId === 'all' ? 'جميع الفصول' : 'الفصل ' + classId;
 
     if(window.ManzoumaReport) {
-        const content = document.getElementById('dr-content')?.innerHTML || '';
+        var content = document.getElementById('dr-content')?.innerHTML || '';
         window.ManzoumaReport.printDirect(content, 'كشف الغياب اليومي — ' + date, subtitle);
     }
 };

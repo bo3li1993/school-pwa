@@ -13,7 +13,7 @@ let _clinicSchoolCache   = null;
 
 async function getClinicStudents(schoolId) {
     if(_clinicStudentsCache && _clinicSchoolCache === schoolId) return _clinicStudentsCache;
-    const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId), limit(500)));
+    var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId), limit(500)));
     _clinicStudentsCache = snap;
     _clinicSchoolCache   = schoolId;
     return snap;
@@ -21,7 +21,7 @@ async function getClinicStudents(schoolId) {
 
 
 export async function initClinicModule() {
-    const container = document.getElementById('tab-clinic');
+    var container = document.getElementById('tab-clinic');
     if (!container) return;
 
     try {
@@ -95,19 +95,19 @@ export async function initClinicModule() {
             </div>
         </div>`;
 
-        const classSelect = document.getElementById('clinic-class-select');
-        const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
+        var classSelect = document.getElementById('clinic-class-select');
+        var schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
         
         // جلب الفصول التابعة للمدرسة الحالية
-        const qStudents = query(collection(db, 'students'), where('schoolId', '==', schoolId));
-        const snap = await getDocs(qStudents);
+        var qStudents = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+        var snap = await getDocs(qStudents);
         
         var classesSet = new Set();
         snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
         
         // دعم التوافقية للمدرسة القديمة
         if (classesSet.size === 0 && schoolId === 'hosainan') {
-            const fSnap = await getDocs(getActiveSchoolId() ? query(collection(db, 'students'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'students'));
+            var fSnap = await getDocs(getActiveSchoolId() ? query(collection(db, 'students'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'students'));
             fSnap.forEach(doc => { if(!doc.data().schoolId && doc.data().classId) classesSet.add(doc.data().classId.trim()); });
         }
         
@@ -122,9 +122,9 @@ export async function initClinicModule() {
 }
 
 window.handleClinicClassChange = async function(classId) {
-    const studentSelect = document.getElementById('clinic-student-select');
+    var studentSelect = document.getElementById('clinic-student-select');
     if (!studentSelect) return;
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     if (!classId) {
         studentSelect.innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
@@ -136,7 +136,7 @@ window.handleClinicClassChange = async function(classId) {
     studentSelect.disabled = true;
 
     try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
+        var q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
         var snap = await getDocs(q);
         
         if (snap.empty && schoolId === 'hosainan') {
@@ -145,7 +145,7 @@ window.handleClinicClassChange = async function(classId) {
         
         var arr = [];
         snap.forEach(doc => { 
-            const d = doc.data();
+            var d = doc.data();
             if(d.name && (!d.schoolId || d.schoolId === schoolId)) arr.push(d.name.trim()); 
         });
         arr.sort((a, b) => a.localeCompare(b, 'ar'));
@@ -162,11 +162,11 @@ window.handleClinicClassChange = async function(classId) {
 
 window.handleRegisterClinicLive = async function(e) {
     e.preventDefault();
-    const sName = document.getElementById('clinic-student-select').value;
-    const cId = document.getElementById('clinic-class-select').value;
-    const complaint = document.getElementById('clinic-complaint').value;
-    const treatment = document.getElementById('clinic-treatment').value.trim();
-    const schoolId = getActiveSchoolId(); // 🏢 الربط المركزي السحابي
+    var sName = document.getElementById('clinic-student-select').value;
+    var cId = document.getElementById('clinic-class-select').value;
+    var complaint = document.getElementById('clinic-complaint').value;
+    var treatment = document.getElementById('clinic-treatment').value.trim();
+    var schoolId = getActiveSchoolId(); // 🏢 الربط المركزي السحابي
 
     try {
         await addDoc(collection(db, 'clinic'), {
@@ -179,10 +179,10 @@ window.handleRegisterClinicLive = async function(e) {
         });
         window.showToast('✓ تم تسجيل البيانات الصحية للطالب بنجاح.');
         // خيار إبلاغ ولي الأمر
-        const sName = document.getElementById('clinic-student-select')?.value||'';
-        const cId   = document.getElementById('clinic-class-select')?.value||'';
-        const comp  = document.getElementById('clinic-complaint')?.value||'';
-        const res   = document.getElementById('clinic-result')?.value||'';
+        var sName = document.getElementById('clinic-student-select')?.value||'';
+        var cId   = document.getElementById('clinic-class-select')?.value||'';
+        var comp  = document.getElementById('clinic-complaint')?.value||'';
+        var res   = document.getElementById('clinic-result')?.value||'';
         if(sName && confirm('هل تريد إبلاغ ولي الأمر عبر واتساب؟')) {
             window.sendClinicWhatsApp(sName, cId, comp, res);
         };
@@ -195,16 +195,16 @@ window.handleRegisterClinicLive = async function(e) {
 };
 
 function loadClinicLogsLive() {
-    const tbody = document.getElementById('clinic-logs-tbody');
+    var tbody = document.getElementById('clinic-logs-tbody');
     if (!tbody) return;
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     // جلب وحصر زيارات العيادة التابعة للمدرسة الحالية فقط
-    const qLogs = query(collection(db, 'clinic'), where('schoolId', '==', schoolId));
+    var qLogs = query(collection(db, 'clinic'), where('schoolId', '==', schoolId));
     onSnapshot(qLogs, (snap) => {
         var html = '';
         snap.forEach(d => {
-            const data = d.data();
+            var data = d.data();
             html += `
                 <tr style="border-bottom:1px solid #eee;">
                     <td><b>👤 ${data.studentName || 'غير محدد'}</b></td>
@@ -218,35 +218,35 @@ function loadClinicLogsLive() {
 }
 // ===== طباعة السجل =====
 window.printClinicPDF = async function() {
-    const tbody = document.getElementById('clinic-logs-tbody');
+    var tbody = document.getElementById('clinic-logs-tbody');
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
-    const contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الشكوى</th><th>العلاج</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    var contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الشكوى</th><th>العلاج</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     await window.ManzoumaReport.exportPDF(contentHTML, 'سجل_العيادة_المدرسية', 'سجل العيادة المدرسية');
 };
 
 window.printClinicDirect = function() {
-    const tbody = document.getElementById('clinic-logs-tbody');
+    var tbody = document.getElementById('clinic-logs-tbody');
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
-    const contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الشكوى</th><th>العلاج</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    var contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الشكوى</th><th>العلاج</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
     window.ManzoumaReport.printDirect(contentHTML, 'سجل العيادة المدرسية');
 };
 
 // ===== واتساب — إبلاغ ولي الأمر بالعيادة =====
 window.sendClinicWhatsApp = async function(studentName, classId, complaint, result) {
     try {
-        const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(
+        var schoolId = getActiveSchoolId();
+        var snap = await getDocs(query(
             collection(db,'students'),
             where('schoolId','==',schoolId),
             where('name','==',studentName),
             where('classId','==',classId)
         ));
         if(snap.empty) { window.showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
-        const phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
+        var phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
         if(!phone) { window.showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
 
-        const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-        const msg = encodeURIComponent(
+        var today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+        var msg = encodeURIComponent(
             `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
             `راجع ابنكم العيادة المدرسية اليوم ${today}.\n` +
             `الشكوى: ${complaint||'—'}\n` +

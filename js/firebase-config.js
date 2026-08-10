@@ -3,7 +3,7 @@ import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from 
 import { getAuth, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFunctions } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
 
-export const firebaseConfig = {
+export var firebaseConfig = {
     apiKey: "AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",
     authDomain: "hosainan-school.firebaseapp.com",
     projectId: "hosainan-school",
@@ -13,10 +13,10 @@ export const firebaseConfig = {
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-export const db   = getFirestore(app);
-export const auth = getAuth(app);
+export var db   = getFirestore(app);
+export var auth = getAuth(app);
 export { onAuthStateChanged };
-export const functions = getFunctions(app, 'me-central1');
+export var functions = getFunctions(app, 'me-central1');
 
 // messaging — يُحمَّل لاحقاً لو المتصفح يدعمه
 export var messaging = null;

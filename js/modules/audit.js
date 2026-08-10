@@ -7,8 +7,8 @@ import {
 // ===== تسجيل عملية بسجل المراجعات =====
 export async function logAudit(action, details = {}) {
     try {
-        const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
-        const schoolId = getActiveSchoolId();
+        var user = JSON.parse(localStorage.getItem('hs_user') || '{}');
+        var schoolId = getActiveSchoolId();
         if (!schoolId) return;
         await addDoc(collection(db, 'audit_log'), {
             schoolId,
@@ -28,7 +28,7 @@ export async function logAudit(action, details = {}) {
 
 // ===== واجهة سجل المراجعات =====
 export async function initAuditModule() {
-    const container = document.getElementById('tab-audit');
+    var container = document.getElementById('tab-audit');
     if (!container) return;
 
     container.innerHTML = `
@@ -96,9 +96,9 @@ const ROLE_LABELS = {
 };
 
 async function loadAuditLog() {
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     try {
-        const snap = await getDocs(query(
+        var snap = await getDocs(query(
             collection(db, 'audit_log'),
             where('schoolId', '==', schoolId),
             orderBy('timestamp', 'desc'),
@@ -107,13 +107,13 @@ async function loadAuditLog() {
         allAuditLogs = [];
         var usersSet = new Set();
         snap.forEach(d => {
-            const data = d.data();
+            var data = d.data();
             allAuditLogs.push({ id: d.id, ...data });
             if (data.userName) usersSet.add(data.userName);
         });
 
         // تعبئة فلتر المستخدمين
-        const userSelect = document.getElementById('audit-filter-user');
+        var userSelect = document.getElementById('audit-filter-user');
         userSelect.innerHTML = '<option value="">كل المستخدمين</option>' +
             [...usersSet].map(u => `<option value="${u}">${u}</option>`).join('');
 
@@ -126,14 +126,14 @@ async function loadAuditLog() {
 
 function renderAuditTable(logs) {
     document.getElementById('audit-count').textContent = `${logs.length} سجل`;
-    const tbody = document.getElementById('audit-tbody');
+    var tbody = document.getElementById('audit-tbody');
     if (!logs.length) {
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:30px;color:#999;">لا توجد سجلات</td></tr>';
         return;
     }
     tbody.innerHTML = logs.map(log => {
-        const meta = ACTION_LABELS[log.action] || { label: log.action, color: '#666', icon: 'bi-circle' };
-        const detailsText = Object.entries(log.details || {}).map(([k, v]) => `${k}: ${v}`).join(' | ');
+        var meta = ACTION_LABELS[log.action] || { label: log.action, color: '#666', icon: 'bi-circle' };
+        var detailsText = Object.entries(log.details || {}).map(([k, v]) => `${k}: ${v}`).join(' | ');
         return `<tr style="border-bottom:1px solid #f0f0f0;">
             <td style="padding:9px 14px;font-size:12px;color:var(--mid);">${log.dateStr || '-'}<br><span style="font-size:11px;">${log.timeStr || ''}</span></td>
             <td style="padding:9px 14px;font-weight:700;">${log.userName || '-'}</td>
@@ -145,16 +145,16 @@ function renderAuditTable(logs) {
 }
 
 window.filterAuditLog = function() {
-    const action = document.getElementById('audit-filter-action').value;
-    const user = document.getElementById('audit-filter-user').value;
-    const filtered = allAuditLogs.filter(l =>
+    var action = document.getElementById('audit-filter-action').value;
+    var user = document.getElementById('audit-filter-user').value;
+    var filtered = allAuditLogs.filter(l =>
         (!action || l.action === action) && (!user || l.userName === user)
     );
     renderAuditTable(filtered);
 };
 
 window.exportAuditExcel = function() {
-    const data = allAuditLogs.map(l => ({
+    var data = allAuditLogs.map(l => ({
         'التاريخ': l.dateStr || '',
         'الوقت': l.timeStr || '',
         'المستخدم': l.userName || '',
@@ -162,8 +162,8 @@ window.exportAuditExcel = function() {
         'العملية': ACTION_LABELS[l.action]?.label || l.action || '',
         'التفاصيل': Object.entries(l.details || {}).map(([k,v]) => `${k}: ${v}`).join(' | ')
     }));
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(data);
+    var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'سجل العمليات');
     XLSX.writeFile(wb, `audit_log_${new Date().toISOString().slice(0,10)}.xlsx`);
     window.showToast('✅ تم تصدير سجل العمليات');

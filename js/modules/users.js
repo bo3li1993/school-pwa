@@ -3,16 +3,16 @@ import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'http
 
 // 🔐 تشفير كلمة المرور محلياً بالمتصفح قبل الإرسال
 async function sha256Hash(text) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(text);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    var encoder = new TextEncoder();
+    var data = encoder.encode(text);
+    var hashBuffer = await crypto.subtle.digest('SHA-256', data);
     return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 export async function initUsersModule() {
-    const container = document.getElementById('tab-users');
+    var container = document.getElementById('tab-users');
     if (!container) return;
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     container.innerHTML = `
     <div class="card" style="border-top: 5px solid var(--primary-color);">
@@ -85,7 +85,7 @@ export async function initUsersModule() {
 }
 
 window.toggleDepartmentField = function(role) {
-    const wrapper = document.getElementById('dept-field-wrapper');
+    var wrapper = document.getElementById('dept-field-wrapper');
     if (!wrapper) return;
     wrapper.style.display = (role === 'department_head' || role === 'teacher') ? 'block' : 'none';
 };
@@ -93,12 +93,12 @@ window.toggleDepartmentField = function(role) {
 window.handleCreateNewUserLive = async function (e) {
     e.preventDefault();
 
-    const schoolId = document.getElementById('reg-school-id').value.trim();
-    const userId = document.getElementById('reg-user-id').value.trim();
-    const name = document.getElementById('reg-user-name').value.trim();
-    const role = document.getElementById('reg-user-role').value;
-    const department = document.getElementById('reg-user-department')?.value.trim() || '';
-    const plainPass = document.getElementById('reg-user-pass').value.trim();
+    var schoolId = document.getElementById('reg-school-id').value.trim();
+    var userId = document.getElementById('reg-user-id').value.trim();
+    var name = document.getElementById('reg-user-name').value.trim();
+    var role = document.getElementById('reg-user-role').value;
+    var department = document.getElementById('reg-user-department')?.value.trim() || '';
+    var plainPass = document.getElementById('reg-user-pass').value.trim();
 
     if (!schoolId) {
         window.showToast('⚠️ خطأ: لا يوجد schoolId نشط لهذا الحساب، لا يمكن إضافة المستخدم.');
@@ -113,18 +113,18 @@ window.handleCreateNewUserLive = async function (e) {
         return;
     }
 
-    const submitBtn = e.target.querySelector('button[type="submit"]');
+    var submitBtn = e.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.textContent = '⏳ جاري الحفظ...';
 
     try {
         // تحقق من عدم تكرار المعرف داخل نفس المدرسة
-        const dupCheck = query(
+        var dupCheck = query(
             collection(db, 'users'),
             where('schoolId', '==', schoolId),
             where('userId', '==', userId)
         );
-        const dupSnap = await getDocs(dupCheck);
+        var dupSnap = await getDocs(dupCheck);
         if (!dupSnap.empty) {
             window.showToast(`⚠️ المعرف "${userId}" مستخدم بالفعل في هذه المدرسة.`);
             submitBtn.disabled = false;
@@ -133,7 +133,7 @@ window.handleCreateNewUserLive = async function (e) {
         }
 
         // 🔐 تشفير كلمة المرور بـ SHA-256 قبل الحفظ (بدل تخزينها نصاً صريحاً)
-        const passHash = await sha256Hash(plainPass);
+        var passHash = await sha256Hash(plainPass);
 
         await addDoc(collection(db, 'users'), {
             schoolId: schoolId,
@@ -158,18 +158,18 @@ window.handleCreateNewUserLive = async function (e) {
 };
 
 async function loadSystemUsersDirectoryLive() {
-    const tbody = document.getElementById('system-users-tbody');
+    var tbody = document.getElementById('system-users-tbody');
     if (!tbody) return;
 
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     if (!schoolId) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:15px;">⚠️ لا يوجد schoolId نشط — لا يمكن جلب الحسابات.</td></tr>';
         return;
     }
 
     try {
-        const q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
-        const snap = await getDocs(q);
+        var q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
+        var snap = await getDocs(q);
 
         if (snap.empty) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold; color:#999;">💡 لا يوجد مستخدمين مقيدين بهذه المدرسة.</td></tr>';
@@ -178,16 +178,16 @@ async function loadSystemUsersDirectoryLive() {
 
         var html = '';
         snap.forEach(docSnap => {
-            const u = docSnap.data();
-            const roleLabel = u.role === 'admin' ? 'مسؤول إداري'
+            var u = docSnap.data();
+            var roleLabel = u.role === 'admin' ? 'مسؤول إداري'
                 : u.role === 'assistant_manager' ? 'مساعد مدير'
                 : u.role === 'wing_supervisor' ? 'مشرف جناح'
                 : u.role === 'social_worker' ? 'أخصائي اجتماعي'
                 : u.role === 'department_head' ? `رئيس قسم${u.department ? ' - ' + u.department : ''}`
                 : u.role === 'guard' ? 'حارس'
                 : 'معلم';
-            const statusLabel = u.status === 'suspended' ? '⏸ موقوف' : '✅ فعّال';
-            const securityBadge = u.passHash ? '<span style="color:var(--success-color); font-size:11px;">🔒 مشفّرة</span>' : '<span style="color:var(--danger-color); font-size:11px;">⚠️ قديمة</span>';
+            var statusLabel = u.status === 'suspended' ? '⏸ موقوف' : '✅ فعّال';
+            var securityBadge = u.passHash ? '<span style="color:var(--success-color); font-size:11px;">🔒 مشفّرة</span>' : '<span style="color:var(--danger-color); font-size:11px;">⚠️ قديمة</span>';
 
             html += `
                 <tr style="border-bottom:1px solid #eee;">
@@ -223,7 +223,7 @@ async function loadSystemUsersDirectoryLive() {
 
 // ===== إعادة تعيين كلمة مرور موظف (Admin فقط، عبر Cloud Function آمنة) =====
 window.openResetPasswordModal = function(userDocId, userName) {
-    const newPass = prompt(`أدخل كلمة المرور الجديدة للموظف: ${userName}`);
+    var newPass = prompt(`أدخل كلمة المرور الجديدة للموظف: ${userName}`);
     if (!newPass) return;
     if (newPass.length < 4) { window.showToast('⚠️ كلمة المرور قصيرة جداً (4 أحرف على الأقل)', 'info'); return; }
 
@@ -232,10 +232,10 @@ window.openResetPasswordModal = function(userDocId, userName) {
 
 window.executeResetPassword = async function(userDocId, newPass, userName) {
     try {
-        const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        const { auth } = await import('../firebase-config.js');
-        const functions = getFunctions(auth.app, 'me-central1');
-        const resetFn = httpsCallable(functions, 'resetUserPassword');
+        var { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        var { auth } = await import('../firebase-config.js');
+        var functions = getFunctions(auth.app, 'me-central1');
+        var resetFn = httpsCallable(functions, 'resetUserPassword');
 
         await resetFn({ userDocId, newPassword: newPass });
         window.showToast(`✅ تم تحديث كلمة مرور ${userName} بنجاح`);
@@ -249,12 +249,12 @@ window.executeResetPassword = async function(userDocId, newPass, userName) {
 // ══ تعديل بيانات المستخدم ══
 window.openEditUserModal = function(docId, name, role, userId, department) {
     document.getElementById('edit-user-modal')?.remove();
-    const roles = [
+    var roles = [
         ['admin','مدير'],['assistant_manager','مساعد مدير'],['wing_supervisor','مشرف جناح'],
         ['department_head','رئيس قسم'],['teacher','معلم'],['social_worker','أخصائي اجتماعي'],
         ['guard','حارس'],['nurse','ممرض']
     ];
-    const modal = document.createElement('div');
+    var modal = document.createElement('div');
     modal.id    = 'edit-user-modal';
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
     modal.innerHTML = `
@@ -281,14 +281,14 @@ window.openEditUserModal = function(docId, name, role, userId, department) {
 };
 
 window.saveUserEdit = async function(docId) {
-    const name = document.getElementById('edit-user-name')?.value?.trim();
-    const role = document.getElementById('edit-user-role')?.value;
-    const dept = document.getElementById('edit-user-dept')?.value?.trim();
+    var name = document.getElementById('edit-user-name')?.value?.trim();
+    var role = document.getElementById('edit-user-role')?.value;
+    var dept = document.getElementById('edit-user-dept')?.value?.trim();
     if(!name) { window.showToast?.('⚠️ أدخل الاسم','warning'); return; }
     try {
-        const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-        const { db: database }   = await import('../firebase-config.js');
-        const updates = { name, role };
+        var { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var { db: database }   = await import('../firebase-config.js');
+        var updates = { name, role };
         if(dept) updates.department = dept;
         await updateDoc(doc(database,'users',docId), updates);
         window.showToast?.('✅ تم حفظ التعديلات');
@@ -301,8 +301,8 @@ window.saveUserEdit = async function(docId) {
 window.deleteUser = async function(docId, userName) {
     if(!confirm('هل أنت متأكد من حذف المستخدم: ' + userName + '؟\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
     try {
-        const { db } = await import('../firebase-config.js');
-        const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var { db } = await import('../firebase-config.js');
+        var { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
         await deleteDoc(doc(db, 'users', docId));
         window.showToast('✅ تم حذف ' + userName);
         loadSystemUsersDirectoryLive();

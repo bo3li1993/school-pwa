@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initArchiveModule() {
-    const container = document.getElementById('tab-archive');
+    var container = document.getElementById('tab-archive');
     if (!container) return;
 
     container.innerHTML = `
@@ -29,12 +29,12 @@ export async function initArchiveModule() {
 }
 
 async function loadArchiveYears() {
-    const listEl = document.getElementById('archive-years-list');
-    const schoolId = getActiveSchoolId();
+    var listEl = document.getElementById('archive-years-list');
+    var schoolId = getActiveSchoolId();
 
     try {
-        const snap = await getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId)));
-        const years = new Set();
+        var snap = await getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId)));
+        var years = new Set();
         snap.forEach(d => { if (d.data().academicYear) years.add(d.data().academicYear); });
 
         if (!years.size) {
@@ -42,7 +42,7 @@ async function loadArchiveYears() {
             return;
         }
 
-        const sortedYears = Array.from(years).sort().reverse();
+        var sortedYears = Array.from(years).sort().reverse();
         listEl.innerHTML = sortedYears.map(y => `
             <button onclick="window.loadYearArchive('${y}')"
                 style="background:var(--ice); color:var(--navy); border:1.5px solid var(--sky); padding:10px 18px; border-radius:8px; font-weight:900; cursor:pointer; font-family:'Cairo',sans-serif;">
@@ -55,23 +55,23 @@ async function loadArchiveYears() {
 }
 
 window.loadYearArchive = async function(yearLabel) {
-    const resultsEl = document.getElementById('archive-results-area');
+    var resultsEl = document.getElementById('archive-results-area');
     resultsEl.innerHTML = `<div class="card"><p style="text-align:center; padding:20px; color:#666; font-weight:700;">⏳ جاري تحميل إحصائيات ${yearLabel}...</p></div>`;
 
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     try {
-        const [attSnap, behSnap, gateSnap, clinicSnap] = await Promise.all([
+        var [attSnap, behSnap, gateSnap, clinicSnap] = await Promise.all([
             getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('academicYear', '==', yearLabel))),
             getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('academicYear', '==', yearLabel))),
             getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('academicYear', '==', yearLabel))),
             getDocs(query(collection(db, 'clinic'), where('schoolId', '==', schoolId), where('academicYear', '==', yearLabel)))
         ]);
 
-        const absentCount = attSnap.docs.filter(d => d.data().status === 'absent').length;
-        const lateCount = attSnap.docs.filter(d => d.data().status === 'late').length;
+        var absentCount = attSnap.docs.filter(d => d.data().status === 'absent').length;
+        var lateCount = attSnap.docs.filter(d => d.data().status === 'late').length;
 
-        const html = `
+        var html = `
         <div class="card">
             <h3 style="font-size:15px; margin-bottom:14px;"><i class="bi bi-graph-up"></i> ملخص السنة الدراسية ${yearLabel}</h3>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:16px;">
@@ -109,7 +109,7 @@ window.loadYearArchive = async function(yearLabel) {
 };
 
 window.exportArchivePDF = async function(yearLabel, absent, late, behavior, gatepass, clinic) {
-    const contentHTML = `
+    var contentHTML = `
     <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; text-align:center; margin-bottom:16px;">
         <div style="border:1px solid #eee; border-radius:8px; padding:10px; border-right:4px solid #dc2626;">
             <div style="font-size:22px; font-weight:900; color:#dc2626;">${absent}</div><div style="font-size:10px;">غياب</div>
@@ -132,21 +132,21 @@ window.exportArchivePDF = async function(yearLabel, absent, late, behavior, gate
 
 // ===== أرشيف الخريجين =====
 async function loadGraduatesList() {
-    const listEl = document.getElementById('graduates-list');
-    const schoolId = getActiveSchoolId();
+    var listEl = document.getElementById('graduates-list');
+    var schoolId = getActiveSchoolId();
 
     try {
-        const snap = await getDocs(query(collection(db, 'graduates'), where('schoolId', '==', schoolId)));
+        var snap = await getDocs(query(collection(db, 'graduates'), where('schoolId', '==', schoolId)));
         if (snap.empty) {
             listEl.innerHTML = '<p style="text-align:center; color:#999; padding:15px;">لا يوجد خريجون مؤرشفون بعد</p>';
             return;
         }
 
-        const docs = snap.docs.sort((a, b) => (b.data().graduatedAt?.seconds || 0) - (a.data().graduatedAt?.seconds || 0));
+        var docs = snap.docs.sort((a, b) => (b.data().graduatedAt?.seconds || 0) - (a.data().graduatedAt?.seconds || 0));
         var html = '<table style="width:100%; border-collapse:collapse; font-size:13px;">';
         html += '<thead><tr style="background:#f8fafc;"><th style="padding:8px;">الاسم</th><th style="padding:8px;">آخر فصل</th><th style="padding:8px;">سنة التخرج</th></tr></thead><tbody>';
         docs.forEach(d => {
-            const g = d.data();
+            var g = d.data();
             html += `<tr style="border-bottom:1px solid #eee;">
                 <td style="padding:8px; font-weight:700;">${g.name || '-'}</td>
                 <td style="padding:8px;">${g.classId || '-'}</td>

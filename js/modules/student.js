@@ -9,7 +9,7 @@ const ALL_CLASSES = [
 ];
 
 export async function initStudentModule() {
-    const container = document.getElementById('tab-student') || document.querySelector('.tab-content.active');
+    var container = document.getElementById('tab-student') || document.querySelector('.tab-content.active');
     if (!container) return;
 
     container.innerHTML = `
@@ -51,8 +51,8 @@ let currentClassStudents = [];
 
 // ===== الخطوة 1: تحميل أسماء طلاب الفصل المختار =====
 window.loadClassStudentsList = async function(classId) {
-    const studentSelect = document.getElementById('st-select-student');
-    const resultsDiv = document.getElementById('student-results-container');
+    var studentSelect = document.getElementById('st-select-student');
+    var resultsDiv = document.getElementById('student-results-container');
     resultsDiv.innerHTML = '';
     currentClassStudents = [];
 
@@ -62,19 +62,19 @@ window.loadClassStudentsList = async function(classId) {
         return;
     }
 
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    const schoolId = user?.schoolId;
+    var user = JSON.parse(localStorage.getItem('hs_user'));
+    var schoolId = user?.schoolId;
     if (!schoolId) return;
 
     studentSelect.disabled = true;
     studentSelect.innerHTML = '<option value="">⏳ جاري التحميل...</option>';
 
     try {
-        const q = query(collection(db, 'students'),
+        var q = query(collection(db, 'students'),
             where('schoolId', '==', schoolId),
             where('classId', '==', classId)
         );
-        const snap = await getDocs(q);
+        var snap = await getDocs(q);
 
         currentClassStudents = [];
         snap.forEach(docSnap => {
@@ -102,10 +102,10 @@ window.loadClassStudentsList = async function(classId) {
 
 // ===== الخطوة 2: عرض ملف الطالب المختار =====
 window.showStudentProfile = function(studentDocId) {
-    const resultsDiv = document.getElementById('student-results-container');
+    var resultsDiv = document.getElementById('student-results-container');
     if (!studentDocId) { resultsDiv.innerHTML = ''; return; }
 
-    const data = currentClassStudents.find(s => s.id === studentDocId);
+    var data = currentClassStudents.find(s => s.id === studentDocId);
     if (!data) return;
 
     resultsDiv.innerHTML = `
@@ -177,22 +177,22 @@ window.showStudentProfile = function(studentDocId) {
 
 // ===== جلب سجلات السلوك/الاستئذان/العيادة للطالب المختار =====
 async function loadStudentHistory(studentName) {
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     // أ) الغياب والتأخير فقط (بدون حضور)
     try {
-        const qAtt = query(collection(db, 'attendance'),
+        var qAtt = query(collection(db, 'attendance'),
             where('schoolId', '==', schoolId),
             where('studentName', '==', studentName),
             where('status', 'in', ['absent', 'late']));
         // ══ جلب كل بيانات الطالب بالتوازي ══
-        const [snapAtt, snapBeh, snapGate, snapClinic] = await Promise.all([getDocs(qAtt),
+        var [snapAtt, snapBeh, snapGate, snapClinic] = await Promise.all([getDocs(qAtt),
         var hAtt = '';
-        const docs = snapAtt.docs.sort((a,b) => (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
+        var docs = snapAtt.docs.sort((a,b) => (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
         docs.forEach(docSnap => {
-            const d = docSnap.data();
-            const isAbsent = d.status === 'absent';
-            const badge = isAbsent
+            var d = docSnap.data();
+            var isAbsent = d.status === 'absent';
+            var badge = isAbsent
                 ? 'background:var(--danger-color); color:#fff;'
                 : 'background:var(--accent-color); color:#fff;';
             hAtt += `<tr style="border-bottom:1px solid #eee;">
@@ -211,12 +211,12 @@ async function loadStudentHistory(studentName) {
 
     // ب) السلوك
     try {
-        const qBeh = query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
+        var qBeh = query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
             getDocs(qBeh),
         var hBeh = '';
         snapBeh.forEach(docSnap => {
-            const d = docSnap.data();
-            const badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : (d.type === 'إيجابي' ? 'background:var(--success-color);' : 'background:#94a3b8;');
+            var d = docSnap.data();
+            var badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : (d.type === 'إيجابي' ? 'background:var(--success-color);' : 'background:#94a3b8;');
             hBeh += `<tr style="border-bottom:1px solid #eee;">
                 <td style="padding:8px;">${d.dateStr || d.date || '-'}</td>
                 <td style="padding:8px;"><span style="color:#fff; padding:2px 6px; border-radius:4px; font-size:11px; ${badgeColor}">${d.type || '—'}</span></td>
@@ -233,11 +233,11 @@ async function loadStudentHistory(studentName) {
 
     // ج) الاستئذان
     try {
-        const qGate = query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
+        var qGate = query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
             getDocs(qGate),
         var hGate = '';
         snapGate.forEach(docSnap => {
-            const d = docSnap.data();
+            var d = docSnap.data();
             hGate += `<tr style="border-bottom:1px solid #eee;">
                 <td style="padding:8px;">${d.dateStr || '-'}</td>
                 <td style="padding:8px;">${d.reason || '-'}</td>
@@ -254,13 +254,13 @@ async function loadStudentHistory(studentName) {
 
     // د) زيارات العيادة
     try {
-        const qClinic = query(collection(db, 'clinic'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
+        var qClinic = query(collection(db, 'clinic'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
             getDocs(qClinic)]);
 
         var hClinic = '';
         snapClinic.forEach(docSnap => {
-            const d = docSnap.data();
-            const dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('ar-KW') : (d.dateStr || '-');
+            var d = docSnap.data();
+            var dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('ar-KW') : (d.dateStr || '-');
             hClinic += `<tr style="border-bottom:1px solid #eee;">
                 <td style="padding:8px;">${dateStr}</td>
                 <td style="padding:8px; font-weight:bold; color:var(--danger-color);">${d.complaint || '-'}</td>
@@ -277,7 +277,7 @@ async function loadStudentHistory(studentName) {
 
 // ===== نقل الطالب لفصل جديد =====
 window.transferStudent = async function(docId) {
-    const newClassInput = document.getElementById(`new-class-${docId}`).value.trim();
+    var newClassInput = document.getElementById(`new-class-${docId}`).value.trim();
     if (!newClassInput) return window.showToast('⚠️ يرجى اختيار الفصل الجديد من القائمة');
 
     if (!confirm(`هل أنت متأكد من نقل الطالب إلى فصل ${newClassInput}؟`)) return;
@@ -288,7 +288,7 @@ window.transferStudent = async function(docId) {
         window.showToast('✅ تم نقل الطالب بنجاح.');
 
         // إعادة تحميل قائمة الفصل الحالي (الطالب انتقل فخرج من القائمة)
-        const currentClass = document.getElementById('st-select-class').value;
+        var currentClass = document.getElementById('st-select-class').value;
         window.loadClassStudentsList(currentClass);
         document.getElementById('student-results-container').innerHTML = '';
 
@@ -301,8 +301,8 @@ window.transferStudent = async function(docId) {
 window.contactParent = function(phone, studentName) {
     if (!phone) return window.showToast('⚠️ رقم هاتف ولي الأمر غير مسجل في النظام.');
 
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    const msg = `مرحباً ولي أمر الطالب *${studentName}*،\nتتواصل معكم إدارة *${user?.schoolName || 'المدرسة'}* بخصوص مستوى الطالب وحضوره.\n\n_المنظومة الرقمية الشاملة_`;
+    var user = JSON.parse(localStorage.getItem('hs_user'));
+    var msg = `مرحباً ولي أمر الطالب *${studentName}*،\nتتواصل معكم إدارة *${user?.schoolName || 'المدرسة'}* بخصوص مستوى الطالب وحضوره.\n\n_المنظومة الرقمية الشاملة_`;
 
     var formattedPhone = phone.startsWith('965') ? phone : '965' + phone;
     window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -310,10 +310,10 @@ window.contactParent = function(phone, studentName) {
 
 // ===== تصدير ملف الطالب PDF =====
 window.exportStudentProfilePDF = async function(studentName, classId, parentPhone) {
-    const container = document.getElementById('student-results-container');
+    var container = document.getElementById('student-results-container');
     if (!container) return;
 
-    const tables = container.querySelectorAll('.card');
+    var tables = container.querySelectorAll('.card');
     var contentHTML = `
     <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:12px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
         <div>
@@ -325,13 +325,13 @@ window.exportStudentProfilePDF = async function(studentName, classId, parentPhon
 
     // نسخ محتوى الكروت مباشرة
     tables.forEach(card => {
-        const h4 = card.querySelector('h4');
-        const table = card.querySelector('table');
+        var h4 = card.querySelector('h4');
+        var table = card.querySelector('table');
         if (h4 && table) {
             contentHTML += `<div class="section-title">${h4.textContent}</div>`;
             // إعادة بناء الجدول بستايل الطباعة
-            const headers = [...table.querySelectorAll('th')].map(th => th.textContent);
-            const rows = [...table.querySelectorAll('tbody tr')].map(tr =>
+            var headers = [...table.querySelectorAll('th')].map(th => th.textContent);
+            var rows = [...table.querySelectorAll('tbody tr')].map(tr =>
                 [...tr.querySelectorAll('td')].map(td => td.textContent.trim())
             );
             if (rows.length === 0) {
@@ -353,17 +353,17 @@ window.exportStudentProfilePDF = async function(studentName, classId, parentPhon
 
 // ===== طباعة مباشرة =====
 window.printStudentProfileDirect = function(studentName, classId) {
-    const container = document.getElementById('student-results-container');
+    var container = document.getElementById('student-results-container');
     if (!container) return;
 
-    const tables = container.querySelectorAll('.card');
+    var tables = container.querySelectorAll('.card');
     var contentHTML = `<div style="font-size:16px; font-weight:900; margin-bottom:16px; color:#0b2545;">الطالب: ${studentName} — الفصل: ${classId}</div>`;
     tables.forEach(card => {
-        const h4 = card.querySelector('h4');
-        const table = card.querySelector('table');
+        var h4 = card.querySelector('h4');
+        var table = card.querySelector('table');
         if (h4 && table) {
-            const headers = [...table.querySelectorAll('th')].map(th => th.textContent);
-            const rows = [...table.querySelectorAll('tbody tr')].map(tr =>
+            var headers = [...table.querySelectorAll('th')].map(th => th.textContent);
+            var rows = [...table.querySelectorAll('tbody tr')].map(tr =>
                 [...tr.querySelectorAll('td')].map(td => td.textContent.trim())
             );
             contentHTML += `<div class="section-title">${h4.textContent}</div>`;

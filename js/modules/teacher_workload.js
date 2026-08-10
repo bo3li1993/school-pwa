@@ -8,7 +8,7 @@ import { collection, getDocs, query, where }
 // ══════════════════════════════════════════════════════════════
 
 export async function initTeacherWorkloadModule() {
-    const container = document.getElementById('tab-teacher-workload');
+    var container = document.getElementById('tab-teacher-workload');
     if(!container) return;
 
     container.innerHTML = `
@@ -93,27 +93,27 @@ export async function initTeacherWorkloadModule() {
 let _workloadData = null;
 
 async function loadWorkloadData() {
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     try {
         // جلب المعلمين والزيارات بالتوازي
-        const [usersSnap, visitsSnap] = await Promise.all([
+        var [usersSnap, visitsSnap] = await Promise.all([
             getDocs(query(collection(db,'users'), where('schoolId','==',schoolId))),
             getDocs(query(collection(db,'technical_visits'), where('schoolId','==',schoolId)))
         ]);
 
         // بناء خريطة الزيارات
-        const visitsByTeacher = {};
+        var visitsByTeacher = {};
         visitsSnap.forEach(d => {
-            const name = d.data().teacherName || '—';
+            var name = d.data().teacherName || '—';
             if(!visitsByTeacher[name]) visitsByTeacher[name] = { count:0, ratings:[] };
             visitsByTeacher[name].count++;
             if(d.data().overallRating) visitsByTeacher[name].ratings.push(d.data().overallRating);
         });
 
         // تنظيم المعلمين بحسب القسم
-        const depts = {};
-        const roleLabel = {
+        var depts = {};
+        var roleLabel = {
             admin:            'مدير / مساعد',
             assistant_manager:'مساعد مدير',
             wing_supervisor:  'مشرف جناح',
@@ -125,11 +125,11 @@ async function loadWorkloadData() {
         };
 
         usersSnap.forEach(d => {
-            const u = d.data();
+            var u = d.data();
             if(!u.name) return;
 
             // القسم: من حقل department أو من الدور
-            const dept = u.department?.trim() ||
+            var dept = u.department?.trim() ||
                 (u.role === 'admin' || u.role === 'assistant_manager' ? 'الإدارة' :
                  u.role === 'wing_supervisor' ? 'الإشراف' :
                  u.role === 'guard'           ? 'الأمن والحراسة' :
@@ -139,8 +139,8 @@ async function loadWorkloadData() {
 
             if(!depts[dept]) depts[dept] = [];
 
-            const visits  = visitsByTeacher[u.name] || { count:0, ratings:[] };
-            const perfScore = visits.ratings.length > 0
+            var visits  = visitsByTeacher[u.name] || { count:0, ratings:[] };
+            var perfScore = visits.ratings.length > 0
                 ? calcPerfScore(visits.ratings) : null;
 
             depts[dept].push({
@@ -162,8 +162,8 @@ async function loadWorkloadData() {
         _workloadData = depts;
 
         // ملخص سريع
-        const totalTeachers = Object.values(depts).flat().length;
-        const totalVisits   = visitsSnap.size;
+        var totalTeachers = Object.values(depts).flat().length;
+        var totalVisits   = visitsSnap.size;
         document.getElementById('wl-total-teachers').textContent = totalTeachers;
         document.getElementById('wl-total-depts').textContent    = Object.keys(depts).length;
         document.getElementById('wl-total-visits').textContent   = totalVisits;
@@ -171,7 +171,7 @@ async function loadWorkloadData() {
             totalTeachers > 0 ? (totalVisits/totalTeachers).toFixed(1) : '0';
 
         // ملء فلتر الأقسام
-        const deptSel = document.getElementById('wl-filter-dept');
+        var deptSel = document.getElementById('wl-filter-dept');
         if(deptSel) {
             deptSel.innerHTML = '<option value="">كل الأقسام</option>' +
                 Object.keys(depts).sort().map(d=>`<option value="${d}">${d}</option>`).join('');
@@ -186,17 +186,17 @@ async function loadWorkloadData() {
 }
 
 function calcPerfScore(ratings) {
-    const scores = { 'ممتاز':100, 'جيد جداً':80, 'جيد':60, 'مقبول':40, 'ضعيف':20 };
-    const vals   = ratings.map(r => scores[r] || 60).filter(v => v);
+    var scores = { 'ممتاز':100, 'جيد جداً':80, 'جيد':60, 'مقبول':40, 'ضعيف':20 };
+    var vals   = ratings.map(r => scores[r] || 60).filter(v => v);
     return vals.length > 0 ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : null;
 }
 
 // ══ رسم الأقسام ══
 function renderWorkload(depts) {
-    const content = document.getElementById('wl-content');
+    var content = document.getElementById('wl-content');
     if(!content) return;
 
-    const sorted = Object.entries(depts).sort((a,b) => a[0].localeCompare(b[0],'ar'));
+    var sorted = Object.entries(depts).sort((a,b) => a[0].localeCompare(b[0],'ar'));
 
     content.innerHTML = sorted.map(([dept, teachers], idx) => `
     <div class="wl-card">
@@ -238,9 +238,9 @@ function renderWorkload(depts) {
 }
 
 window.toggleDept = function(id) {
-    const body    = document.getElementById(id);
-    const idx     = id.replace('dept-','');
-    const chevron = document.getElementById(`chevron-${idx}`);
+    var body    = document.getElementById(id);
+    var idx     = id.replace('dept-','');
+    var chevron = document.getElementById(`chevron-${idx}`);
     if(!body) return;
     body.classList.toggle('open');
     if(chevron) chevron.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
@@ -249,13 +249,13 @@ window.toggleDept = function(id) {
 // ══ فلتر ══
 window.filterWorkload = function() {
     if(!_workloadData) return;
-    const deptFilter = document.getElementById('wl-filter-dept')?.value || '';
-    const roleFilter = document.getElementById('wl-filter-role')?.value || '';
+    var deptFilter = document.getElementById('wl-filter-dept')?.value || '';
+    var roleFilter = document.getElementById('wl-filter-role')?.value || '';
 
-    const filtered = {};
+    var filtered = {};
     Object.entries(_workloadData).forEach(([dept, teachers]) => {
         if(deptFilter && dept !== deptFilter) return;
-        const filtered_t = roleFilter
+        var filtered_t = roleFilter
             ? teachers.filter(t => t.role.includes(roleFilter) || t.perfClass === roleFilter)
             : teachers;
         if(filtered_t.length > 0) filtered[dept] = filtered_t;
@@ -295,17 +295,17 @@ window.exportWorkloadPDF = async function() {
         await window.ManzoumaReport.exportPDF(tableHTML, 'المشغول_الفعلي', 'المشغول الفعلي للمعلمين بحسب الأقسام', '');
     } else {
         // طباعة مباشرة
-        const htmlContent = `<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8">
+        var htmlContent = `<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8">
                 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
                 <title>المشغول الفعلي</title>
                 <style>body{font-family:'Cairo',sans-serif;padding:20px}h1{font-size:16px;margin-bottom:16px}</style>
                 </head><body><h1>المشغول الفعلي للمعلمين</h1>${tableHTML}</body></html>`;
-        const blob    = new Blob([htmlContent], { type:'text/html;charset=utf-8' });
-        const blobUrl = URL.createObjectURL(blob);
-        const win     = window.open(blobUrl, '_blank');
+        var blob    = new Blob([htmlContent], { type:'text/html;charset=utf-8' });
+        var blobUrl = URL.createObjectURL(blob);
+        var win     = window.open(blobUrl, '_blank');
         if(!win) {
             // iOS fallback
-            const overlay = document.createElement('div');
+            var overlay = document.createElement('div');
             overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column';
             overlay.innerHTML = `<div style="padding:12px 16px;background:#0b2545;color:#fff;font-family:Cairo,sans-serif;display:flex;justify-content:space-between">
                 <span style="font-weight:800">معاينة الطباعة</span>

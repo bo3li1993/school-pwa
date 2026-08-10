@@ -3,7 +3,7 @@ import { collection, getDocs, addDoc, query, where, orderBy, serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initWarningsModule() {
-    const container = document.getElementById('tab-warnings');
+    var container = document.getElementById('tab-warnings');
     if(!container) return;
 
     container.innerHTML = `
@@ -74,8 +74,8 @@ export async function initWarningsModule() {
 
 async function loadWarningClasses() {
     try {
-        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId())));
-        const classes = [...new Set(snap.docs.map(d => d.data().classId).filter(Boolean))].sort((a,b) => {
+        var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId())));
+        var classes = [...new Set(snap.docs.map(d => d.data().classId).filter(Boolean))].sort((a,b) => {
             var pa=a.split('/'),pb=b.split('/');
             return (parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0);
         });
@@ -89,7 +89,7 @@ window.loadWarningStudents = async function() {
     var sel = document.getElementById('warn-student');
     if(!classId || !sel) return;
     try {
-        const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId)));
+        var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId)));
         var students = snap.docs.map(d=>d.data().name).filter(Boolean).sort((a,b)=>a.localeCompare(b,'ar'));
         sel.innerHTML = '<option value="">اختر الطالب</option>' + students.map(n => '<option value="'+n+'">'+n+'</option>').join('');
     } catch(e) {}
@@ -174,9 +174,9 @@ async function loadWarnings() {
 
 window.reprintWarning = async function(id) {
     try {
-        const snap = await getDocs(query(collection(db,'warnings'), where('__name__','==',id)));
+        var snap = await getDocs(query(collection(db,'warnings'), where('__name__','==',id)));
         if(!snap.empty) {
-            const data = snap.docs[0].data();
+            var data = snap.docs[0].data();
             var levelText = data.level===1?'الأول':data.level===2?'الثاني':'النهائي';
             var content = '<div style="text-align:center;margin:30px 0 20px"><h2 style="font-size:20px;color:#d97706">⚠️ إنذار غياب '+levelText+'</h2></div>' +
                 '<table style="width:100%;border-collapse:collapse;margin:20px 0"><tr><td style="padding:10px;border:1px solid #ddd;font-weight:800;width:30%">اسم الطالب</td><td style="padding:10px;border:1px solid #ddd">'+data.studentName+'</td></tr>' +
@@ -199,16 +199,16 @@ window._oldReprintWarning = async function(id) {
 
 window.editWarning = async function(id) {
     try {
-        const snap = await getDocs(query(collection(db,'warnings'), where('__name__','==',id)));
+        var snap = await getDocs(query(collection(db,'warnings'), where('__name__','==',id)));
         if(snap.empty) return;
-        const data = snap.docs[0].data();
-        const newDays = prompt('عدد أيام الغياب:', data.absentDays);
+        var data = snap.docs[0].data();
+        var newDays = prompt('عدد أيام الغياب:', data.absentDays);
         if(!newDays) return;
-        const newLevel = prompt('مستوى الإنذار (1=أول، 2=ثاني، 3=نهائي):', data.level);
+        var newLevel = prompt('مستوى الإنذار (1=أول، 2=ثاني، 3=نهائي):', data.level);
         if(!newLevel) return;
-        const newNotes = prompt('ملاحظات:', data.notes||'');
+        var newNotes = prompt('ملاحظات:', data.notes||'');
         
-        const { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
         await updateDoc(doc(db,'warnings',id), {
             absentDays: parseInt(newDays),
             level: parseInt(newLevel),

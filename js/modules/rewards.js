@@ -7,7 +7,7 @@ let _rewardSchoolCache   = null;
 
 async function getCachedStudents(schoolId) {
     if(_rewardStudentsCache && _rewardSchoolCache === schoolId) return _rewardStudentsCache;
-    const snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+    var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
     _rewardStudentsCache = snap;
     _rewardSchoolCache   = schoolId;
     return snap;
@@ -15,7 +15,7 @@ async function getCachedStudents(schoolId) {
 
 
 export async function initRewardsModule() {
-    const container = document.getElementById('tab-rewards');
+    var container = document.getElementById('tab-rewards');
     if (!container) return;
 
     try {
@@ -76,9 +76,9 @@ export async function initRewardsModule() {
         </div>`;
 
         // 🏢 تحميل الفصول المتاحة للمدرسة الحالية
-        const classSelect = document.getElementById('reward-class-select');
-        const schoolId = getActiveSchoolId();
-        const snap = await getCachedStudents(schoolId);
+        var classSelect = document.getElementById('reward-class-select');
+        var schoolId = getActiveSchoolId();
+        var snap = await getCachedStudents(schoolId);
         
         var classesSet = new Set();
         snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
@@ -94,7 +94,7 @@ export async function initRewardsModule() {
 }
 
 window.handleRewardClassChange = async function(classId) {
-    const studentSelect = document.getElementById('reward-student-select');
+    var studentSelect = document.getElementById('reward-student-select');
     if (!studentSelect) return;
 
     if (!classId) {
@@ -103,13 +103,13 @@ window.handleRewardClassChange = async function(classId) {
         return;
     }
 
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     studentSelect.innerHTML = '<option value="">⏳ جاري الفرز...</option>';
     studentSelect.disabled = true;
 
     try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
-        const snap = await getDocs(q);
+        var q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
+        var snap = await getDocs(q);
         
         var arr = [];
         snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
@@ -127,7 +127,7 @@ window.handleRewardClassChange = async function(classId) {
 
 window.handleGrantPointsLive = async function(e) {
     e.preventDefault();
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     
     await addDoc(collection(db, 'rewards'), {
         schoolId: schoolId, // 🔑 البصمة الأمنية
@@ -143,16 +143,16 @@ window.handleGrantPointsLive = async function(e) {
 };
 
 async function loadRewardsLeaderboardLive() {
-    const tbody = document.getElementById('rewards-leaderboard-tbody');
+    var tbody = document.getElementById('rewards-leaderboard-tbody');
     if (!tbody) return;
 
-    const schoolId = getActiveSchoolId();
-    const snap = await getDocs(query(collection(db, 'rewards'), where('schoolId', '==', schoolId)));
+    var schoolId = getActiveSchoolId();
+    var snap = await getDocs(query(collection(db, 'rewards'), where('schoolId', '==', schoolId)));
     
     var leaderboard = {};
     snap.forEach(d => {
-        const data = d.data();
-        const name = data.studentName || 'غير محدد';
+        var data = d.data();
+        var name = data.studentName || 'غير محدد';
         if(!leaderboard[name]) leaderboard[name] = { name: name, classId: data.classId || '-', total: 0 };
         leaderboard[name].total += parseInt(data.points || 0);
     });
