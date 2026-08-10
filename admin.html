@@ -188,7 +188,7 @@ import { db, getActiveSchoolId } from './js/firebase-config.js';
 import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, getDoc, query, where, onSnapshot, serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const saved = localStorage.getItem('hs_user');
+var saved = localStorage.getItem('hs_user');
 if(!saved) window.location.replace('index.html');
 var currentUser = {};
 try {
@@ -200,10 +200,10 @@ try {
     document.getElementById('splash-school').textContent = currentUser.schoolName||'';
 } catch(e) { window.location.replace('index.html'); }
 
-const schoolId = getActiveSchoolId();
+var schoolId = getActiveSchoolId();
 
 // تحديث role من Firestore
-(async()=>{try{const s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(!s.empty){const f=s.docs[0].data();const nr=String(f.role||'').trim().toLowerCase();if(nr!==currentUser.role){currentUser.role=nr;currentUser.name=f.name||currentUser.name;localStorage.setItem('hs_user',JSON.stringify(currentUser));if(!['admin','assistant_manager','wing_supervisor'].includes(nr))window.location.replace('teacher.html')}}}catch(e){}})();
+(async()=>{try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(!s.empty){const f=s.docs[0].data();const nr=String(f.role||'').trim().toLowerCase();if(nr!==currentUser.role){currentUser.role=nr;currentUser.name=f.name||currentUser.name;localStorage.setItem('hs_user',JSON.stringify(currentUser));if(!['admin','assistant_manager','wing_supervisor'].includes(nr))window.location.replace('teacher.html')}}}catch(e){}})();
 
 // صلاحيات المشرف
 var _role2 = String(currentUser.role||'').trim().toLowerCase();
@@ -219,7 +219,7 @@ if(_role2==='wing_supervisor'){
 
 window.doLogout=function(){localStorage.removeItem('hs_user');localStorage.removeItem('hs_custom_token');window.location.replace('index.html')};
 
-const moduleMap={
+var moduleMap={
     'tab-index':{file:'./js/modules/today.js',init:'initTodayModule'},
     'tab-student':{file:'./js/modules/student.js',init:'initStudentModule'},
     'tab-students-manage':{file:'./js/modules/students_manage.js',init:'initStudentsManageModule'},
@@ -247,7 +247,7 @@ const moduleMap={
     'tab-departments':{file:'./js/modules/departments.js',init:'initDepartmentsModule'},
     'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
 };
-const loadedTabs=new Set();
+var loadedTabs=new Set();
 
 window.showToast=function(msg,type){document.querySelectorAll('.toast-msg').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast-msg';t.style.background=type==='error'?'#dc2626':type==='warning'?'#d97706':'#059669';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400)},2500)};
 
