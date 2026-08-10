@@ -206,8 +206,8 @@ const schoolId = getActiveSchoolId();
 (async()=>{try{const s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(!s.empty){const f=s.docs[0].data();const nr=String(f.role||'').trim().toLowerCase();if(nr!==currentUser.role){currentUser.role=nr;currentUser.name=f.name||currentUser.name;localStorage.setItem('hs_user',JSON.stringify(currentUser));if(!['admin','assistant_manager','wing_supervisor'].includes(nr))window.location.replace('teacher.html')}}}catch(e){}})();
 
 // صلاحيات المشرف
-const role = String(currentUser.role||'').trim().toLowerCase();
-if(role==='wing_supervisor'){
+var _role2 = String(currentUser.role||'').trim().toLowerCase();
+if(_role2==='wing_supervisor'){
     var hide=['tab-students-manage','tab-import','tab-classes','tab-promotion','tab-attendance','tab-date','tab-behavior','tab-gatepass','tab-clinic','tab-reports','tab-monthly','tab-archive','tab-teachers','tab-teacher-workload','tab-teacher-perf','tab-manager-visits','tab-visits','tab-coverage','tab-announcements','tab-honors','tab-rewards','tab-users','tab-audit','tab-backup','tab-departments','tab-school-settings','tab-ai-insights'];
     hide.forEach(t=>{
         var m=document.querySelector('.menu-item[data-tab="'+t+'"]');if(m)m.style.display='none';
