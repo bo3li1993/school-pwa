@@ -193,7 +193,7 @@ if(!saved) window.location.replace('index.html');
 var currentUser = {};
 try {
     currentUser = JSON.parse(saved);
-    var role = String(currentUser.role||'').trim().toLowerCase();
+    var _role = String(currentUser.role||'').trim().toLowerCase();
     if(!['admin','assistant_manager','wing_supervisor'].includes(role)) window.location.replace('teacher.html');
     document.getElementById('lbl-admin-name').textContent = 'مرحباً، '+(currentUser.name||'');
     document.getElementById('lbl-school-name').textContent = currentUser.schoolName||'';
