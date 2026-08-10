@@ -198,7 +198,7 @@ try {
     document.getElementById('lbl-admin-name').textContent = 'مرحباً، '+(currentUser.name||'');
     document.getElementById('lbl-school-name').textContent = currentUser.schoolName||'';
     document.getElementById('splash-school').textContent = currentUser.schoolName||'';
-} catch(e) { window.location.replace('index.html'); }
+} catch(e) { console.error(e); }
 
 var schoolId = getActiveSchoolId();
 
