@@ -24,7 +24,7 @@ export async function initStudentModule() {
                     <label class="st-label">١. اختر الفصل</label>
                     <select id="st-select-class" class="st-input" onchange="window.loadClassStudentsList(this.value)">
                         <option value="">-- اختر الفصل --</option>
-                        ${ALL_CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
+                        ${ALL_CLASSES.map(function(c){return "<option value="+c+">"+c+"</option>"}).join("")}
                     </select>
                 </div>
                 <div>
