@@ -23,7 +23,7 @@ export async function initStudentModule() {
                     <label class="st-label">١. اختر الفصل</label>
                     <select id="st-select-class" class="st-input" onchange="window.loadClassStudentsList(this.value)">
                         <option value="">-- اختر الفصل --</option>
-                        ${ALL_CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
+                        ${ALL_CLASSES.map(c ) { return `<option value="${c}">${c}</option>`).join('')}
                     </select>
                 </div>
                 <div>
@@ -77,12 +77,12 @@ window.loadClassStudentsList = async function(classId) {
         var snap = await getDocs(q);
 
         currentClassStudents = [];
-        snap.forEach(docSnap => {
+        snap.forEach(docSnap ) {
             currentClassStudents.push({ id: docSnap.id, ...docSnap.data() });
         });
 
         // فرز أبجدي عربي
-        currentClassStudents.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
+        currentClassStudents.sort((a, b) ) { return (a.name || '').localeCompare(b.name || '', 'ar'));
 
         if (currentClassStudents.length === 0) {
             studentSelect.innerHTML = '<option value="">⚠️ لا يوجد طلاب في هذا الفصل</option>';
@@ -91,7 +91,7 @@ window.loadClassStudentsList = async function(classId) {
         }
 
         studentSelect.innerHTML = '<option value="">-- اختر اسم الطالب --</option>' +
-            currentClassStudents.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            currentClassStudents.map(s ) { return `<option value="${s.id}">${s.name}</option>`).join('');
         studentSelect.disabled = false;
 
     } catch (err) {
@@ -105,7 +105,7 @@ window.showStudentProfile = function(studentDocId) {
     var resultsDiv = document.getElementById('student-results-container');
     if (!studentDocId) { resultsDiv.innerHTML = ''; return; }
 
-    var data = currentClassStudents.find(s => s.id === studentDocId);
+    var data = currentClassStudents.find(s ) { return s.id === studentDocId);
     if (!data) return;
 
     resultsDiv.innerHTML = `
@@ -131,7 +131,7 @@ window.showStudentProfile = function(studentDocId) {
                 <div style="display:flex; align-items:center; border:1.5px solid var(--line); border-radius:8px; overflow:hidden;">
                     <select id="new-class-${data.id}" style="border:none; border-radius:0; margin:0; min-width:90px; font-size:13px;">
                         <option value="">نقل لفصل...</option>
-                        ${ALL_CLASSES.filter(c => c !== data.classId).map(c => `<option value="${c}">${c}</option>`).join('')}
+                        ${ALL_CLASSES.filter(c ) { return c !== data.classId).map(c ) { return `<option value="${c}">${c}</option>`).join('')}
                     </select>
                     <button onclick="window.transferStudent('${data.id}')"
                         style="background:var(--navy); color:#fff; border:none; padding:8px 14px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:13px;">نقل</button>
@@ -188,8 +188,8 @@ async function loadStudentHistory(studentName) {
         // ══ جلب كل بيانات الطالب بالتوازي ══
         var _allData = await Promise.all([getDocs(qAtt),
         var hAtt = '';
-        var docs = _all[0].docs.sort((a,b) => (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
-        docs.forEach(docSnap => {
+        var docs = _all[0].docs.sort((a,b) ) { return (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
+        docs.forEach(docSnap ) {
             var d = docSnap.data();
             var isAbsent = d.status === 'absent';
             var badge = isAbsent
@@ -214,7 +214,7 @@ async function loadStudentHistory(studentName) {
         var qBeh = query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
             getDocs(qBeh),
         var hBeh = '';
-        snapBeh.forEach(docSnap => {
+        snapBeh.forEach(docSnap ) {
             var d = docSnap.data();
             var badgeColor = d.type === 'سلبي' ? 'background:var(--danger-color);' : (d.type === 'إيجابي' ? 'background:var(--success-color);' : 'background:#94a3b8;');
             hBeh += `<tr style="border-bottom:1px solid #eee;">
@@ -236,7 +236,7 @@ async function loadStudentHistory(studentName) {
         var qGate = query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('studentName', '==', studentName));
             getDocs(qGate),
         var hGate = '';
-        snapGate.forEach(docSnap => {
+        snapGate.forEach(docSnap ) {
             var d = docSnap.data();
             hGate += `<tr style="border-bottom:1px solid #eee;">
                 <td style="padding:8px;">${d.dateStr || '-'}</td>
@@ -258,7 +258,7 @@ async function loadStudentHistory(studentName) {
             getDocs(qClinic)]);
 
         var hClinic = '';
-        snapClinic.forEach(docSnap => {
+        snapClinic.forEach(docSnap ) {
             var d = docSnap.data();
             var dateStr = d.createdAt?.toDate ? d.createdAt.toDate().toLocaleDateString('ar-KW') : (d.dateStr || '-');
             hClinic += `<tr style="border-bottom:1px solid #eee;">
@@ -324,15 +324,15 @@ window.exportStudentProfilePDF = async function(studentName, classId, parentPhon
     </div>`;
 
     // نسخ محتوى الكروت مباشرة
-    tables.forEach(card => {
+    tables.forEach(card ) {
         var h4 = card.querySelector('h4');
         var table = card.querySelector('table');
         if (h4 && table) {
             contentHTML += `<div class="section-title">${h4.textContent}</div>`;
             // إعادة بناء الجدول بستايل الطباعة
-            var headers = [...table.querySelectorAll('th')].map(th => th.textContent);
+            var headers = [...table.querySelectorAll('th')].map(th ) { return th.textContent);
             var rows = [...table.querySelectorAll('tbody tr')].map(tr =>
-                [...tr.querySelectorAll('td')].map(td => td.textContent.trim())
+                [...tr.querySelectorAll('td')].map(td ) { return td.textContent.trim())
             );
             if (rows.length === 0) {
                 contentHTML += `<p style="color:#666; font-size:12px; padding:8px 0;">لا توجد سجلات.</p>`;
@@ -358,13 +358,13 @@ window.printStudentProfileDirect = function(studentName, classId) {
 
     var tables = container.querySelectorAll('.card');
     var contentHTML = `<div style="font-size:16px; font-weight:900; margin-bottom:16px; color:#0b2545;">الطالب: ${studentName} — الفصل: ${classId}</div>`;
-    tables.forEach(card => {
+    tables.forEach(card ) {
         var h4 = card.querySelector('h4');
         var table = card.querySelector('table');
         if (h4 && table) {
-            var headers = [...table.querySelectorAll('th')].map(th => th.textContent);
+            var headers = [...table.querySelectorAll('th')].map(th ) { return th.textContent);
             var rows = [...table.querySelectorAll('tbody tr')].map(tr =>
-                [...tr.querySelectorAll('td')].map(td => td.textContent.trim())
+                [...tr.querySelectorAll('td')].map(td ) { return td.textContent.trim())
             );
             contentHTML += `<div class="section-title">${h4.textContent}</div>`;
             contentHTML += `<table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
