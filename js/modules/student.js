@@ -186,7 +186,7 @@ async function loadStudentHistory(studentName) {
             where('studentName', '==', studentName),
             where('status', 'in', ['absent', 'late']));
         // ══ جلب كل بيانات الطالب بالتوازي ══
-        var [snapAtt, snapBeh, snapGate, snapClinic] = await Promise.all([getDocs(qAtt),
+        var _all = await Promise.all([getDocs(qAtt),
         var hAtt = '';
         var docs = snapAtt.docs.sort((a,b) => (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
         docs.forEach(docSnap => {
