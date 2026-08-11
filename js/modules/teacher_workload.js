@@ -97,10 +97,11 @@ async function loadWorkloadData() {
 
     try {
         // جلب المعلمين والزيارات بالتوازي
-        var [usersSnap, visitsSnap] = await Promise.all([
+        var _pr = await Promise.all([
             getDocs(query(collection(db,'users'), where('schoolId','==',schoolId))),
             getDocs(query(collection(db,'technical_visits'), where('schoolId','==',schoolId)))
         ]);
+        var usersSnap = _pr[0];          var visitsSnap = _pr[1]; 
 
         // بناء خريطة الزيارات
         var visitsByTeacher = {};

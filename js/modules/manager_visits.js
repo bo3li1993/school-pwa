@@ -38,10 +38,11 @@ export async function initManagerVisitsModule() {
     var classSelect = document.getElementById('m-visit-class');
 
     // ══ جلب الطلاب والمعلمين بالتوازي ══
-    var [studentsSnap, teachersSnap] = await Promise.all([
+    var _pr = await Promise.all([
         getDocs(query(collection(db,'students'), where('schoolId','==',schoolId))),
         getDocs(query(collection(db,'users'),    where('schoolId','==',schoolId), where('role','==','teacher')))
     ]);
+        var studentsSnap = _pr[0];          var teachersSnap = _pr[1]; 
     var snap = studentsSnap;
     
     var html = '<option value="">-- اختر الفصل --</option>';

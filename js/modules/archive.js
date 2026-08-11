@@ -61,12 +61,13 @@ window.loadYearArchive = async function(yearLabel) {
     var schoolId = getActiveSchoolId();
 
     try {
-        var [attSnap, behSnap, gateSnap, clinicSnap] = await Promise.all([
+        var _pr = await Promise.all([
             getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('academicYear', '==', yearLabel))),
             getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('academicYear', '==', yearLabel))),
             getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('academicYear', '==', yearLabel))),
             getDocs(query(collection(db, 'clinic'), where('schoolId', '==', schoolId), where('academicYear', '==', yearLabel)))
         ]);
+        var attSnap = _pr[0];          var behSnap = _pr[1];          var gateSnap = _pr[2];          var clinicSnap = _pr[3]; 
 
         var absentCount = attSnap.docs.filter(d => d.data().status === 'absent').length;
         var lateCount = attSnap.docs.filter(d => d.data().status === 'late').length;

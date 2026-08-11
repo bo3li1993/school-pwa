@@ -51,11 +51,12 @@ let lastBackupData = null;
 async function loadBackupStats() {
     var schoolId = getActiveSchoolId();
     try {
-        var [studSnap, attSnap, behSnap] = await Promise.all([
+        var _pr = await Promise.all([
             getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId)))
         ]);
+        var studSnap = _pr[0];          var attSnap = _pr[1];          var behSnap = _pr[2]; 
         document.getElementById('backup-students-count').textContent = studSnap.size;
         document.getElementById('backup-attend-count').textContent = attSnap.size;
         document.getElementById('backup-behavior-count').textContent = behSnap.size;
@@ -107,13 +108,14 @@ window.createFullBackup = async function() {
     var user = JSON.parse(localStorage.getItem('hs_user') || '{}');
 
     try {
-        var [studSnap, attSnap, behSnap, gateSnap, clinicSnap] = await Promise.all([
+        var _pr = await Promise.all([
             getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'clinic'), where('schoolId', '==', schoolId)))
         ]);
+        var studSnap = _pr[0];          var attSnap = _pr[1];          var behSnap = _pr[2];          var gateSnap = _pr[3];          var clinicSnap = _pr[4]; 
 
         var backupData = {
             meta: {

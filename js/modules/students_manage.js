@@ -427,13 +427,14 @@ window.loadStudentFullProfile = async function(student) {
     displayArea.innerHTML = `<div class="card" style="text-align:center;padding:30px;color:#999;font-weight:700;">⏳ جاري تحميل السجل الكامل...</div>`;
     try {
         var name = student.name.trim();
-        var [attSnap, behSnap, rewSnap, gateSnap, clinicSnap] = await Promise.all([
+        var _pr = await Promise.all([
             getDocs(query(collection(db, 'attendance'), where('studentName', '==', name), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'behavior'), where('studentName', '==', name), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'rewards'), where('studentName', '==', name), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'gatepass'), where('studentName', '==', name), where('schoolId', '==', schoolId))),
             getDocs(query(collection(db, 'clinic'), where('studentName', '==', name), where('schoolId', '==', schoolId)))
         ]);
+        var attSnap = _pr[0];          var behSnap = _pr[1];          var rewSnap = _pr[2];          var gateSnap = _pr[3];          var clinicSnap = _pr[4]; 
         var absentCount = attSnap.docs.filter(d => d.data().status === 'absent').length;
         var lateCount = attSnap.docs.filter(d => d.data().status === 'late').length;
         var html = `

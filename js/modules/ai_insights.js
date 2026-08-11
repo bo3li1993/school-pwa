@@ -144,7 +144,7 @@ async function fetchAnalysisData(period) {
     var schoolId = getActiveSchoolId();
     var { from, to } = getDateRange(period);
 
-    var [attSnap, behSnap, clinicSnap] = await Promise.all([
+    var _pr = await Promise.all([
         getDocs(query(collection(db,'attendance'),
             where('schoolId','==',schoolId), where('date','>=',from), where('date','<=',to))),
         getDocs(query(collection(db,'behavior'),
@@ -152,6 +152,7 @@ async function fetchAnalysisData(period) {
         getDocs(query(collection(db,'clinic'),
             where('schoolId','==',schoolId), where('date','>=',from), where('date','<=',to))),
     ]);
+        var attSnap = _pr[0];          var behSnap = _pr[1];          var clinicSnap = _pr[2]; 
 
     var byStudent = {}, byClass = {}, byDate = {}, byDay = {0:0,1:0,2:0,3:0,4:0};
     var absentCount = 0, lateCount = 0;
@@ -312,12 +313,13 @@ async function loadQuickStats() {
     var todayISO = getTodayISO();
 
     try {
-        var [todayAbs, weekAbs, stuTotal] = await Promise.all([
+        var _pr = await Promise.all([
             getDocs(query(collection(db,'attendance'),
                 where('schoolId','==',schoolId), where('date','==',todayISO), where('status','==','absent'))),
             getDocs(query(collection(db,'attendance'),
                 where('schoolId','==',schoolId),
-                where('date','>=', (() => { var d=new Date(); d.setDate(d.getDate()-7); return d.toISOString().slice(0,10); })()),
+                where('date','>=', (() => { var d=new Date();
+        var todayAbs = _pr[0];          var weekAbs = _pr[1];          var stuTotal = _pr[2];  d.setDate(d.getDate()-7); return d.toISOString().slice(0,10); })()),
                 where('status','==','absent'))),
             getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)))
         ]);

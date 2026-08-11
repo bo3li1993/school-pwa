@@ -79,9 +79,10 @@ export async function initGatepassModule() {
         var classSelect = document.getElementById('gate-class-select');
         var schoolId = getActiveSchoolId();
         // جلب الطلاب والتصاريح بالتوازي
-    var [stuSnap] = await Promise.all([
+    var _pr = await Promise.all([
         getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)))
     ]);
+        var stuSnap = _pr[0]; 
     var snap = stuSnap;
         
         var classesSet = new Set();
