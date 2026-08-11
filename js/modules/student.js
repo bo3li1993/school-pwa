@@ -188,7 +188,7 @@ async function loadStudentHistory(studentName) {
         // ══ جلب كل بيانات الطالب بالتوازي ══
         var _all = await Promise.all([getDocs(qAtt),
         var hAtt = '';
-        var docs = snapAtt.docs.sort((a,b) => (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
+        var docs = _all[0].docs.sort((a,b) => (b.data().dateStr||'').localeCompare(a.data().dateStr||''));
         docs.forEach(docSnap => {
             var d = docSnap.data();
             var isAbsent = d.status === 'absent';
