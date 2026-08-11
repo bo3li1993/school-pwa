@@ -1,4 +1,4 @@
-ï»¿import { db, getActiveSchoolId } from '../firebase-config.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 var ALL_CLASSES = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'];
@@ -7,27 +7,27 @@ export async function initStudentModule() {
     var container = document.getElementById('tab-student');
     if (!container) return;
     var opts = ALL_CLASSES.map(function(c) { return '<option value="'+c+'">'+c+'</option>'; }).join('');
-    container.innerHTML = '<div class="card"><h2><i class="bi bi-person-badge"></i> Ù…Ù„Ù Ø§Ù„Ø·Ø§Ù„Ø¨</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="font-size:12px;font-weight:800">Ø§Ù„ÙØµÙ„</label><select id="st-class" onchange="window.loadClassStudents(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif"><option value="">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„</option>'+opts+'</select></div><div><label style="font-size:12px;font-weight:800">Ø§Ù„Ø·Ø§Ù„Ø¨</label><select id="st-student" disabled onchange="window.showStudentProfile(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif"><option value="">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ø£ÙˆÙ„Ø§Ù‹</option></select></div></div></div><div id="st-results"></div>';
+    container.innerHTML = '<div class="card"><h2><i class="bi bi-person-badge"></i> ãáİ ÇáØÇáÈ</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="font-size:12px;font-weight:800">ÇáİÕá</label><select id="st-class" onchange="window.loadClassStudents(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif"><option value="">ÇÎÊÑ ÇáİÕá</option>'+opts+'</select></div><div><label style="font-size:12px;font-weight:800">ÇáØÇáÈ</label><select id="st-student" disabled onchange="window.showStudentProfile(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif"><option value="">ÇÎÊÑ ÇáİÕá ÃæáÇğ</option></select></div></div></div><div id="st-results"></div>';
 }
 
 window.loadClassStudents = async function(classId) {
     var sel = document.getElementById('st-student');
     if (!sel) return;
     sel.disabled = true;
-    sel.innerHTML = '<option>â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</option>';
-    if (!classId) { sel.innerHTML = '<option>Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ø£ÙˆÙ„Ø§Ù‹</option>'; return; }
+    sel.innerHTML = '<option>? ÌÇÑí ÇáÊÍãíá...</option>';
+    if (!classId) { sel.innerHTML = '<option>ÇÎÊÑ ÇáİÕá ÃæáÇğ</option>'; return; }
     try {
         var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId)));
         var names = snap.docs.map(function(d) { return d.data().name; }).filter(Boolean).sort(function(a,b) { return a.localeCompare(b,'ar'); });
-        sel.innerHTML = '<option value="">Ø§Ø®ØªØ± Ø§Ù„Ø·Ø§Ù„Ø¨</option>' + names.map(function(n) { return '<option value="'+n+'">'+n+'</option>'; }).join('');
+        sel.innerHTML = '<option value="">ÇÎÊÑ ÇáØÇáÈ</option>' + names.map(function(n) { return '<option value="'+n+'">'+n+'</option>'; }).join('');
         sel.disabled = false;
-    } catch(e) { sel.innerHTML = '<option>âŒ Ø®Ø·Ø£</option>'; }
+    } catch(e) { sel.innerHTML = '<option>? ÎØÃ</option>'; }
 };
 
 window.showStudentProfile = async function(name) {
     var results = document.getElementById('st-results');
     if (!results || !name) return;
-    results.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa">â³</div>';
+    results.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa">?</div>';
     var schoolId = getActiveSchoolId();
     try {
         var attSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('studentName','==',name)));
@@ -36,9 +36,11 @@ window.showStudentProfile = async function(name) {
         var rows = attSnap.docs.slice().sort(function(a,b) { return (b.data().date||'').localeCompare(a.data().date||''); }).map(function(d) {
             var r = d.data();
             var color = r.status==='absent' ? '#dc2626' : '#d97706';
-            var label = r.status==='absent' ? 'ØºØ§Ø¦Ø¨' : 'Ù…ØªØ£Ø®Ø±';
+            var label = r.status==='absent' ? 'ÛÇÆÈ' : 'ãÊÃÎÑ';
             return '<tr><td style="padding:8px">'+r.date+'</td><td style="padding:8px;color:'+color+';font-weight:800">'+label+'</td><td style="padding:8px">'+( r.period||'-')+'</td><td style="padding:8px;font-size:11px;color:#aaa">'+(r.recordedBy||'-')+'</td></tr>';
         }).join('');
-        results.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"><div class="card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#dc2626">'+absent+'</div><div style="font-size:11px;color:#aaa">ØºÙŠØ§Ø¨</div></div><div class="card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#d97706">'+late+'</div><div style="font-size:11px;color:#aaa">ØªØ£Ø®Ø±</div></div></div><div class="card"><h3 style="margin-bottom:10px">ÙƒØ´Ù Ø§Ù„ØºÙŠØ§Ø¨</h3>'+(rows ? '<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th style="padding:8px">Ø§Ù„Ø­Ø§Ù„Ø©</th><th style="padding:8px">Ø§Ù„Ø­ØµØ©</th><th style="padding:8px">Ø³Ø¬Ù‘Ù„Ù‡Ø§</th></tr>'+rows+'</table>' : '<div style="text-align:center;padding:20px;color:#aaa">âœ… Ù„Ø§ ÙŠÙˆØ¬Ø¯ ØºÙŠØ§Ø¨</div>')+'</div>';
-    } catch(e) { results.innerHTML = '<div style="color:#dc2626;padding:20px">âŒ '+e.message+'</div>'; }
+        results.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"><div class="card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#dc2626">'+absent+'</div><div style="font-size:11px;color:#aaa">ÛíÇÈ</div></div><div class="card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#d97706">'+late+'</div><div style="font-size:11px;color:#aaa">ÊÃÎÑ</div></div></div><div class="card"><h3 style="margin-bottom:10px">ßÔİ ÇáÛíÇÈ</h3>'+(rows ? '<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">ÇáÊÇÑíÎ</th><th style="padding:8px">ÇáÍÇáÉ</th><th style="padding:8px">ÇáÍÕÉ</th><th style="padding:8px">ÓÌøáåÇ</th></tr>'+rows+'</table>' : '<div style="text-align:center;padding:20px;color:#aaa">? áÇ íæÌÏ ÛíÇÈ</div>')+'</div>';
+    } catch(e) { results.innerHTML = '<div style="color:#dc2626;padding:20px">? '+e.message+'</div>'; }
 };
+
+// v2
