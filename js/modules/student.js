@@ -7,21 +7,21 @@ export async function initStudentModule() {
     var container = document.getElementById('tab-student');
     if (!container) return;
     var opts = ALL_CLASSES.map(function(c) { return '<option value="'+c+'">'+c+'</option>'; }).join('');
-    container.innerHTML = '<div class="card"><h2><i class="bi bi-person-badge"></i> ãáÝ ÇáØÇáÈ</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="font-size:12px;font-weight:800">ÇáÝÕá</label><select id="st-class" onchange="window.loadClassStudents(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif"><option value="">ÇÎÊÑ ÇáÝÕá</option>'+opts+'</select></div><div><label style="font-size:12px;font-weight:800">ÇáØÇáÈ</label><select id="st-student" disabled onchange="window.showStudentProfile(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif"><option value="">ÇÎÊÑ ÇáÝÕá ÃæáÇð</option></select></div></div></div><div id="st-results"></div>';
+    container.innerHTML = '<div class="card"><h2><i class="bi bi-person-badge"></i> ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label style="font-size:12px;font-weight:800">ï¿½ï¿½ï¿½ï¿½ï¿½</label><select id="st-class" onchange="window.loadClassStudents(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif"><option value="">ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½</option>'+opts+'</select></div><div><label style="font-size:12px;font-weight:800">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</label><select id="st-student" disabled onchange="window.showStudentProfile(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif"><option value="">ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½</option></select></div></div></div><div id="st-results"></div>';
 }
 
 window.loadClassStudents = async function(classId) {
     var sel = document.getElementById('st-student');
     if (!sel) return;
     sel.disabled = true;
-    sel.innerHTML = '<option>? ÌÇÑí ÇáÊÍãíá...</option>';
-    if (!classId) { sel.innerHTML = '<option>ÇÎÊÑ ÇáÝÕá ÃæáÇð</option>'; return; }
+    sel.innerHTML = '<option>? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...</option>';
+    if (!classId) { sel.innerHTML = '<option>ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½</option>'; return; }
     try {
         var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',getActiveSchoolId()), where('classId','==',classId)));
         var names = snap.docs.map(function(d) { return d.data().name; }).filter(Boolean).sort(function(a,b) { return a.localeCompare(b,'ar'); });
-        sel.innerHTML = '<option value="">ÇÎÊÑ ÇáØÇáÈ</option>' + names.map(function(n) { return '<option value="'+n+'">'+n+'</option>'; }).join('');
+        sel.innerHTML = '<option value="">ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</option>' + names.map(function(n) { return '<option value="'+n+'">'+n+'</option>'; }).join('');
         sel.disabled = false;
-    } catch(e) { sel.innerHTML = '<option>? ÎØÃ</option>'; }
+    } catch(e) { sel.innerHTML = '<option>? ï¿½ï¿½ï¿½</option>'; }
 };
 
 window.showStudentProfile = async function(name) {
@@ -36,10 +36,10 @@ window.showStudentProfile = async function(name) {
         var rows = attSnap.docs.slice().sort(function(a,b) { return (b.data().date||'').localeCompare(a.data().date||''); }).map(function(d) {
             var r = d.data();
             var color = r.status==='absent' ? '#dc2626' : '#d97706';
-            var label = r.status==='absent' ? 'ÛÇÆÈ' : 'ãÊÃÎÑ';
+            var label = r.status==='absent' ? 'ï¿½ï¿½ï¿½ï¿½' : 'ï¿½ï¿½ï¿½ï¿½ï¿½';
             return '<tr><td style="padding:8px">'+r.date+'</td><td style="padding:8px;color:'+color+';font-weight:800">'+label+'</td><td style="padding:8px">'+( r.period||'-')+'</td><td style="padding:8px;font-size:11px;color:#aaa">'+(r.recordedBy||'-')+'</td></tr>';
         }).join('');
-        results.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"><div class="card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#dc2626">'+absent+'</div><div style="font-size:11px;color:#aaa">ÛíÇÈ</div></div><div class="card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#d97706">'+late+'</div><div style="font-size:11px;color:#aaa">ÊÃÎÑ</div></div></div><div class="card"><h3 style="margin-bottom:10px">ßÔÝ ÇáÛíÇÈ</h3>'+(rows ? '<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">ÇáÊÇÑíÎ</th><th style="padding:8px">ÇáÍÇáÉ</th><th style="padding:8px">ÇáÍÕÉ</th><th style="padding:8px">ÓÌøáåÇ</th></tr>'+rows+'</table>' : '<div style="text-align:center;padding:20px;color:#aaa">? áÇ íæÌÏ ÛíÇÈ</div>')+'</div>';
+        results.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"><div class="card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#dc2626">'+absent+'</div><div style="font-size:11px;color:#aaa">ï¿½ï¿½ï¿½ï¿½</div></div><div class="card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#d97706">'+late+'</div><div style="font-size:11px;color:#aaa">ï¿½ï¿½ï¿½ï¿½</div></div></div><div class="card"><h3 style="margin-bottom:10px">ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</h3>'+(rows ? '<table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</th><th style="padding:8px">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</th><th style="padding:8px">ï¿½ï¿½ï¿½ï¿½ï¿½</th><th style="padding:8px">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</th></tr>'+rows+'</table>' : '<div style="text-align:center;padding:20px;color:#aaa">? ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½</div>')+'</div>';
     } catch(e) { results.innerHTML = '<div style="color:#dc2626;padding:20px">? '+e.message+'</div>'; }
 };
 
