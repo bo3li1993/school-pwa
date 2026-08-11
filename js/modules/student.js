@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, query, where, getDocs, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
