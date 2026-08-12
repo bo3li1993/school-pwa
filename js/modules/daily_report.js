@@ -1,194 +1,199 @@
-import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
-import { collection, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+﻿import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// ══════════════════════════════════════════════════════════════
-// الكشف اليومي الشامل — غياب اليوم لكل الفصول
-// للمدير + المساعد + المشرف + الأخصائي
-// ══════════════════════════════════════════════════════════════
+var PERIODS = ['الحصة الأولى','الحصة الثانية','الحصة الثالثة','الحصة الرابعة','الحصة الخامسة','الحصة السادسة','الحصة السابعة'];
 
 export async function initDailyReportModule() {
     var container = document.getElementById('tab-daily-report');
-    if(!container) return;
-
-    container.innerHTML = `
-    <div style="max-width:800px;margin:0 auto;padding:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-            <h2 style="font-size:17px;font-weight:900;color:var(--navy);margin:0">
-                <i class="bi bi-clipboard-data-fill" style="color:var(--sky)"></i> كشف الغياب اليومي
-            </h2>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <input type="date" id="dr-date" value="${getTodayISO()}" onchange="window.loadDailyReport()" 
-                    style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px">
-                <select id="dr-class-filter" onchange="window.filterDailyReport()"
-                    style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700">
-                    <option value="all">كل الفصول</option>
-                </select>
-                <button onclick="window.printDailyReport()" style="background:var(--navy);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:800;cursor:pointer">
-                    <i class="bi bi-printer-fill"></i> طباعة
-                </button>
-            </div>
-        </div>
-
-        <!-- ملخص KPI -->
-        <div id="dr-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
-            <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center">
-                <div style="font-size:24px;font-weight:900;color:var(--navy)" id="dr-total-students">-</div>
-                <div style="font-size:11px;color:var(--mid);font-weight:700">إجمالي الطلاب</div>
-            </div>
-            <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center">
-                <div style="font-size:24px;font-weight:900;color:#dc2626" id="dr-total-absent">-</div>
-                <div style="font-size:11px;color:var(--mid);font-weight:700">غائب</div>
-            </div>
-            <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center">
-                <div style="font-size:24px;font-weight:900;color:#d97706" id="dr-total-late">-</div>
-                <div style="font-size:11px;color:var(--mid);font-weight:700">متأخر</div>
-            </div>
-            <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center">
-                <div style="font-size:24px;font-weight:900;color:var(--green)" id="dr-rate">-</div>
-                <div style="font-size:11px;color:var(--mid);font-weight:700">نسبة الحضور</div>
-            </div>
-        </div>
-
-        <!-- الجدول -->
-        <div id="dr-content" style="background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden">
-            <div style="text-align:center;padding:40px;color:#aaa;font-weight:700">⏳ جاري التحميل...</div>
-        </div>
-    </div>`;
-
-    window.loadDailyReport();
-}
-
-let _allRecords = [];
-let _allClasses = [];
-
-window.loadDailyReport = async function() {
-    var schoolId = getActiveSchoolId();
-    var date = document.getElementById('dr-date')?.value || getTodayISO();
-    var content = document.getElementById('dr-content');
-    var classFilter = document.getElementById('dr-class-filter');
-
-    content.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-weight:700">⏳ جاري التحميل...</div>';
-
-    try {
-        // جلب الغياب
-        var snap = await getDocs(query(
-            collection(db, 'attendance'),
-            where('schoolId', '==', schoolId),
-            where('date', '==', date)
-        ));
-
-        _allRecords = snap.docs.map(d => ({id: d.id, ...d.data()}));
-
-        // جلب كل الطلاب لحساب الإحصائيات
-        var studSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
-        var totalStudents = studSnap.size;
-
-        // استخراج الفصول
-        _allClasses = [...new Set(_allRecords.map(r => r.classId))].sort((a,b) => {
-            var pa = a.split('/'), pb = b.split('/');
-            return (parseInt(pa[0])||0) - (parseInt(pb[0])||0) || (parseInt(pa[1])||0) - (parseInt(pb[1])||0);
-        });
-
-        // تحديث فلتر الفصول
-        classFilter.innerHTML = '<option value="all">كل الفصول</option>' +
-            _allClasses.map(c => '<option value="'+c+'">'+c+'</option>').join('');
-
-        // KPI
-        var absentRecords = _allRecords.filter(r => r.status === 'absent');
-        var lateRecords = _allRecords.filter(r => r.status === 'late');
-        var uniqueAbsent = [...new Set(absentRecords.map(r => r.studentName))];
-        var uniqueLate = [...new Set(lateRecords.map(r => r.studentName))];
-
-        document.getElementById('dr-total-students').textContent = totalStudents;
-        document.getElementById('dr-total-absent').textContent = uniqueAbsent.length;
-        document.getElementById('dr-total-late').textContent = uniqueLate.length;
-        var rate = totalStudents > 0 ? Math.round(((totalStudents - uniqueAbsent.length) / totalStudents) * 100) : 0;
-        document.getElementById('dr-rate').textContent = rate + '%';
-
-        renderDailyTable('all');
-
-    } catch(e) {
-        content.innerHTML = '<div style="text-align:center;padding:40px;color:#dc2626;font-weight:700">❌ '+e.message+'</div>';
-    }
-};
-
-window.filterDailyReport = function() {
-    var classId = document.getElementById('dr-class-filter')?.value || 'all';
-    renderDailyTable(classId);
-};
-
-function renderDailyTable(filterClass) {
-    var content = document.getElementById('dr-content');
-    var records = _allRecords;
-    if(filterClass !== 'all') records = records.filter(r => r.classId === filterClass);
-
-    if(!records.length) {
-        content.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;font-weight:700">📭 لا يوجد غياب مسجّل</div>';
-        return;
-    }
-
-    // ترتيب بالفصل ثم الاسم
-    records.sort((a,b) => {
-        var pa = (a.classId||'').split('/'), pb = (b.classId||'').split('/');
-        var diff = (parseInt(pa[0])||0) - (parseInt(pb[0])||0) || (parseInt(pa[1])||0) - (parseInt(pb[1])||0);
-        return diff || (a.studentName||'').localeCompare(b.studentName||'', 'ar');
-    });
-
-    // تجميع بالفصل
-    var byClass = {};
-    records.forEach(r => {
-        if(!byClass[r.classId]) byClass[r.classId] = [];
-        byClass[r.classId].push(r);
-    });
-
-    var statusLabels = {absent:'غائب', late:'متأخر', excused:'مستأذن'};
-    var statusColors = {absent:'#dc2626', late:'#d97706', excused:'#2563eb'};
+    if (!container) return;
 
     var html = '';
-    var classes = Object.keys(byClass).sort((a,b) => {
-        var pa = a.split('/'), pb = b.split('/');
-        return (parseInt(pa[0])||0) - (parseInt(pb[0])||0) || (parseInt(pa[1])||0) - (parseInt(pb[1])||0);
-    });
+    html += '<div style="max-width:900px;margin:0 auto;padding:16px">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">';
+    html += '<h2 style="font-size:17px;font-weight:900;color:var(--navy);margin:0"><i class="bi bi-clipboard-data-fill" style="color:var(--sky)"></i> الكشف اليومي</h2>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+    html += '<input type="date" id="dr-date" value="' + getTodayISO() + '" style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif;font-size:13px">';
+    html += '<select id="dr-class" style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif;font-size:13px;font-weight:700"><option value="">اختر الفصل</option></select>';
+    html += '<button onclick="window.loadDailyAttSheet()" style="background:var(--sky);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-size:12px;font-weight:800;cursor:pointer"><i class="bi bi-eye"></i> عرض</button>';
+    html += '<button onclick="window.printDailySheet()" style="background:var(--navy);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-size:12px;font-weight:800;cursor:pointer"><i class="bi bi-printer-fill"></i> طباعة</button>';
+    html += '</div></div>';
+    html += '<div id="dr-content"><div style="text-align:center;padding:40px;color:#aaa;font-weight:700">اختر التاريخ والفصل ثم اضغط عرض</div></div>';
+    html += '</div>';
+    container.innerHTML = html;
 
-    classes.forEach(cls => {
-        var classRecords = byClass[cls];
-        html += '<div style="border-bottom:1px solid var(--line);padding:12px 16px;background:#f8fafc">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center">' +
-            '<span style="font-weight:900;color:var(--navy);font-size:14px">📚 الفصل '+cls+'</span>' +
-            '<span style="font-size:12px;color:var(--mid);font-weight:700">'+classRecords.length+' سجل</span>' +
-            '</div></div>';
-
-        html += '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
-            '<tr style="background:#f0f4f8"><th style="padding:8px 12px;text-align:right;font-weight:800;color:var(--navy)">الطالب</th>' +
-            '<th style="padding:8px 12px;text-align:center;font-weight:800;color:var(--navy)">الحالة</th>' +
-            '<th style="padding:8px 12px;text-align:center;font-weight:800;color:var(--navy)">الحصة</th>' +
-            '<th style="padding:8px 12px;text-align:right;font-weight:800;color:var(--navy)">سجّلها</th>' +
-            '<th style="padding:8px 12px;text-align:center;font-weight:800;color:var(--navy)">الوقت</th></tr>';
-
-        classRecords.forEach(r => {
-            var time = r.createdAt?.toDate?.();
-            var timeStr = time ? time.toLocaleTimeString('ar-KW', {hour:'2-digit', minute:'2-digit'}) : '-';
-            html += '<tr style="border-bottom:1px solid #f0f2f5">' +
-                '<td style="padding:8px 12px;font-weight:700">'+(r.studentName||'-')+'</td>' +
-                '<td style="padding:8px 12px;text-align:center"><span style="background:'+(statusColors[r.status]||'#666')+'22;color:'+(statusColors[r.status]||'#666')+';padding:3px 10px;border-radius:6px;font-size:11px;font-weight:800">'+(statusLabels[r.status]||r.status)+'</span></td>' +
-                '<td style="padding:8px 12px;text-align:center;font-weight:700">'+(r.period||'-')+'</td>' +
-                '<td style="padding:8px 12px;font-weight:600;color:var(--mid);font-size:12px">'+(r.recordedBy||'-')+'</td>' +
-                '<td style="padding:8px 12px;text-align:center;font-size:11px;color:var(--mid)">'+timeStr+'</td></tr>';
+    try {
+        var schoolId = getActiveSchoolId();
+        var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+        var classes = [];
+        snap.forEach(function(d) { var c = d.data().classId; if (c && classes.indexOf(c) === -1) classes.push(c); });
+        classes.sort(function(a,b) {
+            var pa = a.split('/'), pb = b.split('/');
+            return (parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0);
         });
-        html += '</table>';
-    });
-
-    content.innerHTML = html;
+        var sel = document.getElementById('dr-class');
+        for (var i = 0; i < classes.length; i++) {
+            sel.innerHTML += '<option value="' + classes[i] + '">' + classes[i] + '</option>';
+        }
+    } catch(e) {}
 }
 
-// ══ طباعة ══
-window.printDailyReport = function() {
-    var date = document.getElementById('dr-date')?.value || getTodayISO();
-    var classId = document.getElementById('dr-class-filter')?.value || 'all';
-    var subtitle = classId === 'all' ? 'جميع الفصول' : 'الفصل ' + classId;
+window.loadDailyAttSheet = async function() {
+    var date = document.getElementById('dr-date').value;
+    var classId = document.getElementById('dr-class').value;
+    var content = document.getElementById('dr-content');
+    if (!date || !classId) { if (window.showToast) window.showToast('اختر التاريخ والفصل','warning'); return; }
 
-    if(window.ManzoumaReport) {
-        var content = document.getElementById('dr-content')?.innerHTML || '';
-        window.ManzoumaReport.printDirect(content, 'كشف الغياب اليومي — ' + date, subtitle);
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa">جاري التحميل...</div>';
+    var schoolId = getActiveSchoolId();
+
+    try {
+        var studSnap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId), where('classId','==',classId)));
+        var students = [];
+        studSnap.forEach(function(d) { var n = d.data().name; if (n) students.push(n); });
+        students.sort(function(a,b) { return a.localeCompare(b,'ar'); });
+
+        var attSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('classId','==',classId), where('date','==',date)));
+
+        var attMap = {};
+        attSnap.forEach(function(d) {
+            var r = d.data();
+            var sn = r.studentName;
+            if (!sn) return;
+            if (!attMap[sn]) attMap[sn] = {};
+            var pIdx = PERIODS.indexOf(r.period);
+            if (pIdx === -1) {
+                var pNum = parseInt(r.period);
+                if (!isNaN(pNum) && pNum >= 1 && pNum <= 7) pIdx = pNum - 1;
+            }
+            if (pIdx !== -1) {
+                attMap[sn][pIdx] = { status: r.status, recordedBy: r.recordedBy || '' };
+            }
+        });
+
+        var periodTeacher = {};
+        attSnap.forEach(function(d) {
+            var r = d.data();
+            var pIdx = PERIODS.indexOf(r.period);
+            if (pIdx === -1) { var pNum = parseInt(r.period); if (!isNaN(pNum)) pIdx = pNum-1; }
+            if (pIdx !== -1 && r.recordedBy) periodTeacher[pIdx] = r.recordedBy;
+        });
+
+        var now = new Date(date);
+        var dayName = now.toLocaleDateString('ar-KW', {weekday:'long'});
+
+        var tbl = '';
+        tbl += '<div id="dr-print-area">';
+        tbl += '<div style="text-align:center;margin-bottom:12px">';
+        tbl += '<div style="font-size:15px;font-weight:900;color:var(--navy)">كشف الحضور والغياب</div>';
+        tbl += '<div style="font-size:13px;font-weight:700">الصف: ' + classId + ' &nbsp;|&nbsp; ' + dayName + ' ' + date + '</div>';
+        tbl += '</div>';
+
+        tbl += '<div style="overflow-x:auto">';
+        tbl += '<table style="width:100%;border-collapse:collapse;font-size:12px;direction:rtl" id="att-sheet-table">';
+
+        tbl += '<thead>';
+        tbl += '<tr style="background:#0b2545;color:#fff">';
+        tbl += '<th style="padding:8px;border:1px solid #ddd;min-width:30px;text-align:center">م</th>';
+        tbl += '<th style="padding:8px;border:1px solid #ddd;min-width:160px;text-align:right">اسم الطالب</th>';
+        for (var p = 0; p < PERIODS.length; p++) {
+            tbl += '<th style="padding:6px 4px;border:1px solid #ddd;text-align:center;min-width:70px;font-size:11px">';
+            tbl += 'الحصة ' + (p+1);
+            tbl += '</th>';
+        }
+        tbl += '</tr>';
+
+        tbl += '<tr style="background:#eaf4fd">';
+        tbl += '<td style="border:1px solid #ddd"></td>';
+        tbl += '<td style="border:1px solid #ddd;padding:4px 8px;font-size:10px;color:var(--mid);font-weight:700">المعلم المسجّل</td>';
+        for (var p2 = 0; p2 < PERIODS.length; p2++) {
+            var tName = periodTeacher[p2] || '';
+            tbl += '<td style="border:1px solid #ddd;padding:3px 4px;text-align:center;font-size:9px;color:#555;font-weight:600">' + tName + '</td>';
+        }
+        tbl += '</tr>';
+        tbl += '</thead>';
+
+        tbl += '<tbody>';
+        for (var s = 0; s < students.length; s++) {
+            var sName = students[s];
+            var rowBg = s % 2 === 0 ? '#fff' : '#f8f9fc';
+            tbl += '<tr style="background:' + rowBg + '">';
+            tbl += '<td style="padding:7px 4px;border:1px solid #ddd;text-align:center;font-weight:700;color:#aaa">' + (s+1) + '</td>';
+            tbl += '<td style="padding:7px 10px;border:1px solid #ddd;font-weight:800">' + sName + '</td>';
+            for (var p3 = 0; p3 < PERIODS.length; p3++) {
+                var cell = attMap[sName] ? attMap[sName][p3] : null;
+                var symbol = '';
+                var cellBg = '';
+                var cellColor = '';
+                if (!cell || cell.status === 'present') {
+                    symbol = '&#10003;';
+                    cellColor = '#16a34a';
+                } else if (cell.status === 'absent') {
+                    symbol = '&#10005;';
+                    cellBg = '#fee2e2';
+                    cellColor = '#dc2626';
+                } else if (cell.status === 'late') {
+                    symbol = '&#9716;';
+                    cellBg = '#fef3c7';
+                    cellColor = '#d97706';
+                }
+                tbl += '<td style="padding:6px 2px;border:1px solid #ddd;text-align:center;background:' + cellBg + '">';
+                tbl += '<div style="font-size:16px;font-weight:900;color:' + cellColor + '">' + symbol + '</div>';
+                tbl += '</td>';
+            }
+            tbl += '</tr>';
+        }
+        tbl += '</tbody>';
+        tbl += '</table>';
+        tbl += '</div>';
+
+        var absCount = 0;
+        var lateCount = 0;
+        attSnap.forEach(function(d) {
+            var r = d.data();
+            if (r.status === 'absent') absCount++;
+            if (r.status === 'late') lateCount++;
+        });
+        tbl += '<div style="display:flex;gap:16px;margin-top:12px;font-size:12px;font-weight:700">';
+        tbl += '<span>إجمالي الطلاب: <b>' + students.length + '</b></span>';
+        tbl += '<span style="color:#dc2626">غائب: <b>' + absCount + '</b></span>';
+        tbl += '<span style="color:#d97706">متأخر: <b>' + lateCount + '</b></span>';
+        tbl += '</div>';
+        tbl += '</div>';
+
+        content.innerHTML = tbl;
+
+    } catch(e) {
+        content.innerHTML = '<div style="color:#dc2626;padding:20px">خطأ: ' + e.message + '</div>';
     }
+};
+
+window.printDailySheet = function() {
+    var area = document.getElementById('dr-print-area');
+    if (!area) { if (window.showToast) window.showToast('اضغط عرض أولاً','warning'); return; }
+    var date = document.getElementById('dr-date').value || '';
+    var classId = document.getElementById('dr-class').value || '';
+    var content = area.innerHTML;
+    var html = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">';
+    html += '<style>';
+    html += 'body{font-family:Cairo,Arial,sans-serif;direction:rtl;padding:20px;font-size:12px}';
+    html += 'table{width:100%;border-collapse:collapse}';
+    html += 'th,td{border:1px solid #999;padding:5px;text-align:center}';
+    html += 'th{background:#0b2545;color:#fff}';
+    html += '@media print{body{padding:10px}}';
+    html += '</style></head><body>';
+    html += '<div style="display:flex;justify-content:space-between;margin-bottom:10px">';
+    html += '<div style="font-size:11px">وزارة التربية</div>';
+    html += '<div style="font-size:14px;font-weight:900">كشف الحضور والغياب — الصف ' + classId + '</div>';
+    html += '<div style="font-size:11px">' + date + '</div>';
+    html += '</div>';
+    html += content;
+    html += '<div style="margin-top:30px;display:flex;justify-content:space-between;font-size:11px">';
+    html += '<div>توقيع المعلم: ______________</div>';
+    html += '<div>توقيع المدير: ______________</div>';
+    html += '</div>';
+    html += '</body></html>';
+    var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+    var url = URL.createObjectURL(blob);
+    var w = window.open(url, '_blank');
+    if (w) setTimeout(function() { w.print(); URL.revokeObjectURL(url); }, 800);
 };
