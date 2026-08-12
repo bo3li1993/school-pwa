@@ -78,6 +78,13 @@ window.loadDailyAttSheet = async function() {
             if (pIdx !== -1 && r.recordedBy) periodTeacher[pIdx] = r.recordedBy;
         });
 
+        var completeRows = {};
+        for (var cn = 0; cn < students.length; cn++) {
+            var sn = students[cn];
+            var hasRecord = attMap[sn] && Object.keys(attMap[sn]).length > 0;
+            completeRows[sn] = hasRecord;
+        }
+
         var now = new Date(date);
         var dayName = now.toLocaleDateString('ar-KW', {weekday:'long'});
 
@@ -115,8 +122,11 @@ window.loadDailyAttSheet = async function() {
         tbl += '<tbody>';
         for (var s = 0; s < students.length; s++) {
             var sName = students[s];
-            var rowBg = s % 2 === 0 ? '#fff' : '#f8f9fc';
-            tbl += '<tr style="background:' + rowBg + '">';
+            var isComplete = completeRows[sName];
+            var rowBg = !isComplete ? '#f5f5f5' : (s % 2 === 0 ? '#fff' : '#f8f9fc');
+            var rowOpacity = !isComplete ? '0.7' : '1';
+
+            tbl += '<tr style="background:' + rowBg + ';opacity:' + rowOpacity + '">';
             tbl += '<td style="padding:7px 4px;border:1px solid #ddd;text-align:center;font-weight:700;color:#aaa">' + (s+1) + '</td>';
             tbl += '<td style="padding:7px 10px;border:1px solid #ddd;font-weight:800">' + sName + '</td>';
             for (var p3 = 0; p3 < PERIODS.length; p3++) {
@@ -124,7 +134,15 @@ window.loadDailyAttSheet = async function() {
                 var symbol = '';
                 var cellBg = '';
                 var cellColor = '';
-                if (!cell || cell.status === 'present') {
+                if (!cell) {
+                    if (!isComplete) {
+                        symbol = '?';
+                        cellColor = '#9ca3af';
+                    } else {
+                        symbol = '&#10003;';
+                        cellColor = '#16a34a';
+                    }
+                } else if (cell.status === 'present') {
                     symbol = '&#10003;';
                     cellColor = '#16a34a';
                 } else if (cell.status === 'absent') {
@@ -158,6 +176,13 @@ window.loadDailyAttSheet = async function() {
         tbl += '<span style="color:#dc2626">غائب: <b>' + absCount + '</b></span>';
         tbl += '<span style="color:#d97706">متأخر: <b>' + lateCount + '</b></span>';
         tbl += '</div>';
+
+        tbl += '<div style="margin-top:16px;padding:12px;background:#f9fafb;border-radius:6px;border-right:3px solid #6b7280;font-size:11px;color:#666">';
+        tbl += '<div style="font-weight:700;margin-bottom:6px">وسيلة الإيضاح:</div>';
+        tbl += '<div>✓ = حاضر | ✕ = غائب | ⊔ = متأخر | ? = لم يتم التسجيل</div>';
+        tbl += '<div style="margin-top:6px;color:#9ca3af">الصفوف الفاتحة = لم يتم تسجيل الحضور من المعلم</div>';
+        tbl += '</div>';
+
         tbl += '</div>';
 
         content.innerHTML = tbl;
