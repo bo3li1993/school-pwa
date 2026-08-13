@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>لوحة رئيس القسم - المنظومة الرقمية</title>
+<title>ظ„ظˆط­ط© ط±ط¦ظٹط³ ط§ظ„ظ‚ط³ظ… - ط§ظ„ظ…ظ†ط¸ظˆظ…ط© ط§ظ„ط±ظ‚ظ…ظٹط©</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
 
@@ -74,7 +74,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 .msg-parent { background: #f1f5f9; align-self: flex-start; }
 .msg-mine { background: var(--ice); align-self: flex-end; margin-right: auto; }
 
-/* ══ Dark Mode ══ */
+/* â•گâ•گ Dark Mode â•گâ•گ */
 body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
 body.dark-mode .header-nav { background:#0f1928 !important; }
 body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
@@ -90,15 +90,15 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 
 <style>
-/* ═══ Responsive Additions ═══ */
+/* â•گâ•گâ•گ Responsive Additions â•گâ•گâ•گ */
 
-/* تابلت */
+/* طھط§ط¨ظ„طھ */
 @media (max-width: 1024px) {
   .workspace-container { padding: 0 14px; }
   .stats-grid { grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); }
 }
 
-/* جوال */
+/* ط¬ظˆط§ظ„ */
 @media (max-width: 768px) {
   .workspace-container { padding: 0 10px; margin: 10px auto; }
   
@@ -117,7 +117,7 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
   table { font-size: 12px; min-width: 480px; }
   th, td { padding: 7px 6px; }
   
-  /* Grid layouts → stack */
+  /* Grid layouts â†’ stack */
   div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
   div[style*="display:flex"][style*="gap"] { flex-wrap: wrap; }
   
@@ -136,101 +136,101 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 
 <div class="splash" id="splash">
   <div class="splash-mark">
-    <div class="splash-badge">م</div>
-    <h1>المنظومة الرقمية</h1>
-    <p id="splash-school">جاري التحميل...</p>
+    <div class="splash-badge">ظ…</div>
+    <h1>ط§ظ„ظ…ظ†ط¸ظˆظ…ط© ط§ظ„ط±ظ‚ظ…ظٹط©</h1>
+    <p id="splash-school">ط¬ط§ط±ظٹ ط§ظ„طھط­ظ…ظٹظ„...</p>
   </div>
 </div>
 
 <div class="header-nav">
     <div>
-        <h1 id="lbl-dept-title"><i class="bi bi-diagram-3-fill"></i> رئيس القسم: جاري التحميل...</h1>
-        <p id="lbl-dept-school" style="font-weight:700;">جاري التحميل...</p>
+        <h1 id="lbl-dept-title"><i class="bi bi-diagram-3-fill"></i> ط±ط¦ظٹط³ ط§ظ„ظ‚ط³ظ…: ط¬ط§ط±ظٹ ط§ظ„طھط­ظ…ظٹظ„...</h1>
+        <p id="lbl-dept-school" style="font-weight:700;">ط¬ط§ط±ظٹ ط§ظ„طھط­ظ…ظٹظ„...</p>
     </div>
     <div class="header-actions">
         <button class="btn-header" onclick="window.location.href='teacher.html'" style="background:var(--sky); color:#fff;">
-            <i class="bi bi-easel2-fill"></i> الذهاب لحصصي التعليمية
+            <i class="bi bi-easel2-fill"></i> ط§ظ„ط°ظ‡ط§ط¨ ظ„ط­طµطµظٹ ط§ظ„طھط¹ظ„ظٹظ…ظٹط©
         </button>
         <button class="btn-header" onclick="localStorage.removeItem('hs_user'); localStorage.removeItem('hs_custom_token'); window.location.replace('index.html');" style="background:var(--danger-color); color:#fff;">
-            <i class="bi bi-box-arrow-left"></i> خروج
+            <i class="bi bi-box-arrow-left"></i> ط®ط±ظˆط¬
         </button>
     </div>
 </div>
 
 <div class="workspace-container" style="padding-bottom:80px">
 
-    <!-- لوحة المؤشرات -->
+    <!-- ظ„ظˆط­ط© ط§ظ„ظ…ط¤ط´ط±ط§طھ -->
     <div class="stats-grid">
         <div class="stat-box" style="border-top:3px solid var(--sky);">
-            <div class="num" id="stat-teachers-count" style="color:var(--sky);">—</div>
-            <div class="lbl">معلمو القسم</div>
+            <div class="num" id="stat-teachers-count" style="color:var(--sky);">â€”</div>
+            <div class="lbl">ظ…ط¹ظ„ظ…ظˆ ط§ظ„ظ‚ط³ظ…</div>
         </div>
         <div class="stat-box" style="border-top:3px solid var(--danger-color);">
-            <div class="num" id="stat-absent-today" style="color:var(--danger-color);">—</div>
-            <div class="lbl">غياب اليوم (طلاب قسمك)</div>
+            <div class="num" id="stat-absent-today" style="color:var(--danger-color);">â€”</div>
+            <div class="lbl">ط؛ظٹط§ط¨ ط§ظ„ظٹظˆظ… (ط·ظ„ط§ط¨ ظ‚ط³ظ…ظƒ)</div>
         </div>
         <div class="stat-box" style="border-top:3px solid var(--gold);">
-            <div class="num" id="stat-unread-msgs" style="color:var(--gold);">—</div>
-            <div class="lbl">رسائل جديدة</div>
+            <div class="num" id="stat-unread-msgs" style="color:var(--gold);">â€”</div>
+            <div class="lbl">ط±ط³ط§ط¦ظ„ ط¬ط¯ظٹط¯ط©</div>
         </div>
     </div>
 
-    <!-- معلمو القسم -->
+    <!-- ظ…ط¹ظ„ظ…ظˆ ط§ظ„ظ‚ط³ظ… -->
     <div class="card" style="border-top: 4px solid var(--sky);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-            <h2 style="margin:0"><i class="bi bi-people-fill" style="color:var(--sky);"></i> معلمو القسم وإدارة بياناتهم</h2>
+            <h2 style="margin:0"><i class="bi bi-people-fill" style="color:var(--sky);"></i> ظ…ط¹ظ„ظ…ظˆ ط§ظ„ظ‚ط³ظ… ظˆط¥ط¯ط§ط±ط© ط¨ظٹط§ظ†ط§طھظ‡ظ…</h2>
             <button onclick="exportTeachersPDF()" style="background:var(--red);color:#fff;border:none;padding:7px 14px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;">
-                <i class="bi bi-file-earmark-pdf-fill"></i> تصدير PDF
+                <i class="bi bi-file-earmark-pdf-fill"></i> طھطµط¯ظٹط± PDF
             </button>
         </div>
         <div style="overflow-x:auto;">
             <table>
-                <thead><tr><th>الاسم</th><th>المعرف</th><th>الهاتف</th><th>الإيميل</th><th>إجراء</th></tr></thead>
+                <thead><tr><th>ط§ظ„ط§ط³ظ…</th><th>ط§ظ„ظ…ط¹ط±ظپ</th><th>ط§ظ„ظ‡ط§طھظپ</th><th>ط§ظ„ط¥ظٹظ…ظٹظ„</th><th>ط¥ط¬ط±ط§ط،</th></tr></thead>
                 <tbody id="dept-teachers-tbody">
-                    <tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">⏳ جاري التحميل...</td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">âڈ³ ط¬ط§ط±ظٹ ط§ظ„طھط­ظ…ظٹظ„...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Modal تعديل بيانات معلم -->
+    <!-- Modal طھط¹ط¯ظٹظ„ ط¨ظٹط§ظ†ط§طھ ظ…ط¹ظ„ظ… -->
     <div id="edit-teacher-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; align-items:center; justify-content:center; padding:16px;">
         <div style="background:#fff; border-radius:16px; padding:24px; max-width:400px; width:100%; direction:rtl;">
-            <h3 style="color:var(--primary-color); font-weight:900; margin-bottom:14px;"><i class="bi bi-pencil-square"></i> تعديل بيانات المعلم</h3>
+            <h3 style="color:var(--primary-color); font-weight:900; margin-bottom:14px;"><i class="bi bi-pencil-square"></i> طھط¹ط¯ظٹظ„ ط¨ظٹط§ظ†ط§طھ ط§ظ„ظ…ط¹ظ„ظ…</h3>
             <input type="hidden" id="edit-teacher-id">
-            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">الاسم الكامل</label>
+            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">ط§ظ„ط§ط³ظ… ط§ظ„ظƒط§ظ…ظ„</label>
             <input type="text" id="edit-teacher-name">
-            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">رقم الهاتف</label>
+            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">ط±ظ‚ظ… ط§ظ„ظ‡ط§طھظپ</label>
             <input type="tel" id="edit-teacher-phone">
-            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">البريد الإلكتروني</label>
+            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px;">ط§ظ„ط¨ط±ظٹط¯ ط§ظ„ط¥ظ„ظƒطھط±ظˆظ†ظٹ</label>
             <input type="email" id="edit-teacher-email">
             <button onclick="window.saveTeacherEdit()" class="btn-submit" style="background:var(--green); margin-bottom:8px;">
-                <i class="bi bi-check-circle-fill"></i> حفظ التعديلات
+                <i class="bi bi-check-circle-fill"></i> ط­ظپط¸ ط§ظ„طھط¹ط¯ظٹظ„ط§طھ
             </button>
-            <button onclick="window.closeEditTeacherModal()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; font-family:'Cairo',sans-serif; color:#666;">إلغاء</button>
+            <button onclick="window.closeEditTeacherModal()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; font-family:'Cairo',sans-serif; color:#666;">ط¥ظ„ط؛ط§ط،</button>
         </div>
     </div>
 
-    <!-- الرسائل الموجّهة للقسم -->
+    <!-- ط§ظ„ط±ط³ط§ط¦ظ„ ط§ظ„ظ…ظˆط¬ظ‘ظ‡ط© ظ„ظ„ظ‚ط³ظ… -->
     <div class="card" style="border-top: 4px solid var(--gold);">
-        <h2><i class="bi bi-chat-left-text-fill" style="color:var(--gold);"></i> رسائل أولياء الأمور الموجّهة لقسمك</h2>
+        <h2><i class="bi bi-chat-left-text-fill" style="color:var(--gold);"></i> ط±ط³ط§ط¦ظ„ ط£ظˆظ„ظٹط§ط، ط§ظ„ط£ظ…ظˆط± ط§ظ„ظ…ظˆط¬ظ‘ظ‡ط© ظ„ظ‚ط³ظ…ظƒ</h2>
         <div id="dept-messages-list" style="max-height:400px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
-            <p style="text-align:center; color:#999; padding:15px;">⏳ جاري التحميل...</p>
+            <p style="text-align:center; color:#999; padding:15px;">âڈ³ ط¬ط§ط±ظٹ ط§ظ„طھط­ظ…ظٹظ„...</p>
         </div>
     </div>
 
-    <!-- Modal الرد على رسالة -->
+    <!-- Modal ط§ظ„ط±ط¯ ط¹ظ„ظ‰ ط±ط³ط§ظ„ط© -->
     <div id="reply-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; align-items:center; justify-content:center; padding:16px;">
         <div style="background:#fff; border-radius:16px; padding:24px; max-width:420px; width:100%; direction:rtl;">
-            <h3 style="color:var(--primary-color); font-weight:900; margin-bottom:6px;"><i class="bi bi-reply-fill"></i> الرد على ولي الأمر</h3>
+            <h3 style="color:var(--primary-color); font-weight:900; margin-bottom:6px;"><i class="bi bi-reply-fill"></i> ط§ظ„ط±ط¯ ط¹ظ„ظ‰ ظˆظ„ظٹ ط§ظ„ط£ظ…ط±</h3>
             <p id="reply-context" style="font-size:12px; color:#666; margin-bottom:12px;"></p>
             <input type="hidden" id="reply-thread-id">
             <input type="hidden" id="reply-student-name">
-            <textarea id="reply-text" rows="3" placeholder="اكتب ردك هنا..."></textarea>
+            <textarea id="reply-text" rows="3" placeholder="ط§ظƒطھط¨ ط±ط¯ظƒ ظ‡ظ†ط§..."></textarea>
             <button onclick="window.sendDeptReply()" class="btn-submit" style="background:var(--sky); margin-bottom:8px;">
-                <i class="bi bi-send-fill"></i> إرسال الرد
+                <i class="bi bi-send-fill"></i> ط¥ط±ط³ط§ظ„ ط§ظ„ط±ط¯
             </button>
-            <button onclick="window.closeReplyModal()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; font-family:'Cairo',sans-serif; color:#666;">إلغاء</button>
+            <button onclick="window.closeReplyModal()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; font-family:'Cairo',sans-serif; color:#666;">ط¥ظ„ط؛ط§ط،</button>
         </div>
     </div>
 
@@ -263,12 +263,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     myDepartment = currentUser.department || '';
 
-    document.getElementById('lbl-dept-title').innerHTML = '<i class="bi bi-diagram-3-fill"></i> رئيس قسم ' + myDepartment + ' — ' + (currentUser.name || '');
-    document.getElementById('lbl-dept-school').textContent = currentUser.schoolName || 'المنظومة الرقمية';
-    document.getElementById('splash-school').textContent = currentUser.schoolName || 'المنظومة الرقمية';
+    document.getElementById('lbl-dept-title').innerHTML = '<i class="bi bi-diagram-3-fill"></i> ط±ط¦ظٹط³ ظ‚ط³ظ… ' + myDepartment + ' â€” ' + (currentUser.name || '');
+    document.getElementById('lbl-dept-school').textContent = currentUser.schoolName || 'ط§ظ„ظ…ظ†ط¸ظˆظ…ط© ط§ظ„ط±ظ‚ظ…ظٹط©';
+    document.getElementById('splash-school').textContent = currentUser.schoolName || 'ط§ظ„ظ…ظ†ط¸ظˆظ…ط© ط§ظ„ط±ظ‚ظ…ظٹط©';
 
     if (!myDepartment) {
-        showToast('⚠️ لم يتم تحديد قسمك — راجع الإدارة', 'error');
+        showToast('âڑ ï¸ڈ ظ„ظ… ظٹطھظ… طھط­ط¯ظٹط¯ ظ‚ط³ظ…ظƒ â€” ط±ط§ط¬ط¹ ط§ظ„ط¥ط¯ط§ط±ط©', 'error');
     } else {
         loadDeptTeachers();
         loadDeptMessages();
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('splash').classList.add('hide');
 });
 
-// ===== إحصائية غياب اليوم لطلاب معلمي القسم (تقريبي عبر الفصول المرتبطة) =====
+// ===== ط¥ط­طµط§ط¦ظٹط© ط؛ظٹط§ط¨ ط§ظ„ظٹظˆظ… ظ„ط·ظ„ط§ط¨ ظ…ط¹ظ„ظ…ظٹ ط§ظ„ظ‚ط³ظ… (طھظ‚ط±ظٹط¨ظٹ ط¹ط¨ط± ط§ظ„ظپطµظˆظ„ ط§ظ„ظ…ط±طھط¨ط·ط©) =====
 async function loadTodayAbsentCount() {
     try {
         const schoolId = getActiveSchoolId();
@@ -291,11 +291,11 @@ async function loadTodayAbsentCount() {
         ));
         document.getElementById('stat-absent-today').textContent = snap.size;
     } catch (e) {
-        document.getElementById('stat-absent-today').textContent = '—';
+        document.getElementById('stat-absent-today').textContent = 'â€”';
     }
 }
 
-// ===== معلمو القسم =====
+// ===== ظ…ط¹ظ„ظ…ظˆ ط§ظ„ظ‚ط³ظ… =====
 async function loadDeptTeachers() {
     const tbody = document.getElementById('dept-teachers-tbody');
     const schoolId = getActiveSchoolId();
@@ -311,7 +311,7 @@ async function loadDeptTeachers() {
         document.getElementById('stat-teachers-count').textContent = snap.size;
 
         if (snap.empty) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">لا يوجد معلمون مسجّلون بقسمك بعد</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#999;">ظ„ط§ ظٹظˆط¬ط¯ ظ…ط¹ظ„ظ…ظˆظ† ظ…ط³ط¬ظ‘ظ„ظˆظ† ط¨ظ‚ط³ظ…ظƒ ط¨ط¹ط¯</td></tr>';
             return;
         }
 
@@ -326,14 +326,14 @@ async function loadDeptTeachers() {
                 <td>
                     <button onclick="window.openEditTeacherModal('${d.id}', '${(t.name||'').replace(/'/g,"\\'")}', '${t.phone||''}', '${t.email||''}')"
                         style="background:var(--sky); color:#fff; border:none; padding:6px 12px; border-radius:6px; font-weight:700; cursor:pointer; font-size:12px;">
-                        <i class="bi bi-pencil-fill"></i> تعديل
+                        <i class="bi bi-pencil-fill"></i> طھط¹ط¯ظٹظ„
                     </button>
                 </td>
             </tr>`;
         });
         tbody.innerHTML = html;
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; padding:15px;">❌ خطأ: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; padding:15px;">â‌Œ ط®ط·ط£: ${e.message}</td></tr>`;
     }
 }
 
@@ -355,20 +355,20 @@ window.saveTeacherEdit = async function() {
     const phone = document.getElementById('edit-teacher-phone').value.trim();
     const email = document.getElementById('edit-teacher-email').value.trim();
 
-    if (!name) { showToast('⚠️ الاسم مطلوب', 'error'); return; }
+    if (!name) { showToast('âڑ ï¸ڈ ط§ظ„ط§ط³ظ… ظ…ط·ظ„ظˆط¨', 'error'); return; }
 
     try {
-        // ملاحظة أمنية: رئيس القسم يعدّل فقط الاسم والهاتف والإيميل — لا يقدر يغيّر الدور أو كلمة المرور
+        // ظ…ظ„ط§ط­ط¸ط© ط£ظ…ظ†ظٹط©: ط±ط¦ظٹط³ ط§ظ„ظ‚ط³ظ… ظٹط¹ط¯ظ‘ظ„ ظپظ‚ط· ط§ظ„ط§ط³ظ… ظˆط§ظ„ظ‡ط§طھظپ ظˆط§ظ„ط¥ظٹظ…ظٹظ„ â€” ظ„ط§ ظٹظ‚ط¯ط± ظٹط؛ظٹظ‘ط± ط§ظ„ط¯ظˆط± ط£ظˆ ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط±
         await updateDoc(doc(db, 'users', id), { name, phone, email });
-        showToast('✅ تم تحديث بيانات المعلم بنجاح');
+        showToast('âœ… طھظ… طھط­ط¯ظٹط« ط¨ظٹط§ظ†ط§طھ ط§ظ„ظ…ط¹ظ„ظ… ط¨ظ†ط¬ط§ط­');
         window.closeEditTeacherModal();
         loadDeptTeachers();
     } catch (e) {
-        showToast('❌ خطأ: ' + e.message, 'error');
+        showToast('â‌Œ ط®ط·ط£: ' + e.message, 'error');
     }
 };
 
-// ===== الرسائل الموجّهة للقسم =====
+// ===== ط§ظ„ط±ط³ط§ط¦ظ„ ط§ظ„ظ…ظˆط¬ظ‘ظ‡ط© ظ„ظ„ظ‚ط³ظ… =====
 function loadDeptMessages() {
     const listEl = document.getElementById('dept-messages-list');
     const schoolId = getActiveSchoolId();
@@ -382,7 +382,7 @@ function loadDeptMessages() {
     if (messagesUnsub) messagesUnsub();
     messagesUnsub = onSnapshot(q, (snap) => {
         if (snap.empty) {
-            listEl.innerHTML = '<p style="text-align:center; color:#999; padding:15px;">💡 لا توجد رسائل موجهة لقسمك حالياً</p>';
+            listEl.innerHTML = '<p style="text-align:center; color:#999; padding:15px;">ًں’، ظ„ط§ طھظˆط¬ط¯ ط±ط³ط§ط¦ظ„ ظ…ظˆط¬ظ‡ط© ظ„ظ‚ط³ظ…ظƒ ط­ط§ظ„ظٹط§ظ‹</p>';
             document.getElementById('stat-unread-msgs').textContent = '0';
             return;
         }
@@ -399,13 +399,13 @@ function loadDeptMessages() {
             html += `
             <div style="border:1px solid #eee; border-radius:10px; padding:12px; background:${isParent ? '#f8fafc' : '#eaf4fd'};">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <b style="font-size:13px; color:var(--primary-color);">${isParent ? 'ولي أمر: ' + (m.studentName || '') : 'ردك'}</b>
+                    <b style="font-size:13px; color:var(--primary-color);">${isParent ? 'ظˆظ„ظٹ ط£ظ…ط±: ' + (m.studentName || '') : 'ط±ط¯ظƒ'}</b>
                     <span style="font-size:10px; color:#999;">${m.createdAt?.toDate ? m.createdAt.toDate().toLocaleDateString('ar-KW') : ''}</span>
                 </div>
                 <p style="font-size:13px; margin-bottom:8px;">${m.message || ''}</p>
                 ${isParent ? `<button onclick="window.openReplyModal('${d.id}', '${(m.studentName||'').replace(/'/g,"\\'")}')"
                     style="background:var(--gold); color:#fff; border:none; padding:6px 14px; border-radius:6px; font-weight:700; cursor:pointer; font-size:12px;">
-                    <i class="bi bi-reply-fill"></i> رد
+                    <i class="bi bi-reply-fill"></i> ط±ط¯
                 </button>` : ''}
             </div>`;
         });
@@ -413,14 +413,14 @@ function loadDeptMessages() {
         listEl.innerHTML = html;
         document.getElementById('stat-unread-msgs').textContent = unreadCount;
     }, () => {
-        listEl.innerHTML = '<p style="text-align:center; color:red; padding:15px;">❌ خطأ في تحميل الرسائل</p>';
+        listEl.innerHTML = '<p style="text-align:center; color:red; padding:15px;">â‌Œ ط®ط·ط£ ظپظٹ طھط­ظ…ظٹظ„ ط§ظ„ط±ط³ط§ط¦ظ„</p>';
     });
 }
 
 window.openReplyModal = function(threadId, studentName) {
     document.getElementById('reply-thread-id').value = threadId;
     document.getElementById('reply-student-name').value = studentName;
-    document.getElementById('reply-context').textContent = 'الرد على رسالة بخصوص: ' + studentName;
+    document.getElementById('reply-context').textContent = 'ط§ظ„ط±ط¯ ط¹ظ„ظ‰ ط±ط³ط§ظ„ط© ط¨ط®طµظˆطµ: ' + studentName;
     document.getElementById('reply-text').value = '';
     document.getElementById('reply-modal').style.display = 'flex';
 };
@@ -434,7 +434,7 @@ window.sendDeptReply = async function() {
     const studentName = document.getElementById('reply-student-name').value;
     const text = document.getElementById('reply-text').value.trim();
 
-    if (!text) { showToast('⚠️ يرجى كتابة نص الرد', 'error'); return; }
+    if (!text) { showToast('âڑ ï¸ڈ ظٹط±ط¬ظ‰ ظƒطھط§ط¨ط© ظ†طµ ط§ظ„ط±ط¯', 'error'); return; }
 
     try {
         const schoolId = getActiveSchoolId();
@@ -444,20 +444,20 @@ window.sendDeptReply = async function() {
             department: myDepartment,
             message: text,
             senderRole: 'department_head',
-            senderName: currentUser.name || 'رئيس القسم',
+            senderName: currentUser.name || 'ط±ط¦ظٹط³ ط§ظ„ظ‚ط³ظ…',
             createdAt: serverTimestamp()
         });
         await updateDoc(doc(db, 'school_threads', originalThreadId), { replied: true });
 
-        showToast('✅ تم إرسال الرد بنجاح');
+        showToast('âœ… طھظ… ط¥ط±ط³ط§ظ„ ط§ظ„ط±ط¯ ط¨ظ†ط¬ط§ط­');
         window.closeReplyModal();
     } catch (e) {
-        showToast('❌ خطأ: ' + e.message, 'error');
+        showToast('â‌Œ ط®ط·ط£: ' + e.message, 'error');
     }
 };
 
 
-// ══ تصدير PDF معلمي القسم ══
+// â•گâ•گ طھطµط¯ظٹط± PDF ظ…ط¹ظ„ظ…ظٹ ط§ظ„ظ‚ط³ظ… â•گâ•گ
 window.exportTeachersPDF = async function() {
     try {
         const schoolId = getActiveSchoolId();
@@ -472,10 +472,10 @@ window.exportTeachersPDF = async function() {
             const t = d.data();
             rows += `<tr>
                 <td>${i+1}</td>
-                <td>${t.name||'—'}</td>
-                <td>${t.userId||'—'}</td>
-                <td>${t.phone||'—'}</td>
-                <td>${t.email||'—'}</td>
+                <td>${t.name||'â€”'}</td>
+                <td>${t.userId||'â€”'}</td>
+                <td>${t.phone||'â€”'}</td>
+                <td>${t.email||'â€”'}</td>
             </tr>`;
         });
 
@@ -492,10 +492,10 @@ window.exportTeachersPDF = async function() {
             td{padding:8px;border-bottom:1px solid #eee}
             tr:nth-child(even) td{background:#f8fafc}
         </style></head><body>
-        <h1>قائمة معلمي قسم ${myDepartment}</h1>
-        <p>المدرسة: ${currentUser.schoolName||''} | التاريخ: ${new Date().toLocaleDateString('ar-KW')}</p>
+        <h1>ظ‚ط§ط¦ظ…ط© ظ…ط¹ظ„ظ…ظٹ ظ‚ط³ظ… ${myDepartment}</h1>
+        <p>ط§ظ„ظ…ط¯ط±ط³ط©: ${currentUser.schoolName||''} | ط§ظ„طھط§ط±ظٹط®: ${new Date().toLocaleDateString('ar-KW')}</p>
         <table>
-            <thead><tr><th>#</th><th>الاسم</th><th>رقم المعلم</th><th>الهاتف</th><th>الإيميل</th></tr></thead>
+            <thead><tr><th>#</th><th>ط§ظ„ط§ط³ظ…</th><th>ط±ظ‚ظ… ط§ظ„ظ…ط¹ظ„ظ…</th><th>ط§ظ„ظ‡ط§طھظپ</th><th>ط§ظ„ط¥ظٹظ…ظٹظ„</th></tr></thead>
             <tbody>${rows}</tbody>
         </table>
         
@@ -505,10 +505,10 @@ if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark
 
 
 <script>
-// ══ Service Worker — تسجيل بسيط بدون reload ══
+// â•گâ•گ Service Worker â€” طھط³ط¬ظٹظ„ ط¨ط³ظٹط· ط¨ط¯ظˆظ† reload â•گâ•گ
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(function(reg) {
-        // تحقق من التحديثات كل 5 دقائق
+        // طھط­ظ‚ظ‚ ظ…ظ† ط§ظ„طھط­ط¯ظٹط«ط§طھ ظƒظ„ 5 ط¯ظ‚ط§ط¦ظ‚
         setInterval(function() { reg.update(); }, 5 * 60 * 1000);
     }).catch(function() {});
 }
@@ -517,7 +517,7 @@ if('serviceWorker' in navigator) {
 </body></html>`);
         win.document.close();
         setTimeout(()=>win.print(), 600);
-    } catch(e) { showToast('❌ '+e.message,'error'); }
+    } catch(e) { showToast('â‌Œ '+e.message,'error'); }
 };
 
 if ('serviceWorker' in navigator) {
@@ -527,13 +527,13 @@ if ('serviceWorker' in navigator) {
 
 <div class="bottom-nav" id="dept-bottom-nav" style="display:flex;position:fixed;right:0;left:0;bottom:0;background:#fff;border-top:1px solid var(--line);z-index:45;padding-bottom:env(safe-area-inset-bottom);">
   <button class="bn-item active" data-dv="view-teachers" onclick="switchDeptView('view-teachers')">
-    <i class="bi bi-people-fill"></i>المعلمون
+    <i class="bi bi-people-fill"></i>ط§ظ„ظ…ط¹ظ„ظ…ظˆظ†
   </button>
   <button class="bn-item" data-dv="view-messages" onclick="switchDeptView('view-messages')">
-    <i class="bi bi-chat-left-text-fill"></i>الرسائل
+    <i class="bi bi-chat-left-text-fill"></i>ط§ظ„ط±ط³ط§ط¦ظ„
   </button>
   <button class="bn-item" data-dv="view-stats" onclick="switchDeptView('view-stats')">
-    <i class="bi bi-bar-chart-fill"></i>إحصائيات
+    <i class="bi bi-bar-chart-fill"></i>ط¥ط­طµط§ط¦ظٹط§طھ
   </button>
 </div>
 
@@ -555,10 +555,10 @@ if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark
 
 
 <script>
-// ══ Service Worker — تسجيل بسيط بدون reload ══
+// â•گâ•گ Service Worker â€” طھط³ط¬ظٹظ„ ط¨ط³ظٹط· ط¨ط¯ظˆظ† reload â•گâ•گ
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(function(reg) {
-        // تحقق من التحديثات كل 5 دقائق
+        // طھط­ظ‚ظ‚ ظ…ظ† ط§ظ„طھط­ط¯ظٹط«ط§طھ ظƒظ„ 5 ط¯ظ‚ط§ط¦ظ‚
         setInterval(function() { reg.update(); }, 5 * 60 * 1000);
     }).catch(function() {});
 }
