@@ -7,8 +7,8 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // ============================================================
-// أدوات مساعدة: حد محاولات الدخول الفاشلة (Rate Limiting)
-// 5 محاولات فاشلة → قفل 15 دقيقة
+// ط£ط¯ظˆط§طھ ظ…ط³ط§ط¹ط¯ط©: ط­ط¯ ظ…ط­ط§ظˆظ„ط§طھ ط§ظ„ط¯ط®ظˆظ„ ط§ظ„ظپط§ط´ظ„ط© (Rate Limiting)
+// 5 ظ…ط­ط§ظˆظ„ط§طھ ظپط§ط´ظ„ط© â†’ ظ‚ظپظ„ 15 ط¯ظ‚ظٹظ‚ط©
 // ============================================================
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
@@ -35,7 +35,7 @@ async function recordFailedAttempt(identifier) {
     const minutesSince = snap.exists && snap.data().lastAttempt?.toDate
         ? (Date.now() - snap.data().lastAttempt.toDate().getTime()) / 60000 : 999;
 
-    // لو مرّ وقت أطول من فترة القفل، نبدأ العد من جديد
+    // ظ„ظˆ ظ…ط±ظ‘ ظˆظ‚طھ ط£ط·ظˆظ„ ظ…ظ† ظپطھط±ط© ط§ظ„ظ‚ظپظ„طŒ ظ†ط¨ط¯ط£ ط§ظ„ط¹ط¯ ظ…ظ† ط¬ط¯ظٹط¯
     const newCount = (snap.exists && minutesSince < LOCKOUT_MINUTES) ? (snap.data().count || 0) + 1 : 1;
 
     await ref.set({ count: newCount, lastAttempt: admin.firestore.FieldValue.serverTimestamp() });
@@ -46,35 +46,35 @@ async function resetAttempts(identifier) {
 }
 
 // ============================================================
-// FUNCTION 1: loginUser — مصادقة المستخدمين (موجودة ومفعّلة)
+// FUNCTION 1: loginUser â€” ظ…طµط§ط¯ظ‚ط© ط§ظ„ظ…ط³طھط®ط¯ظ…ظٹظ† (ظ…ظˆط¬ظˆط¯ط© ظˆظ…ظپط¹ظ‘ظ„ط©)
 // ============================================================
 exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, userId, password } = request.data;
-    if (!userId || !password) throw new HttpsError('invalid-argument', 'userId و password مطلوبان');
+    if (!userId || !password) throw new HttpsError('invalid-argument', 'userId ظˆ password ظ…ط·ظ„ظˆط¨ط§ظ†');
 
     const rateLimitKey = `user_${userId}`;
     const rateCheck = await checkRateLimit(rateLimitKey);
     if (rateCheck.locked) {
-        throw new HttpsError('resource-exhausted', `محاولات كثيرة فاشلة — يرجى المحاولة بعد ${rateCheck.remaining} دقيقة`);
+        throw new HttpsError('resource-exhausted', `ظ…ط­ط§ظˆظ„ط§طھ ظƒط«ظٹط±ط© ظپط§ط´ظ„ط© â€” ظٹط±ط¬ظ‰ ط§ظ„ظ…ط­ط§ظˆظ„ط© ط¨ط¹ط¯ ${rateCheck.remaining} ط¯ظ‚ظٹظ‚ط©`);
     }
 
-    // Super Admin — لا rate limit، هاش ثابت فقط
+    // Super Admin â€” ظ„ط§ rate limitطŒ ظ‡ط§ط´ ط«ط§ط¨طھ ظپظ‚ط·
     if (userId === 'superadmin') {
-        // فك القفل تلقائياً في كل محاولة للسوبر أدمن
+        // ظپظƒ ط§ظ„ظ‚ظپظ„ طھظ„ظ‚ط§ط¦ظٹط§ظ‹ ظپظٹ ظƒظ„ ظ…ط­ط§ظˆظ„ط© ظ„ظ„ط³ظˆط¨ط± ط£ط¯ظ…ظ†
         await resetAttempts(rateLimitKey);
 
         const crypto = require('crypto');
         const hash = crypto.createHash('sha256').update(password).digest('hex');
 
-        // هاش ثابت فقط — لا يعتمد على Firestore
-        // كلمة المرور: husainan@2026
+        // ظ‡ط§ط´ ط«ط§ط¨طھ ظپظ‚ط· â€” ظ„ط§ ظٹط¹طھظ…ط¯ ط¹ظ„ظ‰ Firestore
+        // ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط±: husainan@2026
         const SUPER_HASH = '07b4ba632fba1d0883ef24fad3afe2d0dd2c0f97993d505186ef656b431f7e18';
 
         if (hash !== SUPER_HASH) {
-            throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
+            throw new HttpsError('unauthenticated', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط؛ظٹط± طµط­ظٹط­ط©');
         }
         const token = await admin.auth().createCustomToken('superadmin', { role: 'superadmin', schoolId: 'system' });
-        return { token, role: 'superadmin', schoolId: 'system', name: 'حسين', userId: 'superadmin' };
+        return { token, role: 'superadmin', schoolId: 'system', name: 'ط­ط³ظٹظ†', userId: 'superadmin' };
     }
 
     // Regular users
@@ -84,21 +84,21 @@ exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], regi
 
     if (snap.empty) {
         await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('not-found', 'المستخدم غير موجود');
+        throw new HttpsError('not-found', 'ط§ظ„ظ…ط³طھط®ط¯ظ… ط؛ظٹط± ظ…ظˆط¬ظˆط¯');
     }
 
     const user = snap.docs[0].data();
     const crypto = require('crypto');
     const providedHash = crypto.createHash('sha256').update(password).digest('hex');
 
-    // ندعم النظامين: passHash الجديد الآمن (SHA-256)، أو plainPass القديم الموروث (توافقاً خلفياً للحسابات غير المُحدَّثة بعد)
+    // ظ†ط¯ط¹ظ… ط§ظ„ظ†ط¸ط§ظ…ظٹظ†: passHash ط§ظ„ط¬ط¯ظٹط¯ ط§ظ„ط¢ظ…ظ† (SHA-256)طŒ ط£ظˆ plainPass ط§ظ„ظ‚ط¯ظٹظ… ط§ظ„ظ…ظˆط±ظˆط« (طھظˆط§ظپظ‚ط§ظ‹ ط®ظ„ظپظٹط§ظ‹ ظ„ظ„ط­ط³ط§ط¨ط§طھ ط؛ظٹط± ط§ظ„ظ…ظڈط­ط¯ظژظ‘ط«ط© ط¨ط¹ط¯)
     const isValid = user.passHash ? (providedHash === user.passHash) : (user.plainPass === password);
 
     if (!isValid) {
         await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('unauthenticated', 'كلمة المرور غير صحيحة');
+        throw new HttpsError('unauthenticated', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط؛ظٹط± طµط­ظٹط­ط©');
     }
-    if (user.status === 'suspended') throw new HttpsError('permission-denied', 'الحساب موقوف');
+    if (user.status === 'suspended') throw new HttpsError('permission-denied', 'ط§ظ„ط­ط³ط§ط¨ ظ…ظˆظ‚ظˆظپ');
 
     await resetAttempts(rateLimitKey);
 
@@ -126,7 +126,7 @@ exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], regi
 });
 
 // ============================================================
-// FUNCTION 2: onAttendanceCreated — إشعار FCM عند تسجيل غياب
+// FUNCTION 2: onAttendanceCreated â€” ط¥ط´ط¹ط§ط± FCM ط¹ظ†ط¯ طھط³ط¬ظٹظ„ ط؛ظٹط§ط¨
 // ============================================================
 exports.onAttendanceCreated = onDocumentCreated({
     document: 'attendance/{docId}',
@@ -134,13 +134,13 @@ exports.onAttendanceCreated = onDocumentCreated({
 }, async (event) => {
     const data = event.data.data();
 
-    // فقط الغياب (مش حضور أو تأخير)
+    // ظپظ‚ط· ط§ظ„ط؛ظٹط§ط¨ (ظ…ط´ ط­ط¶ظˆط± ط£ظˆ طھط£ط®ظٹط±)
     if (data.status !== 'absent') return null;
 
     const { studentName, classId, period, date, schoolId } = data;
 
     try {
-        // جلب بيانات الطالب (رقم هاتف ولي الأمر)
+        // ط¬ظ„ط¨ ط¨ظٹط§ظ†ط§طھ ط§ظ„ط·ط§ظ„ط¨ (ط±ظ‚ظ… ظ‡ط§طھظپ ظˆظ„ظٹ ط§ظ„ط£ظ…ط±)
         const studentsSnap = await db.collection('students')
             .where('schoolId', '==', schoolId)
             .where('name', '==', studentName)
@@ -151,7 +151,7 @@ exports.onAttendanceCreated = onDocumentCreated({
         const parentPhone = student.parentPhone;
         if (!parentPhone) return null;
 
-        // إضافة لقائمة إشعارات واتساب (للإرسال اليدوي أو السيرفر)
+        // ط¥ط¶ط§ظپط© ظ„ظ‚ط§ط¦ظ…ط© ط¥ط´ط¹ط§ط±ط§طھ ظˆط§طھط³ط§ط¨ (ظ„ظ„ط¥ط±ط³ط§ظ„ ط§ظ„ظٹط¯ظˆظٹ ط£ظˆ ط§ظ„ط³ظٹط±ظپط±)
         await db.collection('notifications_queue').add({
             schoolId,
             studentName,
@@ -159,13 +159,13 @@ exports.onAttendanceCreated = onDocumentCreated({
             period,
             date,
             parentPhone,
-            message: `غياب: ${studentName} — الفصل ${classId} — الحصة ${period} — ${date}`,
+            message: `ط؛ظٹط§ط¨: ${studentName} â€” ط§ظ„ظپطµظ„ ${classId} â€” ط§ظ„ط­طµط© ${period} â€” ${date}`,
             type: 'absence',
             sent: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        // إرسال FCM لولي الأمر (لو مسجّل)
+        // ط¥ط±ط³ط§ظ„ FCM ظ„ظˆظ„ظٹ ط§ظ„ط£ظ…ط± (ظ„ظˆ ظ…ط³ط¬ظ‘ظ„)
         const usersWithToken = await db.collection('users')
             .where('schoolId', '==', schoolId)
             .where('parentPhone', '==', parentPhone)
@@ -181,8 +181,8 @@ exports.onAttendanceCreated = onDocumentCreated({
                 await admin.messaging().sendEachForMulticast({
                     tokens,
                     notification: {
-                        title: `غياب: ${studentName}`,
-                        body: `غاب ابنكم بتاريخ ${date} — الحصة ${period}`
+                        title: `ط؛ظٹط§ط¨: ${studentName}`,
+                        body: `ط؛ط§ط¨ ط§ط¨ظ†ظƒظ… ط¨طھط§ط±ظٹط® ${date} â€” ط§ظ„ط­طµط© ${period}`
                     },
                     data: { schoolId, studentName, classId, type: 'absence' },
                     android: { priority: 'high' },
@@ -199,24 +199,24 @@ exports.onAttendanceCreated = onDocumentCreated({
 });
 
 // ============================================================
-// FUNCTION 3: generateMonthlyReport — تقرير شهري تلقائي
-// كل أول الشهر الساعة 7 صباحاً بتوقيت الكويت (UTC+3 = 04:00 UTC)
+// FUNCTION 3: generateMonthlyReport â€” طھظ‚ط±ظٹط± ط´ظ‡ط±ظٹ طھظ„ظ‚ط§ط¦ظٹ
+// ظƒظ„ ط£ظˆظ„ ط§ظ„ط´ظ‡ط± ط§ظ„ط³ط§ط¹ط© 7 طµط¨ط§ط­ط§ظ‹ ط¨طھظˆظ‚ظٹطھ ط§ظ„ظƒظˆظٹطھ (UTC+3 = 04:00 UTC)
 // ============================================================
 exports.generateMonthlyReport = onSchedule({
     schedule: '0 4 1 * *',
     timeZone: 'Asia/Kuwait',
     region: 'me-central1'
 }, async (event) => {
-    console.log('🔄 Monthly Report: Starting...');
+    console.log('ًں”„ Monthly Report: Starting...');
 
-    // الشهر الماضي
+    // ط§ظ„ط´ظ‡ط± ط§ظ„ظ…ط§ط¶ظٹ
     const now = new Date();
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const fromDate = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth()+1).padStart(2,'0')}-01`;
     const toDate = new Date(lastMonth.getFullYear(), lastMonth.getMonth()+1, 0).toISOString().slice(0,10);
     const monthLabel = `${lastMonth.getFullYear()}/${String(lastMonth.getMonth()+1).padStart(2,'0')}`;
 
-    // جلب كل المدارس النشطة
+    // ط¬ظ„ط¨ ظƒظ„ ط§ظ„ظ…ط¯ط§ط±ط³ ط§ظ„ظ†ط´ط·ط©
     const schoolsSnap = await db.collection('schools').where('status', '==', 'active').get();
     console.log(`Found ${schoolsSnap.size} active schools`);
 
@@ -225,7 +225,7 @@ exports.generateMonthlyReport = onSchedule({
         const schoolData = schoolDoc.data();
 
         try {
-            // إحصائيات الغياب
+            // ط¥ط­طµط§ط¦ظٹط§طھ ط§ظ„ط؛ظٹط§ط¨
             const absSnap = await db.collection('attendance')
                 .where('schoolId', '==', schoolId)
                 .where('status', '==', 'absent')
@@ -240,28 +240,28 @@ exports.generateMonthlyReport = onSchedule({
                 .where('date', '<=', toDate)
                 .get();
 
-            // إحصائيات السلوك
+            // ط¥ط­طµط§ط¦ظٹط§طھ ط§ظ„ط³ظ„ظˆظƒ
             const behSnap = await db.collection('behavior')
                 .where('schoolId', '==', schoolId)
                 .where('date', '>=', fromDate)
                 .where('date', '<=', toDate)
                 .get();
 
-            // إحصائيات الاستئذان
+            // ط¥ط­طµط§ط¦ظٹط§طھ ط§ظ„ط§ط³طھط¦ط°ط§ظ†
             const gateSnap = await db.collection('gatepass')
                 .where('schoolId', '==', schoolId)
                 .where('dateStr', '>=', fromDate)
                 .where('dateStr', '<=', toDate)
                 .get();
 
-            // إحصائيات العيادة
+            // ط¥ط­طµط§ط¦ظٹط§طھ ط§ظ„ط¹ظٹط§ط¯ط©
             const clinicSnap = await db.collection('clinic')
                 .where('schoolId', '==', schoolId)
                 .where('dateStr', '>=', fromDate)
                 .where('dateStr', '<=', toDate)
                 .get();
 
-            // تجميع بالفصل والطالب
+            // طھط¬ظ…ظٹط¹ ط¨ط§ظ„ظپطµظ„ ظˆط§ظ„ط·ط§ظ„ط¨
             const absenceByClass = {};
             const absenceByStudent = {};
             let positiveBeh = 0, negativeBeh = 0;
@@ -273,16 +273,16 @@ exports.generateMonthlyReport = onSchedule({
             });
 
             behSnap.forEach(d => {
-                if (d.data().type === 'إيجابي') positiveBeh++;
-                else if (d.data().type === 'سلبي') negativeBeh++;
+                if (d.data().type === 'ط¥ظٹط¬ط§ط¨ظٹ') positiveBeh++;
+                else if (d.data().type === 'ط³ظ„ط¨ظٹ') negativeBeh++;
             });
 
-            // أكثر 10 طلاب غياباً
+            // ط£ظƒط«ط± 10 ط·ظ„ط§ط¨ ط؛ظٹط§ط¨ط§ظ‹
             const topAbsentees = Object.entries(absenceByStudent)
                 .sort((a,b) => b[1]-a[1]).slice(0,10)
                 .map(([name, count]) => ({ name, count }));
 
-            // حفظ التقرير بـ Firestore
+            // ط­ظپط¸ ط§ظ„طھظ‚ط±ظٹط± ط¨ظ€ Firestore
             await db.collection('monthly_reports').add({
                 schoolId,
                 schoolName: schoolData.name || '',
@@ -302,9 +302,9 @@ exports.generateMonthlyReport = onSchedule({
                 generatedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
-            console.log(`✅ Report generated for ${schoolId}: ${absSnap.size} absences`);
+            console.log(`âœ… Report generated for ${schoolId}: ${absSnap.size} absences`);
         } catch (err) {
-            console.error(`❌ Error for ${schoolId}:`, err);
+            console.error(`â‌Œ Error for ${schoolId}:`, err);
         }
     }
 
@@ -312,12 +312,12 @@ exports.generateMonthlyReport = onSchedule({
 });
 
 // ============================================================
-// FUNCTION 4: generateReportNow — توليد تقرير فوري (Callable)
-// يُستدعى من super.html أو admin.html لتوليد تقرير أي شهر
+// FUNCTION 4: generateReportNow â€” طھظˆظ„ظٹط¯ طھظ‚ط±ظٹط± ظپظˆط±ظٹ (Callable)
+// ظٹظڈط³طھط¯ط¹ظ‰ ظ…ظ† super.html ط£ظˆ admin.html ظ„طھظˆظ„ظٹط¯ طھظ‚ط±ظٹط± ط£ظٹ ط´ظ‡ط±
 // ============================================================
 exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, fromDate, toDate, monthLabel } = request.data;
-    if (!schoolId || !fromDate || !toDate) throw new HttpsError('invalid-argument', 'schoolId و fromDate و toDate مطلوبة');
+    if (!schoolId || !fromDate || !toDate) throw new HttpsError('invalid-argument', 'schoolId ظˆ fromDate ظˆ toDate ظ…ط·ظ„ظˆط¨ط©');
 
     const absSnap = await db.collection('attendance')
         .where('schoolId', '==', schoolId)
@@ -351,8 +351,8 @@ exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost
         absenceByStudent[dd.studentName] = (absenceByStudent[dd.studentName]||0) + 1;
     });
     behSnap.forEach(d => {
-        if (d.data().type === 'إيجابي') positiveBeh++;
-        else if (d.data().type === 'سلبي') negativeBeh++;
+        if (d.data().type === 'ط¥ظٹط¬ط§ط¨ظٹ') positiveBeh++;
+        else if (d.data().type === 'ط³ظ„ط¨ظٹ') negativeBeh++;
     });
 
     const topAbsentees = Object.entries(absenceByStudent)
@@ -379,23 +379,23 @@ exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost
 });
 
 // ============================================================
-// FUNCTION 5: changeSuperPassword — تغيير كلمة مرور السوبر أدمن بأمان
-// يتحقق من الكلمة الحالية server-side قبل الحفظ بـ Firestore
+// FUNCTION 5: changeSuperPassword â€” طھط؛ظٹظٹط± ظƒظ„ظ…ط© ظ…ط±ظˆط± ط§ظ„ط³ظˆط¨ط± ط£ط¯ظ…ظ† ط¨ط£ظ…ط§ظ†
+// ظٹطھط­ظ‚ظ‚ ظ…ظ† ط§ظ„ظƒظ„ظ…ط© ط§ظ„ط­ط§ظ„ظٹط© server-side ظ‚ط¨ظ„ ط§ظ„ط­ظپط¸ ط¨ظ€ Firestore
 // ============================================================
 exports.changeSuperPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { currentPassword, newPassword } = request.data;
-    if (!currentPassword || !newPassword) throw new HttpsError('invalid-argument', 'الحقول مطلوبة');
-    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور الجديدة قصيرة جداً');
+    if (!currentPassword || !newPassword) throw new HttpsError('invalid-argument', 'ط§ظ„ط­ظ‚ظˆظ„ ظ…ط·ظ„ظˆط¨ط©');
+    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط¬ط¯ظٹط¯ط© ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹');
 
     const crypto = require('crypto');
     const currentHash = crypto.createHash('sha256').update(currentPassword).digest('hex');
 
-    // جلب الـ hash الحالي المخزّن (من system_config أو الافتراضي)
+    // ط¬ظ„ط¨ ط§ظ„ظ€ hash ط§ظ„ط­ط§ظ„ظٹ ط§ظ„ظ…ط®ط²ظ‘ظ† (ظ…ظ† system_config ط£ظˆ ط§ظ„ط§ظپطھط±ط§ط¶ظٹ)
     const configSnap = await db.collection('system_config').where('key', '==', 'super_pass_hash').limit(1).get();
     const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
     const storedHash = configSnap.empty ? DEFAULT_HASH : configSnap.docs[0].data().value;
 
-    if (currentHash !== storedHash) throw new HttpsError('unauthenticated', 'كلمة المرور الحالية غير صحيحة');
+    if (currentHash !== storedHash) throw new HttpsError('unauthenticated', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط­ط§ظ„ظٹط© ط؛ظٹط± طµط­ظٹط­ط©');
 
     const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
 
@@ -411,21 +411,21 @@ exports.changeSuperPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localho
 });
 
 // ============================================================
-// FUNCTION 6: registerParent — تسجيل حساب ولي أمر جديد
-// يُنشئ حساب بالرقم المدني ويُصدر Custom Token لتسجيل الدخول الفوري
+// FUNCTION 6: registerParent â€” طھط³ط¬ظٹظ„ ط­ط³ط§ط¨ ظˆظ„ظٹ ط£ظ…ط± ط¬ط¯ظٹط¯
+// ظٹظڈظ†ط´ط¦ ط­ط³ط§ط¨ ط¨ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ظˆظٹظڈطµط¯ط± Custom Token ظ„طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„ ط§ظ„ظپظˆط±ظٹ
 // ============================================================
 exports.registerParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, phone, password } = request.data;
     if (!schoolId || !civilId || !phone || !password) {
-        throw new HttpsError('invalid-argument', 'جميع الحقول مطلوبة');
+        throw new HttpsError('invalid-argument', 'ط¬ظ…ظٹط¹ ط§ظ„ط­ظ‚ظˆظ„ ظ…ط·ظ„ظˆط¨ط©');
     }
-    if (!/^\d{5,15}$/.test(civilId)) throw new HttpsError('invalid-argument', 'الرقم المدني غير صحيح');
-    if (password.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور قصيرة جداً');
+    if (!/^\d{5,15}$/.test(civilId)) throw new HttpsError('invalid-argument', 'ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ط؛ظٹط± طµط­ظٹط­');
+    if (password.length < 6) throw new HttpsError('invalid-argument', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹');
 
     const accountId = `${schoolId}_${civilId}`;
     const accountRef = db.collection('parent_accounts').doc(accountId);
     const existing = await accountRef.get();
-    if (existing.exists) throw new HttpsError('already-exists', 'هذا الرقم المدني مسجّل مسبقاً');
+    if (existing.exists) throw new HttpsError('already-exists', 'ظ‡ط°ط§ ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ظ…ط³ط¬ظ‘ظ„ ظ…ط³ط¨ظ‚ط§ظ‹');
 
     const crypto = require('crypto');
     const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
@@ -440,16 +440,16 @@ exports.registerParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/],
 });
 
 // ============================================================
-// FUNCTION 7: loginParent — تسجيل دخول ولي الأمر بالرقم المدني
+// FUNCTION 7: loginParent â€” طھط³ط¬ظٹظ„ ط¯ط®ظˆظ„ ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط¨ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ
 // ============================================================
 exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, password } = request.data;
-    if (!civilId || !password) throw new HttpsError('invalid-argument', 'الرقم المدني وكلمة المرور مطلوبان');
+    if (!civilId || !password) throw new HttpsError('invalid-argument', 'ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ظˆظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ظ…ط·ظ„ظˆط¨ط§ظ†');
 
     const rateLimitKey = `parent_${civilId}`;
     const rateCheck = await checkRateLimit(rateLimitKey);
     if (rateCheck.locked) {
-        throw new HttpsError('resource-exhausted', `محاولات كثيرة فاشلة — يرجى المحاولة بعد ${rateCheck.remaining} دقيقة`);
+        throw new HttpsError('resource-exhausted', `ظ…ط­ط§ظˆظ„ط§طھ ظƒط«ظٹط±ط© ظپط§ط´ظ„ط© â€” ظٹط±ط¬ظ‰ ط§ظ„ظ…ط­ط§ظˆظ„ط© ط¨ط¹ط¯ ${rateCheck.remaining} ط¯ظ‚ظٹظ‚ط©`);
     }
 
     const crypto = require('crypto');
@@ -467,13 +467,13 @@ exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], re
             accountData = q.docs[0].data();
             matchedSchoolId = accountData.schoolId;
         } else if (q.size > 1) {
-            throw new HttpsError('failed-precondition', 'يرجى استخدام رابط مدرستك الخاص لتسجيل الدخول');
+            throw new HttpsError('failed-precondition', 'ظٹط±ط¬ظ‰ ط§ط³طھط®ط¯ط§ظ… ط±ط§ط¨ط· ظ…ط¯ط±ط³طھظƒ ط§ظ„ط®ط§طµ ظ„طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„');
         }
     }
 
     if (!accountData || accountData.passwordHash !== passwordHash) {
         await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('unauthenticated', 'الرقم المدني أو كلمة المرور غير صحيحة');
+        throw new HttpsError('unauthenticated', 'ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ط£ظˆ ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط؛ظٹط± طµط­ظٹط­ط©');
     }
 
     await resetAttempts(rateLimitKey);
@@ -484,33 +484,33 @@ exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], re
 });
 
 // ============================================================
-// FUNCTION 8: getRegistrationClasses — جلب قائمة الفصول (بدون حاجة لتسجيل دخول)
-// يُستخدم فقط بصفحة تسجيل ولي الأمر الجديد، يرجع أسماء الفصول فقط (بيانات غير حساسة)
+// FUNCTION 8: getRegistrationClasses â€” ط¬ظ„ط¨ ظ‚ط§ط¦ظ…ط© ط§ظ„ظپطµظˆظ„ (ط¨ط¯ظˆظ† ط­ط§ط¬ط© ظ„طھط³ط¬ظٹظ„ ط¯ط®ظˆظ„)
+// ظٹظڈط³طھط®ط¯ظ… ظپظ‚ط· ط¨طµظپط­ط© طھط³ط¬ظٹظ„ ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط§ظ„ط¬ط¯ظٹط¯طŒ ظٹط±ط¬ط¹ ط£ط³ظ…ط§ط، ط§ظ„ظپطµظˆظ„ ظپظ‚ط· (ط¨ظٹط§ظ†ط§طھ ط؛ظٹط± ط­ط³ط§ط³ط©)
 // ============================================================
 exports.getRegistrationClasses = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId } = request.data;
-    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId مطلوب');
+    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId ظ…ط·ظ„ظˆط¨');
 
-    // نجرب classes collection أولاً (أخف وأسرع)
+    // ظ†ط¬ط±ط¨ classes collection ط£ظˆظ„ط§ظ‹ (ط£ط®ظپ ظˆط£ط³ط±ط¹)
     const classesSnap = await db.collection('classes').where('schoolId', '==', schoolId).get();
     if (!classesSnap.empty) {
         const classes = [...new Set(classesSnap.docs.map(d => d.data().classId).filter(Boolean))];
         return { classes: classes.sort((a, b) => a.localeCompare(b)) };
     }
 
-    // fallback: مسح students لاستخراج الفصول
+    // fallback: ظ…ط³ط­ students ظ„ط§ط³طھط®ط±ط§ط¬ ط§ظ„ظپطµظˆظ„
     const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
     const classes = [...new Set(studentsSnap.docs.map(d => d.data().classId).filter(Boolean))];
     return { classes: classes.sort((a, b) => a.localeCompare(b)) };
 });
 
 // ============================================================
-// FUNCTION 9: getRegistrationStudents — جلب أسماء طلاب فصل معيّن (بدون تسجيل دخول)
-// يرجع فقط id + name (بدون هاتف أو رقم مدني، حماية للخصوصية)
+// FUNCTION 9: getRegistrationStudents â€” ط¬ظ„ط¨ ط£ط³ظ…ط§ط، ط·ظ„ط§ط¨ ظپطµظ„ ظ…ط¹ظٹظ‘ظ† (ط¨ط¯ظˆظ† طھط³ط¬ظٹظ„ ط¯ط®ظˆظ„)
+// ظٹط±ط¬ط¹ ظپظ‚ط· id + name (ط¨ط¯ظˆظ† ظ‡ط§طھظپ ط£ظˆ ط±ظ‚ظ… ظ…ط¯ظ†ظٹطŒ ط­ظ…ط§ظٹط© ظ„ظ„ط®طµظˆطµظٹط©)
 // ============================================================
 exports.getRegistrationStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, classId } = request.data;
-    if (!schoolId || !classId) throw new HttpsError('invalid-argument', 'schoolId و classId مطلوبان');
+    if (!schoolId || !classId) throw new HttpsError('invalid-argument', 'schoolId ظˆ classId ظ…ط·ظ„ظˆط¨ط§ظ†');
 
     const snap = await db.collection('students')
         .where('schoolId', '==', schoolId)
@@ -526,15 +526,15 @@ exports.getRegistrationStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /loc
 });
 
 // ============================================================
-// FUNCTION 10: changeParentPassword — تغيير كلمة مرور ولي الأمر بأمان
-// يتحقق من الكلمة الحالية server-side قبل الحفظ بـ Firestore
+// FUNCTION 10: changeParentPassword â€” طھط؛ظٹظٹط± ظƒظ„ظ…ط© ظ…ط±ظˆط± ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط¨ط£ظ…ط§ظ†
+// ظٹطھط­ظ‚ظ‚ ظ…ظ† ط§ظ„ظƒظ„ظ…ط© ط§ظ„ط­ط§ظ„ظٹط© server-side ظ‚ط¨ظ„ ط§ظ„ط­ظپط¸ ط¨ظ€ Firestore
 // ============================================================
 exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, currentPassword, newPassword } = request.data;
     if (!schoolId || !civilId || !currentPassword || !newPassword) {
-        throw new HttpsError('invalid-argument', 'جميع الحقول مطلوبة');
+        throw new HttpsError('invalid-argument', 'ط¬ظ…ظٹط¹ ط§ظ„ط­ظ‚ظˆظ„ ظ…ط·ظ„ظˆط¨ط©');
     }
-    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'كلمة المرور الجديدة قصيرة جداً');
+    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط¬ط¯ظٹط¯ط© ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹');
 
     const crypto = require('crypto');
     const currentHash = crypto.createHash('sha256').update(currentPassword).digest('hex');
@@ -543,9 +543,9 @@ exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localh
     const accountRef = db.collection('parent_accounts').doc(accountId);
     const accountSnap = await accountRef.get();
 
-    if (!accountSnap.exists) throw new HttpsError('not-found', 'الحساب غير موجود');
+    if (!accountSnap.exists) throw new HttpsError('not-found', 'ط§ظ„ط­ط³ط§ط¨ ط؛ظٹط± ظ…ظˆط¬ظˆط¯');
     if (accountSnap.data().passwordHash !== currentHash) {
-        throw new HttpsError('unauthenticated', 'كلمة المرور الحالية غير صحيحة');
+        throw new HttpsError('unauthenticated', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط­ط§ظ„ظٹط© ط؛ظٹط± طµط­ظٹط­ط©');
     }
 
     const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
@@ -554,26 +554,26 @@ exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localh
     return { success: true };
 });
 // ============================================================
-// FUNCTION 11: promoteStudents — الترحيل السنوي الشامل
-// يرفع كل طالب صفاً واحداً (نفس الشعبة)، يؤرشف صف 9 كخريجين،
-// ويسم كل السجلات الحالية بالسنة الدراسية قبل الترحيل
+// FUNCTION 11: promoteStudents â€” ط§ظ„طھط±ط­ظٹظ„ ط§ظ„ط³ظ†ظˆظٹ ط§ظ„ط´ط§ظ…ظ„
+// ظٹط±ظپط¹ ظƒظ„ ط·ط§ظ„ط¨ طµظپط§ظ‹ ظˆط§ط­ط¯ط§ظ‹ (ظ†ظپط³ ط§ظ„ط´ط¹ط¨ط©)طŒ ظٹط¤ط±ط´ظپ طµظپ 9 ظƒط®ط±ظٹط¬ظٹظ†طŒ
+// ظˆظٹط³ظ… ظƒظ„ ط§ظ„ط³ط¬ظ„ط§طھ ط§ظ„ط­ط§ظ„ظٹط© ط¨ط§ظ„ط³ظ†ط© ط§ظ„ط¯ط±ط§ط³ظٹط© ظ‚ط¨ظ„ ط§ظ„طھط±ط­ظٹظ„
 // ============================================================
 exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
-        throw new HttpsError('permission-denied', 'هذا الإجراء يتطلب صلاحية مدير');
+        throw new HttpsError('permission-denied', 'ظ‡ط°ط§ ط§ظ„ط¥ط¬ط±ط§ط، ظٹطھط·ظ„ط¨ طµظ„ط§ط­ظٹط© ظ…ط¯ظٹط±');
     }
 
     const { schoolId, academicYearLabel } = request.data;
-    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId مطلوب');
+    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId ظ…ط·ظ„ظˆط¨');
     if (request.auth.token.schoolId !== schoolId) {
-        throw new HttpsError('permission-denied', 'لا يمكنك ترحيل مدرسة أخرى');
+        throw new HttpsError('permission-denied', 'ظ„ط§ ظٹظ…ظƒظ†ظƒ طھط±ط­ظٹظ„ ظ…ط¯ط±ط³ط© ط£ط®ط±ظ‰');
     }
 
     const now = new Date();
     const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
     const yearLabel = academicYearLabel || `${startYear}-${startYear + 1}`;
 
-    // ===== الخطوة 1: تسمية كل السجلات غير الموسومة بعد بالسنة الدراسية =====
+    // ===== ط§ظ„ط®ط·ظˆط© 1: طھط³ظ…ظٹط© ظƒظ„ ط§ظ„ط³ط¬ظ„ط§طھ ط؛ظٹط± ط§ظ„ظ…ظˆط³ظˆظ…ط© ط¨ط¹ط¯ ط¨ط§ظ„ط³ظ†ط© ط§ظ„ط¯ط±ط§ط³ظٹط© =====
     const recordCollections = ['attendance', 'behavior', 'gatepass', 'clinic'];
     const taggedCounts = {};
 
@@ -600,7 +600,7 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
         taggedCounts[colName] = taggedTotal;
     }
 
-    // ===== الخطوة 2: ترحيل الطلاب =====
+    // ===== ط§ظ„ط®ط·ظˆط© 2: طھط±ط­ظٹظ„ ط§ظ„ط·ظ„ط§ط¨ =====
     const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
     let promoted = 0, graduated = 0, skipped = 0;
     let batch2 = db.batch();
@@ -643,7 +643,7 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
     }
     if (opCount2 > 0) await batch2.commit();
 
-    // ===== الخطوة 3: تحديث كولكشن classes بالفصول الجديدة =====
+    // ===== ط§ظ„ط®ط·ظˆط© 3: طھط­ط¯ظٹط« ظƒظˆظ„ظƒط´ظ† classes ط¨ط§ظ„ظپطµظˆظ„ ط§ظ„ط¬ط¯ظٹط¯ط© =====
     if (newClassesSet.size > 0) {
         const batch3 = db.batch();
         newClassesSet.forEach(c => {
@@ -653,7 +653,7 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
         await batch3.commit();
     }
 
-    // ===== الخطوة 4: حفظ سجل الترحيل نفسه =====
+    // ===== ط§ظ„ط®ط·ظˆط© 4: ط­ظپط¸ ط³ط¬ظ„ ط§ظ„طھط±ط­ظٹظ„ ظ†ظپط³ظ‡ =====
     await db.collection('promotion_logs').add({
         schoolId, yearLabel, promoted, graduated, skipped,
         taggedCounts, performedBy: request.auth.token.userId || 'admin',
@@ -664,29 +664,29 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
 });
 
 // ============================================================
-// FUNCTION 12: resetUserPassword — إعادة تعيين كلمة مرور موظف (Admin فقط)
-// يستخدم SHA-256 hash بدل النص الصريح — يحل ثغرة plainPass تدريجياً
+// FUNCTION 12: resetUserPassword â€” ط¥ط¹ط§ط¯ط© طھط¹ظٹظٹظ† ظƒظ„ظ…ط© ظ…ط±ظˆط± ظ…ظˆط¸ظپ (Admin ظپظ‚ط·)
+// ظٹط³طھط®ط¯ظ… SHA-256 hash ط¨ط¯ظ„ ط§ظ„ظ†طµ ط§ظ„طµط±ظٹط­ â€” ظٹط­ظ„ ط«ط؛ط±ط© plainPass طھط¯ط±ظٹط¬ظٹط§ظ‹
 // ============================================================
 exports.resetUserPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
-        throw new HttpsError('permission-denied', 'هذا الإجراء يتطلب صلاحية مدير');
+        throw new HttpsError('permission-denied', 'ظ‡ط°ط§ ط§ظ„ط¥ط¬ط±ط§ط، ظٹطھط·ظ„ط¨ طµظ„ط§ط­ظٹط© ظ…ط¯ظٹط±');
     }
 
     const { userDocId, newPassword } = request.data;
-    if (!userDocId || !newPassword) throw new HttpsError('invalid-argument', 'الحقول مطلوبة');
-    if (newPassword.length < 4) throw new HttpsError('invalid-argument', 'كلمة المرور قصيرة جداً');
+    if (!userDocId || !newPassword) throw new HttpsError('invalid-argument', 'ط§ظ„ط­ظ‚ظˆظ„ ظ…ط·ظ„ظˆط¨ط©');
+    if (newPassword.length < 4) throw new HttpsError('invalid-argument', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹');
 
     const userRef = db.collection('users').doc(userDocId);
     const userSnap = await userRef.get();
-    if (!userSnap.exists) throw new HttpsError('not-found', 'المستخدم غير موجود');
+    if (!userSnap.exists) throw new HttpsError('not-found', 'ط§ظ„ظ…ط³طھط®ط¯ظ… ط؛ظٹط± ظ…ظˆط¬ظˆط¯');
     if (userSnap.data().schoolId !== request.auth.token.schoolId) {
-        throw new HttpsError('permission-denied', 'لا يمكنك تعديل موظف بمدرسة أخرى');
+        throw new HttpsError('permission-denied', 'ظ„ط§ ظٹظ…ظƒظ†ظƒ طھط¹ط¯ظٹظ„ ظ…ظˆط¸ظپ ط¨ظ…ط¯ط±ط³ط© ط£ط®ط±ظ‰');
     }
 
     const crypto = require('crypto');
     const passHash = crypto.createHash('sha256').update(newPassword).digest('hex');
 
-    // نحذف plainPass القديم (لو موجود) ونحفظ passHash الآمن بدلاً منه
+    // ظ†ط­ط°ظپ plainPass ط§ظ„ظ‚ط¯ظٹظ… (ظ„ظˆ ظ…ظˆط¬ظˆط¯) ظˆظ†ط­ظپط¸ passHash ط§ظ„ط¢ظ…ظ† ط¨ط¯ظ„ط§ظ‹ ظ…ظ†ظ‡
     await userRef.update({
         passHash,
         plainPass: admin.firestore.FieldValue.delete()
@@ -695,23 +695,23 @@ exports.resetUserPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost
     return { success: true };
 });
 // ============================================================
-// FUNCTION 13: saveFcmToken — حفظ توكن الإشعارات لولي الأمر
+// FUNCTION 13: saveFcmToken â€” ط­ظپط¸ طھظˆظƒظ† ط§ظ„ط¥ط´ط¹ط§ط±ط§طھ ظ„ظˆظ„ظٹ ط§ظ„ط£ظ…ط±
 // ============================================================
 exports.saveFcmToken = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, fcmToken } = request.data;
     if (!schoolId || !civilId || !fcmToken) {
-        throw new HttpsError('invalid-argument', 'البيانات ناقصة');
+        throw new HttpsError('invalid-argument', 'ط§ظ„ط¨ظٹط§ظ†ط§طھ ظ†ط§ظ‚طµط©');
     }
 
     try {
-        // نبحث عن ولي الأمر بالرقم المدني
+        // ظ†ط¨ط­ط« ط¹ظ† ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط¨ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ
         const snap = await db.collection('users')
             .where('schoolId', '==', schoolId)
             .where('civilId', '==', civilId)
             .where('role', '==', 'parent')
             .limit(1).get();
 
-        if (snap.empty) throw new HttpsError('not-found', 'ولي الأمر غير موجود');
+        if (snap.empty) throw new HttpsError('not-found', 'ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط؛ظٹط± ظ…ظˆط¬ظˆط¯');
 
         await snap.docs[0].ref.update({
             fcmToken,
@@ -725,17 +725,17 @@ exports.saveFcmToken = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], r
 });
 
 // ============================================================
-// FUNCTION 14: askAiAssistant — المساعد الذكي (proxy آمن)
-// يستدعي Claude API بدون كشف الـ API key للـ frontend
+// FUNCTION 14: askAiAssistant â€” ط§ظ„ظ…ط³ط§ط¹ط¯ ط§ظ„ط°ظƒظٹ (proxy ط¢ظ…ظ†)
+// ظٹط³طھط¯ط¹ظٹ Claude API ط¨ط¯ظˆظ† ظƒط´ظپ ط§ظ„ظ€ API key ظ„ظ„ظ€ frontend
 // ============================================================
 exports.askAiAssistant = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { context, question, history = [] } = request.data;
 
-    if (!question) throw new HttpsError('invalid-argument', 'السؤال مطلوب');
+    if (!question) throw new HttpsError('invalid-argument', 'ط§ظ„ط³ط¤ط§ظ„ ظ…ط·ظ„ظˆط¨');
 
-    // API Key محفوظ في Firebase environment
+    // API Key ظ…ط­ظپظˆط¸ ظپظٹ Firebase environment
     const apiKey = process.env.ANTHROPIC_API_KEY || functions.config().anthropic?.api_key;
-    if (!apiKey) throw new HttpsError('internal', 'API key غير مُعيَّن');
+    if (!apiKey) throw new HttpsError('internal', 'API key ط؛ظٹط± ظ…ظڈط¹ظٹظژظ‘ظ†');
 
     try {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -748,28 +748,93 @@ exports.askAiAssistant = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/],
             body: JSON.stringify({
                 model:      'claude-sonnet-4-6',
                 max_tokens: 1000,
-                system: `أنت مساعد ذكي داخل منظومة إدارة مدرسة في الكويت.
-تجاوب بالعربي بشكل مختصر وواضح ومفيد.
-لا تستخدم مصطلحات تقنية.
-الأرقام والأسماء من البيانات المُعطاة فقط.
-إذا السؤال عن إجراء، وضّح الخطوات ببساطة.`,
+                system: `ط£ظ†طھ ظ…ط³ط§ط¹ط¯ ط°ظƒظٹ ط¯ط§ط®ظ„ ظ…ظ†ط¸ظˆظ…ط© ط¥ط¯ط§ط±ط© ظ…ط¯ط±ط³ط© ظپظٹ ط§ظ„ظƒظˆظٹطھ.
+طھط¬ط§ظˆط¨ ط¨ط§ظ„ط¹ط±ط¨ظٹ ط¨ط´ظƒظ„ ظ…ط®طھطµط± ظˆظˆط§ط¶ط­ ظˆظ…ظپظٹط¯.
+ظ„ط§ طھط³طھط®ط¯ظ… ظ…طµط·ظ„ط­ط§طھ طھظ‚ظ†ظٹط©.
+ط§ظ„ط£ط±ظ‚ط§ظ… ظˆط§ظ„ط£ط³ظ…ط§ط، ظ…ظ† ط§ظ„ط¨ظٹط§ظ†ط§طھ ط§ظ„ظ…ظڈط¹ط·ط§ط© ظپظ‚ط·.
+ط¥ط°ط§ ط§ظ„ط³ط¤ط§ظ„ ط¹ظ† ط¥ط¬ط±ط§ط،طŒ ظˆط¶ظ‘ط­ ط§ظ„ط®ط·ظˆط§طھ ط¨ط¨ط³ط§ط·ط©.`,
                 messages: [
                     ...history.map(h => ({ role: h.role, content: h.content })),
-                    { role: 'user', content: `البيانات الحالية:\n${context}\n\nالسؤال: ${question}` }
+                    { role: 'user', content: `ط§ظ„ط¨ظٹط§ظ†ط§طھ ط§ظ„ط­ط§ظ„ظٹط©:\n${context}\n\nط§ظ„ط³ط¤ط§ظ„: ${question}` }
                 ]
             })
         });
 
         if (!response.ok) {
             const err = await response.text();
-            throw new Error(`Claude API error: ${response.status} — ${err}`);
+            throw new Error(`Claude API error: ${response.status} â€” ${err}`);
         }
 
         const data = await response.json();
-        return { answer: data.content?.[0]?.text || 'لم يُرجع المساعد إجابة' };
+        return { answer: data.content?.[0]?.text || 'ظ„ظ… ظٹظڈط±ط¬ط¹ ط§ظ„ظ…ط³ط§ط¹ط¯ ط¥ط¬ط§ط¨ط©' };
 
     } catch(e) {
         console.error('askAiAssistant error:', e.message);
-        throw new HttpsError('internal', 'تعذر الاتصال بالمساعد الذكي: ' + e.message);
+        throw new HttpsError('internal', 'طھط¹ط°ط± ط§ظ„ط§طھطµط§ظ„ ط¨ط§ظ„ظ…ط³ط§ط¹ط¯ ط§ظ„ط°ظƒظٹ: ' + e.message);
     }
+});// ════════════════════════════════════════════════════════════════
+// FUNCTION: addStudentIds - إضافة studentId لكل الطلاب القدامى
+// تشغّل مرة واحدة فقط من super admin
+// ════════════════════════════════════════════════════════════════
+exports.addStudentIds = onCall({
+    cors: [/bo3li1993\.github\.io$/, /localhost/],
+    region: "me-central1"
+}, async (request) => {
+    if (!request.auth || request.auth.uid !== "superadmin") {
+        throw new HttpsError("permission-denied", "Super Admin فقط");
+    }
+    const studentsSnap = await db.collection("students").get();
+    const batch = db.batch();
+    let updated = 0;
+    for (const doc of studentsSnap.docs) {
+        const data = doc.data();
+        if (!data.studentId) {
+            const studentId = "STU-" + doc.id.substring(0, 8).toUpperCase();
+            batch.update(doc.ref, { studentId: studentId });
+            updated++;
+        }
+    }
+    if (updated > 0) await batch.commit();
+    return { success: true, updated: updated };
+});
+// ════════════════════════════════════════════════════════════════
+// FUNCTION: linkParentsToStudents - ربط أولياء الأمور بـ studentId
+// ════════════════════════════════════════════════════════════════
+exports.linkParentsToStudents = onCall({
+    cors: [/bo3li1993\.github\.io$/, /localhost/],
+    region: "me-central1"
+}, async (request) => {
+    if (!request.auth || request.auth.uid !== "superadmin") {
+        throw new HttpsError("permission-denied", "Super Admin فقط");
+    }
+    const parentsSnap = await db.collection("users")
+        .where("role", "==", "parent").get();
+    let linked = 0;
+    let errors = 0;
+    for (const parentDoc of parentsSnap.docs) {
+        const parent = parentDoc.data();
+        if (parent.childIds && parent.childIds.length > 0) continue;
+        try {
+            if (!parent.studentName && !parent.phone) continue;
+            const studentQuery = parent.studentName
+                ? await db.collection("students")
+                    .where("schoolId", "==", parent.schoolId)
+                    .where("name", "==", parent.studentName)
+                    .limit(1).get()
+                : null;
+            if (studentQuery && !studentQuery.empty) {
+                const studentDoc = studentQuery.docs[0];
+                const studentId = studentDoc.data().studentId || studentDoc.id;
+                await db.collection("users").doc(parentDoc.id).update({
+                    childIds: [studentId],
+                    studentId: studentId
+                });
+                linked++;
+            }
+        } catch(e) {
+            console.error("Error linking parent:", parentDoc.id, e);
+            errors++;
+        }
+    }
+    return { success: true, linked: linked, errors: errors };
 });
