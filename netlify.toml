@@ -1,0 +1,26 @@
+[build]
+publish = "."
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+force = false
+
+[[headers]]
+for = "/*.html"
+[headers.values]
+Content-Type = "text/html; charset=UTF-8"
+Cache-Control = "no-cache"
+
+[[headers]]
+for = "/*.js"
+[headers.values]
+Content-Type = "application/javascript; charset=UTF-8"
+Cache-Control = "max-age=31536000"
+
+[[headers]]
+for = "/*.css"
+[headers.values]
+Content-Type = "text/css; charset=UTF-8"
+Cache-Control = "max-age=31536000"
