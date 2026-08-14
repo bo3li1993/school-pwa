@@ -7,8 +7,8 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // ============================================================
-// ط£ط¯ظˆط§طھ ظ…ط³ط§ط¹ط¯ط©: ط­ط¯ ظ…ط­ط§ظˆظ„ط§طھ ط§ظ„ط¯ط®ظˆظ„ ط§ظ„ظپط§ط´ظ„ط© (Rate Limiting)
-// 5 ظ…ط­ط§ظˆظ„ط§طھ ظپط§ط´ظ„ط© â†’ ظ‚ظپظ„ 15 ط¯ظ‚ظٹظ‚ط©
+// ط·آ£ط·آ¯ط¸ث†ط·آ§ط·ع¾ ط¸â€¦ط·آ³ط·آ§ط·آ¹ط·آ¯ط·آ©: ط·آ­ط·آ¯ ط¸â€¦ط·آ­ط·آ§ط¸ث†ط¸â€‍ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ¯ط·آ®ط¸ث†ط¸â€‍ ط·آ§ط¸â€‍ط¸ظ¾ط·آ§ط·آ´ط¸â€‍ط·آ© (Rate Limiting)
+// 5 ط¸â€¦ط·آ­ط·آ§ط¸ث†ط¸â€‍ط·آ§ط·ع¾ ط¸ظ¾ط·آ§ط·آ´ط¸â€‍ط·آ© أ¢â€ â€™ ط¸â€ڑط¸ظ¾ط¸â€‍ 15 ط·آ¯ط¸â€ڑط¸ظ¹ط¸â€ڑط·آ©
 // ============================================================
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
@@ -35,7 +35,7 @@ async function recordFailedAttempt(identifier) {
     const minutesSince = snap.exists && snap.data().lastAttempt?.toDate
         ? (Date.now() - snap.data().lastAttempt.toDate().getTime()) / 60000 : 999;
 
-    // ظ„ظˆ ظ…ط±ظ‘ ظˆظ‚طھ ط£ط·ظˆظ„ ظ…ظ† ظپطھط±ط© ط§ظ„ظ‚ظپظ„طŒ ظ†ط¨ط¯ط£ ط§ظ„ط¹ط¯ ظ…ظ† ط¬ط¯ظٹط¯
+    // ط¸â€‍ط¸ث† ط¸â€¦ط·آ±ط¸â€ک ط¸ث†ط¸â€ڑط·ع¾ ط·آ£ط·آ·ط¸ث†ط¸â€‍ ط¸â€¦ط¸â€  ط¸ظ¾ط·ع¾ط·آ±ط·آ© ط·آ§ط¸â€‍ط¸â€ڑط¸ظ¾ط¸â€‍ط·إ’ ط¸â€ ط·آ¨ط·آ¯ط·آ£ ط·آ§ط¸â€‍ط·آ¹ط·آ¯ ط¸â€¦ط¸â€  ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯
     const newCount = (snap.exists && minutesSince < LOCKOUT_MINUTES) ? (snap.data().count || 0) + 1 : 1;
 
     await ref.set({ count: newCount, lastAttempt: admin.firestore.FieldValue.serverTimestamp() });
@@ -46,35 +46,35 @@ async function resetAttempts(identifier) {
 }
 
 // ============================================================
-// FUNCTION 1: loginUser â€” ظ…طµط§ط¯ظ‚ط© ط§ظ„ظ…ط³طھط®ط¯ظ…ظٹظ† (ظ…ظˆط¬ظˆط¯ط© ظˆظ…ظپط¹ظ‘ظ„ط©)
+// FUNCTION 1: loginUser أ¢â‚¬â€‌ ط¸â€¦ط·آµط·آ§ط·آ¯ط¸â€ڑط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ط¸ظ¹ط¸â€  (ط¸â€¦ط¸ث†ط·آ¬ط¸ث†ط·آ¯ط·آ© ط¸ث†ط¸â€¦ط¸ظ¾ط·آ¹ط¸â€کط¸â€‍ط·آ©)
 // ============================================================
 exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, userId, password } = request.data;
-    if (!userId || !password) throw new HttpsError('invalid-argument', 'userId ظˆ password ظ…ط·ظ„ظˆط¨ط§ظ†');
+    if (!userId || !password) throw new HttpsError('invalid-argument', 'userId ط¸ث† password ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨ط·آ§ط¸â€ ');
 
     const rateLimitKey = `user_${userId}`;
     const rateCheck = await checkRateLimit(rateLimitKey);
     if (rateCheck.locked) {
-        throw new HttpsError('resource-exhausted', `ظ…ط­ط§ظˆظ„ط§طھ ظƒط«ظٹط±ط© ظپط§ط´ظ„ط© â€” ظٹط±ط¬ظ‰ ط§ظ„ظ…ط­ط§ظˆظ„ط© ط¨ط¹ط¯ ${rateCheck.remaining} ط¯ظ‚ظٹظ‚ط©`);
+        throw new HttpsError('resource-exhausted', `ط¸â€¦ط·آ­ط·آ§ط¸ث†ط¸â€‍ط·آ§ط·ع¾ ط¸ئ’ط·آ«ط¸ظ¹ط·آ±ط·آ© ط¸ظ¾ط·آ§ط·آ´ط¸â€‍ط·آ© أ¢â‚¬â€‌ ط¸ظ¹ط·آ±ط·آ¬ط¸â€° ط·آ§ط¸â€‍ط¸â€¦ط·آ­ط·آ§ط¸ث†ط¸â€‍ط·آ© ط·آ¨ط·آ¹ط·آ¯ ${rateCheck.remaining} ط·آ¯ط¸â€ڑط¸ظ¹ط¸â€ڑط·آ©`);
     }
 
-    // Super Admin â€” ظ„ط§ rate limitطŒ ظ‡ط§ط´ ط«ط§ط¨طھ ظپظ‚ط·
+    // Super Admin أ¢â‚¬â€‌ ط¸â€‍ط·آ§ rate limitط·إ’ ط¸â€،ط·آ§ط·آ´ ط·آ«ط·آ§ط·آ¨ط·ع¾ ط¸ظ¾ط¸â€ڑط·آ·
     if (userId === 'superadmin') {
-        // ظپظƒ ط§ظ„ظ‚ظپظ„ طھظ„ظ‚ط§ط¦ظٹط§ظ‹ ظپظٹ ظƒظ„ ظ…ط­ط§ظˆظ„ط© ظ„ظ„ط³ظˆط¨ط± ط£ط¯ظ…ظ†
+        // ط¸ظ¾ط¸ئ’ ط·آ§ط¸â€‍ط¸â€ڑط¸ظ¾ط¸â€‍ ط·ع¾ط¸â€‍ط¸â€ڑط·آ§ط·آ¦ط¸ظ¹ط·آ§ط¸â€¹ ط¸ظ¾ط¸ظ¹ ط¸ئ’ط¸â€‍ ط¸â€¦ط·آ­ط·آ§ط¸ث†ط¸â€‍ط·آ© ط¸â€‍ط¸â€‍ط·آ³ط¸ث†ط·آ¨ط·آ± ط·آ£ط·آ¯ط¸â€¦ط¸â€ 
         await resetAttempts(rateLimitKey);
 
         const crypto = require('crypto');
         const hash = crypto.createHash('sha256').update(password).digest('hex');
 
-        // ظ‡ط§ط´ ط«ط§ط¨طھ ظپظ‚ط· â€” ظ„ط§ ظٹط¹طھظ…ط¯ ط¹ظ„ظ‰ Firestore
-        // ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط±: husainan@2026
+        // ط¸â€،ط·آ§ط·آ´ ط·آ«ط·آ§ط·آ¨ط·ع¾ ط¸ظ¾ط¸â€ڑط·آ· أ¢â‚¬â€‌ ط¸â€‍ط·آ§ ط¸ظ¹ط·آ¹ط·ع¾ط¸â€¦ط·آ¯ ط·آ¹ط¸â€‍ط¸â€° Firestore
+        // ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ±: husainan@2026
         const SUPER_HASH = '07b4ba632fba1d0883ef24fad3afe2d0dd2c0f97993d505186ef656b431f7e18';
 
         if (hash !== SUPER_HASH) {
-            throw new HttpsError('unauthenticated', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط؛ظٹط± طµط­ظٹط­ط©');
+            throw new HttpsError('unauthenticated', 'ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·ط›ط¸ظ¹ط·آ± ط·آµط·آ­ط¸ظ¹ط·آ­ط·آ©');
         }
         const token = await admin.auth().createCustomToken('superadmin', { role: 'superadmin', schoolId: 'system' });
-        return { token, role: 'superadmin', schoolId: 'system', name: 'ط­ط³ظٹظ†', userId: 'superadmin' };
+        return { token, role: 'superadmin', schoolId: 'system', name: 'ط·آ­ط·آ³ط¸ظ¹ط¸â€ ', userId: 'superadmin' };
     }
 
     // Regular users
@@ -84,21 +84,21 @@ exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], regi
 
     if (snap.empty) {
         await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('not-found', 'ط§ظ„ظ…ط³طھط®ط¯ظ… ط؛ظٹط± ظ…ظˆط¬ظˆط¯');
+        throw new HttpsError('not-found', 'ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ ط·ط›ط¸ظ¹ط·آ± ط¸â€¦ط¸ث†ط·آ¬ط¸ث†ط·آ¯');
     }
 
     const user = snap.docs[0].data();
     const crypto = require('crypto');
     const providedHash = crypto.createHash('sha256').update(password).digest('hex');
 
-    // ظ†ط¯ط¹ظ… ط§ظ„ظ†ط¸ط§ظ…ظٹظ†: passHash ط§ظ„ط¬ط¯ظٹط¯ ط§ظ„ط¢ظ…ظ† (SHA-256)طŒ ط£ظˆ plainPass ط§ظ„ظ‚ط¯ظٹظ… ط§ظ„ظ…ظˆط±ظˆط« (طھظˆط§ظپظ‚ط§ظ‹ ط®ظ„ظپظٹط§ظ‹ ظ„ظ„ط­ط³ط§ط¨ط§طھ ط؛ظٹط± ط§ظ„ظ…ظڈط­ط¯ظژظ‘ط«ط© ط¨ط¹ط¯)
+    // ط¸â€ ط·آ¯ط·آ¹ط¸â€¦ ط·آ§ط¸â€‍ط¸â€ ط·آ¸ط·آ§ط¸â€¦ط¸ظ¹ط¸â€ : passHash ط·آ§ط¸â€‍ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯ ط·آ§ط¸â€‍ط·آ¢ط¸â€¦ط¸â€  (SHA-256)ط·إ’ ط·آ£ط¸ث† plainPass ط·آ§ط¸â€‍ط¸â€ڑط·آ¯ط¸ظ¹ط¸â€¦ ط·آ§ط¸â€‍ط¸â€¦ط¸ث†ط·آ±ط¸ث†ط·آ« (ط·ع¾ط¸ث†ط·آ§ط¸ظ¾ط¸â€ڑط·آ§ط¸â€¹ ط·آ®ط¸â€‍ط¸ظ¾ط¸ظ¹ط·آ§ط¸â€¹ ط¸â€‍ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨ط·آ§ط·ع¾ ط·ط›ط¸ظ¹ط·آ± ط·آ§ط¸â€‍ط¸â€¦ط¸عˆط·آ­ط·آ¯ط¸عکط¸â€کط·آ«ط·آ© ط·آ¨ط·آ¹ط·آ¯)
     const isValid = user.passHash ? (providedHash === user.passHash) : (user.plainPass === password);
 
     if (!isValid) {
         await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('unauthenticated', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط؛ظٹط± طµط­ظٹط­ط©');
+        throw new HttpsError('unauthenticated', 'ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·ط›ط¸ظ¹ط·آ± ط·آµط·آ­ط¸ظ¹ط·آ­ط·آ©');
     }
-    if (user.status === 'suspended') throw new HttpsError('permission-denied', 'ط§ظ„ط­ط³ط§ط¨ ظ…ظˆظ‚ظˆظپ');
+    if (user.status === 'suspended') throw new HttpsError('permission-denied', 'ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨ ط¸â€¦ط¸ث†ط¸â€ڑط¸ث†ط¸ظ¾');
 
     await resetAttempts(rateLimitKey);
 
@@ -126,7 +126,7 @@ exports.loginUser = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], regi
 });
 
 // ============================================================
-// FUNCTION 2: onAttendanceCreated â€” ط¥ط´ط¹ط§ط± FCM ط¹ظ†ط¯ طھط³ط¬ظٹظ„ ط؛ظٹط§ط¨
+// FUNCTION 2: onAttendanceCreated أ¢â‚¬â€‌ ط·آ¥ط·آ´ط·آ¹ط·آ§ط·آ± FCM ط·آ¹ط¸â€ ط·آ¯ ط·ع¾ط·آ³ط·آ¬ط¸ظ¹ط¸â€‍ ط·ط›ط¸ظ¹ط·آ§ط·آ¨
 // ============================================================
 exports.onAttendanceCreated = onDocumentCreated({
     document: 'attendance/{docId}',
@@ -134,13 +134,13 @@ exports.onAttendanceCreated = onDocumentCreated({
 }, async (event) => {
     const data = event.data.data();
 
-    // ظپظ‚ط· ط§ظ„ط؛ظٹط§ط¨ (ظ…ط´ ط­ط¶ظˆط± ط£ظˆ طھط£ط®ظٹط±)
+    // ط¸ظ¾ط¸â€ڑط·آ· ط·آ§ط¸â€‍ط·ط›ط¸ظ¹ط·آ§ط·آ¨ (ط¸â€¦ط·آ´ ط·آ­ط·آ¶ط¸ث†ط·آ± ط·آ£ط¸ث† ط·ع¾ط·آ£ط·آ®ط¸ظ¹ط·آ±)
     if (data.status !== 'absent') return null;
 
     const { studentName, classId, period, date, schoolId } = data;
 
     try {
-        // ط¬ظ„ط¨ ط¨ظٹط§ظ†ط§طھ ط§ظ„ط·ط§ظ„ط¨ (ط±ظ‚ظ… ظ‡ط§طھظپ ظˆظ„ظٹ ط§ظ„ط£ظ…ط±)
+        // ط·آ¬ط¸â€‍ط·آ¨ ط·آ¨ط¸ظ¹ط·آ§ط¸â€ ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ·ط·آ§ط¸â€‍ط·آ¨ (ط·آ±ط¸â€ڑط¸â€¦ ط¸â€،ط·آ§ط·ع¾ط¸ظ¾ ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ±)
         const studentsSnap = await db.collection('students')
             .where('schoolId', '==', schoolId)
             .where('name', '==', studentName)
@@ -151,7 +151,7 @@ exports.onAttendanceCreated = onDocumentCreated({
         const parentPhone = student.parentPhone;
         if (!parentPhone) return null;
 
-        // ط¥ط¶ط§ظپط© ظ„ظ‚ط§ط¦ظ…ط© ط¥ط´ط¹ط§ط±ط§طھ ظˆط§طھط³ط§ط¨ (ظ„ظ„ط¥ط±ط³ط§ظ„ ط§ظ„ظٹط¯ظˆظٹ ط£ظˆ ط§ظ„ط³ظٹط±ظپط±)
+        // ط·آ¥ط·آ¶ط·آ§ط¸ظ¾ط·آ© ط¸â€‍ط¸â€ڑط·آ§ط·آ¦ط¸â€¦ط·آ© ط·آ¥ط·آ´ط·آ¹ط·آ§ط·آ±ط·آ§ط·ع¾ ط¸ث†ط·آ§ط·ع¾ط·آ³ط·آ§ط·آ¨ (ط¸â€‍ط¸â€‍ط·آ¥ط·آ±ط·آ³ط·آ§ط¸â€‍ ط·آ§ط¸â€‍ط¸ظ¹ط·آ¯ط¸ث†ط¸ظ¹ ط·آ£ط¸ث† ط·آ§ط¸â€‍ط·آ³ط¸ظ¹ط·آ±ط¸ظ¾ط·آ±)
         await db.collection('notifications_queue').add({
             schoolId,
             studentName,
@@ -159,13 +159,13 @@ exports.onAttendanceCreated = onDocumentCreated({
             period,
             date,
             parentPhone,
-            message: `ط؛ظٹط§ط¨: ${studentName} â€” ط§ظ„ظپطµظ„ ${classId} â€” ط§ظ„ط­طµط© ${period} â€” ${date}`,
+            message: `ط·ط›ط¸ظ¹ط·آ§ط·آ¨: ${studentName} أ¢â‚¬â€‌ ط·آ§ط¸â€‍ط¸ظ¾ط·آµط¸â€‍ ${classId} أ¢â‚¬â€‌ ط·آ§ط¸â€‍ط·آ­ط·آµط·آ© ${period} أ¢â‚¬â€‌ ${date}`,
             type: 'absence',
             sent: false,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        // ط¥ط±ط³ط§ظ„ FCM ظ„ظˆظ„ظٹ ط§ظ„ط£ظ…ط± (ظ„ظˆ ظ…ط³ط¬ظ‘ظ„)
+        // ط·آ¥ط·آ±ط·آ³ط·آ§ط¸â€‍ FCM ط¸â€‍ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ± (ط¸â€‍ط¸ث† ط¸â€¦ط·آ³ط·آ¬ط¸â€کط¸â€‍)
         const usersWithToken = await db.collection('users')
             .where('schoolId', '==', schoolId)
             .where('parentPhone', '==', parentPhone)
@@ -181,8 +181,8 @@ exports.onAttendanceCreated = onDocumentCreated({
                 await admin.messaging().sendEachForMulticast({
                     tokens,
                     notification: {
-                        title: `ط؛ظٹط§ط¨: ${studentName}`,
-                        body: `ط؛ط§ط¨ ط§ط¨ظ†ظƒظ… ط¨طھط§ط±ظٹط® ${date} â€” ط§ظ„ط­طµط© ${period}`
+                        title: `ط·ط›ط¸ظ¹ط·آ§ط·آ¨: ${studentName}`,
+                        body: `ط·ط›ط·آ§ط·آ¨ ط·آ§ط·آ¨ط¸â€ ط¸ئ’ط¸â€¦ ط·آ¨ط·ع¾ط·آ§ط·آ±ط¸ظ¹ط·آ® ${date} أ¢â‚¬â€‌ ط·آ§ط¸â€‍ط·آ­ط·آµط·آ© ${period}`
                     },
                     data: { schoolId, studentName, classId, type: 'absence' },
                     android: { priority: 'high' },
@@ -199,24 +199,24 @@ exports.onAttendanceCreated = onDocumentCreated({
 });
 
 // ============================================================
-// FUNCTION 3: generateMonthlyReport â€” طھظ‚ط±ظٹط± ط´ظ‡ط±ظٹ طھظ„ظ‚ط§ط¦ظٹ
-// ظƒظ„ ط£ظˆظ„ ط§ظ„ط´ظ‡ط± ط§ظ„ط³ط§ط¹ط© 7 طµط¨ط§ط­ط§ظ‹ ط¨طھظˆظ‚ظٹطھ ط§ظ„ظƒظˆظٹطھ (UTC+3 = 04:00 UTC)
+// FUNCTION 3: generateMonthlyReport أ¢â‚¬â€‌ ط·ع¾ط¸â€ڑط·آ±ط¸ظ¹ط·آ± ط·آ´ط¸â€،ط·آ±ط¸ظ¹ ط·ع¾ط¸â€‍ط¸â€ڑط·آ§ط·آ¦ط¸ظ¹
+// ط¸ئ’ط¸â€‍ ط·آ£ط¸ث†ط¸â€‍ ط·آ§ط¸â€‍ط·آ´ط¸â€،ط·آ± ط·آ§ط¸â€‍ط·آ³ط·آ§ط·آ¹ط·آ© 7 ط·آµط·آ¨ط·آ§ط·آ­ط·آ§ط¸â€¹ ط·آ¨ط·ع¾ط¸ث†ط¸â€ڑط¸ظ¹ط·ع¾ ط·آ§ط¸â€‍ط¸ئ’ط¸ث†ط¸ظ¹ط·ع¾ (UTC+3 = 04:00 UTC)
 // ============================================================
 exports.generateMonthlyReport = onSchedule({
     schedule: '0 4 1 * *',
     timeZone: 'Asia/Kuwait',
     region: 'me-central1'
 }, async (event) => {
-    console.log('ًں”„ Monthly Report: Starting...');
+    console.log('ظ‹ع؛â€‌â€‍ Monthly Report: Starting...');
 
-    // ط§ظ„ط´ظ‡ط± ط§ظ„ظ…ط§ط¶ظٹ
+    // ط·آ§ط¸â€‍ط·آ´ط¸â€،ط·آ± ط·آ§ط¸â€‍ط¸â€¦ط·آ§ط·آ¶ط¸ظ¹
     const now = new Date();
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const fromDate = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth()+1).padStart(2,'0')}-01`;
     const toDate = new Date(lastMonth.getFullYear(), lastMonth.getMonth()+1, 0).toISOString().slice(0,10);
     const monthLabel = `${lastMonth.getFullYear()}/${String(lastMonth.getMonth()+1).padStart(2,'0')}`;
 
-    // ط¬ظ„ط¨ ظƒظ„ ط§ظ„ظ…ط¯ط§ط±ط³ ط§ظ„ظ†ط´ط·ط©
+    // ط·آ¬ط¸â€‍ط·آ¨ ط¸ئ’ط¸â€‍ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط·آ§ط·آ±ط·آ³ ط·آ§ط¸â€‍ط¸â€ ط·آ´ط·آ·ط·آ©
     const schoolsSnap = await db.collection('schools').where('status', '==', 'active').get();
     console.log(`Found ${schoolsSnap.size} active schools`);
 
@@ -225,7 +225,7 @@ exports.generateMonthlyReport = onSchedule({
         const schoolData = schoolDoc.data();
 
         try {
-            // ط¥ط­طµط§ط¦ظٹط§طھ ط§ظ„ط؛ظٹط§ط¨
+            // ط·آ¥ط·آ­ط·آµط·آ§ط·آ¦ط¸ظ¹ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·ط›ط¸ظ¹ط·آ§ط·آ¨
             const absSnap = await db.collection('attendance')
                 .where('schoolId', '==', schoolId)
                 .where('status', '==', 'absent')
@@ -240,28 +240,28 @@ exports.generateMonthlyReport = onSchedule({
                 .where('date', '<=', toDate)
                 .get();
 
-            // ط¥ط­طµط§ط¦ظٹط§طھ ط§ظ„ط³ظ„ظˆظƒ
+            // ط·آ¥ط·آ­ط·آµط·آ§ط·آ¦ط¸ظ¹ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ³ط¸â€‍ط¸ث†ط¸ئ’
             const behSnap = await db.collection('behavior')
                 .where('schoolId', '==', schoolId)
                 .where('date', '>=', fromDate)
                 .where('date', '<=', toDate)
                 .get();
 
-            // ط¥ط­طµط§ط¦ظٹط§طھ ط§ظ„ط§ط³طھط¦ط°ط§ظ†
+            // ط·آ¥ط·آ­ط·آµط·آ§ط·آ¦ط¸ظ¹ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ§ط·آ³ط·ع¾ط·آ¦ط·آ°ط·آ§ط¸â€ 
             const gateSnap = await db.collection('gatepass')
                 .where('schoolId', '==', schoolId)
                 .where('dateStr', '>=', fromDate)
                 .where('dateStr', '<=', toDate)
                 .get();
 
-            // ط¥ط­طµط§ط¦ظٹط§طھ ط§ظ„ط¹ظٹط§ط¯ط©
+            // ط·آ¥ط·آ­ط·آµط·آ§ط·آ¦ط¸ظ¹ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ¹ط¸ظ¹ط·آ§ط·آ¯ط·آ©
             const clinicSnap = await db.collection('clinic')
                 .where('schoolId', '==', schoolId)
                 .where('dateStr', '>=', fromDate)
                 .where('dateStr', '<=', toDate)
                 .get();
 
-            // طھط¬ظ…ظٹط¹ ط¨ط§ظ„ظپطµظ„ ظˆط§ظ„ط·ط§ظ„ط¨
+            // ط·ع¾ط·آ¬ط¸â€¦ط¸ظ¹ط·آ¹ ط·آ¨ط·آ§ط¸â€‍ط¸ظ¾ط·آµط¸â€‍ ط¸ث†ط·آ§ط¸â€‍ط·آ·ط·آ§ط¸â€‍ط·آ¨
             const absenceByClass = {};
             const absenceByStudent = {};
             let positiveBeh = 0, negativeBeh = 0;
@@ -273,16 +273,16 @@ exports.generateMonthlyReport = onSchedule({
             });
 
             behSnap.forEach(d => {
-                if (d.data().type === 'ط¥ظٹط¬ط§ط¨ظٹ') positiveBeh++;
-                else if (d.data().type === 'ط³ظ„ط¨ظٹ') negativeBeh++;
+                if (d.data().type === 'ط·آ¥ط¸ظ¹ط·آ¬ط·آ§ط·آ¨ط¸ظ¹') positiveBeh++;
+                else if (d.data().type === 'ط·آ³ط¸â€‍ط·آ¨ط¸ظ¹') negativeBeh++;
             });
 
-            // ط£ظƒط«ط± 10 ط·ظ„ط§ط¨ ط؛ظٹط§ط¨ط§ظ‹
+            // ط·آ£ط¸ئ’ط·آ«ط·آ± 10 ط·آ·ط¸â€‍ط·آ§ط·آ¨ ط·ط›ط¸ظ¹ط·آ§ط·آ¨ط·آ§ط¸â€¹
             const topAbsentees = Object.entries(absenceByStudent)
                 .sort((a,b) => b[1]-a[1]).slice(0,10)
                 .map(([name, count]) => ({ name, count }));
 
-            // ط­ظپط¸ ط§ظ„طھظ‚ط±ظٹط± ط¨ظ€ Firestore
+            // ط·آ­ط¸ظ¾ط·آ¸ ط·آ§ط¸â€‍ط·ع¾ط¸â€ڑط·آ±ط¸ظ¹ط·آ± ط·آ¨ط¸â‚¬ Firestore
             await db.collection('monthly_reports').add({
                 schoolId,
                 schoolName: schoolData.name || '',
@@ -302,9 +302,9 @@ exports.generateMonthlyReport = onSchedule({
                 generatedAt: admin.firestore.FieldValue.serverTimestamp()
             });
 
-            console.log(`âœ… Report generated for ${schoolId}: ${absSnap.size} absences`);
+            console.log(`أ¢إ“â€¦ Report generated for ${schoolId}: ${absSnap.size} absences`);
         } catch (err) {
-            console.error(`â‌Œ Error for ${schoolId}:`, err);
+            console.error(`أ¢â€Œإ’ Error for ${schoolId}:`, err);
         }
     }
 
@@ -312,12 +312,12 @@ exports.generateMonthlyReport = onSchedule({
 });
 
 // ============================================================
-// FUNCTION 4: generateReportNow â€” طھظˆظ„ظٹط¯ طھظ‚ط±ظٹط± ظپظˆط±ظٹ (Callable)
-// ظٹظڈط³طھط¯ط¹ظ‰ ظ…ظ† super.html ط£ظˆ admin.html ظ„طھظˆظ„ظٹط¯ طھظ‚ط±ظٹط± ط£ظٹ ط´ظ‡ط±
+// FUNCTION 4: generateReportNow أ¢â‚¬â€‌ ط·ع¾ط¸ث†ط¸â€‍ط¸ظ¹ط·آ¯ ط·ع¾ط¸â€ڑط·آ±ط¸ظ¹ط·آ± ط¸ظ¾ط¸ث†ط·آ±ط¸ظ¹ (Callable)
+// ط¸ظ¹ط¸عˆط·آ³ط·ع¾ط·آ¯ط·آ¹ط¸â€° ط¸â€¦ط¸â€  super.html ط·آ£ط¸ث† admin.html ط¸â€‍ط·ع¾ط¸ث†ط¸â€‍ط¸ظ¹ط·آ¯ ط·ع¾ط¸â€ڑط·آ±ط¸ظ¹ط·آ± ط·آ£ط¸ظ¹ ط·آ´ط¸â€،ط·آ±
 // ============================================================
 exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, fromDate, toDate, monthLabel } = request.data;
-    if (!schoolId || !fromDate || !toDate) throw new HttpsError('invalid-argument', 'schoolId ظˆ fromDate ظˆ toDate ظ…ط·ظ„ظˆط¨ط©');
+    if (!schoolId || !fromDate || !toDate) throw new HttpsError('invalid-argument', 'schoolId ط¸ث† fromDate ط¸ث† toDate ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨ط·آ©');
 
     const absSnap = await db.collection('attendance')
         .where('schoolId', '==', schoolId)
@@ -351,8 +351,8 @@ exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost
         absenceByStudent[dd.studentName] = (absenceByStudent[dd.studentName]||0) + 1;
     });
     behSnap.forEach(d => {
-        if (d.data().type === 'ط¥ظٹط¬ط§ط¨ظٹ') positiveBeh++;
-        else if (d.data().type === 'ط³ظ„ط¨ظٹ') negativeBeh++;
+        if (d.data().type === 'ط·آ¥ط¸ظ¹ط·آ¬ط·آ§ط·آ¨ط¸ظ¹') positiveBeh++;
+        else if (d.data().type === 'ط·آ³ط¸â€‍ط·آ¨ط¸ظ¹') negativeBeh++;
     });
 
     const topAbsentees = Object.entries(absenceByStudent)
@@ -379,23 +379,23 @@ exports.generateReportNow = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost
 });
 
 // ============================================================
-// FUNCTION 5: changeSuperPassword â€” طھط؛ظٹظٹط± ظƒظ„ظ…ط© ظ…ط±ظˆط± ط§ظ„ط³ظˆط¨ط± ط£ط¯ظ…ظ† ط¨ط£ظ…ط§ظ†
-// ظٹطھط­ظ‚ظ‚ ظ…ظ† ط§ظ„ظƒظ„ظ…ط© ط§ظ„ط­ط§ظ„ظٹط© server-side ظ‚ط¨ظ„ ط§ظ„ط­ظپط¸ ط¨ظ€ Firestore
+// FUNCTION 5: changeSuperPassword أ¢â‚¬â€‌ ط·ع¾ط·ط›ط¸ظ¹ط¸ظ¹ط·آ± ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·آ§ط¸â€‍ط·آ³ط¸ث†ط·آ¨ط·آ± ط·آ£ط·آ¯ط¸â€¦ط¸â€  ط·آ¨ط·آ£ط¸â€¦ط·آ§ط¸â€ 
+// ط¸ظ¹ط·ع¾ط·آ­ط¸â€ڑط¸â€ڑ ط¸â€¦ط¸â€  ط·آ§ط¸â€‍ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط·آ­ط·آ§ط¸â€‍ط¸ظ¹ط·آ© server-side ط¸â€ڑط·آ¨ط¸â€‍ ط·آ§ط¸â€‍ط·آ­ط¸ظ¾ط·آ¸ ط·آ¨ط¸â‚¬ Firestore
 // ============================================================
 exports.changeSuperPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { currentPassword, newPassword } = request.data;
-    if (!currentPassword || !newPassword) throw new HttpsError('invalid-argument', 'ط§ظ„ط­ظ‚ظˆظ„ ظ…ط·ظ„ظˆط¨ط©');
-    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط¬ط¯ظٹط¯ط© ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹');
+    if (!currentPassword || !newPassword) throw new HttpsError('invalid-argument', 'ط·آ§ط¸â€‍ط·آ­ط¸â€ڑط¸ث†ط¸â€‍ ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨ط·آ©');
+    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·آ§ط¸â€‍ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯ط·آ© ط¸â€ڑط·آµط¸ظ¹ط·آ±ط·آ© ط·آ¬ط·آ¯ط·آ§ط¸â€¹');
 
     const crypto = require('crypto');
     const currentHash = crypto.createHash('sha256').update(currentPassword).digest('hex');
 
-    // ط¬ظ„ط¨ ط§ظ„ظ€ hash ط§ظ„ط­ط§ظ„ظٹ ط§ظ„ظ…ط®ط²ظ‘ظ† (ظ…ظ† system_config ط£ظˆ ط§ظ„ط§ظپطھط±ط§ط¶ظٹ)
+    // ط·آ¬ط¸â€‍ط·آ¨ ط·آ§ط¸â€‍ط¸â‚¬ hash ط·آ§ط¸â€‍ط·آ­ط·آ§ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط¸â€¦ط·آ®ط·آ²ط¸â€کط¸â€  (ط¸â€¦ط¸â€  system_config ط·آ£ط¸ث† ط·آ§ط¸â€‍ط·آ§ط¸ظ¾ط·ع¾ط·آ±ط·آ§ط·آ¶ط¸ظ¹)
     const configSnap = await db.collection('system_config').where('key', '==', 'super_pass_hash').limit(1).get();
     const DEFAULT_HASH = 'e2fedb220c651a45d88c3237fd27e98b4ed6daf5c83b66f6988b36a215528fe2';
     const storedHash = configSnap.empty ? DEFAULT_HASH : configSnap.docs[0].data().value;
 
-    if (currentHash !== storedHash) throw new HttpsError('unauthenticated', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط­ط§ظ„ظٹط© ط؛ظٹط± طµط­ظٹط­ط©');
+    if (currentHash !== storedHash) throw new HttpsError('unauthenticated', 'ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·آ§ط¸â€‍ط·آ­ط·آ§ط¸â€‍ط¸ظ¹ط·آ© ط·ط›ط¸ظ¹ط·آ± ط·آµط·آ­ط¸ظ¹ط·آ­ط·آ©');
 
     const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
 
@@ -411,21 +411,21 @@ exports.changeSuperPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localho
 });
 
 // ============================================================
-// FUNCTION 6: registerParent â€” طھط³ط¬ظٹظ„ ط­ط³ط§ط¨ ظˆظ„ظٹ ط£ظ…ط± ط¬ط¯ظٹط¯
-// ظٹظڈظ†ط´ط¦ ط­ط³ط§ط¨ ط¨ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ظˆظٹظڈطµط¯ط± Custom Token ظ„طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„ ط§ظ„ظپظˆط±ظٹ
+// FUNCTION 6: registerParent أ¢â‚¬â€‌ ط·ع¾ط·آ³ط·آ¬ط¸ظ¹ط¸â€‍ ط·آ­ط·آ³ط·آ§ط·آ¨ ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ£ط¸â€¦ط·آ± ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯
+// ط¸ظ¹ط¸عˆط¸â€ ط·آ´ط·آ¦ ط·آ­ط·آ³ط·آ§ط·آ¨ ط·آ¨ط·آ§ط¸â€‍ط·آ±ط¸â€ڑط¸â€¦ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط¸â€ ط¸ظ¹ ط¸ث†ط¸ظ¹ط¸عˆط·آµط·آ¯ط·آ± Custom Token ط¸â€‍ط·ع¾ط·آ³ط·آ¬ط¸ظ¹ط¸â€‍ ط·آ§ط¸â€‍ط·آ¯ط·آ®ط¸ث†ط¸â€‍ ط·آ§ط¸â€‍ط¸ظ¾ط¸ث†ط·آ±ط¸ظ¹
 // ============================================================
 exports.registerParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, phone, password } = request.data;
     if (!schoolId || !civilId || !phone || !password) {
-        throw new HttpsError('invalid-argument', 'ط¬ظ…ظٹط¹ ط§ظ„ط­ظ‚ظˆظ„ ظ…ط·ظ„ظˆط¨ط©');
+        throw new HttpsError('invalid-argument', 'ط·آ¬ط¸â€¦ط¸ظ¹ط·آ¹ ط·آ§ط¸â€‍ط·آ­ط¸â€ڑط¸ث†ط¸â€‍ ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨ط·آ©');
     }
-    if (!/^\d{5,15}$/.test(civilId)) throw new HttpsError('invalid-argument', 'ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ط؛ظٹط± طµط­ظٹط­');
-    if (password.length < 6) throw new HttpsError('invalid-argument', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹');
+    if (!/^\d{5,15}$/.test(civilId)) throw new HttpsError('invalid-argument', 'ط·آ§ط¸â€‍ط·آ±ط¸â€ڑط¸â€¦ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط¸â€ ط¸ظ¹ ط·ط›ط¸ظ¹ط·آ± ط·آµط·آ­ط¸ظ¹ط·آ­');
+    if (password.length < 6) throw new HttpsError('invalid-argument', 'ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط¸â€ڑط·آµط¸ظ¹ط·آ±ط·آ© ط·آ¬ط·آ¯ط·آ§ط¸â€¹');
 
     const accountId = `${schoolId}_${civilId}`;
     const accountRef = db.collection('parent_accounts').doc(accountId);
     const existing = await accountRef.get();
-    if (existing.exists) throw new HttpsError('already-exists', 'ظ‡ط°ط§ ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ظ…ط³ط¬ظ‘ظ„ ظ…ط³ط¨ظ‚ط§ظ‹');
+    if (existing.exists) throw new HttpsError('already-exists', 'ط¸â€،ط·آ°ط·آ§ ط·آ§ط¸â€‍ط·آ±ط¸â€ڑط¸â€¦ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط¸â€ ط¸ظ¹ ط¸â€¦ط·آ³ط·آ¬ط¸â€کط¸â€‍ ط¸â€¦ط·آ³ط·آ¨ط¸â€ڑط·آ§ط¸â€¹');
 
     const crypto = require('crypto');
     const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
@@ -440,16 +440,16 @@ exports.registerParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/],
 });
 
 // ============================================================
-// FUNCTION 7: loginParent â€” طھط³ط¬ظٹظ„ ط¯ط®ظˆظ„ ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط¨ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ
+// FUNCTION 7: loginParent أ¢â‚¬â€‌ ط·ع¾ط·آ³ط·آ¬ط¸ظ¹ط¸â€‍ ط·آ¯ط·آ®ط¸ث†ط¸â€‍ ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ± ط·آ¨ط·آ§ط¸â€‍ط·آ±ط¸â€ڑط¸â€¦ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط¸â€ ط¸ظ¹
 // ============================================================
 exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, password } = request.data;
-    if (!civilId || !password) throw new HttpsError('invalid-argument', 'ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ظˆظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ظ…ط·ظ„ظˆط¨ط§ظ†');
+    if (!civilId || !password) throw new HttpsError('invalid-argument', 'ط·آ§ط¸â€‍ط·آ±ط¸â€ڑط¸â€¦ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط¸â€ ط¸ظ¹ ط¸ث†ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨ط·آ§ط¸â€ ');
 
     const rateLimitKey = `parent_${civilId}`;
     const rateCheck = await checkRateLimit(rateLimitKey);
     if (rateCheck.locked) {
-        throw new HttpsError('resource-exhausted', `ظ…ط­ط§ظˆظ„ط§طھ ظƒط«ظٹط±ط© ظپط§ط´ظ„ط© â€” ظٹط±ط¬ظ‰ ط§ظ„ظ…ط­ط§ظˆظ„ط© ط¨ط¹ط¯ ${rateCheck.remaining} ط¯ظ‚ظٹظ‚ط©`);
+        throw new HttpsError('resource-exhausted', `ط¸â€¦ط·آ­ط·آ§ط¸ث†ط¸â€‍ط·آ§ط·ع¾ ط¸ئ’ط·آ«ط¸ظ¹ط·آ±ط·آ© ط¸ظ¾ط·آ§ط·آ´ط¸â€‍ط·آ© أ¢â‚¬â€‌ ط¸ظ¹ط·آ±ط·آ¬ط¸â€° ط·آ§ط¸â€‍ط¸â€¦ط·آ­ط·آ§ط¸ث†ط¸â€‍ط·آ© ط·آ¨ط·آ¹ط·آ¯ ${rateCheck.remaining} ط·آ¯ط¸â€ڑط¸ظ¹ط¸â€ڑط·آ©`);
     }
 
     const crypto = require('crypto');
@@ -467,13 +467,13 @@ exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], re
             accountData = q.docs[0].data();
             matchedSchoolId = accountData.schoolId;
         } else if (q.size > 1) {
-            throw new HttpsError('failed-precondition', 'ظٹط±ط¬ظ‰ ط§ط³طھط®ط¯ط§ظ… ط±ط§ط¨ط· ظ…ط¯ط±ط³طھظƒ ط§ظ„ط®ط§طµ ظ„طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„');
+            throw new HttpsError('failed-precondition', 'ط¸ظ¹ط·آ±ط·آ¬ط¸â€° ط·آ§ط·آ³ط·ع¾ط·آ®ط·آ¯ط·آ§ط¸â€¦ ط·آ±ط·آ§ط·آ¨ط·آ· ط¸â€¦ط·آ¯ط·آ±ط·آ³ط·ع¾ط¸ئ’ ط·آ§ط¸â€‍ط·آ®ط·آ§ط·آµ ط¸â€‍ط·ع¾ط·آ³ط·آ¬ط¸ظ¹ط¸â€‍ ط·آ§ط¸â€‍ط·آ¯ط·آ®ط¸ث†ط¸â€‍');
         }
     }
 
     if (!accountData || accountData.passwordHash !== passwordHash) {
         await recordFailedAttempt(rateLimitKey);
-        throw new HttpsError('unauthenticated', 'ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ ط£ظˆ ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط؛ظٹط± طµط­ظٹط­ط©');
+        throw new HttpsError('unauthenticated', 'ط·آ§ط¸â€‍ط·آ±ط¸â€ڑط¸â€¦ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط¸â€ ط¸ظ¹ ط·آ£ط¸ث† ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·ط›ط¸ظ¹ط·آ± ط·آµط·آ­ط¸ظ¹ط·آ­ط·آ©');
     }
 
     await resetAttempts(rateLimitKey);
@@ -484,33 +484,33 @@ exports.loginParent = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], re
 });
 
 // ============================================================
-// FUNCTION 8: getRegistrationClasses â€” ط¬ظ„ط¨ ظ‚ط§ط¦ظ…ط© ط§ظ„ظپطµظˆظ„ (ط¨ط¯ظˆظ† ط­ط§ط¬ط© ظ„طھط³ط¬ظٹظ„ ط¯ط®ظˆظ„)
-// ظٹظڈط³طھط®ط¯ظ… ظپظ‚ط· ط¨طµظپط­ط© طھط³ط¬ظٹظ„ ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط§ظ„ط¬ط¯ظٹط¯طŒ ظٹط±ط¬ط¹ ط£ط³ظ…ط§ط، ط§ظ„ظپطµظˆظ„ ظپظ‚ط· (ط¨ظٹط§ظ†ط§طھ ط؛ظٹط± ط­ط³ط§ط³ط©)
+// FUNCTION 8: getRegistrationClasses أ¢â‚¬â€‌ ط·آ¬ط¸â€‍ط·آ¨ ط¸â€ڑط·آ§ط·آ¦ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸ظ¾ط·آµط¸ث†ط¸â€‍ (ط·آ¨ط·آ¯ط¸ث†ط¸â€  ط·آ­ط·آ§ط·آ¬ط·آ© ط¸â€‍ط·ع¾ط·آ³ط·آ¬ط¸ظ¹ط¸â€‍ ط·آ¯ط·آ®ط¸ث†ط¸â€‍)
+// ط¸ظ¹ط¸عˆط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ ط¸ظ¾ط¸â€ڑط·آ· ط·آ¨ط·آµط¸ظ¾ط·آ­ط·آ© ط·ع¾ط·آ³ط·آ¬ط¸ظ¹ط¸â€‍ ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ± ط·آ§ط¸â€‍ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯ط·إ’ ط¸ظ¹ط·آ±ط·آ¬ط·آ¹ ط·آ£ط·آ³ط¸â€¦ط·آ§ط·طŒ ط·آ§ط¸â€‍ط¸ظ¾ط·آµط¸ث†ط¸â€‍ ط¸ظ¾ط¸â€ڑط·آ· (ط·آ¨ط¸ظ¹ط·آ§ط¸â€ ط·آ§ط·ع¾ ط·ط›ط¸ظ¹ط·آ± ط·آ­ط·آ³ط·آ§ط·آ³ط·آ©)
 // ============================================================
 exports.getRegistrationClasses = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId } = request.data;
-    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId ظ…ط·ظ„ظˆط¨');
+    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨');
 
-    // ظ†ط¬ط±ط¨ classes collection ط£ظˆظ„ط§ظ‹ (ط£ط®ظپ ظˆط£ط³ط±ط¹)
+    // ط¸â€ ط·آ¬ط·آ±ط·آ¨ classes collection ط·آ£ط¸ث†ط¸â€‍ط·آ§ط¸â€¹ (ط·آ£ط·آ®ط¸ظ¾ ط¸ث†ط·آ£ط·آ³ط·آ±ط·آ¹)
     const classesSnap = await db.collection('classes').where('schoolId', '==', schoolId).get();
     if (!classesSnap.empty) {
         const classes = [...new Set(classesSnap.docs.map(d => d.data().classId).filter(Boolean))];
         return { classes: classes.sort((a, b) => a.localeCompare(b)) };
     }
 
-    // fallback: ظ…ط³ط­ students ظ„ط§ط³طھط®ط±ط§ط¬ ط§ظ„ظپطµظˆظ„
+    // fallback: ط¸â€¦ط·آ³ط·آ­ students ط¸â€‍ط·آ§ط·آ³ط·ع¾ط·آ®ط·آ±ط·آ§ط·آ¬ ط·آ§ط¸â€‍ط¸ظ¾ط·آµط¸ث†ط¸â€‍
     const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
     const classes = [...new Set(studentsSnap.docs.map(d => d.data().classId).filter(Boolean))];
     return { classes: classes.sort((a, b) => a.localeCompare(b)) };
 });
 
 // ============================================================
-// FUNCTION 9: getRegistrationStudents â€” ط¬ظ„ط¨ ط£ط³ظ…ط§ط، ط·ظ„ط§ط¨ ظپطµظ„ ظ…ط¹ظٹظ‘ظ† (ط¨ط¯ظˆظ† طھط³ط¬ظٹظ„ ط¯ط®ظˆظ„)
-// ظٹط±ط¬ط¹ ظپظ‚ط· id + name (ط¨ط¯ظˆظ† ظ‡ط§طھظپ ط£ظˆ ط±ظ‚ظ… ظ…ط¯ظ†ظٹطŒ ط­ظ…ط§ظٹط© ظ„ظ„ط®طµظˆطµظٹط©)
+// FUNCTION 9: getRegistrationStudents أ¢â‚¬â€‌ ط·آ¬ط¸â€‍ط·آ¨ ط·آ£ط·آ³ط¸â€¦ط·آ§ط·طŒ ط·آ·ط¸â€‍ط·آ§ط·آ¨ ط¸ظ¾ط·آµط¸â€‍ ط¸â€¦ط·آ¹ط¸ظ¹ط¸â€کط¸â€  (ط·آ¨ط·آ¯ط¸ث†ط¸â€  ط·ع¾ط·آ³ط·آ¬ط¸ظ¹ط¸â€‍ ط·آ¯ط·آ®ط¸ث†ط¸â€‍)
+// ط¸ظ¹ط·آ±ط·آ¬ط·آ¹ ط¸ظ¾ط¸â€ڑط·آ· id + name (ط·آ¨ط·آ¯ط¸ث†ط¸â€  ط¸â€،ط·آ§ط·ع¾ط¸ظ¾ ط·آ£ط¸ث† ط·آ±ط¸â€ڑط¸â€¦ ط¸â€¦ط·آ¯ط¸â€ ط¸ظ¹ط·إ’ ط·آ­ط¸â€¦ط·آ§ط¸ظ¹ط·آ© ط¸â€‍ط¸â€‍ط·آ®ط·آµط¸ث†ط·آµط¸ظ¹ط·آ©)
 // ============================================================
 exports.getRegistrationStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, classId } = request.data;
-    if (!schoolId || !classId) throw new HttpsError('invalid-argument', 'schoolId ظˆ classId ظ…ط·ظ„ظˆط¨ط§ظ†');
+    if (!schoolId || !classId) throw new HttpsError('invalid-argument', 'schoolId ط¸ث† classId ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨ط·آ§ط¸â€ ');
 
     const snap = await db.collection('students')
         .where('schoolId', '==', schoolId)
@@ -526,15 +526,15 @@ exports.getRegistrationStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /loc
 });
 
 // ============================================================
-// FUNCTION 10: changeParentPassword â€” طھط؛ظٹظٹط± ظƒظ„ظ…ط© ظ…ط±ظˆط± ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط¨ط£ظ…ط§ظ†
-// ظٹطھط­ظ‚ظ‚ ظ…ظ† ط§ظ„ظƒظ„ظ…ط© ط§ظ„ط­ط§ظ„ظٹط© server-side ظ‚ط¨ظ„ ط§ظ„ط­ظپط¸ ط¨ظ€ Firestore
+// FUNCTION 10: changeParentPassword أ¢â‚¬â€‌ ط·ع¾ط·ط›ط¸ظ¹ط¸ظ¹ط·آ± ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط¸â€¦ط·آ±ط¸ث†ط·آ± ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ± ط·آ¨ط·آ£ط¸â€¦ط·آ§ط¸â€ 
+// ط¸ظ¹ط·ع¾ط·آ­ط¸â€ڑط¸â€ڑ ط¸â€¦ط¸â€  ط·آ§ط¸â€‍ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط·آ­ط·آ§ط¸â€‍ط¸ظ¹ط·آ© server-side ط¸â€ڑط·آ¨ط¸â€‍ ط·آ§ط¸â€‍ط·آ­ط¸ظ¾ط·آ¸ ط·آ¨ط¸â‚¬ Firestore
 // ============================================================
 exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, currentPassword, newPassword } = request.data;
     if (!schoolId || !civilId || !currentPassword || !newPassword) {
-        throw new HttpsError('invalid-argument', 'ط¬ظ…ظٹط¹ ط§ظ„ط­ظ‚ظˆظ„ ظ…ط·ظ„ظˆط¨ط©');
+        throw new HttpsError('invalid-argument', 'ط·آ¬ط¸â€¦ط¸ظ¹ط·آ¹ ط·آ§ط¸â€‍ط·آ­ط¸â€ڑط¸ث†ط¸â€‍ ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨ط·آ©');
     }
-    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط¬ط¯ظٹط¯ط© ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹');
+    if (newPassword.length < 6) throw new HttpsError('invalid-argument', 'ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·آ§ط¸â€‍ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯ط·آ© ط¸â€ڑط·آµط¸ظ¹ط·آ±ط·آ© ط·آ¬ط·آ¯ط·آ§ط¸â€¹');
 
     const crypto = require('crypto');
     const currentHash = crypto.createHash('sha256').update(currentPassword).digest('hex');
@@ -543,9 +543,9 @@ exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localh
     const accountRef = db.collection('parent_accounts').doc(accountId);
     const accountSnap = await accountRef.get();
 
-    if (!accountSnap.exists) throw new HttpsError('not-found', 'ط§ظ„ط­ط³ط§ط¨ ط؛ظٹط± ظ…ظˆط¬ظˆط¯');
+    if (!accountSnap.exists) throw new HttpsError('not-found', 'ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨ ط·ط›ط¸ظ¹ط·آ± ط¸â€¦ط¸ث†ط·آ¬ط¸ث†ط·آ¯');
     if (accountSnap.data().passwordHash !== currentHash) {
-        throw new HttpsError('unauthenticated', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط­ط§ظ„ظٹط© ط؛ظٹط± طµط­ظٹط­ط©');
+        throw new HttpsError('unauthenticated', 'ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·آ§ط¸â€‍ط·آ­ط·آ§ط¸â€‍ط¸ظ¹ط·آ© ط·ط›ط¸ظ¹ط·آ± ط·آµط·آ­ط¸ظ¹ط·آ­ط·آ©');
     }
 
     const newHash = crypto.createHash('sha256').update(newPassword).digest('hex');
@@ -554,26 +554,26 @@ exports.changeParentPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localh
     return { success: true };
 });
 // ============================================================
-// FUNCTION 11: promoteStudents â€” ط§ظ„طھط±ط­ظٹظ„ ط§ظ„ط³ظ†ظˆظٹ ط§ظ„ط´ط§ظ…ظ„
-// ظٹط±ظپط¹ ظƒظ„ ط·ط§ظ„ط¨ طµظپط§ظ‹ ظˆط§ط­ط¯ط§ظ‹ (ظ†ظپط³ ط§ظ„ط´ط¹ط¨ط©)طŒ ظٹط¤ط±ط´ظپ طµظپ 9 ظƒط®ط±ظٹط¬ظٹظ†طŒ
-// ظˆظٹط³ظ… ظƒظ„ ط§ظ„ط³ط¬ظ„ط§طھ ط§ظ„ط­ط§ظ„ظٹط© ط¨ط§ظ„ط³ظ†ط© ط§ظ„ط¯ط±ط§ط³ظٹط© ظ‚ط¨ظ„ ط§ظ„طھط±ط­ظٹظ„
+// FUNCTION 11: promoteStudents أ¢â‚¬â€‌ ط·آ§ط¸â€‍ط·ع¾ط·آ±ط·آ­ط¸ظ¹ط¸â€‍ ط·آ§ط¸â€‍ط·آ³ط¸â€ ط¸ث†ط¸ظ¹ ط·آ§ط¸â€‍ط·آ´ط·آ§ط¸â€¦ط¸â€‍
+// ط¸ظ¹ط·آ±ط¸ظ¾ط·آ¹ ط¸ئ’ط¸â€‍ ط·آ·ط·آ§ط¸â€‍ط·آ¨ ط·آµط¸ظ¾ط·آ§ط¸â€¹ ط¸ث†ط·آ§ط·آ­ط·آ¯ط·آ§ط¸â€¹ (ط¸â€ ط¸ظ¾ط·آ³ ط·آ§ط¸â€‍ط·آ´ط·آ¹ط·آ¨ط·آ©)ط·إ’ ط¸ظ¹ط·آ¤ط·آ±ط·آ´ط¸ظ¾ ط·آµط¸ظ¾ 9 ط¸ئ’ط·آ®ط·آ±ط¸ظ¹ط·آ¬ط¸ظ¹ط¸â€ ط·إ’
+// ط¸ث†ط¸ظ¹ط·آ³ط¸â€¦ ط¸ئ’ط¸â€‍ ط·آ§ط¸â€‍ط·آ³ط·آ¬ط¸â€‍ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ­ط·آ§ط¸â€‍ط¸ظ¹ط·آ© ط·آ¨ط·آ§ط¸â€‍ط·آ³ط¸â€ ط·آ© ط·آ§ط¸â€‍ط·آ¯ط·آ±ط·آ§ط·آ³ط¸ظ¹ط·آ© ط¸â€ڑط·آ¨ط¸â€‍ ط·آ§ط¸â€‍ط·ع¾ط·آ±ط·آ­ط¸ظ¹ط¸â€‍
 // ============================================================
 exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
-        throw new HttpsError('permission-denied', 'ظ‡ط°ط§ ط§ظ„ط¥ط¬ط±ط§ط، ظٹطھط·ظ„ط¨ طµظ„ط§ط­ظٹط© ظ…ط¯ظٹط±');
+        throw new HttpsError('permission-denied', 'ط¸â€،ط·آ°ط·آ§ ط·آ§ط¸â€‍ط·آ¥ط·آ¬ط·آ±ط·آ§ط·طŒ ط¸ظ¹ط·ع¾ط·آ·ط¸â€‍ط·آ¨ ط·آµط¸â€‍ط·آ§ط·آ­ط¸ظ¹ط·آ© ط¸â€¦ط·آ¯ط¸ظ¹ط·آ±');
     }
 
     const { schoolId, academicYearLabel } = request.data;
-    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId ظ…ط·ظ„ظˆط¨');
+    if (!schoolId) throw new HttpsError('invalid-argument', 'schoolId ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨');
     if (request.auth.token.schoolId !== schoolId) {
-        throw new HttpsError('permission-denied', 'ظ„ط§ ظٹظ…ظƒظ†ظƒ طھط±ط­ظٹظ„ ظ…ط¯ط±ط³ط© ط£ط®ط±ظ‰');
+        throw new HttpsError('permission-denied', 'ط¸â€‍ط·آ§ ط¸ظ¹ط¸â€¦ط¸ئ’ط¸â€ ط¸ئ’ ط·ع¾ط·آ±ط·آ­ط¸ظ¹ط¸â€‍ ط¸â€¦ط·آ¯ط·آ±ط·آ³ط·آ© ط·آ£ط·آ®ط·آ±ط¸â€°');
     }
 
     const now = new Date();
     const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
     const yearLabel = academicYearLabel || `${startYear}-${startYear + 1}`;
 
-    // ===== ط§ظ„ط®ط·ظˆط© 1: طھط³ظ…ظٹط© ظƒظ„ ط§ظ„ط³ط¬ظ„ط§طھ ط؛ظٹط± ط§ظ„ظ…ظˆط³ظˆظ…ط© ط¨ط¹ط¯ ط¨ط§ظ„ط³ظ†ط© ط§ظ„ط¯ط±ط§ط³ظٹط© =====
+    // ===== ط·آ§ط¸â€‍ط·آ®ط·آ·ط¸ث†ط·آ© 1: ط·ع¾ط·آ³ط¸â€¦ط¸ظ¹ط·آ© ط¸ئ’ط¸â€‍ ط·آ§ط¸â€‍ط·آ³ط·آ¬ط¸â€‍ط·آ§ط·ع¾ ط·ط›ط¸ظ¹ط·آ± ط·آ§ط¸â€‍ط¸â€¦ط¸ث†ط·آ³ط¸ث†ط¸â€¦ط·آ© ط·آ¨ط·آ¹ط·آ¯ ط·آ¨ط·آ§ط¸â€‍ط·آ³ط¸â€ ط·آ© ط·آ§ط¸â€‍ط·آ¯ط·آ±ط·آ§ط·آ³ط¸ظ¹ط·آ© =====
     const recordCollections = ['attendance', 'behavior', 'gatepass', 'clinic'];
     const taggedCounts = {};
 
@@ -600,7 +600,7 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
         taggedCounts[colName] = taggedTotal;
     }
 
-    // ===== ط§ظ„ط®ط·ظˆط© 2: طھط±ط­ظٹظ„ ط§ظ„ط·ظ„ط§ط¨ =====
+    // ===== ط·آ§ط¸â€‍ط·آ®ط·آ·ط¸ث†ط·آ© 2: ط·ع¾ط·آ±ط·آ­ط¸ظ¹ط¸â€‍ ط·آ§ط¸â€‍ط·آ·ط¸â€‍ط·آ§ط·آ¨ =====
     const studentsSnap = await db.collection('students').where('schoolId', '==', schoolId).get();
     let promoted = 0, graduated = 0, skipped = 0;
     let batch2 = db.batch();
@@ -643,7 +643,7 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
     }
     if (opCount2 > 0) await batch2.commit();
 
-    // ===== ط§ظ„ط®ط·ظˆط© 3: طھط­ط¯ظٹط« ظƒظˆظ„ظƒط´ظ† classes ط¨ط§ظ„ظپطµظˆظ„ ط§ظ„ط¬ط¯ظٹط¯ط© =====
+    // ===== ط·آ§ط¸â€‍ط·آ®ط·آ·ط¸ث†ط·آ© 3: ط·ع¾ط·آ­ط·آ¯ط¸ظ¹ط·آ« ط¸ئ’ط¸ث†ط¸â€‍ط¸ئ’ط·آ´ط¸â€  classes ط·آ¨ط·آ§ط¸â€‍ط¸ظ¾ط·آµط¸ث†ط¸â€‍ ط·آ§ط¸â€‍ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯ط·آ© =====
     if (newClassesSet.size > 0) {
         const batch3 = db.batch();
         newClassesSet.forEach(c => {
@@ -653,7 +653,7 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
         await batch3.commit();
     }
 
-    // ===== ط§ظ„ط®ط·ظˆط© 4: ط­ظپط¸ ط³ط¬ظ„ ط§ظ„طھط±ط­ظٹظ„ ظ†ظپط³ظ‡ =====
+    // ===== ط·آ§ط¸â€‍ط·آ®ط·آ·ط¸ث†ط·آ© 4: ط·آ­ط¸ظ¾ط·آ¸ ط·آ³ط·آ¬ط¸â€‍ ط·آ§ط¸â€‍ط·ع¾ط·آ±ط·آ­ط¸ظ¹ط¸â€‍ ط¸â€ ط¸ظ¾ط·آ³ط¸â€، =====
     await db.collection('promotion_logs').add({
         schoolId, yearLabel, promoted, graduated, skipped,
         taggedCounts, performedBy: request.auth.token.userId || 'admin',
@@ -664,29 +664,29 @@ exports.promoteStudents = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/]
 });
 
 // ============================================================
-// FUNCTION 12: resetUserPassword â€” ط¥ط¹ط§ط¯ط© طھط¹ظٹظٹظ† ظƒظ„ظ…ط© ظ…ط±ظˆط± ظ…ظˆط¸ظپ (Admin ظپظ‚ط·)
-// ظٹط³طھط®ط¯ظ… SHA-256 hash ط¨ط¯ظ„ ط§ظ„ظ†طµ ط§ظ„طµط±ظٹط­ â€” ظٹط­ظ„ ط«ط؛ط±ط© plainPass طھط¯ط±ظٹط¬ظٹط§ظ‹
+// FUNCTION 12: resetUserPassword أ¢â‚¬â€‌ ط·آ¥ط·آ¹ط·آ§ط·آ¯ط·آ© ط·ع¾ط·آ¹ط¸ظ¹ط¸ظ¹ط¸â€  ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط¸â€¦ط·آ±ط¸ث†ط·آ± ط¸â€¦ط¸ث†ط·آ¸ط¸ظ¾ (Admin ط¸ظ¾ط¸â€ڑط·آ·)
+// ط¸ظ¹ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ SHA-256 hash ط·آ¨ط·آ¯ط¸â€‍ ط·آ§ط¸â€‍ط¸â€ ط·آµ ط·آ§ط¸â€‍ط·آµط·آ±ط¸ظ¹ط·آ­ أ¢â‚¬â€‌ ط¸ظ¹ط·آ­ط¸â€‍ ط·آ«ط·ط›ط·آ±ط·آ© plainPass ط·ع¾ط·آ¯ط·آ±ط¸ظ¹ط·آ¬ط¸ظ¹ط·آ§ط¸â€¹
 // ============================================================
 exports.resetUserPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     if (!request.auth || !['admin', 'assistant_manager'].includes(request.auth.token.role)) {
-        throw new HttpsError('permission-denied', 'ظ‡ط°ط§ ط§ظ„ط¥ط¬ط±ط§ط، ظٹطھط·ظ„ط¨ طµظ„ط§ط­ظٹط© ظ…ط¯ظٹط±');
+        throw new HttpsError('permission-denied', 'ط¸â€،ط·آ°ط·آ§ ط·آ§ط¸â€‍ط·آ¥ط·آ¬ط·آ±ط·آ§ط·طŒ ط¸ظ¹ط·ع¾ط·آ·ط¸â€‍ط·آ¨ ط·آµط¸â€‍ط·آ§ط·آ­ط¸ظ¹ط·آ© ط¸â€¦ط·آ¯ط¸ظ¹ط·آ±');
     }
 
     const { userDocId, newPassword } = request.data;
-    if (!userDocId || !newPassword) throw new HttpsError('invalid-argument', 'ط§ظ„ط­ظ‚ظˆظ„ ظ…ط·ظ„ظˆط¨ط©');
-    if (newPassword.length < 4) throw new HttpsError('invalid-argument', 'ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹');
+    if (!userDocId || !newPassword) throw new HttpsError('invalid-argument', 'ط·آ§ط¸â€‍ط·آ­ط¸â€ڑط¸ث†ط¸â€‍ ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨ط·آ©');
+    if (newPassword.length < 4) throw new HttpsError('invalid-argument', 'ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط¸â€ڑط·آµط¸ظ¹ط·آ±ط·آ© ط·آ¬ط·آ¯ط·آ§ط¸â€¹');
 
     const userRef = db.collection('users').doc(userDocId);
     const userSnap = await userRef.get();
-    if (!userSnap.exists) throw new HttpsError('not-found', 'ط§ظ„ظ…ط³طھط®ط¯ظ… ط؛ظٹط± ظ…ظˆط¬ظˆط¯');
+    if (!userSnap.exists) throw new HttpsError('not-found', 'ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ ط·ط›ط¸ظ¹ط·آ± ط¸â€¦ط¸ث†ط·آ¬ط¸ث†ط·آ¯');
     if (userSnap.data().schoolId !== request.auth.token.schoolId) {
-        throw new HttpsError('permission-denied', 'ظ„ط§ ظٹظ…ظƒظ†ظƒ طھط¹ط¯ظٹظ„ ظ…ظˆط¸ظپ ط¨ظ…ط¯ط±ط³ط© ط£ط®ط±ظ‰');
+        throw new HttpsError('permission-denied', 'ط¸â€‍ط·آ§ ط¸ظ¹ط¸â€¦ط¸ئ’ط¸â€ ط¸ئ’ ط·ع¾ط·آ¹ط·آ¯ط¸ظ¹ط¸â€‍ ط¸â€¦ط¸ث†ط·آ¸ط¸ظ¾ ط·آ¨ط¸â€¦ط·آ¯ط·آ±ط·آ³ط·آ© ط·آ£ط·آ®ط·آ±ط¸â€°');
     }
 
     const crypto = require('crypto');
     const passHash = crypto.createHash('sha256').update(newPassword).digest('hex');
 
-    // ظ†ط­ط°ظپ plainPass ط§ظ„ظ‚ط¯ظٹظ… (ظ„ظˆ ظ…ظˆط¬ظˆط¯) ظˆظ†ط­ظپط¸ passHash ط§ظ„ط¢ظ…ظ† ط¨ط¯ظ„ط§ظ‹ ظ…ظ†ظ‡
+    // ط¸â€ ط·آ­ط·آ°ط¸ظ¾ plainPass ط·آ§ط¸â€‍ط¸â€ڑط·آ¯ط¸ظ¹ط¸â€¦ (ط¸â€‍ط¸ث† ط¸â€¦ط¸ث†ط·آ¬ط¸ث†ط·آ¯) ط¸ث†ط¸â€ ط·آ­ط¸ظ¾ط·آ¸ passHash ط·آ§ط¸â€‍ط·آ¢ط¸â€¦ط¸â€  ط·آ¨ط·آ¯ط¸â€‍ط·آ§ط¸â€¹ ط¸â€¦ط¸â€ ط¸â€،
     await userRef.update({
         passHash,
         plainPass: admin.firestore.FieldValue.delete()
@@ -695,23 +695,23 @@ exports.resetUserPassword = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost
     return { success: true };
 });
 // ============================================================
-// FUNCTION 13: saveFcmToken â€” ط­ظپط¸ طھظˆظƒظ† ط§ظ„ط¥ط´ط¹ط§ط±ط§طھ ظ„ظˆظ„ظٹ ط§ظ„ط£ظ…ط±
+// FUNCTION 13: saveFcmToken أ¢â‚¬â€‌ ط·آ­ط¸ظ¾ط·آ¸ ط·ع¾ط¸ث†ط¸ئ’ط¸â€  ط·آ§ط¸â€‍ط·آ¥ط·آ´ط·آ¹ط·آ§ط·آ±ط·آ§ط·ع¾ ط¸â€‍ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ±
 // ============================================================
 exports.saveFcmToken = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { schoolId, civilId, fcmToken } = request.data;
     if (!schoolId || !civilId || !fcmToken) {
-        throw new HttpsError('invalid-argument', 'ط§ظ„ط¨ظٹط§ظ†ط§طھ ظ†ط§ظ‚طµط©');
+        throw new HttpsError('invalid-argument', 'ط·آ§ط¸â€‍ط·آ¨ط¸ظ¹ط·آ§ط¸â€ ط·آ§ط·ع¾ ط¸â€ ط·آ§ط¸â€ڑط·آµط·آ©');
     }
 
     try {
-        // ظ†ط¨ط­ط« ط¹ظ† ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط¨ط§ظ„ط±ظ‚ظ… ط§ظ„ظ…ط¯ظ†ظٹ
+        // ط¸â€ ط·آ¨ط·آ­ط·آ« ط·آ¹ط¸â€  ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ± ط·آ¨ط·آ§ط¸â€‍ط·آ±ط¸â€ڑط¸â€¦ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط¸â€ ط¸ظ¹
         const snap = await db.collection('users')
             .where('schoolId', '==', schoolId)
             .where('civilId', '==', civilId)
             .where('role', '==', 'parent')
             .limit(1).get();
 
-        if (snap.empty) throw new HttpsError('not-found', 'ظˆظ„ظٹ ط§ظ„ط£ظ…ط± ط؛ظٹط± ظ…ظˆط¬ظˆط¯');
+        if (snap.empty) throw new HttpsError('not-found', 'ط¸ث†ط¸â€‍ط¸ظ¹ ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ± ط·ط›ط¸ظ¹ط·آ± ط¸â€¦ط¸ث†ط·آ¬ط¸ث†ط·آ¯');
 
         await snap.docs[0].ref.update({
             fcmToken,
@@ -725,17 +725,17 @@ exports.saveFcmToken = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], r
 });
 
 // ============================================================
-// FUNCTION 14: askAiAssistant â€” ط§ظ„ظ…ط³ط§ط¹ط¯ ط§ظ„ط°ظƒظٹ (proxy ط¢ظ…ظ†)
-// ظٹط³طھط¯ط¹ظٹ Claude API ط¨ط¯ظˆظ† ظƒط´ظپ ط§ظ„ظ€ API key ظ„ظ„ظ€ frontend
+// FUNCTION 14: askAiAssistant أ¢â‚¬â€‌ ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·آ§ط·آ¹ط·آ¯ ط·آ§ط¸â€‍ط·آ°ط¸ئ’ط¸ظ¹ (proxy ط·آ¢ط¸â€¦ط¸â€ )
+// ط¸ظ¹ط·آ³ط·ع¾ط·آ¯ط·آ¹ط¸ظ¹ Claude API ط·آ¨ط·آ¯ط¸ث†ط¸â€  ط¸ئ’ط·آ´ط¸ظ¾ ط·آ§ط¸â€‍ط¸â‚¬ API key ط¸â€‍ط¸â€‍ط¸â‚¬ frontend
 // ============================================================
 exports.askAiAssistant = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/], region: 'me-central1' }, async (request) => {
     const { context, question, history = [] } = request.data;
 
-    if (!question) throw new HttpsError('invalid-argument', 'ط§ظ„ط³ط¤ط§ظ„ ظ…ط·ظ„ظˆط¨');
+    if (!question) throw new HttpsError('invalid-argument', 'ط·آ§ط¸â€‍ط·آ³ط·آ¤ط·آ§ط¸â€‍ ط¸â€¦ط·آ·ط¸â€‍ط¸ث†ط·آ¨');
 
-    // API Key ظ…ط­ظپظˆط¸ ظپظٹ Firebase environment
+    // API Key ط¸â€¦ط·آ­ط¸ظ¾ط¸ث†ط·آ¸ ط¸ظ¾ط¸ظ¹ Firebase environment
     const apiKey = process.env.ANTHROPIC_API_KEY || functions.config().anthropic?.api_key;
-    if (!apiKey) throw new HttpsError('internal', 'API key ط؛ظٹط± ظ…ظڈط¹ظٹظژظ‘ظ†');
+    if (!apiKey) throw new HttpsError('internal', 'API key ط·ط›ط¸ظ¹ط·آ± ط¸â€¦ط¸عˆط·آ¹ط¸ظ¹ط¸عکط¸â€کط¸â€ ');
 
     try {
         const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -748,40 +748,40 @@ exports.askAiAssistant = onCall({ cors: [/bo3li1993\.github\.io$/, /localhost/],
             body: JSON.stringify({
                 model:      'claude-sonnet-4-6',
                 max_tokens: 1000,
-                system: `ط£ظ†طھ ظ…ط³ط§ط¹ط¯ ط°ظƒظٹ ط¯ط§ط®ظ„ ظ…ظ†ط¸ظˆظ…ط© ط¥ط¯ط§ط±ط© ظ…ط¯ط±ط³ط© ظپظٹ ط§ظ„ظƒظˆظٹطھ.
-طھط¬ط§ظˆط¨ ط¨ط§ظ„ط¹ط±ط¨ظٹ ط¨ط´ظƒظ„ ظ…ط®طھطµط± ظˆظˆط§ط¶ط­ ظˆظ…ظپظٹط¯.
-ظ„ط§ طھط³طھط®ط¯ظ… ظ…طµط·ظ„ط­ط§طھ طھظ‚ظ†ظٹط©.
-ط§ظ„ط£ط±ظ‚ط§ظ… ظˆط§ظ„ط£ط³ظ…ط§ط، ظ…ظ† ط§ظ„ط¨ظٹط§ظ†ط§طھ ط§ظ„ظ…ظڈط¹ط·ط§ط© ظپظ‚ط·.
-ط¥ط°ط§ ط§ظ„ط³ط¤ط§ظ„ ط¹ظ† ط¥ط¬ط±ط§ط،طŒ ظˆط¶ظ‘ط­ ط§ظ„ط®ط·ظˆط§طھ ط¨ط¨ط³ط§ط·ط©.`,
+                system: `ط·آ£ط¸â€ ط·ع¾ ط¸â€¦ط·آ³ط·آ§ط·آ¹ط·آ¯ ط·آ°ط¸ئ’ط¸ظ¹ ط·آ¯ط·آ§ط·آ®ط¸â€‍ ط¸â€¦ط¸â€ ط·آ¸ط¸ث†ط¸â€¦ط·آ© ط·آ¥ط·آ¯ط·آ§ط·آ±ط·آ© ط¸â€¦ط·آ¯ط·آ±ط·آ³ط·آ© ط¸ظ¾ط¸ظ¹ ط·آ§ط¸â€‍ط¸ئ’ط¸ث†ط¸ظ¹ط·ع¾.
+ط·ع¾ط·آ¬ط·آ§ط¸ث†ط·آ¨ ط·آ¨ط·آ§ط¸â€‍ط·آ¹ط·آ±ط·آ¨ط¸ظ¹ ط·آ¨ط·آ´ط¸ئ’ط¸â€‍ ط¸â€¦ط·آ®ط·ع¾ط·آµط·آ± ط¸ث†ط¸ث†ط·آ§ط·آ¶ط·آ­ ط¸ث†ط¸â€¦ط¸ظ¾ط¸ظ¹ط·آ¯.
+ط¸â€‍ط·آ§ ط·ع¾ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ ط¸â€¦ط·آµط·آ·ط¸â€‍ط·آ­ط·آ§ط·ع¾ ط·ع¾ط¸â€ڑط¸â€ ط¸ظ¹ط·آ©.
+ط·آ§ط¸â€‍ط·آ£ط·آ±ط¸â€ڑط·آ§ط¸â€¦ ط¸ث†ط·آ§ط¸â€‍ط·آ£ط·آ³ط¸â€¦ط·آ§ط·طŒ ط¸â€¦ط¸â€  ط·آ§ط¸â€‍ط·آ¨ط¸ظ¹ط·آ§ط¸â€ ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط¸â€¦ط¸عˆط·آ¹ط·آ·ط·آ§ط·آ© ط¸ظ¾ط¸â€ڑط·آ·.
+ط·آ¥ط·آ°ط·آ§ ط·آ§ط¸â€‍ط·آ³ط·آ¤ط·آ§ط¸â€‍ ط·آ¹ط¸â€  ط·آ¥ط·آ¬ط·آ±ط·آ§ط·طŒط·إ’ ط¸ث†ط·آ¶ط¸â€کط·آ­ ط·آ§ط¸â€‍ط·آ®ط·آ·ط¸ث†ط·آ§ط·ع¾ ط·آ¨ط·آ¨ط·آ³ط·آ§ط·آ·ط·آ©.`,
                 messages: [
                     ...history.map(h => ({ role: h.role, content: h.content })),
-                    { role: 'user', content: `ط§ظ„ط¨ظٹط§ظ†ط§طھ ط§ظ„ط­ط§ظ„ظٹط©:\n${context}\n\nط§ظ„ط³ط¤ط§ظ„: ${question}` }
+                    { role: 'user', content: `ط·آ§ط¸â€‍ط·آ¨ط¸ظ¹ط·آ§ط¸â€ ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ­ط·آ§ط¸â€‍ط¸ظ¹ط·آ©:\n${context}\n\nط·آ§ط¸â€‍ط·آ³ط·آ¤ط·آ§ط¸â€‍: ${question}` }
                 ]
             })
         });
 
         if (!response.ok) {
             const err = await response.text();
-            throw new Error(`Claude API error: ${response.status} â€” ${err}`);
+            throw new Error(`Claude API error: ${response.status} أ¢â‚¬â€‌ ${err}`);
         }
 
         const data = await response.json();
-        return { answer: data.content?.[0]?.text || 'ظ„ظ… ظٹظڈط±ط¬ط¹ ط§ظ„ظ…ط³ط§ط¹ط¯ ط¥ط¬ط§ط¨ط©' };
+        return { answer: data.content?.[0]?.text || 'ط¸â€‍ط¸â€¦ ط¸ظ¹ط¸عˆط·آ±ط·آ¬ط·آ¹ ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·آ§ط·آ¹ط·آ¯ ط·آ¥ط·آ¬ط·آ§ط·آ¨ط·آ©' };
 
     } catch(e) {
         console.error('askAiAssistant error:', e.message);
-        throw new HttpsError('internal', 'طھط¹ط°ط± ط§ظ„ط§طھطµط§ظ„ ط¨ط§ظ„ظ…ط³ط§ط¹ط¯ ط§ظ„ط°ظƒظٹ: ' + e.message);
+        throw new HttpsError('internal', 'ط·ع¾ط·آ¹ط·آ°ط·آ± ط·آ§ط¸â€‍ط·آ§ط·ع¾ط·آµط·آ§ط¸â€‍ ط·آ¨ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·آ§ط·آ¹ط·آ¯ ط·آ§ط¸â€‍ط·آ°ط¸ئ’ط¸ظ¹: ' + e.message);
     }
-});// ════════════════════════════════════════════════════════════════
-// FUNCTION: addStudentIds - إضافة studentId لكل الطلاب القدامى
-// تشغّل مرة واحدة فقط من super admin
-// ════════════════════════════════════════════════════════════════
+});// â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
+// FUNCTION: addStudentIds - ط¥ط¶ط§ظپط© studentId ظ„ظƒظ„ ط§ظ„ط·ظ„ط§ط¨ ط§ظ„ظ‚ط¯ط§ظ…ظ‰
+// طھط´ط؛ظ‘ظ„ ظ…ط±ط© ظˆط§ط­ط¯ط© ظپظ‚ط· ظ…ظ† super admin
+// â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 exports.addStudentIds = onCall({
     cors: [/bo3li1993\.github\.io$/, /localhost/],
     region: "me-central1"
 }, async (request) => {
     if (!request.auth || request.auth.uid !== "superadmin") {
-        throw new HttpsError("permission-denied", "Super Admin فقط");
+        throw new HttpsError("permission-denied", "Super Admin ظپظ‚ط·");
     }
     const studentsSnap = await db.collection("students").get();
     const batch = db.batch();
@@ -797,15 +797,15 @@ exports.addStudentIds = onCall({
     if (updated > 0) await batch.commit();
     return { success: true, updated: updated };
 });
-// ════════════════════════════════════════════════════════════════
-// FUNCTION: linkParentsToStudents - ربط أولياء الأمور بـ studentId
-// ════════════════════════════════════════════════════════════════
+// â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
+// FUNCTION: linkParentsToStudents - ط±ط¨ط· ط£ظˆظ„ظٹط§ط، ط§ظ„ط£ظ…ظˆط± ط¨ظ€ studentId
+// â•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گâ•گ
 exports.linkParentsToStudents = onCall({
     cors: [/bo3li1993\.github\.io$/, /localhost/],
     region: "me-central1"
 }, async (request) => {
     if (!request.auth || request.auth.uid !== "superadmin") {
-        throw new HttpsError("permission-denied", "Super Admin فقط");
+        throw new HttpsError("permission-denied", "Super Admin ظپظ‚ط·");
     }
     const parentsSnap = await db.collection("users")
         .where("role", "==", "parent").get();
@@ -837,4 +837,126 @@ exports.linkParentsToStudents = onCall({
         }
     }
     return { success: true, linked: linked, errors: errors };
+});
+// ════════════════════════════════════════════════════════════════
+// FUNCTION: archiveYear — أرشفة سنوية للبيانات
+// ════════════════════════════════════════════════════════════════
+exports.archiveYear = onCall({
+    cors: [/bo3li1993\.github\.io$/, /localhost/],
+    region: "me-central1"
+}, async (request) => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "يجب تسجيل الدخول");
+
+    const adminDoc = await db.collection("users").doc(request.auth.uid).get();
+    if (!adminDoc.exists || !["admin", "superadmin"].includes(adminDoc.data().role)) {
+        throw new HttpsError("permission-denied", "المدير فقط");
+    }
+
+    const { year, schoolId } = request.data;
+    if (!year || !schoolId) throw new HttpsError("invalid-argument", "year و schoolId مطلوبان");
+
+    const verifiedSchoolId = adminDoc.data().role === "superadmin" ? schoolId : adminDoc.data().schoolId;
+
+    try {
+        // أرشف بيانات الغياب
+        const attendanceSnap = await db.collection("attendance")
+            .where("schoolId", "==", verifiedSchoolId)
+            .where("date", ">=", year + "-01-01")
+            .where("date", "<=", year + "-12-31")
+            .get();
+
+        const batch = db.batch();
+        let archived = 0;
+
+        attendanceSnap.docs.forEach(function(doc) {
+            const archiveRef = db.collection("archive_attendance").doc(year + "_" + doc.id);
+            batch.set(archiveRef, { ...doc.data(), archivedYear: year, archivedAt: admin.firestore.FieldValue.serverTimestamp() });
+            archived++;
+        });
+
+        // أرشف بيانات السلوك
+        const behaviorSnap = await db.collection("behavior")
+            .where("schoolId", "==", verifiedSchoolId)
+            .where("date", ">=", year + "-01-01")
+            .where("date", "<=", year + "-12-31")
+            .get();
+
+        behaviorSnap.docs.forEach(function(doc) {
+            const archiveRef = db.collection("archive_behavior").doc(year + "_" + doc.id);
+            batch.set(archiveRef, { ...doc.data(), archivedYear: year, archivedAt: admin.firestore.FieldValue.serverTimestamp() });
+            archived++;
+        });
+
+        // أرشف الإنذارات
+        const warningsSnap = await db.collection("warnings")
+            .where("schoolId", "==", verifiedSchoolId)
+            .where("date", ">=", year + "-01-01")
+            .where("date", "<=", year + "-12-31")
+            .get();
+
+        warningsSnap.docs.forEach(function(doc) {
+            const archiveRef = db.collection("archive_warnings").doc(year + "_" + doc.id);
+            batch.set(archiveRef, { ...doc.data(), archivedYear: year, archivedAt: admin.firestore.FieldValue.serverTimestamp() });
+            archived++;
+        });
+
+        await batch.commit();
+
+        // سجل العملية في audit log
+        await db.collection("audit_log").add({
+            schoolId: verifiedSchoolId,
+            action: "archive_year",
+            year: year,
+            recordsArchived: archived,
+            performedBy: adminDoc.data().name || request.auth.uid,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        return { 
+            success: true, 
+            archived: archived,
+            message: "تم أرشفة " + archived + " سجل للسنة " + year
+        };
+
+    } catch(e) {
+        throw new HttpsError("internal", "خطأ في الأرشفة: " + e.message);
+    }
+});
+
+// ════════════════════════════════════════════════════════════════
+// FUNCTION: getAuditLog — سجل التدقيق الكامل
+// ════════════════════════════════════════════════════════════════
+exports.getAuditLog = onCall({
+    cors: [/bo3li1993\.github\.io$/, /localhost/],
+    region: "me-central1"
+}, async (request) => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "يجب تسجيل الدخول");
+
+    const adminDoc = await db.collection("users").doc(request.auth.uid).get();
+    if (!adminDoc.exists || !["admin", "superadmin", "assistant_manager"].includes(adminDoc.data().role)) {
+        throw new HttpsError("permission-denied", "لا توجد صلاحيات");
+    }
+
+    const schoolId = adminDoc.data().schoolId;
+    const { limit: limitNum = 50 } = request.data || {};
+
+    const snap = await db.collection("audit_log")
+        .where("schoolId", "==", schoolId)
+        .orderBy("createdAt", "desc")
+        .limit(limitNum)
+        .get();
+
+    const logs = [];
+    snap.forEach(function(doc) {
+        const data = doc.data();
+        logs.push({
+            id: doc.id,
+            action: data.action,
+            performedBy: data.performedBy,
+            details: data.details || "",
+            createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null
+        });
+    });
+
+    return { logs: logs };
 });
