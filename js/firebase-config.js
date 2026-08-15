@@ -1,6 +1,5 @@
-﻿import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getAuth, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFunctions } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
 
 export var firebaseConfig = {
@@ -18,15 +17,11 @@ export var auth = getAuth(app);
 export { onAuthStateChanged };
 export var functions = getFunctions(app, 'me-central1');
 
-// messaging â€” ظٹظڈط­ظ…ظژظ‘ظ„ ظ„ط§ط­ظ‚ط§ظ‹ ظ„ظˆ ط§ظ„ظ…طھطµظپط­ ظٹط¯ط¹ظ…ظ‡
+// messaging أ¢â‚¬â€‌ ط¸ظ¹ط¸عˆط·آ­ط¸â€¦ط¸عکط¸â€کط¸â€‍ ط¸â€‍ط·آ§ط·آ­ط¸â€ڑط·آ§ط¸â€¹ ط¸â€‍ط¸ث† ط·آ§ط¸â€‍ط¸â€¦ط·ع¾ط·آµط¸ظ¾ط·آ­ ط¸ظ¹ط·آ¯ط·آ¹ط¸â€¦ط¸â€،
 export var messaging = null;
 
-// ط§ط³طھط¹ط§ط¯ط© ط¬ظ„ط³ط© Custom Token
+// ط·آ§ط·آ³ط·ع¾ط·آ¹ط·آ§ط·آ¯ط·آ© ط·آ¬ط¸â€‍ط·آ³ط·آ© Custom Token
 try {
-    var savedToken = localStorage.getItem('hs_custom_token');
-    if (savedToken && !auth.currentUser) {
-        signInWithCustomToken(auth, savedToken).catch(function() {
-            localStorage.removeItem('hs_custom_token');
         });
     }
 } catch(e) {}
