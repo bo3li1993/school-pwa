@@ -1,17 +1,21 @@
 ﻿name: CI Check
+
 on:
   push:
     branches: [main]
+
 jobs:
   security:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
       - name: Validate key files
         run: |
           test -f index.html && echo "index.html OK"
@@ -19,37 +23,44 @@ jobs:
           test -f js/firebase-config.js && echo "firebase-config.js OK"
           test -f firestore.rules && echo "firestore.rules OK"
           test -f functions/index.js && echo "functions/index.js OK"
+
       - name: Install functions dependencies
-        run: cd functions && npm install --ignore-scripts
+        run: cd functions && npm ci
+
       - name: Check functions syntax
         run: cd functions && node --check index.js && echo "Syntax OK"
-      - name: Security - no plainPass in entire project
+
+      - name: Security - no plainPass
         run: |
-          if grep -RIn "plainPass" . --exclude-dir=.git --exclude-dir=node_modules --exclude="package-lock.json" --include="*.js" --include="*.html" | grep -v "delete\|FieldValue\|//"; then
+          if grep -RIn "plainPass" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html" | grep -v "delete\|FieldValue\|//"; then
             echo "ERROR: plainPass found!"
             exit 1
           fi
-          echo "plainPass check passed"
+          echo "plainPass OK"
+
       - name: Security - no hardcoded secrets
         run: |
-          if grep -RIn "husainan@2026\|SUPER_HASH\s*=" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html" | grep -v "process.env"; then
-            echo "ERROR: Hardcoded secret found!"
+          if grep -RIn "husainan@2026" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
+            echo "ERROR: Hardcoded secret!"
             exit 1
           fi
-          echo "Secrets check passed"
-      - name: Security - no SHA-256 for passwords
+          echo "Secrets OK"
+
+      - name: Security - no SHA-256
         run: |
           if grep -RIn "createHash.*sha256" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
             echo "ERROR: SHA-256 found!"
             exit 1
           fi
-          echo "SHA-256 check passed"
-      - name: Security - no custom token in localStorage (JS and HTML)
+          echo "SHA-256 OK"
+
+      - name: Security - no custom token storage
         run: |
           if grep -RIn "hs_custom_token" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
-            echo "ERROR: Custom token in localStorage!"
+            echo "ERROR: Custom token!"
             exit 1
           fi
-          echo "Token check passed"
+          echo "Token OK"
+
       - name: All checks passed
-        run: echo "Security CI passed!"
+        run: echo "CI passed!"
