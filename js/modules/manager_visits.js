@@ -1,4 +1,7 @@
-﻿import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
+// XSS Prevention
+function escHtml(str) { var d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+
+import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp, onSnapshot, doc, updateDoc, deleteDoc }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
@@ -102,7 +105,7 @@ window.loadMVTeachers = async function() {
         var teachers = [];
         snap.forEach(function(d) { var n = d.data().name; if (n) teachers.push(n); });
         teachers.sort(function(a,b) { return a.localeCompare(b,'ar'); });
-        teacherSelect.innerHTML = '<option value="">اختر المعلم</option>' + teachers.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('');
+        teacherSelect.innerHTML = '<option value="">اختر المعلم</option>' + teachers.map(function(t) { return '<option value="' + escHtml(t) + '">' + escHtml(t) + '</option>'; }).join('');
 
         window.renderMVCriteria(deptId, deptName);
         loadMVVisitsList();
