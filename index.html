@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>تسجيل الدخول | المنظومة الرقمية</title>
+<title>طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„ | ط§ظ„ظ…ظ†ط¸ظˆظ…ط© ط§ظ„ط±ظ‚ظ…ظٹط©</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0b2545">
@@ -30,7 +30,7 @@
 
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; }
 
-/* ══ خلفية ديناميكية ══ */
+/* â•گâ•گ ط®ظ„ظپظٹط© ط¯ظٹظ†ط§ظ…ظٹظƒظٹط© â•گâ•گ */
 body {
     background: var(--school-primary);
     min-height: 100vh;
@@ -44,7 +44,7 @@ body {
     overflow-x: hidden;
 }
 
-/* دوائر خلفية زخرفية */
+/* ط¯ظˆط§ط¦ط± ط®ظ„ظپظٹط© ط²ط®ط±ظپظٹط© */
 body::before {
     content: '';
     position: fixed;
@@ -64,7 +64,7 @@ body::after {
     pointer-events: none;
 }
 
-/* ══ شريط الإعلانات ══ */
+/* â•گâ•گ ط´ط±ظٹط· ط§ظ„ط¥ط¹ظ„ط§ظ†ط§طھ â•گâ•گ */
 .announcements-bar {
     width: 100%;
     max-width: 460px;
@@ -103,7 +103,7 @@ body::after {
     font-weight: 700;
 }
 
-/* ══ بطاقة الدخول ══ */
+/* â•گâ•گ ط¨ط·ط§ظ‚ط© ط§ظ„ط¯ط®ظˆظ„ â•گâ•گ */
 .login-card {
     width: 100%;
     max-width: 460px;
@@ -113,7 +113,7 @@ body::after {
     box-shadow: 0 24px 60px rgba(0,0,0,.3);
 }
 
-/* هيدر المدرسة */
+/* ظ‡ظٹط¯ط± ط§ظ„ظ…ط¯ط±ط³ط© */
 .school-header {
     background: var(--school-primary);
     padding: 28px 28px 22px;
@@ -176,7 +176,7 @@ body::after {
     margin-top: 10px;
 }
 
-/* جسم النموذج */
+/* ط¬ط³ظ… ط§ظ„ظ†ظ…ظˆط°ط¬ */
 .login-body {
     padding: 32px 28px 24px;
 }
@@ -243,7 +243,7 @@ body::after {
 }
 .login-footer a:hover { color: var(--school-primary); }
 
-/* ══ رسالة الخطأ ══ */
+/* â•گâ•گ ط±ط³ط§ظ„ط© ط§ظ„ط®ط·ط£ â•گâ•گ */
 .error-msg {
     background: #fef2f2;
     border: 1px solid #fecaca;
@@ -258,7 +258,7 @@ body::after {
 }
 .error-msg.show { display: block; }
 
-/* ══ شاشة الإيقاف ══ */
+/* â•گâ•گ ط´ط§ط´ط© ط§ظ„ط¥ظٹظ‚ط§ظپ â•گâ•گ */
 .lockdown-screen {
     text-align: center;
     padding: 40px 20px;
@@ -267,7 +267,7 @@ body::after {
 .lockdown-screen h2 { font-size: 18px; font-weight: 900; color: #111; margin-bottom: 10px; }
 .lockdown-screen p  { font-size: 13px; color: var(--mid); font-weight: 600; line-height: 1.7; }
 
-/* ══ زر التثبيت ══ */
+/* â•گâ•گ ط²ط± ط§ظ„طھط«ط¨ظٹطھ â•گâ•گ */
 .install-btn {
     width: 100%; max-width: 460px;
     padding: 13px;
@@ -288,7 +288,7 @@ body::after {
 }
 .install-btn:hover { background: rgba(255,255,255,.18); }
 
-/* ══ شريط المنظومة ══ */
+/* â•گâ•گ ط´ط±ظٹط· ط§ظ„ظ…ظ†ط¸ظˆظ…ط© â•گâ•گ */
 .system-brand {
     margin-top: 20px;
     color: rgba(255,255,255,.35);
@@ -299,7 +299,7 @@ body::after {
     gap: 6px;
 }
 
-/* ══ Skeleton loading ══ */
+/* â•گâ•گ Skeleton loading â•گâ•گ */
 .skeleton {
     background: linear-gradient(90deg,rgba(255,255,255,.1) 25%,rgba(255,255,255,.18) 50%,rgba(255,255,255,.1) 75%);
     background-size: 200% 100%;
@@ -317,62 +317,62 @@ body::after {
 </head>
 <body>
 
-<!-- إعلانات المدرسة -->
+<!-- ط¥ط¹ظ„ط§ظ†ط§طھ ط§ظ„ظ…ط¯ط±ط³ط© -->
 <div class="announcements-bar" id="ann-bar">
     <div class="ann-header">
         <i class="bi bi-megaphone-fill"></i>
-        إعلانات المدرسة
+        ط¥ط¹ظ„ط§ظ†ط§طھ ط§ظ„ظ…ط¯ط±ط³ط©
     </div>
     <div id="ann-list"></div>
 </div>
 
-<!-- بطاقة الدخول -->
+<!-- ط¨ط·ط§ظ‚ط© ط§ظ„ط¯ط®ظˆظ„ -->
 <div class="login-card" id="login-card">
 
-    <!-- هيدر المدرسة -->
+    <!-- ظ‡ظٹط¯ط± ط§ظ„ظ…ط¯ط±ط³ط© -->
     <div class="school-header" id="school-header">
-        <div class="school-logo-wrap" id="school-logo">🏫</div>
-        <div class="school-name" id="school-name">المنظومة الرقمية</div>
-        <div class="school-sub" id="school-sub">بوابة الدخول الآمنة</div>
+        <div class="school-logo-wrap" id="school-logo">ًںڈ«</div>
+        <div class="school-name" id="school-name">ط§ظ„ظ…ظ†ط¸ظˆظ…ط© ط§ظ„ط±ظ‚ظ…ظٹط©</div>
+        <div class="school-sub" id="school-sub">ط¨ظˆط§ط¨ط© ط§ظ„ط¯ط®ظˆظ„ ط§ظ„ط¢ظ…ظ†ط©</div>
         <div class="school-badge">
             <i class="bi bi-shield-check-fill"></i>
-            اتصال مشفر وآمن
+            ط§طھطµط§ظ„ ظ…ط´ظپط± ظˆط¢ظ…ظ†
         </div>
     </div>
 
-    <!-- نموذج الدخول -->
+    <!-- ظ†ظ…ظˆط°ط¬ ط§ظ„ط¯ط®ظˆظ„ -->
     <div class="login-body">
         <div class="error-msg" id="error-msg"></div>
 
-        <label class="login-label">رقم المستخدم</label>
+        <label class="login-label">ط±ظ‚ظ… ط§ظ„ظ…ط³طھط®ط¯ظ…</label>
         <input type="text" class="login-input" id="inp-id"
-            placeholder="أدخل رقمك..." autocomplete="username" required>
+            placeholder="ط£ط¯ط®ظ„ ط±ظ‚ظ…ظƒ..." autocomplete="username" required>
 
-        <label class="login-label">كلمة المرور</label>
+        <label class="login-label">ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط±</label>
         <input type="password" class="login-input" id="inp-pass"
-            placeholder="••••••••" autocomplete="current-password" required>
+            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password" required>
 
         <button class="login-btn" id="login-btn" onclick="doLogin()">
             <i class="bi bi-box-arrow-in-left"></i>
-            تسجيل الدخول
+            طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„
         </button>
     </div>
 
     <div class="login-footer">
-        <a href="privacy.html"><i class="bi bi-shield-lock"></i> سياسة الخصوصية</a>
+        <a href="privacy.html"><i class="bi bi-shield-lock"></i> ط³ظٹط§ط³ط© ط§ظ„ط®طµظˆطµظٹط©</a>
     </div>
 </div>
 
-<!-- زر التثبيت -->
+<!-- ط²ط± ط§ظ„طھط«ط¨ظٹطھ -->
 <button class="install-btn" id="install-btn">
     <i class="bi bi-phone-fill"></i>
-    ثبّت التطبيق على جهازك
+    ط«ط¨ظ‘طھ ط§ظ„طھط·ط¨ظٹظ‚ ط¹ظ„ظ‰ ط¬ظ‡ط§ط²ظƒ
 </button>
 
-<!-- شعار المنظومة -->
+<!-- ط´ط¹ط§ط± ط§ظ„ظ…ظ†ط¸ظˆظ…ط© -->
 <div class="system-brand">
     <i class="bi bi-grid-3x3-gap-fill"></i>
-    المنظومة الرقمية الموحدة © 2026
+    ط§ظ„ظ…ظ†ط¸ظˆظ…ط© ط§ظ„ط±ظ‚ظ…ظٹط© ط§ظ„ظ…ظˆط­ط¯ط© آ© 2026
 </div>
 
 <script type="module">
@@ -389,7 +389,7 @@ const schoolFromUrl = urlParams.get('school')?.trim().toLowerCase() || '';
 const functions    = getFunctions(auth.app, 'me-central1');
 const loginUserFn  = httpsCallable(functions, 'loginUser');
 
-// ══ تحميل بيانات المدرسة ══
+// â•گâ•گ طھط­ظ…ظٹظ„ ط¨ظٹط§ظ†ط§طھ ط§ظ„ظ…ط¯ط±ط³ط© â•گâ•گ
 async function loadSchoolBranding() {
     if (!schoolFromUrl) return;
 
@@ -399,24 +399,24 @@ async function loadSchoolBranding() {
 
         const s = snap.data();
 
-        // فحص الحالة
+        // ظپط­طµ ط§ظ„ط­ط§ظ„ط©
         if (s.status === 'suspended') {
-            showLockdown('⛔', 'الحساب موقوف', 'تم إيقاف حساب هذه المدرسة. يرجى التواصل مع الدعم الفني لتجديد الاشتراك.');
+            showLockdown('â›”', 'ط§ظ„ط­ط³ط§ط¨ ظ…ظˆظ‚ظˆظپ', 'طھظ… ط¥ظٹظ‚ط§ظپ ط­ط³ط§ط¨ ظ‡ط°ظ‡ ط§ظ„ظ…ط¯ط±ط³ط©. ظٹط±ط¬ظ‰ ط§ظ„طھظˆط§طµظ„ ظ…ط¹ ط§ظ„ط¯ط¹ظ… ط§ظ„ظپظ†ظٹ ظ„طھط¬ط¯ظٹط¯ ط§ظ„ط§ط´طھط±ط§ظƒ.');
             return;
         }
         if (s.subscriptionEnd && new Date(s.subscriptionEnd) < new Date()) {
-            showLockdown('⏰', 'انتهى الاشتراك', 'انتهت مدة اشتراك هذه المدرسة. يرجى التواصل مع الدعم الفني للتجديد.');
+            showLockdown('âڈ°', 'ط§ظ†طھظ‡ظ‰ ط§ظ„ط§ط´طھط±ط§ظƒ', 'ط§ظ†طھظ‡طھ ظ…ط¯ط© ط§ط´طھط±ط§ظƒ ظ‡ط°ظ‡ ط§ظ„ظ…ط¯ط±ط³ط©. ظٹط±ط¬ظ‰ ط§ظ„طھظˆط§طµظ„ ظ…ط¹ ط§ظ„ط¯ط¹ظ… ط§ظ„ظپظ†ظٹ ظ„ظ„طھط¬ط¯ظٹط¯.');
             return;
         }
 
-        // ══ تطبيق هوية المدرسة ══
+        // â•گâ•گ طھط·ط¨ظٹظ‚ ظ‡ظˆظٹط© ط§ظ„ظ…ط¯ط±ط³ط© â•گâ•گ
 
-        // الاسم
-        document.getElementById('school-name').textContent = s.name || 'المدرسة';
-        document.getElementById('school-sub').textContent  = s.region || 'وزارة التربية — الكويت';
-        document.title = `دخول | ${s.name}`;
+        // ط§ظ„ط§ط³ظ…
+        document.getElementById('school-name').textContent = s.name || 'ط§ظ„ظ…ط¯ط±ط³ط©';
+        document.getElementById('school-sub').textContent  = s.region || 'ظˆط²ط§ط±ط© ط§ظ„طھط±ط¨ظٹط© â€” ط§ظ„ظƒظˆظٹطھ';
+        document.title = `ط¯ط®ظˆظ„ | ${s.name}`;
 
-        // اللون المخصص
+        // ط§ظ„ظ„ظˆظ† ط§ظ„ظ…ط®طµطµ
         if (s.primaryColor) {
             document.documentElement.style.setProperty('--school-primary', s.primaryColor);
             document.getElementById('school-header').style.background = s.primaryColor;
@@ -428,15 +428,15 @@ async function loadSchoolBranding() {
             document.documentElement.style.setProperty('--school-accent', s.accentColor);
         }
 
-        // اللوغو
+        // ط§ظ„ظ„ظˆط؛ظˆ
         const logoWrap = document.getElementById('school-logo');
         if (s.logoUrl) {
-            logoWrap.innerHTML = `<img src="${s.logoUrl}" alt="${s.name}" onerror="this.parentElement.innerHTML='🏫'">`;
+            logoWrap.innerHTML = `<img src="${s.logoUrl}" alt="${s.name}" onerror="this.parentElement.innerHTML='ًںڈ«'">`;
         } else {
-            logoWrap.textContent = '🏫';
+            logoWrap.textContent = 'ًںڈ«';
         }
 
-        // ══ تحميل الإعلانات ══
+        // â•گâ•گ طھط­ظ…ظٹظ„ ط§ظ„ط¥ط¹ظ„ط§ظ†ط§طھ â•گâ•گ
         loadAnnouncements(snap.id);
 
     } catch(e) {
@@ -444,7 +444,7 @@ async function loadSchoolBranding() {
     }
 }
 
-// ══ تحميل الإعلانات ══
+// â•گâ•گ طھط­ظ…ظٹظ„ ط§ظ„ط¥ط¹ظ„ط§ظ†ط§طھ â•گâ•گ
 async function loadAnnouncements(schoolId) {
     try {
         const snap = await getDocs(query(
@@ -471,10 +471,10 @@ async function loadAnnouncements(schoolId) {
             </div>`;
         }).join('');
 
-    } catch(e) { /* الإعلانات اختيارية */ }
+    } catch(e) { /* ط§ظ„ط¥ط¹ظ„ط§ظ†ط§طھ ط§ط®طھظٹط§ط±ظٹط© */ }
 }
 
-// ══ شاشة الإيقاف ══
+// â•گâ•گ ط´ط§ط´ط© ط§ظ„ط¥ظٹظ‚ط§ظپ â•گâ•گ
 function showLockdown(icon, title, msg) {
     document.getElementById('login-card').innerHTML = `
         <div class="lockdown-screen">
@@ -484,7 +484,7 @@ function showLockdown(icon, title, msg) {
         </div>`;
 }
 
-// ══ تسجيل الدخول ══
+// â•گâ•گ طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„ â•گâ•گ
 window.doLogin = async function() {
     const id   = document.getElementById('inp-id').value.trim();
     const pass = document.getElementById('inp-pass').value.trim();
@@ -494,12 +494,12 @@ window.doLogin = async function() {
     err.classList.remove('show');
 
     if (!id || !pass) {
-        err.textContent = '⚠️ أدخل رقم المستخدم وكلمة المرور';
+        err.textContent = 'âڑ ï¸ڈ ط£ط¯ط®ظ„ ط±ظ‚ظ… ط§ظ„ظ…ط³طھط®ط¯ظ… ظˆظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط±';
         err.classList.add('show'); return;
     }
 
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> ط¬ط§ط±ظٹ ط§ظ„طھط­ظ‚ظ‚...';
 
     try {
         const result   = await loginUserFn({ schoolId: schoolFromUrl || null, userId: id, password: pass });
@@ -510,7 +510,6 @@ window.doLogin = async function() {
         }
 
         await signInWithCustomToken(auth, userData.token);
-        localStorage.setItem('hs_custom_token', userData.token);
 
         const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
         if (!schoolSnap.exists()) throw { code: 'school-not-found' };
@@ -542,19 +541,19 @@ window.doLogin = async function() {
 
     } catch(errObj) {
         const msgs = {
-            'functions/not-found':         '❌ رقم المستخدم غير موجود',
-            'functions/permission-denied': '❌ كلمة المرور غير صحيحة',
-            'functions/invalid-argument':  '⚠️ أدخل البيانات بشكل صحيح',
-            'school-mismatch':             '❌ هذا الحساب غير تابع لهذه المدرسة',
-            'school-not-found':            '❌ المدرسة غير مسجلة في النظام',
-            'school-suspended':            '⚠️ حساب المدرسة موقوف — تواصل مع الدعم',
-            'subscription-ended':          '⚠️ انتهى اشتراك المدرسة — تواصل مع الدعم'
+            'functions/not-found':         'â‌Œ ط±ظ‚ظ… ط§ظ„ظ…ط³طھط®ط¯ظ… ط؛ظٹط± ظ…ظˆط¬ظˆط¯',
+            'functions/permission-denied': 'â‌Œ ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط؛ظٹط± طµط­ظٹط­ط©',
+            'functions/invalid-argument':  'âڑ ï¸ڈ ط£ط¯ط®ظ„ ط§ظ„ط¨ظٹط§ظ†ط§طھ ط¨ط´ظƒظ„ طµط­ظٹط­',
+            'school-mismatch':             'â‌Œ ظ‡ط°ط§ ط§ظ„ط­ط³ط§ط¨ ط؛ظٹط± طھط§ط¨ط¹ ظ„ظ‡ط°ظ‡ ط§ظ„ظ…ط¯ط±ط³ط©',
+            'school-not-found':            'â‌Œ ط§ظ„ظ…ط¯ط±ط³ط© ط؛ظٹط± ظ…ط³ط¬ظ„ط© ظپظٹ ط§ظ„ظ†ط¸ط§ظ…',
+            'school-suspended':            'âڑ ï¸ڈ ط­ط³ط§ط¨ ط§ظ„ظ…ط¯ط±ط³ط© ظ…ظˆظ‚ظˆظپ â€” طھظˆط§طµظ„ ظ…ط¹ ط§ظ„ط¯ط¹ظ…',
+            'subscription-ended':          'âڑ ï¸ڈ ط§ظ†طھظ‡ظ‰ ط§ط´طھط±ط§ظƒ ط§ظ„ظ…ط¯ط±ط³ط© â€” طھظˆط§طµظ„ ظ…ط¹ ط§ظ„ط¯ط¹ظ…'
         };
-        err.textContent = msgs[errObj.code] || ('❌ ' + (errObj.message || 'حدث خطأ، حاول مرة أخرى'));
+        err.textContent = msgs[errObj.code] || ('â‌Œ ' + (errObj.message || 'ط­ط¯ط« ط®ط·ط£طŒ ط­ط§ظˆظ„ ظ…ط±ط© ط£ط®ط±ظ‰'));
         err.classList.add('show');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول';
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> طھط³ط¬ظٹظ„ ط§ظ„ط¯ط®ظˆظ„';
     }
 };
 
@@ -573,7 +572,7 @@ window.addEventListener('beforeinstallprompt', e => {
     };
 });
 
-// تحميل الهوية
+// طھط­ظ…ظٹظ„ ط§ظ„ظ‡ظˆظٹط©
 loadSchoolBranding();
 </script>
 
@@ -588,10 +587,10 @@ if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark
 
 
 <script>
-// ══ Service Worker — تسجيل بسيط بدون reload ══
+// â•گâ•گ Service Worker â€” طھط³ط¬ظٹظ„ ط¨ط³ظٹط· ط¨ط¯ظˆظ† reload â•گâ•گ
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(function(reg) {
-        // تحقق من التحديثات كل 5 دقائق
+        // طھط­ظ‚ظ‚ ظ…ظ† ط§ظ„طھط­ط¯ظٹط«ط§طھ ظƒظ„ 5 ط¯ظ‚ط§ط¦ظ‚
         setInterval(function() { reg.update(); }, 5 * 60 * 1000);
     }).catch(function() {});
 }
