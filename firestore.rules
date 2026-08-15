@@ -2,7 +2,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ══ دوال مساعدة ══
     function isAuth() {
       return request.auth != null;
     }
@@ -43,6 +42,16 @@ service cloud.firestore {
       return sameSchool(schoolId) && (isAdmin() || isTeacher());
     }
 
+    // تحقق: لا يمكن تغيير role أو schoolId
+    function roleNotChanged() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'schoolId']);
+    }
+
+    // تحقق: schoolId لا يتغير عند Update
+    function schoolIdNotChanged() {
+      return request.resource.data.schoolId == resource.data.schoolId;
+    }
+
     // ══ المدارس ══
     match /schools/{schoolId} {
       allow read: if isAuth();
@@ -56,8 +65,11 @@ service cloud.firestore {
         isAdmin() && sameSchool(resource.data.schoolId) ||
         isSuperAdmin()
       );
-      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
-      allow update: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId) &&
+        !request.resource.data.role.matches('superadmin');
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) &&
+        roleNotChanged() &&
+        schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
@@ -69,7 +81,7 @@ service cloud.firestore {
           resource.data.studentId in getUser().childIds
       );
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
-      allow update: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
@@ -81,7 +93,7 @@ service cloud.firestore {
           resource.data.studentId in getUser().childIds
       );
       allow create: if isSchoolStaff(request.resource.data.schoolId);
-      allow update: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
@@ -93,7 +105,7 @@ service cloud.firestore {
           resource.data.studentId in getUser().childIds
       );
       allow create: if isSchoolStaff(request.resource.data.schoolId);
-      allow update: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
@@ -105,7 +117,7 @@ service cloud.firestore {
           resource.data.studentId in getUser().childIds
       );
       allow create: if isSchoolStaff(request.resource.data.schoolId);
-      allow update: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
@@ -126,99 +138,88 @@ service cloud.firestore {
     // ══ الفصول ══
     match /classes/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow write: if isAdmin() && sameSchool(
-        request.resource.data.schoolId != null
-          ? request.resource.data.schoolId
-          : resource.data.schoolId
-      );
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ الأقسام ══
     match /departments/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow write: if isAdmin() && sameSchool(
-        request.resource.data.schoolId != null
-          ? request.resource.data.schoolId
-          : resource.data.schoolId
-      );
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ الإعلانات ══
     match /announcements/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow write: if isAdmin() && sameSchool(
-        request.resource.data.schoolId != null
-          ? request.resource.data.schoolId
-          : resource.data.schoolId
-      );
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ الصندوق البريدي ══
     match /school_threads/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
-      allow update: if isAuth() && sameSchool(resource.data.schoolId);
+      allow update: if isAuth() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ لوحة الشرف ══
     match /honors_board/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow write: if isAdmin() && sameSchool(
-        request.resource.data.schoolId != null
-          ? request.resource.data.schoolId
-          : resource.data.schoolId
-      );
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ المكافآت ══
     match /rewards/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow write: if isAdmin() && sameSchool(
-        request.resource.data.schoolId != null
-          ? request.resource.data.schoolId
-          : resource.data.schoolId
-      );
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ الزيارات الفنية ══
     match /technical_visits/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow write: if isSchoolStaff(
-        request.resource.data.schoolId != null
-          ? request.resource.data.schoolId
-          : resource.data.schoolId
-      );
+      allow create: if isSchoolStaff(request.resource.data.schoolId);
+      allow update: if isSchoolStaff(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ زيارات المدير ══
     match /manager_visits/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
-      allow update, delete: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ جولات المشرف ══
     match /wing_rounds/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow write: if isSchoolStaff(
-        request.resource.data.schoolId != null
-          ? request.resource.data.schoolId
-          : resource.data.schoolId
-      );
+      allow create: if isSchoolStaff(request.resource.data.schoolId);
+      allow update: if isSchoolStaff(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // ══ سجل التدقيق ══
+    // ══ سجل التدقيق — منع التزوير ══
     match /audit_log/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
-      allow create: if isAuth();
+      allow create: if isAuth() &&
+        request.resource.data.schoolId == userSchool() &&
+        request.resource.data.keys().hasAll(['schoolId', 'action', 'createdAt']);
       allow update, delete: if false;
     }
 
     // ══ النسخ الاحتياطية ══
     match /backups/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
-      allow create: if isAdmin();
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update, delete: if false;
     }
 
@@ -238,39 +239,43 @@ service cloud.firestore {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
     }
-
     match /archive_behavior/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
     }
-
     match /archive_warnings/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
     }
 
-    // ══ الخريجون ══
+    // ══ الخريجون — مع sameSchool ══
     match /graduates/{docId} {
-      allow read: if isAdmin();
-      allow write: if isAdmin();
+      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // ══ سجلات الترقية ══
+    // ══ سجلات الترقية — مع sameSchool ══
     match /promotion_logs/{docId} {
-      allow read: if isAdmin();
-      allow write: if isAdmin();
+      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update, delete: if false;
     }
 
-    // ══ الطلاب المحذوفون ══
+    // ══ الطلاب المحذوفون — مع sameSchool ══
     match /deleted_students/{docId} {
-      allow read: if isAdmin();
-      allow write: if isAdmin();
+      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update, delete: if false;
     }
 
-    // ══ توزيع الفصول ══
+    // ══ توزيع الفصول — مع sameSchool ══
     match /class_distribution/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow write: if isAdmin();
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // ══ سجلات الاشتراك ══
@@ -279,7 +284,7 @@ service cloud.firestore {
       allow write: if isSuperAdmin();
     }
 
-    // ══ المنع الافتراضي لأي collection غير معرّفة ══
+    // ══ المنع الافتراضي ══
     match /{document=**} {
       allow read, write: if false;
     }
