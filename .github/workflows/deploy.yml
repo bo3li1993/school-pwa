@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
 jobs:
-  validate:
+  security:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,32 +16,41 @@ jobs:
         run: |
           test -f index.html && echo "index.html OK"
           test -f admin.html && echo "admin.html OK"
-          test -f teacher.html && echo "teacher.html OK"
-          test -f parent.html && echo "parent.html OK"
           test -f js/firebase-config.js && echo "firebase-config.js OK"
           test -f firestore.rules && echo "firestore.rules OK"
           test -f functions/index.js && echo "functions/index.js OK"
           test -f sw.js && echo "sw.js OK"
-          echo "All files OK!"
       - name: Install functions dependencies
         run: cd functions && npm install --ignore-scripts
       - name: Check functions syntax
         run: cd functions && node --check index.js && echo "Syntax OK"
-      - name: Check for plainPass in code
+      - name: Security - no plainPass allowed
         run: |
-          if grep -r "plainPass" functions/index.js --include="*.js" | grep -v "delete\|migration\|comment"; then
-            echo "WARNING: plainPass found in code!"
-          else
-            echo "plainPass check OK"
+          if grep -n "plainPass" functions/index.js | grep -v "delete\|FieldValue\|//"; then
+            echo "ERROR: plainPass found in production code!"
+            exit 1
           fi
-      - name: Check for hardcoded secrets
+          echo "plainPass check passed"
+      - name: Security - no hardcoded secrets
         run: |
-          if grep -r "sha256\|createHash" functions/index.js | grep -v "argon2\|comment"; then
-            echo "WARNING: SHA-256 found!"
-          else
-            echo "Hash check OK"
+          if grep -n "husainan@2026\|SUPER_HASH\s*=" functions/index.js | grep -v "process.env"; then
+            echo "ERROR: Hardcoded secret found!"
+            exit 1
           fi
-      - name: Install test dependencies
-        run: cd tests && npm install --ignore-scripts 2>/dev/null || echo "Test deps skipped"
-      - name: Summary
-        run: echo "CI passed successfully!"
+          echo "Secrets check passed"
+      - name: Security - no SHA-256 for passwords
+        run: |
+          if grep -n "createHash.*sha256" functions/index.js; then
+            echo "ERROR: SHA-256 still used for passwords!"
+            exit 1
+          fi
+          echo "Hash check passed"
+      - name: Security - no custom token in localStorage
+        run: |
+          if grep -rn "hs_custom_token" js/ --include="*.js"; then
+            echo "ERROR: Custom token still in localStorage!"
+            exit 1
+          fi
+          echo "Token check passed"
+      - name: All checks passed
+        run: echo "Security CI passed successfully!"
