@@ -1,4 +1,4 @@
-import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+﻿import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getAuth, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFunctions } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
@@ -18,10 +18,10 @@ export var auth = getAuth(app);
 export { onAuthStateChanged };
 export var functions = getFunctions(app, 'me-central1');
 
-// messaging — يُحمَّل لاحقاً لو المتصفح يدعمه
+// messaging â€” ظٹظڈط­ظ…ظژظ‘ظ„ ظ„ط§ط­ظ‚ط§ظ‹ ظ„ظˆ ط§ظ„ظ…طھطµظپط­ ظٹط¯ط¹ظ…ظ‡
 export var messaging = null;
 
-// استعادة جلسة Custom Token
+// ط§ط³طھط¹ط§ط¯ط© ط¬ظ„ط³ط© Custom Token
 try {
     var savedToken = localStorage.getItem('hs_custom_token');
     if (savedToken && !auth.currentUser) {
