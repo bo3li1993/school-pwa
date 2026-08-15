@@ -42,23 +42,23 @@ service cloud.firestore {
       return sameSchool(schoolId) && (isAdmin() || isTeacher());
     }
 
-    // طھط­ظ‚ظ‚: ظ„ط§ ظٹظ…ظƒظ† طھط؛ظٹظٹط± role ط£ظˆ schoolId
+    // ط·ع¾ط·آ­ط¸â€ڑط¸â€ڑ: ط¸â€‍ط·آ§ ط¸ظ¹ط¸â€¦ط¸ئ’ط¸â€  ط·ع¾ط·ط›ط¸ظ¹ط¸ظ¹ط·آ± role ط·آ£ط¸ث† schoolId
     function roleNotChanged() {
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'schoolId']);
     }
 
-    // طھط­ظ‚ظ‚: schoolId ظ„ط§ ظٹطھط؛ظٹط± ط¹ظ†ط¯ Update
+    // ط·ع¾ط·آ­ط¸â€ڑط¸â€ڑ: schoolId ط¸â€‍ط·آ§ ط¸ظ¹ط·ع¾ط·ط›ط¸ظ¹ط·آ± ط·آ¹ط¸â€ ط·آ¯ Update
     function schoolIdNotChanged() {
       return request.resource.data.schoolId == resource.data.schoolId;
     }
 
-    // â•گâ•گ ط§ظ„ظ…ط¯ط§ط±ط³ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط·آ§ط·آ±ط·آ³ أ¢â€¢ع¯أ¢â€¢ع¯
     match /schools/{schoolId} {
       allow read: if isAuth();
       allow write: if isSuperAdmin();
     }
 
-    // â•گâ•گ ط§ظ„ظ…ط³طھط®ط¯ظ…ظˆظ† â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ط¸ث†ط¸â€  أ¢â€¢ع¯أ¢â€¢ع¯
     match /users/{userId} {
       allow read: if isAuth() && (
         request.auth.uid == userId ||
@@ -73,7 +73,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط·ظ„ط§ط¨ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ·ط¸â€‍ط·آ§ط·آ¨ أ¢â€¢ع¯أ¢â€¢ع¯
     match /students/{docId} {
       allow read: if isAuth() && (
         isSchoolStaff(resource.data.schoolId) ||
@@ -85,7 +85,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط­ط¶ظˆط± ظˆط§ظ„ط؛ظٹط§ط¨ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ­ط·آ¶ط¸ث†ط·آ± ط¸ث†ط·آ§ط¸â€‍ط·ط›ط¸ظ¹ط·آ§ط·آ¨ أ¢â€¢ع¯أ¢â€¢ع¯
     match /attendance/{docId} {
       allow read: if isAuth() && (
         isSchoolStaff(resource.data.schoolId) ||
@@ -97,7 +97,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط³ظ„ظˆظƒ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ³ط¸â€‍ط¸ث†ط¸ئ’ أ¢â€¢ع¯أ¢â€¢ع¯
     match /behavior/{docId} {
       allow read: if isAuth() && (
         isSchoolStaff(resource.data.schoolId) ||
@@ -109,7 +109,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط¥ظ†ط°ط§ط±ط§طھ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ¥ط¸â€ ط·آ°ط·آ§ط·آ±ط·آ§ط·ع¾ أ¢â€¢ع¯أ¢â€¢ع¯
     match /warnings/{docId} {
       allow read: if isAuth() && (
         isSchoolStaff(resource.data.schoolId) ||
@@ -121,21 +121,21 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط§ط³طھط¦ط°ط§ظ† â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ§ط·آ³ط·ع¾ط·آ¦ط·آ°ط·آ§ط¸â€  أ¢â€¢ع¯أ¢â€¢ع¯
     match /gatepass/{docId} {
       allow read: if isAuth() && isSchoolStaff(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update, delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط¹ظٹط§ط¯ط© â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ¹ط¸ظ¹ط·آ§ط·آ¯ط·آ© أ¢â€¢ع¯أ¢â€¢ع¯
     match /clinic/{docId} {
       allow read: if isAuth() && isSchoolStaff(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update, delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ظپطµظˆظ„ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط¸ظ¾ط·آµط¸ث†ط¸â€‍ أ¢â€¢ع¯أ¢â€¢ع¯
     match /classes/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
@@ -143,7 +143,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط£ظ‚ط³ط§ظ… â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ£ط¸â€ڑط·آ³ط·آ§ط¸â€¦ أ¢â€¢ع¯أ¢â€¢ع¯
     match /departments/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
@@ -151,7 +151,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط¥ط¹ظ„ط§ظ†ط§طھ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ¥ط·آ¹ط¸â€‍ط·آ§ط¸â€ ط·آ§ط·ع¾ أ¢â€¢ع¯أ¢â€¢ع¯
     match /announcements/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
@@ -159,7 +159,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„طµظ†ط¯ظˆظ‚ ط§ظ„ط¨ط±ظٹط¯ظٹ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آµط¸â€ ط·آ¯ط¸ث†ط¸â€ڑ ط·آ§ط¸â€‍ط·آ¨ط·آ±ط¸ظ¹ط·آ¯ط¸ظ¹ أ¢â€¢ع¯أ¢â€¢ع¯
     match /school_threads/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
@@ -167,7 +167,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ظ„ظˆط­ط© ط§ظ„ط´ط±ظپ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط¸â€‍ط¸ث†ط·آ­ط·آ© ط·آ§ط¸â€‍ط·آ´ط·آ±ط¸ظ¾ أ¢â€¢ع¯أ¢â€¢ع¯
     match /honors_board/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
@@ -175,7 +175,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ظ…ظƒط§ظپط¢طھ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط¸â€¦ط¸ئ’ط·آ§ط¸ظ¾ط·آ¢ط·ع¾ أ¢â€¢ع¯أ¢â€¢ع¯
     match /rewards/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
@@ -183,7 +183,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط§ظ„ط²ظٹط§ط±ط§طھ ط§ظ„ظپظ†ظٹط© â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ²ط¸ظ¹ط·آ§ط·آ±ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط¸ظ¾ط¸â€ ط¸ظ¹ط·آ© أ¢â€¢ع¯أ¢â€¢ع¯
     match /technical_visits/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
@@ -191,7 +191,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط²ظٹط§ط±ط§طھ ط§ظ„ظ…ط¯ظٹط± â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ²ط¸ظ¹ط·آ§ط·آ±ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط¸ظ¹ط·آ± أ¢â€¢ع¯أ¢â€¢ع¯
     match /manager_visits/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
@@ -199,7 +199,7 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط¬ظˆظ„ط§طھ ط§ظ„ظ…ط´ط±ظپ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ¬ط¸ث†ط¸â€‍ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط¸â€¦ط·آ´ط·آ±ط¸ظ¾ أ¢â€¢ع¯أ¢â€¢ع¯
     match /wing_rounds/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
@@ -207,31 +207,31 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط³ط¬ظ„ ط§ظ„طھط¯ظ‚ظٹظ‚ â€” ظ…ظ†ط¹ ط§ظ„طھط²ظˆظٹط± â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ³ط·آ¬ط¸â€‍ ط·آ§ط¸â€‍ط·ع¾ط·آ¯ط¸â€ڑط¸ظ¹ط¸â€ڑ أ¢â‚¬â€‌ ط¸â€¦ط¸â€ ط·آ¹ ط·آ§ط¸â€‍ط·ع¾ط·آ²ط¸ث†ط¸ظ¹ط·آ± أ¢â€¢ع¯أ¢â€¢ع¯
     match /audit_log/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow create, update, delete: if false;
     }
 
-    // â•گâ•گ ط§ظ„ظ†ط³ط® ط§ظ„ط§ط­طھظٹط§ط·ظٹط© â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط¸â€ ط·آ³ط·آ® ط·آ§ط¸â€‍ط·آ§ط·آ­ط·ع¾ط¸ظ¹ط·آ§ط·آ·ط¸ظ¹ط·آ© أ¢â€¢ع¯أ¢â€¢ع¯
     match /backups/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update, delete: if false;
     }
 
-    // â•گâ•گ ظ‚ط§ط¦ظ…ط© ط§ظ†طھط¸ط§ط± ط§ظ„ط¥ط´ط¹ط§ط±ط§طھ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط¸â€ڑط·آ§ط·آ¦ط¸â€¦ط·آ© ط·آ§ط¸â€ ط·ع¾ط·آ¸ط·آ§ط·آ± ط·آ§ط¸â€‍ط·آ¥ط·آ´ط·آ¹ط·آ§ط·آ±ط·آ§ط·ع¾ أ¢â€¢ع¯أ¢â€¢ع¯
     match /notifications_queue/{docId} {
-      allow read: if isAdmin();
+      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
     }
 
-    // â•گâ•گ ظ…ط­ط§ظˆظ„ط§طھ ط§ظ„ط¯ط®ظˆظ„ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط¸â€¦ط·آ­ط·آ§ط¸ث†ط¸â€‍ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ¯ط·آ®ط¸ث†ط¸â€‍ أ¢â€¢ع¯أ¢â€¢ع¯
     match /login_attempts/{docId} {
       allow read, write: if false;
     }
 
-    // â•گâ•گ ط§ظ„ط£ط±ط´ظٹظپ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ£ط·آ±ط·آ´ط¸ظ¹ط¸ظ¾ أ¢â€¢ع¯أ¢â€¢ع¯
     match /archive_attendance/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
@@ -245,7 +245,7 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // â•گâ•گ ط§ظ„ط®ط±ظٹط¬ظˆظ† â€” ظ…ط¹ sameSchool â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ®ط·آ±ط¸ظ¹ط·آ¬ط¸ث†ط¸â€  أ¢â‚¬â€‌ ط¸â€¦ط·آ¹ sameSchool أ¢â€¢ع¯أ¢â€¢ع¯
     match /graduates/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
@@ -253,21 +253,21 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط³ط¬ظ„ط§طھ ط§ظ„طھط±ظ‚ظٹط© â€” ظ…ط¹ sameSchool â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ³ط·آ¬ط¸â€‍ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·ع¾ط·آ±ط¸â€ڑط¸ظ¹ط·آ© أ¢â‚¬â€‌ ط¸â€¦ط·آ¹ sameSchool أ¢â€¢ع¯أ¢â€¢ع¯
     match /promotion_logs/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update, delete: if false;
     }
 
-    // â•گâ•گ ط§ظ„ط·ظ„ط§ط¨ ط§ظ„ظ…ط­ط°ظˆظپظˆظ† â€” ظ…ط¹ sameSchool â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط·آ·ط¸â€‍ط·آ§ط·آ¨ ط·آ§ط¸â€‍ط¸â€¦ط·آ­ط·آ°ط¸ث†ط¸ظ¾ط¸ث†ط¸â€  أ¢â‚¬â€‌ ط¸â€¦ط·آ¹ sameSchool أ¢â€¢ع¯أ¢â€¢ع¯
     match /deleted_students/{docId} {
       allow read: if isAdmin() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update, delete: if false;
     }
 
-    // â•گâ•گ طھظˆط²ظٹط¹ ط§ظ„ظپطµظˆظ„ â€” ظ…ط¹ sameSchool â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·ع¾ط¸ث†ط·آ²ط¸ظ¹ط·آ¹ ط·آ§ط¸â€‍ط¸ظ¾ط·آµط¸ث†ط¸â€‍ أ¢â‚¬â€‌ ط¸â€¦ط·آ¹ sameSchool أ¢â€¢ع¯أ¢â€¢ع¯
     match /class_distribution/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
@@ -275,13 +275,13 @@ service cloud.firestore {
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
-    // â•گâ•گ ط³ط¬ظ„ط§طھ ط§ظ„ط§ط´طھط±ط§ظƒ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ³ط·آ¬ط¸â€‍ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط·آ§ط·آ´ط·ع¾ط·آ±ط·آ§ط¸ئ’ أ¢â€¢ع¯أ¢â€¢ع¯
     match /subscription_logs/{docId} {
       allow read: if isSuperAdmin();
       allow write: if isSuperAdmin();
     }
 
-    // â•گâ•گ ط§ظ„ظ…ظ†ط¹ ط§ظ„ط§ظپطھط±ط§ط¶ظٹ â•گâ•گ
+    // أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ§ط¸â€‍ط¸â€¦ط¸â€ ط·آ¹ ط·آ§ط¸â€‍ط·آ§ط¸ظ¾ط·ع¾ط·آ±ط·آ§ط·آ¶ط¸ظ¹ أ¢â€¢ع¯أ¢â€¢ع¯
     match /{document=**} {
       allow read, write: if false;
     }
