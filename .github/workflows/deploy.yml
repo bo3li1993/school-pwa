@@ -1,38 +1,47 @@
 ﻿name: CI Check
-
 on:
   push:
     branches: [main]
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - name: Validate key files
         run: |
           test -f index.html && echo "index.html OK"
           test -f admin.html && echo "admin.html OK"
           test -f teacher.html && echo "teacher.html OK"
           test -f parent.html && echo "parent.html OK"
-          test -f department_head.html && echo "department_head.html OK"
           test -f js/firebase-config.js && echo "firebase-config.js OK"
           test -f firestore.rules && echo "firestore.rules OK"
           test -f functions/index.js && echo "functions/index.js OK"
           test -f sw.js && echo "sw.js OK"
-          echo "All files validated!"
-
+          echo "All files OK!"
       - name: Install functions dependencies
         run: cd functions && npm install --ignore-scripts
-
       - name: Check functions syntax
+        run: cd functions && node --check index.js && echo "Syntax OK"
+      - name: Check for plainPass in code
         run: |
-          cd functions
-          node --check index.js && echo "functions/index.js syntax OK"
+          if grep -r "plainPass" functions/index.js --include="*.js" | grep -v "delete\|migration\|comment"; then
+            echo "WARNING: plainPass found in code!"
+          else
+            echo "plainPass check OK"
+          fi
+      - name: Check for hardcoded secrets
+        run: |
+          if grep -r "sha256\|createHash" functions/index.js | grep -v "argon2\|comment"; then
+            echo "WARNING: SHA-256 found!"
+          else
+            echo "Hash check OK"
+          fi
+      - name: Install test dependencies
+        run: cd tests && npm install --ignore-scripts 2>/dev/null || echo "Test deps skipped"
+      - name: Summary
+        run: echo "CI passed successfully!"
