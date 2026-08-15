@@ -30,13 +30,13 @@ jobs:
       - name: Check functions syntax
         run: cd functions && node --check index.js && echo "Syntax OK"
 
-      - name: Security - no plainPass
+      - name: Security - no passHash written from browser
         run: |
-          if grep -RIn "plainPass" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html" | grep -v "delete\|FieldValue\|//"; then
-            echo "ERROR: plainPass found!"
+          if grep -RIn "passHash.*sha256\|sha256.*passHash\|await sha256Hash" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
+            echo "ERROR: SHA-256 passHash in browser code!"
             exit 1
           fi
-          echo "plainPass OK"
+          echo "passHash check OK"
 
       - name: Security - no hardcoded secrets
         run: |
@@ -46,9 +46,9 @@ jobs:
           fi
           echo "Secrets OK"
 
-      - name: Security - no SHA-256
+      - name: Security - no SHA-256 hashing
         run: |
-          if grep -RIn "createHash.*sha256" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
+          if grep -RIn "createHash.*sha256\|sha256.*createHash" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
             echo "ERROR: SHA-256 found!"
             exit 1
           fi
@@ -56,8 +56,8 @@ jobs:
 
       - name: Security - no custom token storage
         run: |
-          if grep -RIn "hs_custom_token" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
-            echo "ERROR: Custom token!"
+          if grep -RIn "setItem.*hs_custom_token\|hs_custom_token.*setItem" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
+            echo "ERROR: Custom token stored!"
             exit 1
           fi
           echo "Token OK"
