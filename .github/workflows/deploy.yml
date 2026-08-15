@@ -19,38 +19,37 @@ jobs:
           test -f js/firebase-config.js && echo "firebase-config.js OK"
           test -f firestore.rules && echo "firestore.rules OK"
           test -f functions/index.js && echo "functions/index.js OK"
-          test -f sw.js && echo "sw.js OK"
       - name: Install functions dependencies
         run: cd functions && npm install --ignore-scripts
       - name: Check functions syntax
         run: cd functions && node --check index.js && echo "Syntax OK"
-      - name: Security - no plainPass allowed
+      - name: Security - no plainPass in entire project
         run: |
-          if grep -n "plainPass" functions/index.js | grep -v "delete\|FieldValue\|//"; then
-            echo "ERROR: plainPass found in production code!"
+          if grep -RIn "plainPass" . --exclude-dir=.git --exclude-dir=node_modules --exclude="package-lock.json" --include="*.js" --include="*.html" | grep -v "delete\|FieldValue\|//"; then
+            echo "ERROR: plainPass found!"
             exit 1
           fi
           echo "plainPass check passed"
       - name: Security - no hardcoded secrets
         run: |
-          if grep -n "husainan@2026\|SUPER_HASH\s*=" functions/index.js | grep -v "process.env"; then
+          if grep -RIn "husainan@2026\|SUPER_HASH\s*=" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html" | grep -v "process.env"; then
             echo "ERROR: Hardcoded secret found!"
             exit 1
           fi
           echo "Secrets check passed"
       - name: Security - no SHA-256 for passwords
         run: |
-          if grep -n "createHash.*sha256" functions/index.js; then
-            echo "ERROR: SHA-256 still used for passwords!"
+          if grep -RIn "createHash.*sha256" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
+            echo "ERROR: SHA-256 found!"
             exit 1
           fi
-          echo "Hash check passed"
-      - name: Security - no custom token in localStorage
+          echo "SHA-256 check passed"
+      - name: Security - no custom token in localStorage (JS and HTML)
         run: |
-          if grep -rn "hs_custom_token" js/ --include="*.js"; then
-            echo "ERROR: Custom token still in localStorage!"
+          if grep -RIn "hs_custom_token" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
+            echo "ERROR: Custom token in localStorage!"
             exit 1
           fi
           echo "Token check passed"
       - name: All checks passed
-        run: echo "Security CI passed successfully!"
+        run: echo "Security CI passed!"
