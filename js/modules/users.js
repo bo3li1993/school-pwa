@@ -1,13 +1,8 @@
-﻿import { db, getActiveSchoolId } from '../firebase-config.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// ًں”گ طھط´ظپظٹط± ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ظ…ط­ظ„ظٹط§ظ‹ ط¨ط§ظ„ظ…طھطµظپط­ ظ‚ط¨ظ„ ط§ظ„ط¥ط±ط³ط§ظ„
-async function sha256Hash(text) {
-    var encoder = new TextEncoder();
-    var data = encoder.encode(text);
-    var hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+// ظ‹ع؛â€‌ع¯ ط·ع¾ط·آ´ط¸ظ¾ط¸ظ¹ط·آ± ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط¸â€¦ط·آ­ط¸â€‍ط¸ظ¹ط·آ§ط¸â€¹ ط·آ¨ط·آ§ط¸â€‍ط¸â€¦ط·ع¾ط·آµط¸ظ¾ط·آ­ ط¸â€ڑط·آ¨ط¸â€‍ ط·آ§ط¸â€‍ط·آ¥ط·آ±ط·آ³ط·آ§ط¸â€‍
+
 
 export async function initUsersModule() {
     var container = document.getElementById('tab-users');
@@ -16,66 +11,66 @@ export async function initUsersModule() {
 
     container.innerHTML = `
     <div class="card" style="border-top: 5px solid var(--primary-color);">
-        <h2><i class="bi bi-person-plus-fill"></i> ظ‚ظٹط¯ ظ…ط³طھط®ط¯ظ… ط¬ط¯ظٹط¯ (${schoolId})</h2>
+        <h2><i class="bi bi-person-plus-fill"></i> ط¸â€ڑط¸ظ¹ط·آ¯ ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯ (${schoolId})</h2>
         <form id="new-user-form" onsubmit="window.handleCreateNewUserLive(event)">
             <input type="hidden" id="reg-school-id" value="${schoolId}">
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
                 <div>
-                    <label style="font-weight:700; font-size:13px;">ط§ظ„ظ…ط¹ط±ظپ ط§ظ„ظپط±ظٹط¯ (User ID)</label>
-                    <input type="text" id="reg-user-id" placeholder="ظ…ط«ط§ظ„: T100" required>
+                    <label style="font-weight:700; font-size:13px;">ط·آ§ط¸â€‍ط¸â€¦ط·آ¹ط·آ±ط¸ظ¾ ط·آ§ط¸â€‍ط¸ظ¾ط·آ±ط¸ظ¹ط·آ¯ (User ID)</label>
+                    <input type="text" id="reg-user-id" placeholder="ط¸â€¦ط·آ«ط·آ§ط¸â€‍: T100" required>
                 </div>
                 <div>
-                    <label style="font-weight:700; font-size:13px;">ط§ظ„ط§ط³ظ… ط§ظ„ظƒط§ظ…ظ„</label>
+                    <label style="font-weight:700; font-size:13px;">ط·آ§ط¸â€‍ط·آ§ط·آ³ط¸â€¦ ط·آ§ط¸â€‍ط¸ئ’ط·آ§ط¸â€¦ط¸â€‍</label>
                     <input type="text" id="reg-user-name" required>
                 </div>
                 <div>
-                    <label style="font-weight:700; font-size:13px;">ط§ظ„طµظ„ط§ط­ظٹط©</label>
+                    <label style="font-weight:700; font-size:13px;">ط·آ§ط¸â€‍ط·آµط¸â€‍ط·آ§ط·آ­ط¸ظ¹ط·آ©</label>
                     <select id="reg-user-role" required onchange="window.toggleDepartmentField(this.value)">
-                        <option value="teacher">ظ…ط¹ظ„ظ…</option>
-                        <option value="admin">ظ…ط³ط¤ظˆظ„ ط¥ط¯ط§ط±ظٹ (ظ…ط¯ظٹط±)</option>
-                        <option value="assistant_manager">ظ…ط³ط§ط¹ط¯ ظ…ط¯ظٹط±</option>
-                        <option value="wing_supervisor">ظ…ط´ط±ظپ ط¬ظ†ط§ط­</option>
-                        <option value="social_worker">ط£ط®طµط§ط¦ظٹ ط§ط¬طھظ…ط§ط¹ظٹ</option>
-                        <option value="department_head">ط±ط¦ظٹط³ ظ‚ط³ظ…</option>
-                        <option value="guard">ط­ط§ط±ط³</option>
+                        <option value="teacher">ط¸â€¦ط·آ¹ط¸â€‍ط¸â€¦</option>
+                        <option value="admin">ط¸â€¦ط·آ³ط·آ¤ط¸ث†ط¸â€‍ ط·آ¥ط·آ¯ط·آ§ط·آ±ط¸ظ¹ (ط¸â€¦ط·آ¯ط¸ظ¹ط·آ±)</option>
+                        <option value="assistant_manager">ط¸â€¦ط·آ³ط·آ§ط·آ¹ط·آ¯ ط¸â€¦ط·آ¯ط¸ظ¹ط·آ±</option>
+                        <option value="wing_supervisor">ط¸â€¦ط·آ´ط·آ±ط¸ظ¾ ط·آ¬ط¸â€ ط·آ§ط·آ­</option>
+                        <option value="social_worker">ط·آ£ط·آ®ط·آµط·آ§ط·آ¦ط¸ظ¹ ط·آ§ط·آ¬ط·ع¾ط¸â€¦ط·آ§ط·آ¹ط¸ظ¹</option>
+                        <option value="department_head">ط·آ±ط·آ¦ط¸ظ¹ط·آ³ ط¸â€ڑط·آ³ط¸â€¦</option>
+                        <option value="guard">ط·آ­ط·آ§ط·آ±ط·آ³</option>
                     </select>
                 </div>
                 <div id="dept-field-wrapper" style="display:none;">
-                    <label style="font-weight:700; font-size:13px;">ط§ظ„ظ‚ط³ظ…</label>
+                    <label style="font-weight:700; font-size:13px;">ط·آ§ط¸â€‍ط¸â€ڑط·آ³ط¸â€¦</label>
                     <select id="reg-user-department">
-                        <option value="">-- ط§ط®طھط± ط§ظ„ظ‚ط³ظ… --</option>
-                        <option value="ظ„ط؛ط© ط¹ط±ط¨ظٹط©">ظ„ط؛ط© ط¹ط±ط¨ظٹط©</option>
-                        <option value="ظ„ط؛ط© ط¥ظ†ط¬ظ„ظٹط²ظٹط©">ظ„ط؛ط© ط¥ظ†ط¬ظ„ظٹط²ظٹط©</option>
-                        <option value="ط±ظٹط§ط¶ظٹط§طھ">ط±ظٹط§ط¶ظٹط§طھ</option>
-                        <option value="ط¹ظ„ظˆظ…">ط¹ظ„ظˆظ…</option>
-                        <option value="ط§ط¬طھظ…ط§ط¹ظٹط§طھ">ط§ط¬طھظ…ط§ط¹ظٹط§طھ</option>
-                        <option value="طھط±ط¨ظٹط© ط¥ط³ظ„ط§ظ…ظٹط©">طھط±ط¨ظٹط© ط¥ط³ظ„ط§ظ…ظٹط©</option>
-                        <option value="طھط±ط¨ظٹط© ظپظ†ظٹط©">طھط±ط¨ظٹط© ظپظ†ظٹط©</option>
-                        <option value="طھط±ط¨ظٹط© ط¨ط¯ظ†ظٹط©">طھط±ط¨ظٹط© ط¨ط¯ظ†ظٹط©</option>
-                        <option value="ط­ط§ط³ط¨ ط¢ظ„ظٹ">ط­ط§ط³ط¨ ط¢ظ„ظٹ</option>
-                        <option value="ظ…ظ‡ط§ط±ط§طھ ط­ظٹط§طھظٹط©">ظ…ظ‡ط§ط±ط§طھ ط­ظٹط§طھظٹط©</option>
+                        <option value="">-- ط·آ§ط·آ®ط·ع¾ط·آ± ط·آ§ط¸â€‍ط¸â€ڑط·آ³ط¸â€¦ --</option>
+                        <option value="ط¸â€‍ط·ط›ط·آ© ط·آ¹ط·آ±ط·آ¨ط¸ظ¹ط·آ©">ط¸â€‍ط·ط›ط·آ© ط·آ¹ط·آ±ط·آ¨ط¸ظ¹ط·آ©</option>
+                        <option value="ط¸â€‍ط·ط›ط·آ© ط·آ¥ط¸â€ ط·آ¬ط¸â€‍ط¸ظ¹ط·آ²ط¸ظ¹ط·آ©">ط¸â€‍ط·ط›ط·آ© ط·آ¥ط¸â€ ط·آ¬ط¸â€‍ط¸ظ¹ط·آ²ط¸ظ¹ط·آ©</option>
+                        <option value="ط·آ±ط¸ظ¹ط·آ§ط·آ¶ط¸ظ¹ط·آ§ط·ع¾">ط·آ±ط¸ظ¹ط·آ§ط·آ¶ط¸ظ¹ط·آ§ط·ع¾</option>
+                        <option value="ط·آ¹ط¸â€‍ط¸ث†ط¸â€¦">ط·آ¹ط¸â€‍ط¸ث†ط¸â€¦</option>
+                        <option value="ط·آ§ط·آ¬ط·ع¾ط¸â€¦ط·آ§ط·آ¹ط¸ظ¹ط·آ§ط·ع¾">ط·آ§ط·آ¬ط·ع¾ط¸â€¦ط·آ§ط·آ¹ط¸ظ¹ط·آ§ط·ع¾</option>
+                        <option value="ط·ع¾ط·آ±ط·آ¨ط¸ظ¹ط·آ© ط·آ¥ط·آ³ط¸â€‍ط·آ§ط¸â€¦ط¸ظ¹ط·آ©">ط·ع¾ط·آ±ط·آ¨ط¸ظ¹ط·آ© ط·آ¥ط·آ³ط¸â€‍ط·آ§ط¸â€¦ط¸ظ¹ط·آ©</option>
+                        <option value="ط·ع¾ط·آ±ط·آ¨ط¸ظ¹ط·آ© ط¸ظ¾ط¸â€ ط¸ظ¹ط·آ©">ط·ع¾ط·آ±ط·آ¨ط¸ظ¹ط·آ© ط¸ظ¾ط¸â€ ط¸ظ¹ط·آ©</option>
+                        <option value="ط·ع¾ط·آ±ط·آ¨ط¸ظ¹ط·آ© ط·آ¨ط·آ¯ط¸â€ ط¸ظ¹ط·آ©">ط·ع¾ط·آ±ط·آ¨ط¸ظ¹ط·آ© ط·آ¨ط·آ¯ط¸â€ ط¸ظ¹ط·آ©</option>
+                        <option value="ط·آ­ط·آ§ط·آ³ط·آ¨ ط·آ¢ط¸â€‍ط¸ظ¹">ط·آ­ط·آ§ط·آ³ط·آ¨ ط·آ¢ط¸â€‍ط¸ظ¹</option>
+                        <option value="ط¸â€¦ط¸â€،ط·آ§ط·آ±ط·آ§ط·ع¾ ط·آ­ط¸ظ¹ط·آ§ط·ع¾ط¸ظ¹ط·آ©">ط¸â€¦ط¸â€،ط·آ§ط·آ±ط·آ§ط·ع¾ ط·آ­ط¸ظ¹ط·آ§ط·ع¾ط¸ظ¹ط·آ©</option>
                     </select>
                 </div>
                 <div>
-                    <label style="font-weight:700; font-size:13px;">ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط§ط¨طھط¯ط§ط¦ظٹط©</label>
+                    <label style="font-weight:700; font-size:13px;">ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·آ§ط¸â€‍ط·آ§ط·آ¨ط·ع¾ط·آ¯ط·آ§ط·آ¦ط¸ظ¹ط·آ©</label>
                     <input type="password" id="reg-user-pass" required>
                 </div>
             </div>
-            <button type="submit" style="width:100%; font-weight:bold; margin-top:10px; background:var(--primary-color); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer;">ط§ط¹طھظ…ط§ط¯ ط§ظ„ط­ط³ط§ط¨</button>
+            <button type="submit" style="width:100%; font-weight:bold; margin-top:10px; background:var(--primary-color); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer;">ط·آ§ط·آ¹ط·ع¾ط¸â€¦ط·آ§ط·آ¯ ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨</button>
         </form>
     </div>
 
     <div class="card" style="border-top: 5px solid var(--hover-color);">
-        <h2><i class="bi bi-people-fill"></i> ط³ط¬ظ„ ط­ط³ط§ط¨ط§طھ ط§ظ„ظ…ط¯ط±ط³ط©</h2>
+        <h2><i class="bi bi-people-fill"></i> ط·آ³ط·آ¬ط¸â€‍ ط·آ­ط·آ³ط·آ§ط·آ¨ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط·آ±ط·آ³ط·آ©</h2>
         <div style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr style="background:#f4f6f9;">
-                        <th>ط§ظ„ظ…ط¹ط±ظپ</th><th>ط§ظ„ط§ط³ظ… ط§ظ„ط±ط³ظ…ظٹ</th><th>ط§ظ„طµظ„ط§ط­ظٹط©</th><th>ط§ظ„ط­ط§ظ„ط©</th><th>ط§ظ„ط£ظ…ط§ظ†</th><th>ط¥ط¬ط±ط§ط،</th>
+                        <th>ط·آ§ط¸â€‍ط¸â€¦ط·آ¹ط·آ±ط¸ظ¾</th><th>ط·آ§ط¸â€‍ط·آ§ط·آ³ط¸â€¦ ط·آ§ط¸â€‍ط·آ±ط·آ³ط¸â€¦ط¸ظ¹</th><th>ط·آ§ط¸â€‍ط·آµط¸â€‍ط·آ§ط·آ­ط¸ظ¹ط·آ©</th><th>ط·آ§ط¸â€‍ط·آ­ط·آ§ط¸â€‍ط·آ©</th><th>ط·آ§ط¸â€‍ط·آ£ط¸â€¦ط·آ§ط¸â€ </th><th>ط·آ¥ط·آ¬ط·آ±ط·آ§ط·طŒ</th>
                     </tr>
                 </thead>
                 <tbody id="system-users-tbody">
-                    <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">ط¬ط§ط±ظٹ طھط­ظ…ظٹظ„ ط§ظ„ط­ط³ط§ط¨ط§طھ...</td></tr>
+                    <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">ط·آ¬ط·آ§ط·آ±ط¸ظ¹ ط·ع¾ط·آ­ط¸â€¦ط¸ظ¹ط¸â€‍ ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨ط·آ§ط·ع¾...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -101,24 +96,24 @@ window.handleCreateNewUserLive = async function (e) {
     var plainPass = document.getElementById('reg-user-pass').value.trim();
 
     if (!schoolId) {
-        window.showToast('âڑ ï¸ڈ ط®ط·ط£: ظ„ط§ ظٹظˆط¬ط¯ schoolId ظ†ط´ط· ظ„ظ‡ط°ط§ ط§ظ„ط­ط³ط§ط¨طŒ ظ„ط§ ظٹظ…ظƒظ† ط¥ط¶ط§ظپط© ط§ظ„ظ…ط³طھط®ط¯ظ….');
+        window.showToast('أ¢ع‘آ أ¯آ¸عˆ ط·آ®ط·آ·ط·آ£: ط¸â€‍ط·آ§ ط¸ظ¹ط¸ث†ط·آ¬ط·آ¯ schoolId ط¸â€ ط·آ´ط·آ· ط¸â€‍ط¸â€،ط·آ°ط·آ§ ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨ط·إ’ ط¸â€‍ط·آ§ ط¸ظ¹ط¸â€¦ط¸ئ’ط¸â€  ط·آ¥ط·آ¶ط·آ§ط¸ظ¾ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦.');
         return;
     }
     if (!userId || !name || !plainPass) {
-        window.showToast('âڑ ï¸ڈ ط§ظ„ط±ط¬ط§ط، طھط¹ط¨ط¦ط© ط¬ظ…ظٹط¹ ط§ظ„ط­ظ‚ظˆظ„.');
+        window.showToast('أ¢ع‘آ أ¯آ¸عˆ ط·آ§ط¸â€‍ط·آ±ط·آ¬ط·آ§ط·طŒ ط·ع¾ط·آ¹ط·آ¨ط·آ¦ط·آ© ط·آ¬ط¸â€¦ط¸ظ¹ط·آ¹ ط·آ§ط¸â€‍ط·آ­ط¸â€ڑط¸ث†ط¸â€‍.');
         return;
     }
     if (role === 'department_head' && !department) {
-        window.showToast('âڑ ï¸ڈ ظٹط±ط¬ظ‰ ط§ط®طھظٹط§ط± ط§ظ„ظ‚ط³ظ… ظ„ط±ط¦ظٹط³ ط§ظ„ظ‚ط³ظ….');
+        window.showToast('أ¢ع‘آ أ¯آ¸عˆ ط¸ظ¹ط·آ±ط·آ¬ط¸â€° ط·آ§ط·آ®ط·ع¾ط¸ظ¹ط·آ§ط·آ± ط·آ§ط¸â€‍ط¸â€ڑط·آ³ط¸â€¦ ط¸â€‍ط·آ±ط·آ¦ط¸ظ¹ط·آ³ ط·آ§ط¸â€‍ط¸â€ڑط·آ³ط¸â€¦.');
         return;
     }
 
     var submitBtn = e.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'âڈ³ ط¬ط§ط±ظٹ ط§ظ„ط­ظپط¸...';
+    submitBtn.textContent = 'أ¢عˆآ³ ط·آ¬ط·آ§ط·آ±ط¸ظ¹ ط·آ§ط¸â€‍ط·آ­ط¸ظ¾ط·آ¸...';
 
     try {
-        // طھط­ظ‚ظ‚ ظ…ظ† ط¹ط¯ظ… طھظƒط±ط§ط± ط§ظ„ظ…ط¹ط±ظپ ط¯ط§ط®ظ„ ظ†ظپط³ ط§ظ„ظ…ط¯ط±ط³ط©
+        // ط·ع¾ط·آ­ط¸â€ڑط¸â€ڑ ط¸â€¦ط¸â€  ط·آ¹ط·آ¯ط¸â€¦ ط·ع¾ط¸ئ’ط·آ±ط·آ§ط·آ± ط·آ§ط¸â€‍ط¸â€¦ط·آ¹ط·آ±ط¸ظ¾ ط·آ¯ط·آ§ط·آ®ط¸â€‍ ط¸â€ ط¸ظ¾ط·آ³ ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط·آ±ط·آ³ط·آ©
         var dupCheck = query(
             collection(db, 'users'),
             where('schoolId', '==', schoolId),
@@ -126,13 +121,13 @@ window.handleCreateNewUserLive = async function (e) {
         );
         var dupSnap = await getDocs(dupCheck);
         if (!dupSnap.empty) {
-            window.showToast(`âڑ ï¸ڈ ط§ظ„ظ…ط¹ط±ظپ "${userId}" ظ…ط³طھط®ط¯ظ… ط¨ط§ظ„ظپط¹ظ„ ظپظٹ ظ‡ط°ظ‡ ط§ظ„ظ…ط¯ط±ط³ط©.`);
+            window.showToast(`أ¢ع‘آ أ¯آ¸عˆ ط·آ§ط¸â€‍ط¸â€¦ط·آ¹ط·آ±ط¸ظ¾ "${userId}" ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ ط·آ¨ط·آ§ط¸â€‍ط¸ظ¾ط·آ¹ط¸â€‍ ط¸ظ¾ط¸ظ¹ ط¸â€،ط·آ°ط¸â€، ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط·آ±ط·آ³ط·آ©.`);
             submitBtn.disabled = false;
-            submitBtn.textContent = 'ط§ط¹طھظ…ط§ط¯ ط§ظ„ط­ط³ط§ط¨';
+            submitBtn.textContent = 'ط·آ§ط·آ¹ط·ع¾ط¸â€¦ط·آ§ط·آ¯ ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨';
             return;
         }
 
-        // ًں”گ طھط´ظپظٹط± ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط¨ظ€ SHA-256 ظ‚ط¨ظ„ ط§ظ„ط­ظپط¸ (ط¨ط¯ظ„ طھط®ط²ظٹظ†ظ‡ط§ ظ†طµط§ظ‹ طµط±ظٹط­ط§ظ‹)
+        // ظ‹ع؛â€‌ع¯ ط·ع¾ط·آ´ط¸ظ¾ط¸ظ¹ط·آ± ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·آ¨ط¸â‚¬ SHA-256 ط¸â€ڑط·آ¨ط¸â€‍ ط·آ§ط¸â€‍ط·آ­ط¸ظ¾ط·آ¸ (ط·آ¨ط·آ¯ط¸â€‍ ط·ع¾ط·آ®ط·آ²ط¸ظ¹ط¸â€ ط¸â€،ط·آ§ ط¸â€ ط·آµط·آ§ط¸â€¹ ط·آµط·آ±ط¸ظ¹ط·آ­ط·آ§ط¸â€¹)
         var passHash = await sha256Hash(plainPass);
 
         await addDoc(collection(db, 'users'), {
@@ -146,14 +141,14 @@ window.handleCreateNewUserLive = async function (e) {
             createdAt: serverTimestamp()
         });
 
-        window.showToast(`âœ… طھظ… ط§ط¹طھظ…ط§ط¯ ط­ط³ط§ط¨ "${name}" ط¨ظ†ط¬ط§ط­.`);
+        window.showToast(`أ¢إ“â€¦ ط·ع¾ط¸â€¦ ط·آ§ط·آ¹ط·ع¾ط¸â€¦ط·آ§ط·آ¯ ط·آ­ط·آ³ط·آ§ط·آ¨ "${name}" ط·آ¨ط¸â€ ط·آ¬ط·آ§ط·آ­.`);
         document.getElementById('new-user-form').reset();
         loadSystemUsersDirectoryLive();
     } catch (err) {
-        window.showToast('â‌Œ طھط¹ط°ط± ط¥ط¶ط§ظپط© ط§ظ„ظ…ط³طھط®ط¯ظ…: ' + err.message);
+        window.showToast('أ¢â€Œإ’ ط·ع¾ط·آ¹ط·آ°ط·آ± ط·آ¥ط·آ¶ط·آ§ط¸ظ¾ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦: ' + err.message);
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'ط§ط¹طھظ…ط§ط¯ ط§ظ„ط­ط³ط§ط¨';
+        submitBtn.textContent = 'ط·آ§ط·آ¹ط·ع¾ط¸â€¦ط·آ§ط·آ¯ ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨';
     }
 };
 
@@ -163,7 +158,7 @@ async function loadSystemUsersDirectoryLive() {
 
     var schoolId = getActiveSchoolId();
     if (!schoolId) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:15px;">âڑ ï¸ڈ ظ„ط§ ظٹظˆط¬ط¯ schoolId ظ†ط´ط· â€” ظ„ط§ ظٹظ…ظƒظ† ط¬ظ„ط¨ ط§ظ„ط­ط³ط§ط¨ط§طھ.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:15px;">أ¢ع‘آ أ¯آ¸عˆ ط¸â€‍ط·آ§ ط¸ظ¹ط¸ث†ط·آ¬ط·آ¯ schoolId ط¸â€ ط·آ´ط·آ· أ¢â‚¬â€‌ ط¸â€‍ط·آ§ ط¸ظ¹ط¸â€¦ط¸ئ’ط¸â€  ط·آ¬ط¸â€‍ط·آ¨ ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨ط·آ§ط·ع¾.</td></tr>';
         return;
     }
 
@@ -172,22 +167,22 @@ async function loadSystemUsersDirectoryLive() {
         var snap = await getDocs(q);
 
         if (snap.empty) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold; color:#999;">ًں’، ظ„ط§ ظٹظˆط¬ط¯ ظ…ط³طھط®ط¯ظ…ظٹظ† ظ…ظ‚ظٹط¯ظٹظ† ط¨ظ‡ط°ظ‡ ط§ظ„ظ…ط¯ط±ط³ط©.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:15px; font-weight:bold; color:#999;">ظ‹ع؛â€™طŒ ط¸â€‍ط·آ§ ط¸ظ¹ط¸ث†ط·آ¬ط·آ¯ ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ط¸ظ¹ط¸â€  ط¸â€¦ط¸â€ڑط¸ظ¹ط·آ¯ط¸ظ¹ط¸â€  ط·آ¨ط¸â€،ط·آ°ط¸â€، ط·آ§ط¸â€‍ط¸â€¦ط·آ¯ط·آ±ط·آ³ط·آ©.</td></tr>';
             return;
         }
 
         var html = '';
         snap.forEach(docSnap => {
             var u = docSnap.data();
-            var roleLabel = u.role === 'admin' ? 'ظ…ط³ط¤ظˆظ„ ط¥ط¯ط§ط±ظٹ'
-                : u.role === 'assistant_manager' ? 'ظ…ط³ط§ط¹ط¯ ظ…ط¯ظٹط±'
-                : u.role === 'wing_supervisor' ? 'ظ…ط´ط±ظپ ط¬ظ†ط§ط­'
-                : u.role === 'social_worker' ? 'ط£ط®طµط§ط¦ظٹ ط§ط¬طھظ…ط§ط¹ظٹ'
-                : u.role === 'department_head' ? `ط±ط¦ظٹط³ ظ‚ط³ظ…${u.department ? ' - ' + u.department : ''}`
-                : u.role === 'guard' ? 'ط­ط§ط±ط³'
-                : 'ظ…ط¹ظ„ظ…';
-            var statusLabel = u.status === 'suspended' ? 'âڈ¸ ظ…ظˆظ‚ظˆظپ' : 'âœ… ظپط¹ظ‘ط§ظ„';
-            var securityBadge = u.passHash ? '<span style="color:var(--success-color); font-size:11px;">ًں”’ ظ…ط´ظپظ‘ط±ط©</span>' : '<span style="color:var(--danger-color); font-size:11px;">âڑ ï¸ڈ ظ‚ط¯ظٹظ…ط©</span>';
+            var roleLabel = u.role === 'admin' ? 'ط¸â€¦ط·آ³ط·آ¤ط¸ث†ط¸â€‍ ط·آ¥ط·آ¯ط·آ§ط·آ±ط¸ظ¹'
+                : u.role === 'assistant_manager' ? 'ط¸â€¦ط·آ³ط·آ§ط·آ¹ط·آ¯ ط¸â€¦ط·آ¯ط¸ظ¹ط·آ±'
+                : u.role === 'wing_supervisor' ? 'ط¸â€¦ط·آ´ط·آ±ط¸ظ¾ ط·آ¬ط¸â€ ط·آ§ط·آ­'
+                : u.role === 'social_worker' ? 'ط·آ£ط·آ®ط·آµط·آ§ط·آ¦ط¸ظ¹ ط·آ§ط·آ¬ط·ع¾ط¸â€¦ط·آ§ط·آ¹ط¸ظ¹'
+                : u.role === 'department_head' ? `ط·آ±ط·آ¦ط¸ظ¹ط·آ³ ط¸â€ڑط·آ³ط¸â€¦${u.department ? ' - ' + u.department : ''}`
+                : u.role === 'guard' ? 'ط·آ­ط·آ§ط·آ±ط·آ³'
+                : 'ط¸â€¦ط·آ¹ط¸â€‍ط¸â€¦';
+            var statusLabel = u.status === 'suspended' ? 'أ¢عˆآ¸ ط¸â€¦ط¸ث†ط¸â€ڑط¸ث†ط¸ظ¾' : 'أ¢إ“â€¦ ط¸ظ¾ط·آ¹ط¸â€کط·آ§ط¸â€‍';
+            var securityBadge = u.passHash ? '<span style="color:var(--success-color); font-size:11px;">ظ‹ع؛â€‌â€™ ط¸â€¦ط·آ´ط¸ظ¾ط¸â€کط·آ±ط·آ©</span>' : '<span style="color:var(--danger-color); font-size:11px;">أ¢ع‘آ أ¯آ¸عˆ ط¸â€ڑط·آ¯ط¸ظ¹ط¸â€¦ط·آ©</span>';
 
             html += `
                 <tr style="border-bottom:1px solid #eee;">
@@ -200,15 +195,15 @@ async function loadSystemUsersDirectoryLive() {
                         <div style="display:flex;gap:5px;flex-wrap:wrap">
                             <button onclick="window.openEditUserModal('${docSnap.id}','${(u.name||'').replace(/'/g,"\\'")}','${u.role||''}','${u.userId||''}','${u.department||''}')"
                                 style="background:#16a34a;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px">
-                                <i class="bi bi-pencil-fill"></i> طھط¹ط¯ظٹظ„
+                                <i class="bi bi-pencil-fill"></i> ط·ع¾ط·آ¹ط·آ¯ط¸ظ¹ط¸â€‍
                             </button>
                             <button onclick="window.openResetPasswordModal('${docSnap.id}', '${(u.name||'').replace(/'/g,"\\'")}')"
                                 style="background:var(--sky);color:#fff;border:none;padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-size:11px">
-                                <i class="bi bi-key-fill"></i> ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط±
+                                <i class="bi bi-key-fill"></i> ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ±
                             </button>
                             <button onclick="window.deleteUser('${docSnap.id}', '${(u.name||"").replace(/'/g,"\\'")}')"
                                 style="background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">
-                                <i class="bi bi-trash-fill"></i> ط­ط°ظپ
+                                <i class="bi bi-trash-fill"></i> ط·آ­ط·آ°ط¸ظ¾
                             </button>
                         </div>
                     </td>
@@ -217,15 +212,15 @@ async function loadSystemUsersDirectoryLive() {
 
         tbody.innerHTML = html;
     } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:15px; font-weight:bold;">â‌Œ طھط¹ط°ط± ط¬ظ„ط¨ ط§ظ„ط­ط³ط§ط¨ط§طھ: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:15px; font-weight:bold;">أ¢â€Œإ’ ط·ع¾ط·آ¹ط·آ°ط·آ± ط·آ¬ط¸â€‍ط·آ¨ ط·آ§ط¸â€‍ط·آ­ط·آ³ط·آ§ط·آ¨ط·آ§ط·ع¾: ${e.message}</td></tr>`;
     }
 }
 
-// ===== ط¥ط¹ط§ط¯ط© طھط¹ظٹظٹظ† ظƒظ„ظ…ط© ظ…ط±ظˆط± ظ…ظˆط¸ظپ (Admin ظپظ‚ط·طŒ ط¹ط¨ط± Cloud Function ط¢ظ…ظ†ط©) =====
+// ===== ط·آ¥ط·آ¹ط·آ§ط·آ¯ط·آ© ط·ع¾ط·آ¹ط¸ظ¹ط¸ظ¹ط¸â€  ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط¸â€¦ط·آ±ط¸ث†ط·آ± ط¸â€¦ط¸ث†ط·آ¸ط¸ظ¾ (Admin ط¸ظ¾ط¸â€ڑط·آ·ط·إ’ ط·آ¹ط·آ¨ط·آ± Cloud Function ط·آ¢ط¸â€¦ط¸â€ ط·آ©) =====
 window.openResetPasswordModal = function(userDocId, userName) {
-    var newPass = prompt(`ط£ط¯ط®ظ„ ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ط§ظ„ط¬ط¯ظٹط¯ط© ظ„ظ„ظ…ظˆط¸ظپ: ${userName}`);
+    var newPass = prompt(`ط·آ£ط·آ¯ط·آ®ط¸â€‍ ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط·آ§ط¸â€‍ط·آ¬ط·آ¯ط¸ظ¹ط·آ¯ط·آ© ط¸â€‍ط¸â€‍ط¸â€¦ط¸ث†ط·آ¸ط¸ظ¾: ${userName}`);
     if (!newPass) return;
-    if (newPass.length < 4) { window.showToast('âڑ ï¸ڈ ظƒظ„ظ…ط© ط§ظ„ظ…ط±ظˆط± ظ‚طµظٹط±ط© ط¬ط¯ط§ظ‹ (4 ط£ط­ط±ظپ ط¹ظ„ظ‰ ط§ظ„ط£ظ‚ظ„)', 'info'); return; }
+    if (newPass.length < 4) { window.showToast('أ¢ع‘آ أ¯آ¸عˆ ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط·آ§ط¸â€‍ط¸â€¦ط·آ±ط¸ث†ط·آ± ط¸â€ڑط·آµط¸ظ¹ط·آ±ط·آ© ط·آ¬ط·آ¯ط·آ§ط¸â€¹ (4 ط·آ£ط·آ­ط·آ±ط¸ظ¾ ط·آ¹ط¸â€‍ط¸â€° ط·آ§ط¸â€‍ط·آ£ط¸â€ڑط¸â€‍)', 'info'); return; }
 
     window.executeResetPassword(userDocId, newPass, userName);
 };
@@ -238,21 +233,21 @@ window.executeResetPassword = async function(userDocId, newPass, userName) {
         var resetFn = httpsCallable(functions, 'resetUserPassword');
 
         await resetFn({ userDocId, newPassword: newPass });
-        window.showToast(`âœ… طھظ… طھط­ط¯ظٹط« ظƒظ„ظ…ط© ظ…ط±ظˆط± ${userName} ط¨ظ†ط¬ط§ط­`);
+        window.showToast(`أ¢إ“â€¦ ط·ع¾ط¸â€¦ ط·ع¾ط·آ­ط·آ¯ط¸ظ¹ط·آ« ط¸ئ’ط¸â€‍ط¸â€¦ط·آ© ط¸â€¦ط·آ±ط¸ث†ط·آ± ${userName} ط·آ¨ط¸â€ ط·آ¬ط·آ§ط·آ­`);
         loadSystemUsersDirectoryLive();
     } catch (e) {
-        window.showToast('â‌Œ ط®ط·ط£: ' + e.message, 'error');
+        window.showToast('أ¢â€Œإ’ ط·آ®ط·آ·ط·آ£: ' + e.message, 'error');
     }
 };
 
 
-// â•گâ•گ طھط¹ط¯ظٹظ„ ط¨ظٹط§ظ†ط§طھ ط§ظ„ظ…ط³طھط®ط¯ظ… â•گâ•گ
+// أ¢â€¢ع¯أ¢â€¢ع¯ ط·ع¾ط·آ¹ط·آ¯ط¸ظ¹ط¸â€‍ ط·آ¨ط¸ظ¹ط·آ§ط¸â€ ط·آ§ط·ع¾ ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ أ¢â€¢ع¯أ¢â€¢ع¯
 window.openEditUserModal = function(docId, name, role, userId, department) {
     document.getElementById('edit-user-modal')?.remove();
     var roles = [
-        ['admin','ظ…ط¯ظٹط±'],['assistant_manager','ظ…ط³ط§ط¹ط¯ ظ…ط¯ظٹط±'],['wing_supervisor','ظ…ط´ط±ظپ ط¬ظ†ط§ط­'],
-        ['department_head','ط±ط¦ظٹط³ ظ‚ط³ظ…'],['teacher','ظ…ط¹ظ„ظ…'],['social_worker','ط£ط®طµط§ط¦ظٹ ط§ط¬طھظ…ط§ط¹ظٹ'],
-        ['guard','ط­ط§ط±ط³'],['nurse','ظ…ظ…ط±ط¶']
+        ['admin','ط¸â€¦ط·آ¯ط¸ظ¹ط·آ±'],['assistant_manager','ط¸â€¦ط·آ³ط·آ§ط·آ¹ط·آ¯ ط¸â€¦ط·آ¯ط¸ظ¹ط·آ±'],['wing_supervisor','ط¸â€¦ط·آ´ط·آ±ط¸ظ¾ ط·آ¬ط¸â€ ط·آ§ط·آ­'],
+        ['department_head','ط·آ±ط·آ¦ط¸ظ¹ط·آ³ ط¸â€ڑط·آ³ط¸â€¦'],['teacher','ط¸â€¦ط·آ¹ط¸â€‍ط¸â€¦'],['social_worker','ط·آ£ط·آ®ط·آµط·آ§ط·آ¦ط¸ظ¹ ط·آ§ط·آ¬ط·ع¾ط¸â€¦ط·آ§ط·آ¹ط¸ظ¹'],
+        ['guard','ط·آ­ط·آ§ط·آ±ط·آ³'],['nurse','ط¸â€¦ط¸â€¦ط·آ±ط·آ¶']
     ];
     var modal = document.createElement('div');
     modal.id    = 'edit-user-modal';
@@ -260,20 +255,20 @@ window.openEditUserModal = function(docId, name, role, userId, department) {
     modal.innerHTML = `
     <div style="background:#fff;border-radius:16px;padding:24px;max-width:420px;width:100%;direction:rtl;font-family:'Cairo',sans-serif">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">âœڈï¸ڈ طھط¹ط¯ظٹظ„ ط§ظ„ظ…ط³طھط®ط¯ظ…</h3>
-            <button onclick="document.getElementById('edit-user-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">âœ•</button>
+            <h3 style="font-size:15px;font-weight:900;color:#0b2545;margin:0">أ¢إ“عˆأ¯آ¸عˆ ط·ع¾ط·آ¹ط·آ¯ط¸ظ¹ط¸â€‍ ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦</h3>
+            <button onclick="document.getElementById('edit-user-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">أ¢إ“â€¢</button>
         </div>
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ط§ظ„ط§ط³ظ…</label>
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ط·آ§ط¸â€‍ط·آ§ط·آ³ط¸â€¦</label>
         <input id="edit-user-name" type="text" value="${name}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px;outline:none">
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ط§ظ„ط¯ظˆط±</label>
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ط·آ§ط¸â€‍ط·آ¯ط¸ث†ط·آ±</label>
         <select id="edit-user-role" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px;outline:none">
             ${roles.map(([v,l])=>`<option value="${v}" ${v===role?'selected':''}>${l}</option>`).join('')}
         </select>
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ط§ظ„ظ‚ط³ظ… (ظ„ط±ط¦ظٹط³ ط§ظ„ظ‚ط³ظ… ظپظ‚ط·)</label>
-        <input id="edit-user-dept" type="text" value="${department||''}" placeholder="ظ…ط«ط§ظ„: ط±ظٹط§ط¶ظٹط§طھ" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:16px;outline:none">
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ط·آ§ط¸â€‍ط¸â€ڑط·آ³ط¸â€¦ (ط¸â€‍ط·آ±ط·آ¦ط¸ظ¹ط·آ³ ط·آ§ط¸â€‍ط¸â€ڑط·آ³ط¸â€¦ ط¸ظ¾ط¸â€ڑط·آ·)</label>
+        <input id="edit-user-dept" type="text" value="${department||''}" placeholder="ط¸â€¦ط·آ«ط·آ§ط¸â€‍: ط·آ±ط¸ظ¹ط·آ§ط·آ¶ط¸ظ¹ط·آ§ط·ع¾" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:16px;outline:none">
         <button onclick="window.saveUserEdit('${docId}')"
             style="width:100%;padding:12px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer">
-            ط­ظپط¸ ط§ظ„طھط¹ط¯ظٹظ„ط§طھ
+            ط·آ­ط¸ظ¾ط·آ¸ ط·آ§ط¸â€‍ط·ع¾ط·آ¹ط·آ¯ط¸ظ¹ط¸â€‍ط·آ§ط·ع¾
         </button>
     </div>`;
     modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
@@ -284,30 +279,29 @@ window.saveUserEdit = async function(docId) {
     var name = document.getElementById('edit-user-name')?.value?.trim();
     var role = document.getElementById('edit-user-role')?.value;
     var dept = document.getElementById('edit-user-dept')?.value?.trim();
-    if(!name) { window.showToast?.('âڑ ï¸ڈ ط£ط¯ط®ظ„ ط§ظ„ط§ط³ظ…','warning'); return; }
+    if(!name) { window.showToast?.('أ¢ع‘آ أ¯آ¸عˆ ط·آ£ط·آ¯ط·آ®ط¸â€‍ ط·آ§ط¸â€‍ط·آ§ط·آ³ط¸â€¦','warning'); return; }
     try {
         var { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
         var { db: database }   = await import('../firebase-config.js');
         var updates = { name, role };
         if(dept) updates.department = dept;
         await updateDoc(doc(database,'users',docId), updates);
-        window.showToast?.('âœ… طھظ… ط­ظپط¸ ط§ظ„طھط¹ط¯ظٹظ„ط§طھ');
+        window.showToast?.('أ¢إ“â€¦ ط·ع¾ط¸â€¦ ط·آ­ط¸ظ¾ط·آ¸ ط·آ§ط¸â€‍ط·ع¾ط·آ¹ط·آ¯ط¸ظ¹ط¸â€‍ط·آ§ط·ع¾');
         document.getElementById('edit-user-modal')?.remove();
         setTimeout(() => window.loadSystemUsersDirectoryLive?.(), 500);
-    } catch(e) { window.showToast?.('â‌Œ '+e.message,'error'); }
+    } catch(e) { window.showToast?.('أ¢â€Œإ’ '+e.message,'error'); }
 };
 
-// â•گâ•گ ط­ط°ظپ ظ…ط³طھط®ط¯ظ… â•گâ•گ
+// أ¢â€¢ع¯أ¢â€¢ع¯ ط·آ­ط·آ°ط¸ظ¾ ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦ أ¢â€¢ع¯أ¢â€¢ع¯
 window.deleteUser = async function(docId, userName) {
-    if(!confirm('ظ‡ظ„ ط£ظ†طھ ظ…طھط£ظƒط¯ ظ…ظ† ط­ط°ظپ ط§ظ„ظ…ط³طھط®ط¯ظ…: ' + userName + 'طں\n\nظ‡ط°ط§ ط§ظ„ط¥ط¬ط±ط§ط، ظ„ط§ ظٹظ…ظƒظ† ط§ظ„طھط±ط§ط¬ط¹ ط¹ظ†ظ‡!')) return;
+    if(!confirm('ط¸â€،ط¸â€‍ ط·آ£ط¸â€ ط·ع¾ ط¸â€¦ط·ع¾ط·آ£ط¸ئ’ط·آ¯ ط¸â€¦ط¸â€  ط·آ­ط·آ°ط¸ظ¾ ط·آ§ط¸â€‍ط¸â€¦ط·آ³ط·ع¾ط·آ®ط·آ¯ط¸â€¦: ' + userName + 'ط·ع؛\n\nط¸â€،ط·آ°ط·آ§ ط·آ§ط¸â€‍ط·آ¥ط·آ¬ط·آ±ط·آ§ط·طŒ ط¸â€‍ط·آ§ ط¸ظ¹ط¸â€¦ط¸ئ’ط¸â€  ط·آ§ط¸â€‍ط·ع¾ط·آ±ط·آ§ط·آ¬ط·آ¹ ط·آ¹ط¸â€ ط¸â€،!')) return;
     try {
         var { db } = await import('../firebase-config.js');
         var { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
         await deleteDoc(doc(db, 'users', docId));
-        window.showToast('âœ… طھظ… ط­ط°ظپ ' + userName);
+        window.showToast('أ¢إ“â€¦ ط·ع¾ط¸â€¦ ط·آ­ط·آ°ط¸ظ¾ ' + userName);
         loadSystemUsersDirectoryLive();
     } catch(e) {
-        window.showToast('â‌Œ ط®ط·ط£: ' + e.message, 'error');
+        window.showToast('أ¢â€Œإ’ ط·آ®ط·آ·ط·آ£: ' + e.message, 'error');
     }
 };
-
