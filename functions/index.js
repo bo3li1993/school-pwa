@@ -114,6 +114,7 @@ exports.getRegistrationClasses = onCall({ cors: CORS, region: REGION }, async (r
 });
 
 exports.getRegistrationStudents = onCall({ cors: CORS, region: REGION }, async (req) => {
+    if (!req.auth || !req.auth.uid) throw new HttpsError("unauthenticated", "يجب تسجيل الدخول");
     const { schoolId, classId } = req.data;
     if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
     let q = db.collection("students").where("schoolId","==",schoolId);
