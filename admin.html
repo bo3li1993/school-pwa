@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -217,7 +217,7 @@ if(_role2==='wing_supervisor'){
     document.querySelectorAll('.menu-sec-body').forEach(b=>{if(!b.querySelector('.menu-item:not([style*="display: none"])'))b.previousElementSibling&&(b.previousElementSibling.style.display='none',b.style.display='none')});
 }
 
-window.doLogout=function(){localStorage.removeItem('hs_user');localStorage.removeItem('hs_custom_token');window.location.replace('index.html')};
+window.doLogout=function(){localStorage.removeItem('hs_user');window.location.replace('index.html')};
 
 var moduleMap={
     'tab-index':{file:'./js/modules/today.js',init:'initTodayModule'},

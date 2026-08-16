@@ -240,7 +240,7 @@ body.dark-mode .stat-box{background:#1e2535!important;border-color:#2a3650!impor
 <script>
 if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
 function toggleDark(){document.body.classList.toggle('dark-mode');localStorage.setItem('hs_dark_mode',document.body.classList.contains('dark-mode')?'1':'0');}
-function doLogout(){localStorage.removeItem('hs_user');localStorage.removeItem('hs_custom_token');window.location.replace('index.html');}
+function doLogout(){localStorage.removeItem('hs_user');window.location.replace('index.html');}
 function switchView(v){
   document.querySelectorAll('.dept-view').forEach(function(el){el.classList.remove('active');});
   document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('active');});

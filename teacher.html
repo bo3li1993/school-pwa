@@ -198,7 +198,7 @@ window.switchPage = function(pageId, btn) {
     if(pageId === 'page-profile') loadProfile();
 };
 
-window.doLogout = function() { localStorage.removeItem('hs_user'); localStorage.removeItem('hs_custom_token'); window.location.replace('index.html'); };
+window.doLogout = function() { localStorage.removeItem('hs_user'); window.location.replace('index.html'); };
 
 // ── Toast ──
 window.showToast = function(msg, type) {
