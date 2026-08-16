@@ -162,7 +162,9 @@ exports.createBackup = onCall({ cors: CORS, region: REGION }, async (req) => {
 exports.getAuditLog = onCall({ cors: CORS, region: REGION }, async (req) => {
     const au = await requireAuth(req, ["admin","assistant_manager","superadmin"]);
     const lim = Math.min(req.data?.limit||50, 200);
-    const snap = await db.collection("audit_log").where("schoolId","==",au.schoolId).orderBy("createdAt","desc").limit(lim).get();
+    const sid = au.role === "superadmin" ? (req.data?.schoolId || null) : au.schoolId;
+    let q = db.collection("audit_log").orderBy("createdAt","desc").limit(lim); if (sid && sid !== "system") q = q.where("schoolId","==",sid);
+    const snap = await q.get();
     return { logs: snap.docs.map(d => ({ id:d.id, action:d.data().action, performedBy:d.data().performedBy, details:d.data().details||"", createdAt:d.data().createdAt?.toDate?.()?.toISOString()||null })) };
 });
 
