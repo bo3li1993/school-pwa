@@ -14,8 +14,8 @@ exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
         const token = await admin.auth().createCustomToken("superadmin", { role: "superadmin", schoolId: "system" });
         return { token, role: "superadmin", schoolId: "system", name: "Super Admin", userId: "superadmin" };
     }
-    let q = db.collection("users").where("userId", "==", userId);
-    if (schoolId) q = q.where("schoolId", "==", schoolId);
+    if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
+    let q = db.collection("users").where("userId", "==", userId).where("schoolId", "==", schoolId);
     const snap = await q.limit(1).get();
     if (snap.empty) { await recFail(userId); throw new HttpsError("not-found", "المستخدم غير موجود"); }
     const user = snap.docs[0].data();
