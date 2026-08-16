@@ -48,6 +48,7 @@ exports.createUser = onCall({ cors: CORS, region: REGION }, async (req) => {
     const { userId, name, password, role, email, phone, department, classId } = req.data;
     if (!userId || !name || !password || !role || !sid) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
     if (role === "superadmin") throw new HttpsError("permission-denied", "لا يمكن انشاء superadmin");
+    const ROLE_RANK = { superadmin:99, admin:3, assistant_manager:2, teacher:1, parent:0 }; if ((ROLE_RANK[role]||0) >= (ROLE_RANK[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إنشاء دور أعلى أو مساوٍ لدورك");
     if (password.length < 8) throw new HttpsError("invalid-argument", "كلمة المرور قصيرة");
     const ex = await db.collection("users").where("userId","==",userId).where("schoolId","==",sid).limit(1).get();
     if (!ex.empty) throw new HttpsError("already-exists", "المستخدم موجود");
@@ -67,6 +68,7 @@ exports.resetUserPassword = onCall({ cors: CORS, region: REGION }, async (req) =
         const s = await db.collection("users").where("userId","==",targetUserId).where("schoolId","==",sid).limit(1).get();
         if (s.empty) throw new HttpsError("not-found", "المستخدم غير موجود");
         docId = s.docs[0].id;
+        const targetRole = s.docs[0].data().role; const ROLE_RANK2 = { superadmin:99, admin:3, assistant_manager:2, teacher:1, parent:0 }; if ((ROLE_RANK2[targetRole]||0) >= (ROLE_RANK2[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إعادة تعيين كلمة مرور هذا الدور");
     }
     if (!docId) throw new HttpsError("invalid-argument", "يجب تحديد المستخدم");
     const passHash = await hashPassword(newPassword);
