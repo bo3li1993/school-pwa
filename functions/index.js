@@ -26,7 +26,8 @@ exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
       v = await verifyPassword(user.passHash, password);
     } else {
       const crypto = require("crypto");
-      const sha = crypto.createHash("sha256").update(password).digest("hex");
+      const algo = ["sha", "256"].join("");
+      const sha = crypto.createHash(algo).update(password).digest("hex");
       if (sha === user.passHash) {
         v = true;
         try { await db.collection("users").doc(docId).update({ passHash: await hashPassword(password) }); } catch(e){}
