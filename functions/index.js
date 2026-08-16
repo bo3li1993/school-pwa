@@ -20,8 +20,18 @@ exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
     if (snap.empty) { await recFail(userId); throw new HttpsError("not-found", "المستخدم غير موجود"); }
     const user = snap.docs[0].data();
     const docId = snap.docs[0].id;
-    if (!user.passHash || !user.passHash.startsWith("$argon2")) throw new HttpsError("failed-precondition", "الحساب يحتاج تحديث");
-    const v = await verifyPassword(user.passHash, password);
+    let v = false;
+    if (!user.passHash) { await recFail(userId); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
+    if (user.passHash.startsWith("$argon2")) {
+      v = await verifyPassword(user.passHash, password);
+    } else {
+      const crypto = require("crypto");
+      const sha = crypto.createHash("sha256").update(password).digest("hex");
+      if (sha === user.passHash) {
+        v = true;
+        try { await db.collection("users").doc(docId).update({ passHash: await hashPassword(password) }); } catch(e){}
+      }
+    }
     if (!v) { await recFail(userId); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
     if (user.status === "suspended") throw new HttpsError("permission-denied", "الحساب موقوف");
     await resetRL(userId);
