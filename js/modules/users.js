@@ -150,6 +150,7 @@ async function loadSystemUsersDirectoryLive() {
             return;
         }
 
+        var esc = function(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); };
         var html = '';
         snap.forEach(docSnap => {
             var u = docSnap.data();
@@ -165,8 +166,8 @@ async function loadSystemUsersDirectoryLive() {
 
             html += `
                 <tr style="border-bottom:1px solid #eee;">
-                    <td style="font-weight:700;">${u.userId || '-'}</td>
-                    <td>${u.name || '-'}</td>
+                    <td style="font-weight:700;">${esc(u.userId)||'-'}</td>
+                    <td>${esc(u.name)||'-'}</td>
                     <td>${roleLabel}</td>
                     <td>${statusLabel}</td>
                     <td>${securityBadge}</td>
