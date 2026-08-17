@@ -11,7 +11,7 @@ exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
         const v = await verifyPassword(SH, password);
         if (!v) { await recFail(userId); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
         await resetRL(userId);
-        const token = await admin.auth().createCustomToken("superadmin", { role: "superadmin", schoolId: "system" });
+        const token = await admin.auth().createCustomToken("superadmin", { role: "superadmin", schoolId: "system", superadmin: true });
         return { token, role: "superadmin", schoolId: "system", name: "Super Admin", userId: "superadmin" };
     }
     if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
@@ -188,4 +188,36 @@ exports.scheduledDailyBackup = onSchedule({ schedule:"0 2 * * *", region:REGION,
     const snap = await db.collection("schools").get();
     for (const s of snap.docs) { try { await db.collection("backups").add({ schoolId:s.id, type:"scheduled", createdAt:admin.firestore.FieldValue.serverTimestamp() }); } catch(e){} }
     return null;
+});
+
+exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
+    const { schoolId, phone } = req.data;
+    if (!schoolId || !phone) throw new HttpsError("invalid-argument", "schoolId والهاتف مطلوبان");
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expires = Date.now() + 10 * 60 * 1000;
+    await db.collection("otp_requests").doc(phone).set({ otp, expires, schoolId, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+    console.log("OTP for " + phone + ": " + otp);
+    return { success: true, message: "تم إرسال رمز التحقق" };
+});
+
+exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req) => {
+    const { schoolId, civilId, phone, password, studentName, studentCivilId, otp } = req.data;
+    if (!schoolId || !civilId || !phone || !password || !studentName || !otp || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
+    const otpDoc = await db.collection("otp_requests").doc(phone).get();
+    if (!otpDoc.exists) throw new HttpsError("not-found", "لم يتم طلب رمز تحقق");
+    const otpData = otpDoc.data();
+    if (otpData.otp !== otp) throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح");
+    if (Date.now() > otpData.expires) throw new HttpsError("deadline-exceeded", "انتهت صلاحية رمز التحقق");
+    if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
+    await db.collection("otp_requests").doc(phone).delete();
+    const ex = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
+    if (!ex.empty) throw new HttpsError("already-exists", "الحساب موجود");
+    let ssq = db.collection("students").where("schoolId","==",schoolId).where("name","==",studentName);
+    if (studentCivilId) ssq = ssq.where("civilId","==",studentCivilId);
+    const ss = await ssq.limit(1).get();
+    if (ss.empty) throw new HttpsError("not-found", "الطالب غير موجود أو البيانات غير مطابقة");
+    const st = ss.docs[0].data();
+    const passHash = await hashPassword(password);
+    await db.collection("users").add({ schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentName, studentId:st.studentId||ss.docs[0].id, childIds:[st.studentId||ss.docs[0].id], classId:st.classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
+    return { success: true, userId:"P-"+civilId };
 });
