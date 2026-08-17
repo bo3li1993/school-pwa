@@ -23,7 +23,7 @@ service cloud.firestore {
     }
 
     function isSuperAdmin() {
-      return isAuth() && userRole() == 'superadmin';
+      return isAuth() && request.auth.token.role == "superadmin";
     }
 
     function isTeacher() {
