@@ -19,23 +19,23 @@ exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
     const snap = await q.limit(1).get();
     if (snap.empty) { await recFail(userId); throw new HttpsError("not-found", "المستخدم غير موجود"); }
     const user = snap.docs[0].data();
+
     const docId = snap.docs[0].id;
-    let v = false;
     if (!user.passHash) { await recFail(userId); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
-    if (user.passHash.startsWith("$argon2")) {
-      v = await verifyPassword(user.passHash, password);
-    } else {
-      const crypto = require("crypto");
-      const algo = ["sha", "256"].join("");
-      const sha = crypto.createHash(algo).update(password).digest("hex");
-      if (sha === user.passHash) {
-        v = true;
-        try { await db.collection("users").doc(docId).update({ passHash: await hashPassword(password) }); } catch(e){}
-      }
-    }
+    const v = await verifyPassword(user.passHash, password);
     if (!v) { await recFail(userId); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
     if (user.status === "suspended") throw new HttpsError("permission-denied", "الحساب موقوف");
     await resetRL(userId);
+
+
+
+
+
+
+
+
+
+
     const schoolSnap = await db.collection("schools").doc(user.schoolId).get();
     const sd = schoolSnap.exists ? schoolSnap.data() : {};
     const token = await admin.auth().createCustomToken(docId, { role: user.role, schoolId: user.schoolId, userId: user.userId });
@@ -61,38 +61,38 @@ exports.createUser = onCall({ cors: CORS, region: REGION }, async (req) => {
 exports.resetUserPassword = onCall({ cors: CORS, region: REGION }, async (req) => {
     const au = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
     const sid = au.role === "superadmin" ? req.data.schoolId : au.schoolId;
-    const { targetUserId, userDocId, newPassword } = req.data;
+    const { targetUserId, newPassword } = req.data;
     if (!newPassword || newPassword.length < 8) throw new HttpsError("invalid-argument", "كلمة المرور قصيرة");
-    let docId = userDocId;
-    if (!docId && targetUserId) {
-        const s = await db.collection("users").where("userId","==",targetUserId).where("schoolId","==",sid).limit(1).get();
-        if (s.empty) throw new HttpsError("not-found", "المستخدم غير موجود");
-        docId = s.docs[0].id;
-        const targetRole = s.docs[0].data().role; const ROLE_RANK2 = { superadmin:99, admin:3, assistant_manager:2, teacher:1, parent:0 }; if ((ROLE_RANK2[targetRole]||0) >= (ROLE_RANK2[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إعادة تعيين كلمة مرور هذا الدور");
-    }
-    if (!docId) throw new HttpsError("invalid-argument", "يجب تحديد المستخدم");
+    if (!targetUserId) throw new HttpsError("invalid-argument", "يجب تحديد المستخدم");
+    const s = await db.collection("users").where("userId","==",targetUserId).where("schoolId","==",sid).limit(1).get();
+    if (s.empty) throw new HttpsError("not-found", "المستخدم غير موجود");
+    const targetDoc = s.docs[0]; const targetRole = targetDoc.data().role;
+    const ROLE_RANK2 = { superadmin:99, admin:3, assistant_manager:2, teacher:1, parent:0 }; if ((ROLE_RANK2[targetRole]||0) >= (ROLE_RANK2[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إعادة تعيين كلمة مرور هذا الدور");
+    const docId = targetDoc.id;
+    if (!docId) throw new HttpsError("not-found", "المستخدم غير موجود");
     const passHash = await hashPassword(newPassword);
     await db.collection("users").doc(docId).update({ passHash, passwordResetRequired: true, resetAt: admin.firestore.FieldValue.serverTimestamp() });
-    await logAudit(sid, "reset_password", au.name, `docId: ${docId}`);
+    await logAudit(sid, "reset_password", au.name, `userId: ${targetUserId}`);
     return { success: true, message: "تم تحديث كلمة المرور" };
 });
 
+
 exports.registerParent = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, civilId, phone, password, studentName } = req.data;
-    if (!schoolId || !civilId || !phone || !password || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
+    const { schoolId, civilId, phone, password, studentName, studentCivilId } = req.data;
+    if (!schoolId || !civilId || !phone || !password || !studentName || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
     const ex = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
     if (!ex.empty) throw new HttpsError("already-exists", "الحساب موجود");
-    const ss = await db.collection("students").where("schoolId","==",schoolId).where("name","==",studentName).limit(1).get();
-    if (ss.empty) throw new HttpsError("not-found", "الطالب غير موجود");
+    let ssq = db.collection("students").where("schoolId","==",schoolId).where("name","==",studentName);
+    if (studentCivilId) ssq = ssq.where("civilId","==",studentCivilId);
+    const ss = await ssq.limit(1).get();
+    if (ss.empty) throw new HttpsError("not-found", "الطالب غير موجود أو البيانات غير مطابقة");
     const st = ss.docs[0].data();
     const passHash = await hashPassword(password);
     await db.collection("users").add({ schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentName, studentId:st.studentId||ss.docs[0].id, childIds:[st.studentId||ss.docs[0].id], classId:st.classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
     return { success: true, userId:"P-"+civilId };
 });
-
 exports.loginParent = onCall({ cors: CORS, region: REGION }, async (req) => {
     const { schoolId, civilId, password } = req.data;
-    if (!schoolId || !civilId || !password) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
     const rl = await checkRL("parent_"+civilId);
     if (rl.locked) throw new HttpsError("resource-exhausted", `انتظر ${rl.remaining} دقيقة`);
     const snap = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
@@ -107,7 +107,9 @@ exports.loginParent = onCall({ cors: CORS, region: REGION }, async (req) => {
 });
 
 exports.getRegistrationClasses = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId } = req.data;
+    if (!req.auth || !req.auth.uid) throw new HttpsError("unauthenticated", "يجب تسجيل الدخول");
+    const au2 = await requireAuth(req, ["admin","assistant_manager","superadmin","teacher"]);
+    const { schoolId: scId } = req.data; const schoolId = au2.role === "superadmin" ? scId : au2.schoolId;
     if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
     const snap = await db.collection("students").where("schoolId","==",schoolId).get();
     const cls = {};
@@ -116,10 +118,11 @@ exports.getRegistrationClasses = onCall({ cors: CORS, region: REGION }, async (r
 });
 
 exports.getRegistrationStudents = onCall({ cors: CORS, region: REGION }, async (req) => {
-    if (!req.auth || !req.auth.uid) throw new HttpsError("unauthenticated", "يجب تسجيل الدخول");
-    const { schoolId, classId } = req.data;
-    if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
-    let q = db.collection("students").where("schoolId","==",schoolId);
+    const au3 = await requireAuth(req, ["admin","assistant_manager","superadmin","teacher"]);
+    const { schoolId: scId2, classId } = req.data;
+    const schoolId2 = au3.role === "superadmin" ? scId2 : au3.schoolId;
+    if (!schoolId2) throw new HttpsError("invalid-argument", "schoolId مطلوب");
+    let q = db.collection("students").where("schoolId","==",schoolId2);
     if (classId) q = q.where("classId","==",classId);
     const snap = await q.get();
     const students = [];
