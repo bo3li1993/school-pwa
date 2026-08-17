@@ -156,7 +156,7 @@ window.createFullBackup = async function() {
         URL.revokeObjectURL(url);
 
         window.showToast('✅ تم إنشاء النسخة الاحتياطية وتحميلها');
-        document.getElementById('backup-last').innerHTML = `✅ آخر نسخة: <b>${dateStr}</b> — ${studSnap.size} طالب، بواسطة: ${user.name}`;
+        const backupEl = document.getElementById('backup-last'); backupEl.textContent = `✅ آخر نسخة: ${dateStr} — ${studSnap.size} طالب، بواسطة: ${user.name}`;
     } catch (e) {
         window.showToast('❌ خطأ: ' + e.message, 'error');
     } finally {
