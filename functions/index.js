@@ -161,9 +161,9 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     if (ss.empty) { await recFail("otp_"+phone); throw new HttpsError("not-found", "الطالب غير موجود"); }
     const st = ss.docs[0].data(); const regPhone = st.parentPhone||st.phone||""; if (regPhone && regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); const expires = Date.now() + 10*60*1000;
-    await db.collection("otp_requests").doc(phone).set({ otp, expires, schoolId, studentName, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await resetRL("otp_"+phone);
-    console.log("OTP for " + phone + ": " + otp); return { success: true, message: "تم إرسال رمز التحقق" };
-});
+    const crypto = require("crypto"); const otpHash = crypto.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
+    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentName, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await resetRL("otp_"+phone);
+    return { success: true, message: "تم إرسال رمز التحقق" };
 
 exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req) => {
     const { schoolId, civilId, phone, password, studentName, studentCivilId, otp } = req.data;
@@ -172,8 +172,8 @@ exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req
     const otpDoc = await db.collection("otp_requests").doc(phone).get();
     if (!otpDoc.exists) throw new HttpsError("not-found", "لم يتم طلب رمز تحقق");
     const otpData = otpDoc.data();
-    if (otpData.otp !== otp) { await recFail("otp_verify_"+phone); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح"); }
-    if (Date.now() > otpData.expires) throw new HttpsError("deadline-exceeded", "انتهت صلاحية رمز التحقق");
+    const crypto2 = require("crypto"); const inputHash = crypto2.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
+    if (otpData.otpHash !== inputHash) { await recFail("otp_verify_"+phone); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح"); }
     if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
     await db.collection("otp_requests").doc(phone).delete();
     const ex = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
