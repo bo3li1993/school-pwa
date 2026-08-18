@@ -162,7 +162,7 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("failed-precondition", "لا يوجد رقم ولي امر مسجل لهذا الطالب"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
     const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
     const crypto = require("crypto"); const otpHash = crypto.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentName, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
+    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentName, studentDocId: ss.docs[0].id, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
     return { success: true, message: "تم إرسال رمز التحقق" };
 });
 
@@ -175,15 +175,15 @@ exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req
     const crypto2 = require("crypto"); const inputHash = crypto2.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
     if (otpData.otpHash !== inputHash) { await recFail("otp_verify_"+phone); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح"); }
     if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
+    if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
     await db.collection("otp_requests").doc(phone).delete();
     const ex = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
     if (!ex.empty) throw new HttpsError("already-exists", "الحساب موجود");
-    let ssq = db.collection("students").where("schoolId","==",schoolId).where("name","==",studentName);
-    if (studentCivilId) ssq = ssq.where("civilId","==",studentCivilId);
-    const ss = await ssq.limit(1).get();
-    if (ss.empty) throw new HttpsError("not-found", "الطالب غير موجود أو البيانات غير مطابقة");
-    const st = ss.docs[0].data();
-    const passHash = await hashPassword(password);
+    const studentRef = await db.collection("students").doc(otpData.studentDocId).get();
+    if (!studentRef.exists || studentRef.data().schoolId !== schoolId) throw new HttpsError("not-found", "الطالب غير موجود");
+    const st = studentRef.data();
+
+
     await db.collection("users").add({ schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentName, studentId:st.studentId||ss.docs[0].id, childIds:[st.studentId||ss.docs[0].id], classId:st.classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
     return { success: true, userId:"P-"+civilId };
 });
