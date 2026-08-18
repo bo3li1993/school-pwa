@@ -162,7 +162,7 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("failed-precondition", "لا يوجد رقم ولي امر مسجل لهذا الطالب"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
     const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
     const crypto = require("crypto"); const otpHash = crypto.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentName, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await resetRL("otp_"+phone);
+    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentName, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
     return { success: true, message: "تم إرسال رمز التحقق" };
 });
 

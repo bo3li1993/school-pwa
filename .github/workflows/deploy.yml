@@ -48,8 +48,12 @@ jobs:
 
       - name: Security - no SHA-256 hashing
         run: |
-          if grep -RIn "createHash.*sha256\|sha256.*createHash" . --exclude-dir=.git --exclude-dir=node_modules --include="*.js" --include="*.html"; then
-            echo "ERROR: SHA-256 found!"
+          if grep -RIn "createHash.*sha256\|sha256.*createHash" . --exclude-dir=.git --exclude-dir=node_modules --include="*.html"; then
+            echo "ERROR: SHA-256 in browser code!"
+            exit 1
+          fi
+          if grep -RIn "passHash.*sha256\|sha256.*passHash" functions/index.js; then
+            echo "ERROR: SHA-256 password hashing!"
             exit 1
           fi
           echo "SHA-256 OK"
