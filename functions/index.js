@@ -161,7 +161,7 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("failed-precondition", "لا يوجد رقم ولي امر مسجل"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
     const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
     const otpHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentDocId: ss.docs[0].id, used: false, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
+    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentDocId: ss.docs[0].id, studentCivilId: studentCivilId, used: false, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
     return { success: true, message: "تم إرسال رمز التحقق" };
 });
 
@@ -181,6 +181,7 @@ exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req
         const inputHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
         if (otpData.otpHash !== inputHash) { const attempts = (otpData.attempts||0)+1; if (attempts>=5) { t.delete(otpRef); throw new HttpsError("unauthenticated", "تم تجاوز الحد المسموح"); } t.update(otpRef, {attempts}); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح"); }
         if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
+        if (otpData.studentCivilId && otpData.studentCivilId !== civilId) throw new HttpsError("permission-denied", "الرقم المدني غير مطابق");
         const parentSnap = await t.get(parentRef);
         if (parentSnap.exists) throw new HttpsError("already-exists", "الحساب موجود");
         t.update(otpRef, { used: true });

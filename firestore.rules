@@ -163,7 +163,7 @@ service cloud.firestore {
     match /school_threads/{docId} {
       allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
-      allow update: if isAuth() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+      allow update: if isAuth() && sameSchool(resource.data.schoolId) && schoolIdNotChanged() && (resource.data.createdBy == request.auth.uid || isAdmin());
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
