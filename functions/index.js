@@ -140,18 +140,6 @@ exports.addStudentIds = onCall({ cors: CORS, region: REGION }, async (req) => {
     return { success: true, updated };
 });
 
-exports.migrateAllPasswords = onCall({ cors: CORS, region: REGION }, async (req) => {
-    if (!req.auth || req.auth.uid !== "superadmin") throw new HttpsError("permission-denied", "Super Admin فقط");
-    const snap = await db.collection("users").get();
-    let migrated = 0;
-    for (const doc of snap.docs) {
-        const data = doc.data();
-        if (data.passHash && data.passHash.startsWith("$argon2")) continue;
-        if (data.plainPass) { try { await doc.ref.update({ passHash: await hashPassword(data.plainPass), plainPass: admin.firestore.FieldValue.delete() }); migrated++; } catch(e){} }
-    }
-    return { success: true, migrated };
-});
-
 exports.createBackup = onCall({ cors: CORS, region: REGION }, async (req) => {
     const au = await requireAuth(req, ["admin", "superadmin"]);
     const sid = au.role === "superadmin" ? req.data.schoolId : au.schoolId;
