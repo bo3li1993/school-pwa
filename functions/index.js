@@ -155,7 +155,7 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const { schoolId, phone, studentName, studentCivilId } = req.data;
     if (!schoolId || !phone || !studentName) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
     const rl = await checkRL("otp_"+phone); if (rl.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl.remaining + " دقيقة");
-    let ssq = db.collection("students").where("schoolId","==",schoolId).where("name","==",studentName);
+    const lastOtp = await db.collection("otp_requests").doc(phone).get(); if (lastOtp.exists) { const created = lastOtp.data().createdAt?.toMillis?.() || 0; if (Date.now() - created < 60000) throw new HttpsError("resource-exhausted", "انتظر دقيقة قبل طلب رمز جديد"); }
     if (studentCivilId) ssq = ssq.where("civilId","==",studentCivilId);
     const ss = await ssq.limit(1).get();
     if (ss.empty) { await recFail("otp_"+phone); throw new HttpsError("not-found", "الطالب غير موجود"); }
@@ -173,11 +173,11 @@ exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req
     if (!otpDoc.exists) throw new HttpsError("not-found", "لم يتم طلب رمز تحقق");
     const otpData = otpDoc.data(); if (!otpData.expires || Date.now() > otpData.expires) { await db.collection("otp_requests").doc(phone).delete(); throw new HttpsError("deadline-exceeded", "انتهت صلاحية رمز التحقق"); }
     const crypto2 = require("crypto"); const inputHash = crypto2.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-    if (otpData.otpHash !== inputHash) { await recFail("otp_verify_"+phone); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح"); }
-    if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
-    if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
-    await db.collection("otp_requests").doc(phone).delete();
-    const ex = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
+    if (otpData.otpHash !== inputHash) {
+        const attempts = (otpData.attempts || 0) + 1;
+        if (attempts >= 5) { await db.collection("otp_requests").doc(phone).delete(); throw new HttpsError("unauthenticated", "تم تجاوز الحد المسموح، أعد طلب رمز جديد"); }
+        await db.collection("otp_requests").doc(phone).update({ attempts }); await recFail("otp_verify_"+phone); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح");
+    }
     if (!ex.empty) throw new HttpsError("already-exists", "الحساب موجود");
     const studentRef = await db.collection("students").doc(otpData.studentDocId).get();
     if (!studentRef.exists || studentRef.data().schoolId !== schoolId) throw new HttpsError("not-found", "الطالب غير موجود");
