@@ -3,29 +3,29 @@
 exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
     const { schoolId, userId, password } = req.data;
     if (!userId || !password) throw new HttpsError("invalid-argument", "userId و password مطلوبان");
-    const rl = await checkRL(userId);
+    const rlKey = (schoolId || "system") + ":" + userId; const rl = await checkRL(rlKey);
     if (rl.locked) throw new HttpsError("resource-exhausted", `انتظر ${rl.remaining} دقيقة`);
     if (userId === "superadmin") {
         const SH = process.env.SUPER_ADMIN_HASH || "";
         if (!SH) throw new HttpsError("internal", "خطا في الاعدادات");
         const v = await verifyPassword(SH, password);
         if (!v) { await recFail(userId); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
-        await resetRL(userId);
+        await resetRL(rlKey);
         const token = await admin.auth().createCustomToken("superadmin", { role: "superadmin", schoolId: "system", superadmin: true });
         return { token, role: "superadmin", schoolId: "system", name: "Super Admin", userId: "superadmin" };
     }
     if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
     let q = db.collection("users").where("userId", "==", userId).where("schoolId", "==", schoolId);
     const snap = await q.limit(1).get();
-    if (snap.empty) { await recFail(userId); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
+    if (snap.empty) { await recFail(rlKey); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
     const user = snap.docs[0].data();
 
     const docId = snap.docs[0].id;
-    if (!user.passHash) { await recFail(userId); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
+    if (!user.passHash) { await recFail(rlKey); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
     const v = await verifyPassword(user.passHash, password);
-    if (!v) { await recFail(userId); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
+    if (!v) { await recFail(rlKey); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
     if (user.status === "suspended") throw new HttpsError("permission-denied", "الحساب موقوف");
-    await resetRL(userId);
+    await resetRL(rlKey);
 
 
 
@@ -157,8 +157,8 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const rl = await checkRL("otp_"+phone); if (rl.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl.remaining + " دقيقة");
     const lastOtp = await db.collection("otp_requests").doc(phone).get(); if (lastOtp.exists && !lastOtp.data().used) { const created = lastOtp.data().createdAt?.toMillis?.() || 0; if (Date.now() - created < 60000) throw new HttpsError("resource-exhausted", "انتظر دقيقة قبل طلب رمز جديد"); }
     const ss = await db.collection("students").where("schoolId","==",schoolId).where("civilId","==",studentCivilId).limit(1).get();
-    if (ss.empty) { await recFail("otp_"+phone); throw new HttpsError("not-found", "الطالب غير موجود"); }
-    const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("failed-precondition", "لا يوجد رقم ولي امر مسجل"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
+    if (ss.empty) { await recFail("otp_"+phone); throw new HttpsError("not-found", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); }
+    const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("unauthenticated", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
     const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
     const otpHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
     await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentDocId: ss.docs[0].id, studentCivilId: studentCivilId, used: false, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
