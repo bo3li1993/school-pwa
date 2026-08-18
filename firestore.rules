@@ -69,8 +69,8 @@ service cloud.firestore {
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) &&
         roleNotChanged() &&
         schoolIdNotChanged() &&
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['passHash', 'userId']);
-      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(["passHash", "userId", "childIds", "createdAt", "passwordResetRequired", "resetAt"]) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["name", "email", "phone", "department", "classId", "status"]);
     }
 
     // ط·آ·ط¢آ£ط·آ¢ط¢آ¢ط·آ£ط¢آ¢ط£آ¢أ¢â‚¬ع‘ط¢آ¬ط·آ¢ط¢آ¢ط·آ·ط¢آ¹ط·آ¢ط¢آ¯ط·آ·ط¢آ£ط·آ¢ط¢آ¢ط·آ£ط¢آ¢ط£آ¢أ¢â‚¬ع‘ط¢آ¬ط·آ¢ط¢آ¢ط·آ·ط¢آ¹ط·آ¢ط¢آ¯ ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ¸ط·آ£ط¢آ¢ط£آ¢أ¢â‚¬ع‘ط¢آ¬ط£آ¢أ¢â€ڑآ¬ط¹â€ ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¸ط·آ£ط¢آ¢ط£آ¢أ¢â‚¬ع‘ط¢آ¬ط£آ¢أ¢â€ڑآ¬ط¹â€ ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ¨ ط·آ·ط¢آ£ط·آ¢ط¢آ¢ط·آ£ط¢آ¢ط£آ¢أ¢â‚¬ع‘ط¢آ¬ط·آ¢ط¢آ¢ط·آ·ط¢آ¹ط·آ¢ط¢آ¯ط·آ·ط¢آ£ط·آ¢ط¢آ¢ط·آ£ط¢آ¢ط£آ¢أ¢â‚¬ع‘ط¢آ¬ط·آ¢ط¢آ¢ط·آ·ط¢آ¹ط·آ¢ط¢آ¯
