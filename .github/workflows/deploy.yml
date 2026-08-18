@@ -69,7 +69,8 @@ jobs:
       - name: Install Firebase Tools
         run: npm install -g firebase-tools
       - name: Validate Firestore Rules
-        run: firebase --project hosainan-school firestore:rules:list 2>&1 || firebase --project demo-test firestore:rules:test --emulator 2>&1 || node -e "const fs=require('fs'); const r=fs.readFileSync('firestore.rules','utf8'); if(r.includes('allow read, write: if false') && r.includes('isSuperAdmin')) { console.log('Rules OK'); } else { console.error('Rules check failed'); process.exit(1); }"
+        run: |
+          node -e "const fs=require('fs'); const r=fs.readFileSync('firestore.rules','utf8'); if(r.includes('allow read, write: if false') && r.includes('isSuperAdmin') && r.includes('superadmin == true') && r.includes('userSchool()')) { console.log('Rules OK'); } else { console.error('Rules check failed'); process.exit(1); }"
       - name: Security - no plainPass in functions
         run: |
           if grep -RIn "plainPass" functions/index.js; then
