@@ -164,9 +164,9 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const crypto = require("crypto"); const otpHash = crypto.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
     await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentName, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await resetRL("otp_"+phone);
     return { success: true, message: "تم إرسال رمز التحقق" };
+});
 
 exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, civilId, phone, password, studentName, studentCivilId, otp } = req.data;
     if (!schoolId || !civilId || !phone || !password || !studentName || !otp || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
     const rl2 = await checkRL("otp_verify_"+phone); if (rl2.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl2.remaining + " دقيقة");
     const otpDoc = await db.collection("otp_requests").doc(phone).get();
@@ -187,3 +187,4 @@ exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req
     await db.collection("users").add({ schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentName, studentId:st.studentId||ss.docs[0].id, childIds:[st.studentId||ss.docs[0].id], classId:st.classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
     return { success: true, userId:"P-"+civilId };
 });
+
