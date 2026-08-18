@@ -104,7 +104,7 @@ exports.getRegistrationStudents = onCall({ cors: CORS, region: REGION }, async (
 
 exports.addStudentIds = onCall({ cors: CORS, region: REGION }, async (req) => {
     if (!req.auth || req.auth.uid !== "superadmin") throw new HttpsError("permission-denied", "Super Admin فقط");
-    if (!req.auth || req.auth.uid !== "superadmin") throw new HttpsError("permission-denied", "Super Admin فقط");
+
     let updated = 0; const docs = (await db.collection("students").get()).docs.filter(d => !d.data().studentId);
     const BATCH_SIZE = 499;
 
@@ -156,35 +156,37 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     if (!schoolId || !phone || !studentName) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
     const rl = await checkRL("otp_"+phone); if (rl.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl.remaining + " دقيقة");
     const lastOtp = await db.collection("otp_requests").doc(phone).get(); if (lastOtp.exists) { const created = lastOtp.data().createdAt?.toMillis?.() || 0; if (Date.now() - created < 60000) throw new HttpsError("resource-exhausted", "انتظر دقيقة قبل طلب رمز جديد"); }
+    let ssq = db.collection("students").where("schoolId","==",schoolId).where("name","==",studentName);
     if (studentCivilId) ssq = ssq.where("civilId","==",studentCivilId);
     const ss = await ssq.limit(1).get();
     if (ss.empty) { await recFail("otp_"+phone); throw new HttpsError("not-found", "الطالب غير موجود"); }
-    const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("failed-precondition", "لا يوجد رقم ولي امر مسجل لهذا الطالب"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
+    const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("failed-precondition", "لا يوجد رقم ولي امر مسجل"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
     const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
-    const crypto = require("crypto"); const otpHash = crypto.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
+    const otpHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
     await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentName, studentDocId: ss.docs[0].id, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
     return { success: true, message: "تم إرسال رمز التحقق" };
 });
 
 exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, civilId, phone, password, studentName, studentCivilId, otp } = req.data || {};
-    if (!schoolId || !civilId || !phone || !password || !studentName || !otp || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
+    const { schoolId, civilId, phone, password, otp } = req.data || {};
+    if (!schoolId || !civilId || !phone || !password || !otp || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
+    const rl2 = await checkRL("otp_verify_"+phone); if (rl2.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl2.remaining + " دقيقة");
     const otpDoc = await db.collection("otp_requests").doc(phone).get();
     if (!otpDoc.exists) throw new HttpsError("not-found", "لم يتم طلب رمز تحقق");
-    const otpData = otpDoc.data(); if (!otpData.expires || Date.now() > otpData.expires) { await db.collection("otp_requests").doc(phone).delete(); throw new HttpsError("deadline-exceeded", "انتهت صلاحية رمز التحقق"); }
-    const crypto2 = require("crypto"); const inputHash = crypto2.createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-    if (otpData.otpHash !== inputHash) {
-        const attempts = (otpData.attempts || 0) + 1;
-        if (attempts >= 5) { await db.collection("otp_requests").doc(phone).delete(); throw new HttpsError("unauthenticated", "تم تجاوز الحد المسموح، أعد طلب رمز جديد"); }
-        await db.collection("otp_requests").doc(phone).update({ attempts }); await recFail("otp_verify_"+phone); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح");
-    }
+    const otpData = otpDoc.data();
+    if (!otpData.expires || Date.now() > otpData.expires) { await db.collection("otp_requests").doc(phone).delete(); throw new HttpsError("deadline-exceeded", "انتهت صلاحية رمز التحقق"); }
+    const inputHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
+    if (otpData.otpHash !== inputHash) { const attempts = (otpData.attempts||0)+1; if (attempts>=5) { await db.collection("otp_requests").doc(phone).delete(); throw new HttpsError("unauthenticated", "تم تجاوز الحد المسموح"); } await db.collection("otp_requests").doc(phone).update({attempts}); await recFail("otp_verify_"+phone); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح"); }
+    if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
+    await db.collection("otp_requests").doc(phone).delete();
+    const ex = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
     if (!ex.empty) throw new HttpsError("already-exists", "الحساب موجود");
     const studentRef = await db.collection("students").doc(otpData.studentDocId).get();
     if (!studentRef.exists || studentRef.data().schoolId !== schoolId) throw new HttpsError("not-found", "الطالب غير موجود");
     const st = studentRef.data();
-
-
-    await db.collection("users").add({ schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentName, studentId:st.studentId||ss.docs[0].id, childIds:[st.studentId||ss.docs[0].id], classId:st.classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
+    const passHash = await hashPassword(password);
+    await db.collection("users").add({ schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentName:st.name||"", studentId:st.studentId||studentRef.id, childIds:[st.studentId||studentRef.id], classId:st.classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
+    await resetRL("otp_verify_"+phone);
     return { success: true, userId:"P-"+civilId };
 });
 
