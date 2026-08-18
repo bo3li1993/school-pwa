@@ -179,19 +179,19 @@ exports.scheduledDailyBackup = onSchedule({ schedule:"0 2 * * *", region:REGION,
 });
 
 exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, phone } = req.data;
-    if (!schoolId || !phone) throw new HttpsError("invalid-argument", "schoolId والهاتف مطلوبان");
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expires = Date.now() + 10 * 60 * 1000;
-    await db.collection("otp_requests").doc(phone).set({ otp, expires, schoolId, createdAt: admin.firestore.FieldValue.serverTimestamp() });
-    console.log("OTP for " + phone + ": " + otp);
-    return { success: true, message: "تم إرسال رمز التحقق" };
+exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
+    const { schoolId, phone, studentName, studentCivilId } = req.data;
+    if (!schoolId || !phone || !studentName) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
+    const rl = await checkRL("otp_"+phone); if (rl.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl.remaining + " دقيقة");
+    let ssq = db.collection("students").where("schoolId","==",schoolId).where("name","==",studentName);
+    if (studentCivilId) ssq = ssq.where("civilId","==",studentCivilId);
+    const ss = await ssq.limit(1).get();
+    if (ss.empty) { await recFail("otp_"+phone); throw new HttpsError("not-found", "الطالب غير موجود"); }
+    const st = ss.docs[0].data(); const regPhone = st.parentPhone||st.phone||""; if (regPhone && regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق"); }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); const expires = Date.now() + 10*60*1000;
+    await db.collection("otp_requests").doc(phone).set({ otp, expires, schoolId, studentName, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await resetRL("otp_"+phone);
+    console.log("OTP for " + phone + ": " + otp); return { success: true, message: "تم إرسال رمز التحقق" };
 });
-
-exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, civilId, phone, password, studentName, studentCivilId, otp } = req.data;
-    if (!schoolId || !civilId || !phone || !password || !studentName || !otp || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
-    const otpDoc = await db.collection("otp_requests").doc(phone).get();
     if (!otpDoc.exists) throw new HttpsError("not-found", "لم يتم طلب رمز تحقق");
     const otpData = otpDoc.data();
     if (otpData.otp !== otp) throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح");
