@@ -104,11 +104,11 @@ exports.getRegistrationStudents = onCall({ cors: CORS, region: REGION }, async (
 
 exports.addStudentIds = onCall({ cors: CORS, region: REGION }, async (req) => {
     if (!req.auth || req.auth.uid !== "superadmin") throw new HttpsError("permission-denied", "Super Admin فقط");
-    const snap = await db.collection("students").get();
-    let updated = 0;
-    const batch = db.batch();
-    snap.docs.filter(d => !d.data().studentId).forEach(d => { batch.update(d.ref, { studentId:"STU-"+d.id.substring(0,8).toUpperCase() }); updated++; });
-    if (updated > 0) await batch.commit();
+    if (!req.auth || req.auth.uid !== "superadmin") throw new HttpsError("permission-denied", "Super Admin فقط");
+    let updated = 0; const docs = (await db.collection("students").get()).docs.filter(d => !d.data().studentId);
+    const BATCH_SIZE = 499;
+
+    for (let i = 0; i < docs.length; i += BATCH_SIZE) { const batch = db.batch(); docs.slice(i, i+BATCH_SIZE).forEach(d => { batch.update(d.ref, { studentId:"STU-"+d.id.substring(0,8).toUpperCase() }); updated++; }); await batch.commit(); }
     return { success: true, updated };
 });
 
