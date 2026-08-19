@@ -286,3 +286,4 @@ service cloud.firestore {
     match /otp_rate_limits/{docId} { allow read, write: if false; }
 }
 
+}
