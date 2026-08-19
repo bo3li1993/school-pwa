@@ -9,7 +9,7 @@ exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
         const SH = process.env.SUPER_ADMIN_HASH || "";
         if (!SH) throw new HttpsError("internal", "خطا في الاعدادات");
         const v = await verifyPassword(SH, password);
-        if (!v) { await recFail(userId); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
+        if (!v) { await recFail(rlKey); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
         await resetRL(rlKey);
         const token = await admin.auth().createCustomToken("superadmin", { role: "superadmin", schoolId: "system", superadmin: true });
         return { token, role: "superadmin", schoolId: "system", name: "Super Admin", userId: "superadmin" };
@@ -50,10 +50,10 @@ exports.createUser = onCall({ cors: CORS, region: REGION }, async (req) => {
     if (role === "superadmin") throw new HttpsError("permission-denied", "لا يمكن انشاء superadmin");
     const ROLE_RANK = { superadmin:99, admin:3, assistant_manager:2, teacher:1, parent:0 }; if ((ROLE_RANK[role]||0) >= (ROLE_RANK[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إنشاء دور أعلى أو مساوٍ لدورك");
     if (password.length < 8) throw new HttpsError("invalid-argument", "كلمة المرور قصيرة");
-    const ex = await db.collection("users").where("userId","==",userId).where("schoolId","==",sid).limit(1).get();
-    if (!ex.empty) throw new HttpsError("already-exists", "المستخدم موجود");
+    const userDocId = "user_" + sid + "_" + userId;
+    const userRef = db.collection("users").doc(userDocId);
     const passHash = await hashPassword(password);
-    await db.collection("users").add({ schoolId:sid, userId, name, passHash, role, email:email||"", phone:phone||"", department:department||"", classId:classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
+    await db.runTransaction(async (t) => { const existing = await t.get(userRef); if (existing.exists) throw new HttpsError("already-exists", "المستخدم موجود"); t.set(userRef, { schoolId:sid, userId, name, passHash, role, email:email||"", phone:phone||"", department:department||"", classId:classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() }); });
     await logAudit(sid, "create_user", au.name, `userId: ${userId}`);
     return { success: true };
 });
@@ -161,7 +161,7 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("unauthenticated", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); }
     const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
     const otpHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentDocId: ss.docs[0].id, studentCivilId: studentCivilId, used: false, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
+    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentDocId: ss.docs[0].id, studentId: ss.docs[0].data().studentId || ss.docs[0].id, studentCivilId: studentCivilId, used: false, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
     return { success: true, message: "تم إرسال رمز التحقق" };
 });
 
@@ -187,7 +187,7 @@ exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req
         const parentSnap = await t.get(parentRef);
         if (parentSnap.exists) throw new HttpsError("already-exists", "الحساب موجود");
         t.delete(otpRef);
-        t.set(parentRef, { schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentId:otpData.studentDocId||"", childIds:[otpData.studentDocId||""], status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
+        t.set(parentRef, { schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentId:otpData.studentId||otpData.studentDocId||"", childIds:[otpData.studentId||otpData.studentDocId||""], status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
     });
     await resetRL("otp_verify_"+phone);
     return { success: true, userId:"P-"+civilId };
