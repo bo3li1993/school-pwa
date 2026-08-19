@@ -161,10 +161,10 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("unauthenticated", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("permission-denied", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); }
     const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
     const otpHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentDocId: ss.docs[0].id, studentId: ss.docs[0].data().studentId || ss.docs[0].id, studentCivilId: studentCivilId, used: false, createdAt: admin.firestore.FieldValue.serverTimestamp() }); await recFail("otp_"+phone);
+    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentDocId: ss.docs[0].id, studentId: ss.docs[0].data().studentId || ss.docs[0].id, studentCivilId: studentCivilId, used: false, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+    await otpSendRef.set({ lastSentAt: admin.firestore.FieldValue.serverTimestamp(), sendCount: admin.firestore.FieldValue.increment(1) }, { merge: true });
     return { success: true, message: "تم إرسال رمز التحقق" };
 });
-
 exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req) => {
     const { schoolId, civilId, phone, password, otp } = req.data || {};
     if (!schoolId || !civilId || !phone || !password || !otp || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
