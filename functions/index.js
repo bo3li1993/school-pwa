@@ -3,7 +3,7 @@
 exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
     const { schoolId, userId, password } = req.data;
     if (!userId || !password) throw new HttpsError("invalid-argument", "userId و password مطلوبان");
-    const rlKey = (schoolId || "system") + ":" + userId; const rl = await checkRL(rlKey);
+    const rlKey = userId === "superadmin" ? "system:superadmin" : (schoolId || "system") + ":" + userId; const rl = await checkRL(rlKey);
     if (rl.locked) throw new HttpsError("resource-exhausted", `انتظر ${rl.remaining} دقيقة`);
     if (userId === "superadmin") {
         const SH = process.env.SUPER_ADMIN_HASH || "";
@@ -69,7 +69,7 @@ exports.resetUserPassword = onCall({ cors: CORS, region: REGION }, async (req) =
     const s = await db.collection("users").where("userId","==",targetUserId).where("schoolId","==",sid).limit(1).get();
     if (s.empty) throw new HttpsError("not-found", "المستخدم غير موجود");
     const targetDoc = s.docs[0]; const targetRole = targetDoc.data().role;
-    const ROLE_RANK2 = { superadmin:99, admin:3, assistant_manager:2, wing_supervisor:1, department_head:1, social_worker:1, nurse:1, guard:1, teacher:1, parent:0 }; if ((ROLE_RANK2[targetRole]||0) >= (ROLE_RANK2[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إعادة تعيين كلمة مرور هذا الدور");
+    const ROLE_RANK2 = { superadmin:99, admin:3, assistant_manager:2, wing_supervisor:1, department_head:1, social_worker:1, nurse:1, guard:1, teacher:1, parent:0 }; if (!(targetRole in ROLE_RANK2)) throw new HttpsError("permission-denied", "دور غير معروف"); if ((ROLE_RANK2[targetRole]||0) >= (ROLE_RANK2[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إعادة تعيين كلمة مرور هذا الدور");
     const docId = targetDoc.id;
     if (!docId) throw new HttpsError("not-found", "المستخدم غير موجود");
     const passHash = await hashPassword(newPassword);
@@ -159,7 +159,7 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     const otpSendRef = db.collection("otp_rate_limits").doc("send_"+phone); const otpSendDoc = await otpSendRef.get(); if (otpSendDoc.exists) { const d = otpSendDoc.data(); const minsPassed = (Date.now() - (d.lastSentAt?.toMillis?.() || 0)) / 60000; if (d.sendCount >= 5 && minsPassed < 60) throw new HttpsError("resource-exhausted", "تجاوزت الحد المسموح، انتظر ساعة"); if (minsPassed < 1) throw new HttpsError("resource-exhausted", "انتظر دقيقة قبل إرسال رمز جديد"); }
     const lastOtp = await db.collection("otp_requests").doc(phone).get(); if (lastOtp.exists && !lastOtp.data().used) { const created = lastOtp.data().createdAt?.toMillis?.() || 0; if (Date.now() - created < 60000) throw new HttpsError("resource-exhausted", "انتظر دقيقة قبل طلب رمز جديد"); }
     const ss = await db.collection("students").where("schoolId","==",schoolId).where("civilId","==",studentCivilId).limit(1).get();
-    if (ss.empty) { await otpSendRef.set({ lastSentAt: admin.firestore.FieldValue.serverTimestamp(), sendCount: (otpSendDoc.exists ? (otpSendDoc.data().sendCount||0)+1 : 1) }); throw new HttpsError("not-found", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); }
+    if (ss.empty) { await recFail("otp_student_"+phone); throw new HttpsError("failed-precondition", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); }
     const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("failed-precondition", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("failed-precondition", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); }
     const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
     const otpHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
