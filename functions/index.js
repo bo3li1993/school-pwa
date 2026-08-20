@@ -47,8 +47,10 @@ exports.createUser = onCall({ cors: CORS, region: REGION }, async (req) => {
     const sid = au.role === "superadmin" ? req.data.schoolId : au.schoolId;
     const { userId, name, password, role, email, phone, department, classId } = req.data;
     if (!userId || !name || !password || !role || !sid) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
+    const ALLOWED_ROLES = ["admin","assistant_manager","wing_supervisor","department_head","social_worker","nurse","guard","teacher","parent"];
+    if (!ALLOWED_ROLES.includes(role)) throw new HttpsError("invalid-argument", "دور غير صالح");
     if (role === "superadmin") throw new HttpsError("permission-denied", "لا يمكن انشاء superadmin");
-    const ROLE_RANK = { superadmin:99, admin:3, assistant_manager:2, teacher:1, parent:0 }; if ((ROLE_RANK[role]||0) >= (ROLE_RANK[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إنشاء دور أعلى أو مساوٍ لدورك");
+    const ROLE_RANK = { superadmin:99, admin:3, assistant_manager:2, wing_supervisor:1, department_head:1, social_worker:1, nurse:1, guard:1, teacher:1, parent:0 }; if ((ROLE_RANK[role]||0) >= (ROLE_RANK[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إنشاء دور أعلى أو مساوٍ لدورك");
     if (password.length < 8) throw new HttpsError("invalid-argument", "كلمة المرور قصيرة");
     const userDocId = "user_" + sid + "_" + userId;
     const userRef = db.collection("users").doc(userDocId);
@@ -67,7 +69,7 @@ exports.resetUserPassword = onCall({ cors: CORS, region: REGION }, async (req) =
     const s = await db.collection("users").where("userId","==",targetUserId).where("schoolId","==",sid).limit(1).get();
     if (s.empty) throw new HttpsError("not-found", "المستخدم غير موجود");
     const targetDoc = s.docs[0]; const targetRole = targetDoc.data().role;
-    const ROLE_RANK2 = { superadmin:99, admin:3, assistant_manager:2, teacher:1, parent:0 }; if ((ROLE_RANK2[targetRole]||0) >= (ROLE_RANK2[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إعادة تعيين كلمة مرور هذا الدور");
+    const ROLE_RANK2 = { superadmin:99, admin:3, assistant_manager:2, wing_supervisor:1, department_head:1, social_worker:1, nurse:1, guard:1, teacher:1, parent:0 }; if ((ROLE_RANK2[targetRole]||0) >= (ROLE_RANK2[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إعادة تعيين كلمة مرور هذا الدور");
     const docId = targetDoc.id;
     if (!docId) throw new HttpsError("not-found", "المستخدم غير موجود");
     const passHash = await hashPassword(newPassword);
