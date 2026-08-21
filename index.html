@@ -49,6 +49,8 @@ body{background:var(--navy);min-height:100vh;display:flex;flex-direction:column;
   </div>
   <div class="login-body">
     <div class="error-msg" id="error-msg"></div>
+    <label class="login-label">كود المدرسة</label>
+    <input type="text" class="login-input" id="inp-school" placeholder="مثال: hosainan" autocomplete="off">
     <label class="login-label">رقم المستخدم</label>
     <input type="text" class="login-input" id="inp-id" placeholder="أدخل رقمك..." autocomplete="username">
     <label class="login-label">كلمة المرور</label>
@@ -96,6 +98,7 @@ async function loadSchoolBranding() {
   } catch(e) {}
 }
 window.doLogin = async function() {
+  const schoolId2 = (document.getElementById('inp-school')?.value?.trim().toLowerCase()) || schoolFromUrl || '';
   const id = document.getElementById('inp-id').value.trim();
   const pass = document.getElementById('inp-pass').value.trim();
   const btn = document.getElementById('login-btn');
@@ -105,7 +108,7 @@ window.doLogin = async function() {
   btn.disabled = true;
   btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
   try {
-    const result = await loginUserFn({ schoolId: schoolFromUrl || null, userId: id, password: pass });
+    const result = await loginUserFn({ schoolId: schoolId2 || null, userId: id, password: pass });
     const userData = result.data;
     await signInWithCustomToken(auth, userData.token);
     const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
