@@ -195,3 +195,19 @@ exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req
     return { success: true, userId:"P-"+civilId };
 });
 
+
+exports.loginParent = onCall({ cors: CORS, region: REGION }, async (req) => {
+    const { schoolId, civilId, password } = req.data;
+    if (!schoolId || !civilId || !password) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
+    const rl = await checkRL("parent_"+civilId);
+    if (rl.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl.remaining + " دقيقة");
+    const snap = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
+    if (snap.empty) { await recFail("parent_"+civilId); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
+    const user = snap.docs[0].data();
+    const v = await verifyPassword(user.passHash, password);
+    if (!v) { await recFail("parent_"+civilId); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
+    await resetRL("parent_"+civilId);
+    const token = await admin.auth().createCustomToken(snap.docs[0].id, { role:"parent", schoolId:user.schoolId, userId:user.userId });
+    const sd = await db.collection("schools").doc(user.schoolId).get();
+    return { token, role:"parent", schoolId:user.schoolId, userId:user.userId, studentName:user.studentName||"", studentId:user.studentId||"", classId:user.classId||"", schoolName:sd.exists?sd.data().name:"" };
+});
