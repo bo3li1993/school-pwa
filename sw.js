@@ -1,4 +1,4 @@
-const CACHE_NAME = 'manzoma-v8';
+const CACHE_NAME = 'manzoma-v9';
 const STATIC_ASSETS = [
     './',
     './index.html',
