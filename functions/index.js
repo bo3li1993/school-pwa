@@ -211,3 +211,5 @@ exports.loginParent = onCall({ cors: CORS, region: REGION }, async (req) => {
     const sd = await db.collection("schools").doc(user.schoolId).get();
     return { token, role:"parent", schoolId:user.schoolId, userId:user.userId, studentName:user.studentName||"", studentId:user.studentId||"", classId:user.classId||"", schoolName:sd.exists?sd.data().name:"" };
 });
+
+// rebuild-marker-20260822131022
