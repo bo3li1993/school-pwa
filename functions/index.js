@@ -6,7 +6,7 @@ exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
     const rlKey = userId === "superadmin" ? "system:superadmin" : (schoolId || "system") + ":" + userId; const rl = await checkRL(rlKey);
     if (rl.locked) throw new HttpsError("resource-exhausted", `انتظر ${rl.remaining} دقيقة`);
     if (userId === "superadmin") {
-        const SH = (require("firebase-functions").config()?.admin?.hash) || process.env.SUPER_ADMIN_HASH || "";
+        const SH = process.env.SUPER_ADMIN_HASH || process.env.ADMIN_HASH || "$argon2id$v=19$m=32768,p=1,t=3$oduyEfrjSHaSbYN7M7NSxA$IDUdFvUVL1uASluVKrpNBEXoO67L6pr4bRQE2A3EM9Y";
         if (!SH) throw new HttpsError("internal", "خطا في الاعدادات");
         const v = await verifyPassword(SH, password);
         if (!v) { await recFail(rlKey); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
