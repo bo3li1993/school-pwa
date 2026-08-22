@@ -1,1 +1,1 @@
-{"name":"hosainan-school-functions","main":"index.js","engines":{"node":"22"},"dependencies":{"argon2":"^0.45.1","firebase-admin":"^12.0.0","firebase-functions":"^5.1.0"}}
+{"name":"hosainan-school-functions","engines":{"node":"22"},"dependencies":{"argon2":"^0.45.1","firebase-admin":"^12.0.0","firebase-functions":"^5.0.0"}}
