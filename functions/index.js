@@ -1,3 +1,4 @@
+// build: 20260823003955
 "use strict"; const { onCall, HttpsError } = require("firebase-functions/v2/https"); const { onSchedule } = require("firebase-functions/v2/scheduler"); const admin = require("firebase-admin"); const argon2 = require("argon2"); admin.initializeApp(); const db = admin.firestore(); const CORS = [/^https:\/\/bo3li1993\.github\.io(\/.*)?$/, /^http:\/\/localhost(?::\d+)?$/]; const REGION = "me-central1"; const MAX_ATTEMPTS = 5; const _CORS_VERSION = 2; // v2 const LOCKOUT_MINUTES = 15; // v202608230035
 async function hashPassword(p) { return argon2.hash(p, { type: argon2.argon2id, memoryCost: 32768, timeCost: 3, parallelism: 1 }); }
 async function verifyPassword(h, p) { try { return await argon2.verify(h, p); } catch(e) { return false; } }
