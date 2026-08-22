@@ -534,7 +534,7 @@ window.checkSuperPass = async function() {
   try {
     const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
     const fns = getFunctions(auth.app, 'me-central1');
-    const res = await httpsCallable(fns, 'loginUser')({ schoolId:null, userId:'superadmin', password:pass });
+    const res = await httpsCallable(fns, 'loginUser')({ schoolId:'system', userId:'superadmin', password:pass });
     if(res.data?.token) {
       await signInWithCustomToken(auth, res.data.token);
       // token used directly - not stored
