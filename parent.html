@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>بوابة ولي الأمر — المنظومة الرقمية</title>
+<title>(H'() HDJ 'D#E1  'DEF8HE) 'D1BEJ)</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -51,60 +51,60 @@ body{font-family:'Cairo',sans-serif;background:var(--off);min-height:100vh;paddi
 
 <div class="topbar">
   <div>
-    <h1 id="topbar-name">👨‍👩‍👦 بوابة ولي الأمر</h1>
+    <h1 id="topbar-name">=h=i=f (H'() HDJ 'D#E1</h1>
     <p id="topbar-school"></p>
   </div>
-  <button onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> خروج</button>
+  <button onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> .1H,</button>
 </div>
 
-<!-- الرئيسية -->
+<!-- 'D1&J3J) -->
 <div class="page active" id="page-home">
 
   <div class="card">
-    <h2><i class="bi bi-person-fill" style="color:var(--sky)"></i> بيانات الطالب</h2>
+    <h2><i class="bi bi-person-fill" style="color:var(--sky)"></i> (J'F'* 'D7'D(</h2>
     <div class="info-grid" id="student-info">
-      <div class="loading">⏳ جاري التحميل...</div>
+      <div class="loading">� ,'1J 'D*-EJD...</div>
     </div>
   </div>
 
   <div class="card" id="stats-card" style="display:none">
-    <h2><i class="bi bi-bar-chart-fill" style="color:var(--gold)"></i> الإحصائيات</h2>
+    <h2><i class="bi bi-bar-chart-fill" style="color:var(--gold)"></i> 'D%-5'&J'*</h2>
     <div class="stat-row">
-      <div><div class="stat-num" id="stat-absent">—</div><div class="stat-lbl">غياب</div></div>
-      <div><div class="stat-num" id="stat-late">—</div><div class="stat-lbl">تأخر</div></div>
-      <div><div class="stat-num" id="stat-notes">—</div><div class="stat-lbl">ملاحظات</div></div>
+      <div><div class="stat-num" id="stat-absent"></div><div class="stat-lbl">:J'(</div></div>
+      <div><div class="stat-num" id="stat-late"></div><div class="stat-lbl">*#.1</div></div>
+      <div><div class="stat-num" id="stat-notes"></div><div class="stat-lbl">ED'-8'*</div></div>
     </div>
   </div>
 
   <div id="home-announcements"></div>
 
   <div class="card">
-    <h2><i class="bi bi-calendar-x" style="color:var(--red)"></i> آخر سجلات الغياب</h2>
-    <div id="absence-list"><div class="loading">⏳</div></div>
+    <h2><i class="bi bi-calendar-x" style="color:var(--red)"></i> ".1 3,D'* 'D:J'(</h2>
+    <div id="absence-list"><div class="loading">�</div></div>
   </div>
 
 </div>
 
-<!-- ملاحظات المعلمين -->
+<!-- ED'-8'* 'DE9DEJF -->
 <div class="page" id="page-notes">
   <div class="card">
-    <h2><i class="bi bi-pencil-square" style="color:var(--gold)"></i> ملاحظات المعلمين</h2>
-    <div id="teacher-notes"><div class="loading">⏳ جاري التحميل...</div></div>
+    <h2><i class="bi bi-pencil-square" style="color:var(--gold)"></i> ED'-8'* 'DE9DEJF</h2>
+    <div id="teacher-notes"><div class="loading">� ,'1J 'D*-EJD...</div></div>
   </div>
 </div>
 
-<!-- الإعلانات -->
+<!-- 'D%9D'F'* -->
 <div class="page" id="page-ann">
   <div class="card">
-    <h2><i class="bi bi-megaphone-fill" style="color:var(--gold)"></i> إعلانات المدرسة</h2>
-    <div id="ann-list"><div class="loading">⏳ جاري التحميل...</div></div>
+    <h2><i class="bi bi-megaphone-fill" style="color:var(--gold)"></i> %9D'F'* 'DE/13)</h2>
+    <div id="ann-list"><div class="loading">� ,'1J 'D*-EJD...</div></div>
   </div>
 </div>
 
 <div class="bottom-nav">
-  <button class="nav-btn active" onclick="switchPage('page-home',this)"><i class="bi bi-house-fill"></i>الرئيسية</button>
-  <button class="nav-btn" onclick="switchPage('page-notes',this)"><i class="bi bi-pencil-square"></i>ملاحظات</button>
-  <button class="nav-btn" onclick="switchPage('page-ann',this)"><i class="bi bi-megaphone"></i>إعلانات</button>
+  <button class="nav-btn active" onclick="switchPage('page-home',this)"><i class="bi bi-house-fill"></i>'D1&J3J)</button>
+  <button class="nav-btn" onclick="switchPage('page-notes',this)"><i class="bi bi-pencil-square"></i>ED'-8'*</button>
+  <button class="nav-btn" onclick="switchPage('page-ann',this)"><i class="bi bi-megaphone"></i>%9D'F'*</button>
 </div>
 
 <script type="module">
@@ -112,7 +112,7 @@ import { auth } from './js/firebase-config.js';
 import { getFirestore, collection, getDocs, query, where, orderBy, limit }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// التحقق من الجلسة
+// 'D*-BB EF 'D,D3)
 const saved = localStorage.getItem('hs_parent');
 if (!saved) { window.location.replace('parent-login.html'); }
 let me = {};
@@ -124,7 +124,7 @@ try {
     window.location.replace('parent-login.html');
 }
 
-document.getElementById('topbar-name').textContent = '👨‍👩‍👦 ' + (me.studentName || 'ولي الأمر');
+document.getElementById('topbar-name').textContent = '=h=i=f ' + (me.studentName || 'HDJ 'D#E1');
 document.getElementById('topbar-school').textContent = me.schoolName || '';
 
 const db = getFirestore(auth.app);
@@ -140,23 +140,23 @@ window.switchPage = function(pageId, btn) {
 };
 
 window.doLogout = function() {
-    if (!confirm('هل تريد تسجيل الخروج؟')) return;
+    if (!confirm('GD *1J/ *3,JD 'D.1H,')) return;
     localStorage.removeItem('hs_parent');
     window.location.replace('parent-login.html');
 };
 
-// بيانات الطالب
+// (J'F'* 'D7'D(
 document.getElementById('student-info').innerHTML = `
-    <div class="info-item"><div class="lbl">اسم الطالب</div><div class="val">${studentName || '—'}</div></div>
-    <div class="info-item"><div class="lbl">الفصل</div><div class="val">${me.classId || '—'}</div></div>
-    <div class="info-item"><div class="lbl">المدرسة</div><div class="val">${me.schoolName || '—'}</div></div>
-    <div class="info-item"><div class="lbl">رقم الطالب</div><div class="val">${studentId || '—'}</div></div>
+    <div class="info-item"><div class="lbl">'3E 'D7'D(</div><div class="val">${studentName || ''}</div></div>
+    <div class="info-item"><div class="lbl">'DA5D</div><div class="val">${me.classId || ''}</div></div>
+    <div class="info-item"><div class="lbl">'DE/13)</div><div class="val">${me.schoolName || ''}</div></div>
+    <div class="info-item"><div class="lbl">1BE 'D7'D(</div><div class="val">${studentId || ''}</div></div>
 `;
 
-// تحميل البيانات
+// *-EJD 'D(J'F'*
 (async function() {
     try {
-        // سجل الغياب
+        // 3,D 'D:J'(
         const attQ = query(
             collection(db, 'attendance'),
             where('schoolId','==',schoolId),
@@ -168,9 +168,9 @@ document.getElementById('student-info').innerHTML = `
         const absList = document.getElementById('absence-list');
 
         if (attSnap.empty) {
-            absList.innerHTML = '<div class="empty" style="color:var(--green)">✅ لا يوجد غياب مسجّل — ممتاز!</div>';
+            absList.innerHTML = '<div class="empty" style="color:var(--green)"> D' JH,/ :J'( E3,QD  EE*'2!</div>';
         } else {
-            const labels = {absent:'غائب',late:'متأخر',excused:'مستأذن'};
+            const labels = {absent:':'&(',late:'E*#.1',excused:'E3*#0F'};
             const cls = {absent:'badge-absent',late:'badge-late',excused:'badge-excused'};
             let absent=0, late=0;
             absList.innerHTML = attSnap.docs.map(d => {
@@ -187,7 +187,7 @@ document.getElementById('student-info').innerHTML = `
             document.getElementById('stat-late').textContent = late;
         }
 
-        // ملاحظات المعلمين
+        // ED'-8'* 'DE9DEJF
         const notesQ = query(
             collection(db,'student_notes'),
             where('schoolId','==',schoolId),
@@ -200,7 +200,7 @@ document.getElementById('student-info').innerHTML = `
         document.getElementById('stat-notes').textContent = notesSnap.size;
 
         if (notesSnap.empty) {
-            notesDiv.innerHTML = '<div class="empty">لا توجد ملاحظات</div>';
+            notesDiv.innerHTML = '<div class="empty">D' *H,/ ED'-8'*</div>';
         } else {
             notesDiv.innerHTML = notesSnap.docs.map(d => {
                 const n = d.data();
@@ -215,10 +215,10 @@ document.getElementById('student-info').innerHTML = `
             }).join('');
         }
 
-        // إظهار الإحصائيات
+        // %8G'1 'D%-5'&J'*
         document.getElementById('stats-card').style.display = 'block';
 
-        // الإعلانات
+        // 'D%9D'F'*
         const annQ = query(
             collection(db,'school_announcements'),
             where('schoolId','==',schoolId),
@@ -231,7 +231,7 @@ document.getElementById('student-info').innerHTML = `
         if (!annSnap.empty) {
             document.getElementById('home-announcements').innerHTML =
                 `<div class="card" style="background:#fef3c7;border-color:#fbbf24">
-                    <h2 style="color:#92400e"><i class="bi bi-megaphone-fill"></i> إعلانات المدرسة</h2>
+                    <h2 style="color:#92400e"><i class="bi bi-megaphone-fill"></i> %9D'F'* 'DE/13)</h2>
                     ${annSnap.docs.slice(0,3).map(d=>`<div class="ann-item">${d.data().text||''}</div>`).join('')}
                 </div>`;
 
@@ -244,12 +244,12 @@ document.getElementById('student-info').innerHTML = `
                 </div>`;
             }).join('');
         } else {
-            document.getElementById('ann-list').innerHTML = '<div class="empty">لا توجد إعلانات</div>';
+            document.getElementById('ann-list').innerHTML = '<div class="empty">D' *H,/ %9D'F'*</div>';
         }
 
     } catch(e) {
         console.error('Parent load:', e);
-        document.getElementById('absence-list').innerHTML = `<div class="empty" style="color:var(--red)">❌ خطأ في التحميل: ${e.message}</div>`;
+        document.getElementById('absence-list').innerHTML = `<div class="empty" style="color:var(--red)">L .7# AJ 'D*-EJD: ${e.message}</div>`;
     }
 })();
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة التحكم — المنظومة الرقمية</title>
+<title>DH-) 'D*-CE  'DEF8HE) 'D1BEJ)</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
@@ -227,13 +227,13 @@ tr:hover td{background:#fafafa}
 <!-- ===== LOGIN ===== -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">🛡</div>
-    <div class="login-title">لوحة التحكم العليا</div>
-    <div class="login-sub">المنظومة الرقمية — Superadmin</div>
+    <div class="login-logo">=�</div>
+    <div class="login-title">DH-) 'D*-CE 'D9DJ'</div>
+    <div class="login-sub">'DEF8HE) 'D1BEJ)  Superadmin</div>
     <div class="login-err" id="login-err"></div>
-    <input type="password" class="login-field" id="super-pass" placeholder="كلمة المرور">
+    <input type="password" class="login-field" id="super-pass" placeholder="CDE) 'DE1H1">
     <button class="login-btn" onclick="checkSuperPass()">
-      <i class="bi bi-shield-lock-fill"></i> دخول آمن
+      <i class="bi bi-shield-lock-fill"></i> /.HD "EF
     </button>
   </div>
 </div>
@@ -242,160 +242,160 @@ tr:hover td{background:#fafafa}
 <div id="main-screen">
   <div class="topbar">
     <div class="topbar-brand">
-      <div class="topbar-dot">🏫</div>
+      <div class="topbar-dot"><�</div>
       <div>
-        <div class="topbar-name">المنظومة الرقمية</div>
-        <div class="topbar-sub">لوحة تحكم السوبر آدمن</div>
+        <div class="topbar-name">'DEF8HE) 'D1BEJ)</div>
+        <div class="topbar-sub">DH-) *-CE 'D3H(1 "/EF</div>
       </div>
     </div>
     <div style="display:flex;gap:10px;align-items:center">
       <button class="logout-btn" onclick="doLogout()">
-        <i class="bi bi-box-arrow-left"></i> خروج
+        <i class="bi bi-box-arrow-left"></i> .1H,
       </button>
     </div>
   </div>
 
   <div class="page">
 
-    <!-- تنبيه انتهاء الاشتراك -->
+    <!-- *F(JG 'F*G'! 'D'4*1'C -->
     <div class="expiry-alert" id="expiry-alert" style="display:none">
       <i class="bi bi-exclamation-triangle-fill"></i>
       <span id="expiry-alert-text"></span>
     </div>
 
-    <!-- إحصائيات -->
+    <!-- %-5'&J'* -->
     <div class="stats">
       <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-buildings"></i> إجمالي المدارس</div>
+        <div class="stat-label"><i class="bi bi-buildings"></i> %,E'DJ 'DE/'13</div>
         <div class="stat-value" id="s-total">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-check-circle"></i> نشطة</div>
+        <div class="stat-label"><i class="bi bi-check-circle"></i> F47)</div>
         <div class="stat-value green" id="s-active">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-clock-history"></i> تنتهي قريباً</div>
+        <div class="stat-label"><i class="bi bi-clock-history"></i> *F*GJ B1J('K</div>
         <div class="stat-value warn" id="s-expiring">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-pause-circle"></i> موقوفة</div>
+        <div class="stat-label"><i class="bi bi-pause-circle"></i> EHBHA)</div>
         <div class="stat-value red" id="s-suspended">0</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-currency-dollar"></i> الإيرادات (KWD)</div>
+        <div class="stat-label"><i class="bi bi-currency-dollar"></i> 'D%J1'/'* (KWD)</div>
         <div class="stat-value gold" id="s-revenue">0</div>
       </div>
     </div>
 
-    <!-- إضافة مدرسة جديدة -->
+    <!-- %6'A) E/13) ,/J/) -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon"><i class="bi bi-plus-circle-fill"></i></div>
         <div>
-          <h2>إضافة مدرسة جديدة</h2>
-          <p>أنشئ مدرسة ومديرها في خطوة واحدة</p>
+          <h2>%6'A) E/13) ,/J/)</h2>
+          <p>#F4& E/13) HE/J1G' AJ .7H) H'-/)</p>
         </div>
       </div>
       <div class="card-body">
         <div class="form-grid">
           <div class="form-group">
-            <label class="form-label">معرّف المدرسة (ID) *</label>
-            <input type="text" class="form-input" id="f-school-id" placeholder="مثال: school_hawally">
+            <label class="form-label">E91QA 'DE/13) (ID) *</label>
+            <input type="text" class="form-input" id="f-school-id" placeholder="E+'D: school_hawally">
           </div>
           <div class="form-group">
-            <label class="form-label">اسم المدرسة *</label>
-            <input type="text" class="form-input" id="f-school-name" placeholder="متوسطة الكويت النموذجية">
+            <label class="form-label">'3E 'DE/13) *</label>
+            <input type="text" class="form-input" id="f-school-name" placeholder="E*H37) 'DCHJ* 'DFEH0,J)">
           </div>
           <div class="form-group">
-            <label class="form-label">المنطقة</label>
-            <input type="text" class="form-input" id="s-region" placeholder="حولي / مبارك الكبير ...">
+            <label class="form-label">'DEF7B)</label>
+            <input type="text" class="form-input" id="s-region" placeholder="-HDJ / E('1C 'DC(J1 ...">
           </div>
           <div class="form-group">
-            <label class="form-label">الخطة</label>
+            <label class="form-label">'D.7)</label>
             <select class="form-input" id="f-plan">
-              <option value="basic">🥉 أساسية — 150 KWD</option>
-              <option value="pro" selected>🥈 احترافية — 250 KWD</option>
-              <option value="enterprise">🥇 مؤسسية — 400 KWD</option>
+              <option value="basic">>I #3'3J)  150 KWD</option>
+              <option value="pro" selected>>H '-*1'AJ)  250 KWD</option>
+              <option value="enterprise">>G E$33J)  400 KWD</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">تاريخ انتهاء الاشتراك</label>
+            <label class="form-label">*'1J. 'F*G'! 'D'4*1'C</label>
             <input type="date" class="form-input" id="f-sub-end">
           </div>
           <div class="form-group">
-            <label class="form-label">لون النظام الرئيسي</label>
+            <label class="form-label">DHF 'DF8'E 'D1&J3J</label>
             <input type="color" class="form-input" id="f-primary-color" value="#0b2545" style="padding:3px;cursor:pointer;height:44px">
           </div>
           <div class="form-group">
-            <label class="form-label">لون التمييز</label>
+            <label class="form-label">DHF 'D*EJJ2</label>
             <input type="color" class="form-input" id="f-accent-color" value="#d4920a" style="padding:3px;cursor:pointer;height:44px">
           </div>
           <div class="form-group">
-            <label class="form-label">شعار المدرسة (URL اختياري)</label>
+            <label class="form-label">49'1 'DE/13) (URL '.*J'1J)</label>
             <input type="text" class="form-input" id="f-logo-url" placeholder="https://...">
           </div>
           <div class="form-group form-full">
-            <label class="form-label">ملاحظات (اختياري)</label>
-            <input type="text" class="form-input" id="f-notes" placeholder="أي معلومة إضافية...">
+            <label class="form-label">ED'-8'* ('.*J'1J)</label>
+            <input type="text" class="form-input" id="f-notes" placeholder="#J E9DHE) %6'AJ)...">
           </div>
         </div>
         <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
-        <p style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:12px">بيانات المدير الأول</p>
+        <p style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:12px">(J'F'* 'DE/J1 'D#HD</p>
         <div class="form-grid">
           <div class="form-group">
-            <label class="form-label">اسم المستخدم (مدير) *</label>
+            <label class="form-label">'3E 'DE3*./E (E/J1) *</label>
             <input type="text" class="form-input" id="f-admin-id" placeholder="admin01">
           </div>
           <div class="form-group">
-            <label class="form-label">الاسم الكامل *</label>
-            <input type="text" class="form-input" id="f-admin-name" placeholder="أحمد محمد العلي">
+            <label class="form-label">'D'3E 'DC'ED *</label>
+            <input type="text" class="form-input" id="f-admin-name" placeholder="#-E/ E-E/ 'D9DJ">
           </div>
           <div class="form-group">
-            <label class="form-label">كلمة المرور *</label>
-            <input type="text" class="form-input" id="f-admin-pass" placeholder="8 أحرف على الأقل">
+            <label class="form-label">CDE) 'DE1H1 *</label>
+            <input type="text" class="form-input" id="f-admin-pass" placeholder="8 #-1A 9DI 'D#BD">
           </div>
           <div class="form-group">
-            <label class="form-label">رقم الهاتف</label>
+            <label class="form-label">1BE 'DG'*A</label>
             <input type="text" class="form-input" id="f-admin-phone" placeholder="965XXXXXXXX+">
           </div>
         </div>
         <button class="submit-btn" onclick="createSchool()">
-          <i class="bi bi-rocket-takeoff-fill"></i> إنشاء المدرسة والمدير
+          <i class="bi bi-rocket-takeoff-fill"></i> %F4'! 'DE/13) H'DE/J1
         </button>
       </div>
     </div>
 
-    <!-- قائمة المدارس -->
+    <!-- B'&E) 'DE/'13 -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon"><i class="bi bi-buildings-fill"></i></div>
         <div>
-          <h2>المدارس المسجلة</h2>
-          <p>إدارة كاملة لجميع المدارس</p>
+          <h2>'DE/'13 'DE3,D)</h2>
+          <p>%/'1) C'ED) D,EJ9 'DE/'13</p>
         </div>
       </div>
       <div class="card-body">
         <div class="filter-bar">
-          <button class="filter-btn active" onclick="setFilter('all',this)">الكل</button>
-          <button class="filter-btn" onclick="setFilter('active',this)">نشطة</button>
-          <button class="filter-btn" onclick="setFilter('expiring',this)">تنتهي قريباً</button>
-          <button class="filter-btn" onclick="setFilter('suspended',this)">موقوفة</button>
-          <button class="filter-btn" onclick="setFilter('expired',this)">منتهية</button>
-          <input type="text" class="search-input" id="school-search" placeholder="🔍 بحث باسم أو ID المدرسة..." oninput="renderSchools()">
+          <button class="filter-btn active" onclick="setFilter('all',this)">'DCD</button>
+          <button class="filter-btn" onclick="setFilter('active',this)">F47)</button>
+          <button class="filter-btn" onclick="setFilter('expiring',this)">*F*GJ B1J('K</button>
+          <button class="filter-btn" onclick="setFilter('suspended',this)">EHBHA)</button>
+          <button class="filter-btn" onclick="setFilter('expired',this)">EF*GJ)</button>
+          <input type="text" class="search-input" id="school-search" placeholder="= (-+ ('3E #H ID 'DE/13)..." oninput="renderSchools()">
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>المدرسة</th>
-                <th>الخطة</th>
-                <th>الحالة</th>
-                <th>انتهاء الاشتراك</th>
-                <th>الإجراءات</th>
+                <th>'DE/13)</th>
+                <th>'D.7)</th>
+                <th>'D-'D)</th>
+                <th>'F*G'! 'D'4*1'C</th>
+                <th>'D%,1'!'*</th>
               </tr>
             </thead>
             <tbody id="schools-tbody">
-              <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">جاري التحميل...</td></tr>
+              <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">,'1J 'D*-EJD...</td></tr>
             </tbody>
           </table>
         </div>
@@ -405,72 +405,72 @@ tr:hover td{background:#fafafa}
   </div><!-- /page -->
 </div><!-- /main-screen -->
 
-<!-- ===== MODAL: تجديد الاشتراك ===== -->
+<!-- ===== MODAL: *,/J/ 'D'4*1'C ===== -->
 <div class="modal-overlay" id="renew-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-arrow-clockwise" style="color:var(--green)"></i> تجديد اشتراك — <span id="renew-school-name"></span></div>
+    <div class="modal-title"><i class="bi bi-arrow-clockwise" style="color:var(--green)"></i> *,/J/ '4*1'C  <span id="renew-school-name"></span></div>
     <div class="modal-err" id="renew-error"></div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr">
       <div class="form-group">
-        <label class="form-label">الخطة</label>
+        <label class="form-label">'D.7)</label>
         <select class="form-input" id="renew-plan">
-          <option value="basic">🥉 أساسية — 150 KWD</option>
-          <option value="pro">🥈 احترافية — 250 KWD</option>
-          <option value="enterprise">🥇 مؤسسية — 400 KWD</option>
+          <option value="basic">>I #3'3J)  150 KWD</option>
+          <option value="pro">>H '-*1'AJ)  250 KWD</option>
+          <option value="enterprise">>G E$33J)  400 KWD</option>
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">تاريخ الانتهاء الجديد</label>
+        <label class="form-label">*'1J. 'D'F*G'! 'D,/J/</label>
         <input type="date" class="form-input" id="renew-end-date">
       </div>
       <div class="form-group form-full">
-        <label class="form-label">ملاحظات المبلغ المدفوع (اختياري)</label>
-        <input type="text" class="form-input" id="renew-notes" placeholder="مثال: تم الدفع نقداً بتاريخ ...">
+        <label class="form-label">ED'-8'* 'DE(D: 'DE/AH9 ('.*J'1J)</label>
+        <input type="text" class="form-input" id="renew-notes" placeholder="E+'D: *E 'D/A9 FB/'K (*'1J. ...">
       </div>
     </div>
     <div id="renew-history-wrap" style="margin-top:16px;display:none">
-      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">📋 سجل التجديدات السابقة (آخر 5):</div>
+      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">=� 3,D 'D*,/J/'* 'D3'(B) (".1 5):</div>
       <div id="renew-history"></div>
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitRenewal()"><i class="bi bi-arrow-clockwise"></i> تجديد الاشتراك</button>
-      <button class="modal-btn cancel" onclick="closeModal('renew-modal')">إلغاء</button>
+      <button class="modal-btn primary" onclick="submitRenewal()"><i class="bi bi-arrow-clockwise"></i> *,/J/ 'D'4*1'C</button>
+      <button class="modal-btn cancel" onclick="closeModal('renew-modal')">%D:'!</button>
     </div>
   </div>
 </div>
 
-<!-- ===== MODAL: ترقية الخطة ===== -->
+<!-- ===== MODAL: *1BJ) 'D.7) ===== -->
 <div class="modal-overlay" id="upgrade-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-arrow-up-circle-fill" style="color:#6d28d9"></i> ترقية خطة — <span id="upgrade-school-name"></span></div>
+    <div class="modal-title"><i class="bi bi-arrow-up-circle-fill" style="color:#6d28d9"></i> *1BJ) .7)  <span id="upgrade-school-name"></span></div>
     <div class="form-group" style="margin-bottom:14px">
-      <label class="form-label">اختر الخطة الجديدة</label>
+      <label class="form-label">'.*1 'D.7) 'D,/J/)</label>
       <select class="form-input" id="upgrade-plan">
-        <option value="basic">🥉 أساسية — 150 KWD</option>
-        <option value="pro">🥈 احترافية — 250 KWD</option>
-        <option value="enterprise">🥇 مؤسسية — 400 KWD</option>
+        <option value="basic">>I #3'3J)  150 KWD</option>
+        <option value="pro">>H '-*1'AJ)  250 KWD</option>
+        <option value="enterprise">>G E$33J)  400 KWD</option>
       </select>
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitUpgrade()"><i class="bi bi-check-circle-fill"></i> تطبيق الترقية</button>
-      <button class="modal-btn cancel" onclick="closeModal('upgrade-modal')">إلغاء</button>
+      <button class="modal-btn primary" onclick="submitUpgrade()"><i class="bi bi-check-circle-fill"></i> *7(JB 'D*1BJ)</button>
+      <button class="modal-btn cancel" onclick="closeModal('upgrade-modal')">%D:'!</button>
     </div>
   </div>
 </div>
 
-<!-- ===== MODAL: بيانات مدير المدرسة ===== -->
+<!-- ===== MODAL: (J'F'* E/J1 'DE/13) ===== -->
 <div class="modal-overlay" id="admin-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-person-badge-fill" style="color:var(--sky)"></i> بيانات مدير — <span id="admin-modal-school"></span></div>
+    <div class="modal-title"><i class="bi bi-person-badge-fill" style="color:var(--sky)"></i> (J'F'* E/J1  <span id="admin-modal-school"></span></div>
     <div id="admin-modal-content" style="font-size:14px;line-height:2"></div>
     <div class="form-group" style="margin-top:14px;display:none" id="change-pass-wrap">
-      <label class="form-label">كلمة المرور الجديدة للمدير</label>
-      <input type="text" class="form-input" id="admin-new-pass" placeholder="اكتب كلمة المرور الجديدة هنا">
+      <label class="form-label">CDE) 'DE1H1 'D,/J/) DDE/J1</label>
+      <input type="text" class="form-input" id="admin-new-pass" placeholder="'C*( CDE) 'DE1H1 'D,/J/) GF'">
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="document.getElementById('change-pass-wrap').style.display='block'" id="change-admin-pass-btn">🔑 تغيير كلمة المرور</button>
-      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()" id="save-admin-pass-btn">💾 حفظ كلمة المرور</button>
-      <button class="modal-btn cancel" onclick="closeModal('admin-modal')">إغلاق</button>
+      <button class="modal-btn primary" onclick="document.getElementById('change-pass-wrap').style.display='block'" id="change-admin-pass-btn">= *:JJ1 CDE) 'DE1H1</button>
+      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()" id="save-admin-pass-btn">=� -A8 CDE) 'DE1H1</button>
+      <button class="modal-btn cancel" onclick="closeModal('admin-modal')">%:D'B</button>
     </div>
   </div>
 </div>
@@ -482,10 +482,10 @@ import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, deleteDoc,
          serverTimestamp, getDocs, query, where, orderBy, getDoc }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// ===== الثوابت =====
+// ===== 'D+H'(* =====
 const PLANS = { basic: 150, pro: 250, enterprise: 400 };
-const PLAN_NAMES = { basic:'🥉 أساسية', pro:'🥈 احترافية', enterprise:'🥇 مؤسسية' };
-const PLAN_ICONS = { basic:'🥉', pro:'🥈', enterprise:'🥇' };
+const PLAN_NAMES = { basic:'>I #3'3J)', pro:'>H '-*1'AJ)', enterprise:'>G E$33J)' };
+const PLAN_ICONS = { basic:'>I', pro:'>H', enterprise:'>G' };
 
 let allSchools = [];
 let currentFilter = 'all';
@@ -502,8 +502,8 @@ window.checkSuperPass = async function() {
   const pass = document.getElementById('super-pass').value.trim();
   const err  = document.getElementById('login-err');
   const btn  = document.querySelector('.login-btn');
-  if(!pass) { err.textContent = 'أدخل كلمة المرور'; err.style.display='block'; return; }
-  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...'; btn.disabled = true; err.style.display='none';
+  if(!pass) { err.textContent = '#/.D CDE) 'DE1H1'; err.style.display='block'; return; }
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> ,'1J 'D*-BB...'; btn.disabled = true; err.style.display='none';
   try {
     const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
     const fns = getFunctions(auth.app, 'me-central1');
@@ -515,9 +515,9 @@ window.checkSuperPass = async function() {
       initDashboard();
     }
   } catch(e) {
-    err.textContent = 'خطأ: ' + (e.message.includes('unauthenticated') ? 'كلمة المرور غير صحيحة' : e.message);
+    err.textContent = '.7#: ' + (e.message.includes('unauthenticated') ? 'CDE) 'DE1H1 :J1 5-J-)' : e.message);
     err.style.display='block';
-  } finally { btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> دخول آمن'; btn.disabled=false; document.getElementById('super-pass').value=''; }
+  } finally { btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> /.HD "EF'; btn.disabled=false; document.getElementById('super-pass').value=''; }
 };
 document.getElementById('super-pass').addEventListener('keypress', e => { if(e.key==='Enter') window.checkSuperPass(); });
 window.doLogout = function() {
@@ -525,7 +525,7 @@ window.doLogout = function() {
   document.getElementById('main-screen').style.display='none';
 };
 
-// ===== تهيئة الداشبورد =====
+// ===== *GJ&) 'D/'4(H1/ =====
 const d = new Date(); d.setFullYear(d.getFullYear()+1);
 document.getElementById('f-sub-end').value = d.toISOString().slice(0,10);
 
@@ -539,7 +539,7 @@ function initDashboard() {
   });
 }
 
-// ===== الإحصائيات =====
+// ===== 'D%-5'&J'* =====
 function updateStats() {
   const today = new Date().toISOString().slice(0,10);
   const soon  = new Date(); soon.setDate(soon.getDate()+30);
@@ -562,7 +562,7 @@ function updateStats() {
   document.getElementById('s-revenue').textContent  = revenue;
 }
 
-// ===== تنبيه الانتهاء =====
+// ===== *F(JG 'D'F*G'! =====
 function checkExpiryAlerts() {
   const today = new Date().toISOString().slice(0,10);
   const soon  = new Date(); soon.setDate(soon.getDate()+14);
@@ -575,14 +575,14 @@ function checkExpiryAlerts() {
   const alertEl = document.getElementById('expiry-alert');
   if(expiring.length > 0) {
     document.getElementById('expiry-alert-text').textContent =
-      `⚠️ تنبيه: ${expiring.length} مدارس اشتراكها ينتهي خلال 14 يوم: ${expiring.map(s=>s.name||s.id).join('، ')}`;
+      `� *F(JG: ${expiring.length} E/'13 '4*1'CG' JF*GJ .D'D 14 JHE: ${expiring.map(s=>s.name||s.id).join(' ')}`;
     alertEl.style.display = 'flex';
   } else {
     alertEl.style.display = 'none';
   }
 }
 
-// ===== فلتر المدارس =====
+// ===== AD*1 'DE/'13 =====
 window.setFilter = function(f, btn) {
   currentFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
@@ -590,7 +590,7 @@ window.setFilter = function(f, btn) {
   renderSchools();
 };
 
-// ===== عرض المدارس =====
+// ===== 916 'DE/'13 =====
 window.renderSchools = function() {
   const today   = new Date().toISOString().slice(0,10);
   const soon    = new Date(); soon.setDate(soon.getDate()+30);
@@ -614,7 +614,7 @@ window.renderSchools = function() {
 
   if(filtered.length === 0) {
     document.getElementById('schools-tbody').innerHTML =
-      '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">لا توجد مدارس تطابق الفلتر</td></tr>';
+      '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">D' *H,/ E/'13 *7'(B 'DAD*1</td></tr>';
     return;
   }
 
@@ -627,16 +627,16 @@ window.renderSchools = function() {
 
     let statusBadge, endColor;
     if(isExpired) {
-      statusBadge = '<span class="badge expired">⏰ منتهي الاشتراك</span>';
+      statusBadge = '<span class="badge expired">� EF*GJ 'D'4*1'C</span>';
       endColor = 'color:var(--red)';
     } else if(s.status==='suspended') {
-      statusBadge = '<span class="badge suspended">⏸ موقوف</span>';
+      statusBadge = '<span class="badge suspended">� EHBHA</span>';
       endColor = 'color:var(--mid)';
     } else if(isExpiring) {
-      statusBadge = `<span class="badge" style="background:#fef3c7;color:var(--warn)">⚠️ ينتهي بعد ${daysLeft} يوم</span>`;
+      statusBadge = `<span class="badge" style="background:#fef3c7;color:var(--warn)">� JF*GJ (9/ ${daysLeft} JHE</span>`;
       endColor = 'color:var(--warn)';
     } else {
-      statusBadge = '<span class="badge active">✅ نشط</span>';
+      statusBadge = '<span class="badge active"> F47</span>';
       endColor = 'color:var(--green)';
     }
 
@@ -652,27 +652,27 @@ window.renderSchools = function() {
       <td>${planBadge}</td>
       <td>${statusBadge}</td>
       <td style="${endColor};font-weight:700;font-size:12px">
-        ${s.subscriptionEnd||'غير محدد'}
-        ${daysLeft!==null ? `<br><span style="font-size:10px">(${daysLeft>0?daysLeft+' يوم متبقي':'منتهي'})</span>` : ''}
+        ${s.subscriptionEnd||':J1 E-//'}
+        ${daysLeft!==null ? `<br><span style="font-size:10px">(${daysLeft>0?daysLeft+' JHE E*(BJ':'EF*GJ'})</span>` : ''}
       </td>
       <td>
         <div class="actions-wrap">
-          <button class="action-btn link" onclick="copySchoolLink('${s.id}')">🔗 الرابط</button>
-          <button class="action-btn info" onclick="openEditSchoolModal('${s.id}')">✏️ تعديل</button>
-          <button class="action-btn info" onclick="showAdminCreds('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">👤 المدير</button>
-          <button class="action-btn renew" onclick="openRenewModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')">🔄 تجديد</button>
-          <button class="action-btn upgrade" onclick="openUpgradeModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')">⬆️ ترقية</button>
+          <button class="action-btn link" onclick="copySchoolLink('${s.id}')">= 'D1'(7</button>
+          <button class="action-btn info" onclick="openEditSchoolModal('${s.id}')"> *9/JD</button>
+          <button class="action-btn info" onclick="showAdminCreds('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">=d 'DE/J1</button>
+          <button class="action-btn renew" onclick="openRenewModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')">= *,/J/</button>
+          <button class="action-btn upgrade" onclick="openUpgradeModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')"> *1BJ)</button>
           <button class="action-btn ${isActive?'stop':'go'}" onclick="toggleSchool('${s.id}','${isActive?'suspended':'active'}')">
-            ${isActive?'⏸ إيقاف':'▶️ تفعيل'}
+            ${isActive?'� %JB'A':'� *A9JD'}
           </button>
-          <button class="action-btn del" onclick="deleteSchool('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">🗑 حذف</button>
+          <button class="action-btn del" onclick="deleteSchool('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">=� -0A</button>
         </div>
       </td>
     </tr>`;
   }).join('');
 };
 
-// ===== إنشاء مدرسة جديدة =====
+// ===== %F4'! E/13) ,/J/) =====
 window.createSchool = async function() {
   const schoolId   = document.getElementById('f-school-id').value.trim().toLowerCase().replace(/\s+/g,'_');
   const schoolName = document.getElementById('f-school-name').value.trim();
@@ -685,11 +685,11 @@ window.createSchool = async function() {
   const notes      = document.getElementById('f-notes').value.trim();
 
   if(!schoolId||!schoolName||!adminId||!adminName||!adminPass) {
-    alert('⚠️ يرجى ملء الحقول المطلوبة: معرّف المدرسة، اسمها، معرّف المدير، اسمه، وكلمة المرور'); return;
+    alert('� J1,I ED! 'D-BHD 'DE7DH(): E91QA 'DE/13) '3EG' E91QA 'DE/J1 '3EG HCDE) 'DE1H1'); return;
   }
 
   const btn = document.querySelector('.submit-btn');
-  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> جاري الإنشاء...';
+  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> ,'1J 'D%F4'!...';
 
   try {
     await setDoc(doc(db,'schools',schoolId), {
@@ -710,20 +710,20 @@ window.createSchool = async function() {
     await addDoc(collection(db,'subscription_logs'), {
       schoolId, schoolName, plan, subEnd,
       amount: PLANS[plan]||250, type:'new',
-      notes: 'اشتراك جديد', createdAt: serverTimestamp()
+      notes: ''4*1'C ,/J/', createdAt: serverTimestamp()
     });
 
     const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-    alert(`✅ تم إنشاء المدرسة "${schoolName}" بنجاح!\n\nرابط الدخول:\n${link}\n\nبيانات المدير:\nاسم المستخدم: ${adminId}\nكلمة المرور: ${adminPass}\n\n⚠️ احفظ كلمة المرور الآن لأنها لن تظهر مجدداً.`);
+    alert(` *E %F4'! 'DE/13) "${schoolName}" (F,'-!\n\n1'(7 'D/.HD:\n${link}\n\n(J'F'* 'DE/J1:\n'3E 'DE3*./E: ${adminId}\nCDE) 'DE1H1: ${adminPass}\n\n� '-A8 CDE) 'DE1H1 'D"F D#FG' DF *8G1 E,//'K.`);
     ['f-school-id','f-school-name','f-admin-id','f-admin-name','f-admin-pass','f-admin-phone','f-notes']
       .forEach(id => document.getElementById(id).value='');
     const nd=new Date(); nd.setFullYear(nd.getFullYear()+1);
     document.getElementById('f-sub-end').value=nd.toISOString().slice(0,10);
-  } catch(err) { alert('❌ خطأ: '+err.message); }
-  finally { btn.disabled=false; btn.innerHTML='<i class="bi bi-rocket-takeoff-fill"></i> إنشاء المدرسة والمدير'; }
+  } catch(err) { alert('L .7#: '+err.message); }
+  finally { btn.disabled=false; btn.innerHTML='<i class="bi bi-rocket-takeoff-fill"></i> %F4'! 'DE/13) H'DE/J1'; }
 };
 
-// ===== تجديد الاشتراك =====
+// ===== *,/J/ 'D'4*1'C =====
 window.openRenewModal = async function(schoolId, schoolName, currentPlan) {
   currentRenewId = schoolId;
   document.getElementById('renew-school-name').textContent = schoolName;
@@ -748,10 +748,10 @@ window.openRenewModal = async function(schoolId, schoolName, currentPlan) {
       histEl.innerHTML = logs.map(d=>{
         const v=d.data();
         return `<div class="history-item">
-          <span class="date">${v.subEnd||'غير محدد'}</span>
+          <span class="date">${v.subEnd||':J1 E-//'}</span>
           <span class="plan">${PLAN_ICONS[v.plan]||''} ${PLAN_NAMES[v.plan]||v.plan}</span>
           <span class="amount">${v.amount||0} KWD</span>
-          <span style="font-size:11px;color:var(--mid)">${v.type==='new'?'جديد':'تجديد'}</span>
+          <span style="font-size:11px;color:var(--mid)">${v.type==='new'?',/J/':'*,/J/'}</span>
         </div>`;
       }).join('');
       histWrap.style.display='block';
@@ -770,7 +770,7 @@ window.submitRenewal = async function() {
   const notes   = document.getElementById('renew-notes').value.trim();
   const errEl   = document.getElementById('renew-error');
 
-  if(!endDate) { errEl.textContent='⚠️ حدد تاريخ انتهاء الاشتراك'; errEl.style.display='block'; return; }
+  if(!endDate) { errEl.textContent='� -// *'1J. 'F*G'! 'D'4*1'C'; errEl.style.display='block'; return; }
   errEl.style.display='none';
 
   try {
@@ -787,11 +787,11 @@ window.submitRenewal = async function() {
     });
 
     closeModal('renew-modal');
-    alert(`✅ تم تجديد اشتراك "${school?.name||currentRenewId}" حتى ${endDate}`);
-  } catch(e) { errEl.textContent='خطأ: '+e.message; errEl.style.display='block'; }
+    alert(` *E *,/J/ '4*1'C "${school?.name||currentRenewId}" -*I ${endDate}`);
+  } catch(e) { errEl.textContent='.7#: '+e.message; errEl.style.display='block'; }
 };
 
-// ===== ترقية الخطة =====
+// ===== *1BJ) 'D.7) =====
 window.openUpgradeModal = function(schoolId, schoolName, currentPlan) {
   currentUpgradeId = schoolId;
   document.getElementById('upgrade-school-name').textContent = schoolName;
@@ -808,14 +808,14 @@ window.submitUpgrade = async function() {
     await addDoc(collection(db,'subscription_logs'), {
       schoolId: currentUpgradeId, schoolName: school?.name||currentUpgradeId,
       plan, amount: PLANS[plan]||250, type:'upgrade',
-      notes:`ترقية إلى ${PLAN_NAMES[plan]}`, createdAt: serverTimestamp()
+      notes:`*1BJ) %DI ${PLAN_NAMES[plan]}`, createdAt: serverTimestamp()
     });
     closeModal('upgrade-modal');
-    alert(`✅ تم ترقية خطة "${school?.name||currentUpgradeId}" إلى ${PLAN_NAMES[plan]}`);
-  } catch(e) { alert('خطأ: '+e.message); }
+    alert(` *E *1BJ) .7) "${school?.name||currentUpgradeId}" %DI ${PLAN_NAMES[plan]}`);
+  } catch(e) { alert('.7#: '+e.message); }
 };
 
-// ===== بيانات مدير المدرسة =====
+// ===== (J'F'* E/J1 'DE/13) =====
 window.showAdminCreds = async function(schoolId, schoolName) {
   document.getElementById('admin-modal-school').textContent = schoolName;
   document.getElementById('change-pass-wrap').style.display='none';
@@ -825,7 +825,7 @@ window.showAdminCreds = async function(schoolId, schoolName) {
   try {
     const snap = await getDocs(query(collection(db,'users'),
       where('schoolId','==',schoolId), where('role','==','admin')));
-    if(snap.empty) { alert(`⚠️ لا يوجد مدير لهذه المدرسة`); return; }
+    if(snap.empty) { alert(`� D' JH,/ E/J1 DG0G 'DE/13)`); return; }
 
     const admins=[];
     snap.forEach(d => admins.push({ docId:d.id, ...d.data() }));
@@ -833,59 +833,59 @@ window.showAdminCreds = async function(schoolId, schoolName) {
 
     document.getElementById('admin-modal-content').innerHTML = admins.map(a=>`
       <div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:8px">
-        <div>👤 الاسم: <b>${a.name||'غير محدد'}</b></div>
-        <div>🔑 اسم المستخدم: <b>${a.userId||'غير محدد'}</b></div>
-        <div>📱 الهاتف: <b>${a.phone||'غير محدد'}</b></div>
+        <div>=d 'D'3E: <b>${a.name||':J1 E-//'}</b></div>
+        <div>= '3E 'DE3*./E: <b>${a.userId||':J1 E-//'}</b></div>
+        <div>=� 'DG'*A: <b>${a.phone||':J1 E-//'}</b></div>
       </div>
     `).join('');
     openModal('admin-modal');
-  } catch(e) { alert('خطأ: '+e.message); }
+  } catch(e) { alert('.7#: '+e.message); }
 };
 
 window.saveAdminPass = async function() {
   if(!currentAdminDocId) return;
   const newPass = document.getElementById('admin-new-pass').value.trim();
-  if(!newPass) { alert('أدخل كلمة المرور الجديدة'); return; }
+  if(!newPass) { alert('#/.D CDE) 'DE1H1 'D,/J/)'); return; }
   try {
     const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
     const resetFn = httpsCallable(getFunctions(auth.app,'me-central1'), 'resetUserPassword');
     await resetFn({ targetUserDocId: currentAdminDocId, newPassword: newPass });
-    alert('✅ تم تغيير كلمة المرور بنجاح');
+    alert(' *E *:JJ1 CDE) 'DE1H1 (F,'-');
     closeModal('admin-modal');
-  } catch(e) { alert('خطأ: '+e.message); }
+  } catch(e) { alert('.7#: '+e.message); }
 };
 
-// ===== نسخ رابط المدرسة =====
+// ===== F3. 1'(7 'DE/13) =====
 window.copySchoolLink = function(schoolId) {
   const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-  navigator.clipboard?.writeText(link).then(()=>alert(`✅ تم نسخ رابط المدرسة:\n${link}`))
-    .catch(()=>prompt('انسخ الرابط:',link));
+  navigator.clipboard?.writeText(link).then(()=>alert(` *E F3. 1'(7 'DE/13):\n${link}`))
+    .catch(()=>prompt(''F3. 'D1'(7:',link));
 };
 
-// ===== تفعيل/إيقاف المدرسة =====
+// ===== *A9JD/%JB'A 'DE/13) =====
 window.toggleSchool = async function(schoolId, newStatus) {
   const school = allSchools.find(s=>s.id===schoolId);
   const msg = newStatus==='suspended'
-    ? `هل تريد إيقاف "${school?.name||schoolId}"؟`
-    : `هل تريد تفعيل "${school?.name||schoolId}"؟`;
+    ? `GD *1J/ %JB'A "${school?.name||schoolId}"`
+    : `GD *1J/ *A9JD "${school?.name||schoolId}"`;
   if(!confirm(msg)) return;
   await updateDoc(doc(db,'schools',schoolId), { status: newStatus });
 };
 
-// ===== حذف مدرسة =====
+// ===== -0A E/13) =====
 window.deleteSchool = async function(schoolId, schoolName) {
-  if(!confirm(`⚠️ تحذير: حذف "${schoolName}" لن يمكن التراجع عنه!\n\nسيتم حذف بيانات المدرسة فقط (المستخدمون والطلاب لن يُحذفوا).`)) return;
-  const code = prompt(`للتأكيد، اكتب معرّف المدرسة "${schoolId}" بالضبط:`);
-  if(code !== schoolId) { alert('المعرّف غير صحيح. تم إلغاء الحذف.'); return; }
-  try { await deleteDoc(doc(db,'schools',schoolId)); alert(`✅ تم حذف "${schoolName}"`); }
-  catch(e) { alert('خطأ: '+e.message); }
+  if(!confirm(`� *-0J1: -0A "${schoolName}" DF JECF 'D*1',9 9FG!\n\n3J*E -0A (J'F'* 'DE/13) AB7 ('DE3*./EHF H'D7D'( DF JO-0AH').`)) return;
+  const code = prompt(`DD*#CJ/ 'C*( E91QA 'DE/13) "${schoolId}" ('D6(7:`);
+  if(code !== schoolId) { alert(''DE91QA :J1 5-J-. *E %D:'! 'D-0A.'); return; }
+  try { await deleteDoc(doc(db,'schools',schoolId)); alert(` *E -0A "${schoolName}"`); }
+  catch(e) { alert('.7#: '+e.message); }
 };
 
-// ===== تعديل بيانات المدرسة =====
+// ===== *9/JD (J'F'* 'DE/13) =====
 window.openEditSchoolModal = async function(schoolId) {
   try {
     const snap = await getDoc(doc(db,'schools',schoolId));
-    if(!snap.exists()) { alert('المدرسة غير موجودة'); return; }
+    if(!snap.exists()) { alert(''DE/13) :J1 EH,H/)'); return; }
     const s = snap.data();
 
     document.getElementById('edit-school-modal')?.remove();
@@ -896,37 +896,37 @@ window.openEditSchoolModal = async function(schoolId) {
     modal.innerHTML = `
     <div style="background:#fff;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <h3 style="font-size:16px;font-weight:900;color:#0b2545;margin:0">✏️ تعديل: ${s.name || schoolId}</h3>
-            <button onclick="document.getElementById('edit-school-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">✕</button>
+            <h3 style="font-size:16px;font-weight:900;color:#0b2545;margin:0"> *9/JD: ${s.name || schoolId}</h3>
+            <button onclick="document.getElementById('edit-school-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer"></button>
         </div>
 
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">اسم المدرسة</label>
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">'3E 'DE/13)</label>
         <input id="edit-school-name" type="text" value="${s.name||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
             <div>
-                <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">اللون الرئيسي</label>
+                <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">'DDHF 'D1&J3J</label>
                 <input id="edit-primary-color" type="color" value="${s.primaryColor||'#0b2545'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer">
             </div>
             <div>
-                <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">لون التمييز</label>
+                <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">DHF 'D*EJJ2</label>
                 <input id="edit-accent-color" type="color" value="${s.accentColor||'#d4920a'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer">
             </div>
         </div>
 
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">شعار المدرسة (URL)</label>
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">49'1 'DE/13) (URL)</label>
         <input id="edit-logo-url" type="text" value="${s.logoUrl||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
 
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ملاحظات</label>
+        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ED'-8'*</label>
         <input id="edit-notes" type="text" value="${s.notes||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:16px">
 
         <button onclick="window.saveEditSchool('${schoolId}')" style="width:100%;padding:12px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer">
-            <i class="bi bi-check-circle-fill"></i> حفظ التعديلات
+            <i class="bi bi-check-circle-fill"></i> -A8 'D*9/JD'*
         </button>
     </div>`;
     modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
     document.body.appendChild(modal);
-  } catch(e) { alert('خطأ: ' + e.message); }
+  } catch(e) { alert('.7#: ' + e.message); }
 };
 
 window.saveEditSchool = async function(schoolId) {
@@ -938,12 +938,12 @@ window.saveEditSchool = async function(schoolId) {
       logoUrl:      document.getElementById('edit-logo-url')?.value?.trim() || '',
       notes:        document.getElementById('edit-notes')?.value?.trim() || ''
     });
-    alert('✅ تم حفظ التعديلات بنجاح');
+    alert(' *E -A8 'D*9/JD'* (F,'-');
     document.getElementById('edit-school-modal')?.remove();
-  } catch(e) { alert('خطأ: ' + e.message); }
+  } catch(e) { alert('.7#: ' + e.message); }
 };
 
-// ===== إغلاق المودالات بالنقر خارجها =====
+// ===== %:D'B 'DEH/'D'* ('DFB1 .'1,G' =====
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if(e.target===m) m.classList.remove('show'); });
 });

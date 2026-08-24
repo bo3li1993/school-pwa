@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>بوابة الممرض - المنظومة الرقمية</title>
+<title>(H'() 'DEE16 - 'DEF8HE) 'D1BEJ)</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0b2545">
@@ -89,7 +89,7 @@ body { background:var(--off); }
   .record-card { flex-direction:column; }
 }
 
-/* ══ Dark Mode ══ */
+/* PP Dark Mode PP */
 body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
 body.dark-mode .header-nav { background:#0f1928 !important; }
 body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
@@ -108,168 +108,168 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 
 <div class="splash" id="splash">
   <div class="splash-mark">
-    <div class="splash-badge">🏥</div>
-    <h1>المنظومة الرقمية</h1>
-    <p id="splash-school">بوابة الممرض</p>
+    <div class="splash-badge"><�</div>
+    <h1>'DEF8HE) 'D1BEJ)</h1>
+    <p id="splash-school">(H'() 'DEE16</p>
   </div>
 </div>
 
 <div class="header-nav">
   <div>
-    <h1 id="lbl-nurse-title"><i class="bi bi-heart-pulse-fill"></i> بوابة الممرض</h1>
-    <p id="lbl-nurse-school">المنظومة الرقمية</p>
+    <h1 id="lbl-nurse-title"><i class="bi bi-heart-pulse-fill"></i> (H'() 'DEE16</h1>
+    <p id="lbl-nurse-school">'DEF8HE) 'D1BEJ)</p>
   </div>
   <div class="header-actions">
     <button onclick="document.body.classList.toggle('dark-mode');localStorage.setItem('hs_dark_mode',document.body.classList.contains('dark-mode')?'1':'0')"
     style="background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:15px"
-    title="الوضع الليلي">🌙</button>
+    title="'DH69 'DDJDJ"><</button>
     <button class="btn-header" onclick="doLogout()" style="background:var(--red);color:#fff;">
-      <i class="bi bi-box-arrow-left"></i> خروج
+      <i class="bi bi-box-arrow-left"></i> .1H,
     </button>
   </div>
 </div>
 
 <div class="workspace">
 
-  <!-- إحصائيات اليوم -->
+  <!-- %-5'&J'* 'DJHE -->
   <div class="stats-row">
     <div class="stat-box">
-      <div class="num" id="stat-today" style="color:var(--teal)">—</div>
-      <div class="lbl">مراجعات اليوم</div>
+      <div class="num" id="stat-today" style="color:var(--teal)"></div>
+      <div class="lbl">E1',9'* 'DJHE</div>
     </div>
     <div class="stat-box">
-      <div class="num" id="stat-inside" style="color:var(--gold)">—</div>
-      <div class="lbl">داخل العيادة</div>
+      <div class="num" id="stat-inside" style="color:var(--gold)"></div>
+      <div class="lbl">/'.D 'D9J'/)</div>
     </div>
     <div class="stat-box">
-      <div class="num" id="stat-returned" style="color:var(--green)">—</div>
-      <div class="lbl">رجعوا للفصل</div>
+      <div class="num" id="stat-returned" style="color:var(--green)"></div>
+      <div class="lbl">1,9H' DDA5D</div>
     </div>
     <div class="stat-box">
-      <div class="num" id="stat-sent-home" style="color:var(--red)">—</div>
-      <div class="lbl">أُرسلوا للبيت</div>
+      <div class="num" id="stat-sent-home" style="color:var(--red)"></div>
+      <div class="lbl">#O13DH' DD(J*</div>
     </div>
   </div>
 
-  <!-- تبويب: تسجيل -->
+  <!-- *(HJ(: *3,JD -->
   <div class="tab-view active" id="view-register">
     <div class="card">
-      <h2><i class="bi bi-plus-circle-fill" style="color:var(--teal)"></i> تسجيل مراجعة جديدة</h2>
+      <h2><i class="bi bi-plus-circle-fill" style="color:var(--teal)"></i> *3,JD E1',9) ,/J/)</h2>
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">الفصل</label>
+          <label class="form-label">'DA5D</label>
           <select class="form-input" id="nurse-class" onchange="loadStudents(this.value)">
-            <option value="">-- اختر الفصل --</option>
+            <option value="">-- '.*1 'DA5D --</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">الطالب</label>
+          <label class="form-label">'D7'D(</label>
           <select class="form-input" id="nurse-student" disabled>
-            <option value="">-- اختر الفصل أولاً --</option>
+            <option value="">-- '.*1 'DA5D #HD'K --</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">الشكوى / التشخيص</label>
+          <label class="form-label">'D4CHI / 'D*4.J5</label>
           <select class="form-input" id="nurse-complaint">
-            <option value="ارتفاع درجة الحرارة">🌡️ ارتفاع درجة الحرارة</option>
-            <option value="صداع وألم بالرأس">🤕 صداع وألم بالرأس</option>
-            <option value="ألم بالمعدة ومغص">🤢 ألم بالمعدة</option>
-            <option value="إصابة جرح أو كدمة">🏃 جرح / إصابة</option>
-            <option value="إعياء عام وإرهاق">💤 إعياء عام</option>
-            <option value="ألم بالأسنان">🦷 ألم بالأسنان</option>
-            <option value="ضغط دم / دوخة">😵 دوخة / ضغط</option>
-            <option value="حساسية أو طفح جلدي">🤧 حساسية</option>
-            <option value="أخرى">📋 أخرى</option>
+            <option value="'1*A'9 /1,) 'D-1'1)"><! '1*A'9 /1,) 'D-1'1)</option>
+            <option value="5/'9 H#DE ('D1#3">> 5/'9 H#DE ('D1#3</option>
+            <option value="#DE ('DE9/) HE:5">>" #DE ('DE9/)</option>
+            <option value="%5'() ,1- #H C/E)"><� ,1- / %5'()</option>
+            <option value="%9J'! 9'E H%1G'B">=� %9J'! 9'E</option>
+            <option value="#DE ('D#3F'F">>� #DE ('D#3F'F</option>
+            <option value="6:7 /E / /H.)">=5 /H.) / 6:7</option>
+            <option value="-3'3J) #H 7A- ,D/J">>' -3'3J)</option>
+            <option value="#.1I">=� #.1I</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">الإجراء / العلاج</label>
-          <input type="text" class="form-input" id="nurse-treatment" placeholder="مثال: بندول + راحة حصة">
+          <label class="form-label">'D%,1'! / 'D9D',</label>
+          <input type="text" class="form-input" id="nurse-treatment" placeholder="E+'D: (F/HD + 1'-) -5)">
         </div>
         <div class="form-group">
-          <label class="form-label">النتيجة</label>
+          <label class="form-label">'DF*J,)</label>
           <select class="form-input" id="nurse-result">
-            <option value="داخل العيادة">⏳ داخل العيادة</option>
-            <option value="رجع للفصل">✅ رجع للفصل</option>
-            <option value="أُرسل للبيت">🏠 أُرسل للبيت</option>
-            <option value="تم استدعاء ولي الأمر">📞 استدعاء ولي الأمر</option>
+            <option value="/'.D 'D9J'/)">� /'.D 'D9J'/)</option>
+            <option value="1,9 DDA5D"> 1,9 DDA5D</option>
+            <option value="#O13D DD(J*"><� #O13D DD(J*</option>
+            <option value="*E '3*/9'! HDJ 'D#E1">=� '3*/9'! HDJ 'D#E1</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">ملاحظات إضافية</label>
-          <input type="text" class="form-input" id="nurse-notes" placeholder="ملاحظات اختيارية...">
+          <label class="form-label">ED'-8'* %6'AJ)</label>
+          <input type="text" class="form-input" id="nurse-notes" placeholder="ED'-8'* '.*J'1J)...">
         </div>
       </div>
       <button class="btn-submit" onclick="saveVisit()">
-        <i class="bi bi-cloud-upload-fill"></i> حفظ المراجعة الطبية
+        <i class="bi bi-cloud-upload-fill"></i> -A8 'DE1',9) 'D7(J)
       </button>
     </div>
   </div>
 
-  <!-- تبويب: اليوم -->
+  <!-- *(HJ(: 'DJHE -->
   <div class="tab-view" id="view-today">
     <div class="card">
-      <h2><i class="bi bi-calendar-day-fill" style="color:var(--teal)"></i> مراجعات اليوم الحية</h2>
+      <h2><i class="bi bi-calendar-day-fill" style="color:var(--teal)"></i> E1',9'* 'DJHE 'D-J)</h2>
       <div id="today-list">
-        <div style="text-align:center;padding:30px;color:var(--mid);font-weight:700">⏳ جاري التحميل...</div>
+        <div style="text-align:center;padding:30px;color:var(--mid);font-weight:700">� ,'1J 'D*-EJD...</div>
       </div>
     </div>
   </div>
 
-  <!-- تبويب: الأرشيف -->
+  <!-- *(HJ(: 'D#14JA -->
   <div class="tab-view" id="view-archive">
     <div class="card">
-      <h2><i class="bi bi-archive-fill" style="color:var(--teal)"></i> أرشيف العيادة</h2>
+      <h2><i class="bi bi-archive-fill" style="color:var(--teal)"></i> #14JA 'D9J'/)</h2>
       <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
         <input type="date" id="archive-date-from" class="form-input" style="max-width:160px">
         <input type="date" id="archive-date-to" class="form-input" style="max-width:160px">
         <button onclick="loadArchive()" class="btn-submit" style="width:auto;padding:10px 18px;">
-          <i class="bi bi-search"></i> بحث
+          <i class="bi bi-search"></i> (-+
         </button>
       </div>
       <div style="overflow-x:auto">
         <table style="width:100%;border-collapse:collapse;font-size:13px;">
           <thead>
             <tr style="background:var(--off)">
-              <th style="padding:9px;text-align:right;font-weight:900;color:var(--navy);">التاريخ</th>
-              <th style="padding:9px;text-align:right;">الطالب</th>
-              <th style="padding:9px;text-align:right;">الفصل</th>
-              <th style="padding:9px;text-align:right;">الشكوى</th>
-              <th style="padding:9px;text-align:right;">النتيجة</th>
+              <th style="padding:9px;text-align:right;font-weight:900;color:var(--navy);">'D*'1J.</th>
+              <th style="padding:9px;text-align:right;">'D7'D(</th>
+              <th style="padding:9px;text-align:right;">'DA5D</th>
+              <th style="padding:9px;text-align:right;">'D4CHI</th>
+              <th style="padding:9px;text-align:right;">'DF*J,)</th>
             </tr>
           </thead>
           <tbody id="archive-tbody">
-            <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--mid);">اختر نطاق التاريخ وابحث</td></tr>
+            <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--mid);">'.*1 F7'B 'D*'1J. H'(-+</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- تبويب: إعداداتي -->
+  <!-- *(HJ(: %9/'/'*J -->
   <div class="tab-view" id="view-settings">
     <div class="card">
-      <h2><i class="bi bi-person-gear" style="color:var(--teal)"></i> بياناتي الشخصية</h2>
+      <h2><i class="bi bi-person-gear" style="color:var(--teal)"></i> (J'F'*J 'D4.5J)</h2>
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">الاسم الكامل</label>
+          <label class="form-label">'D'3E 'DC'ED</label>
           <input type="text" class="form-input" id="nurse-name">
         </div>
         <div class="form-group">
-          <label class="form-label">رقم الهاتف</label>
+          <label class="form-label">1BE 'DG'*A</label>
           <input type="tel" class="form-input" id="nurse-phone">
         </div>
         <div class="form-group">
-          <label class="form-label">البريد الإلكتروني</label>
+          <label class="form-label">'D(1J/ 'D%DC*1HFJ</label>
           <input type="email" class="form-input" id="nurse-email">
         </div>
         <div class="form-group">
-          <label class="form-label">كلمة مرور جديدة (اختياري)</label>
-          <input type="password" class="form-input" id="nurse-pass" placeholder="اتركها فارغة إذا ما تبي تغييرها">
+          <label class="form-label">CDE) E1H1 ,/J/) ('.*J'1J)</label>
+          <input type="password" class="form-input" id="nurse-pass" placeholder="'*1CG' A'1:) %0' E' *(J *:JJ1G'">
         </div>
       </div>
       <button class="btn-submit" onclick="saveProfile()">
-        <i class="bi bi-check-circle-fill"></i> حفظ التعديلات
+        <i class="bi bi-check-circle-fill"></i> -A8 'D*9/JD'*
       </button>
     </div>
   </div>
@@ -279,16 +279,16 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 <!-- Bottom Nav -->
 <div class="bottom-nav">
   <button class="bn-item active" data-view="view-register" onclick="switchView('view-register')">
-    <i class="bi bi-plus-circle-fill"></i>تسجيل
+    <i class="bi bi-plus-circle-fill"></i>*3,JD
   </button>
   <button class="bn-item" data-view="view-today" onclick="switchView('view-today')">
-    <i class="bi bi-calendar-day"></i>اليوم
+    <i class="bi bi-calendar-day"></i>'DJHE
   </button>
   <button class="bn-item" data-view="view-archive" onclick="switchView('view-archive')">
-    <i class="bi bi-archive"></i>الأرشيف
+    <i class="bi bi-archive"></i>'D#14JA
   </button>
   <button class="bn-item" data-view="view-settings" onclick="switchView('view-settings')">
-    <i class="bi bi-sliders"></i>إعداداتي
+    <i class="bi bi-sliders"></i>%9/'/'*J
   </button>
 </div>
 
@@ -300,7 +300,7 @@ import { collection, addDoc, getDocs, doc, updateDoc, onSnapshot,
 let currentUser = null;
 let todayUnsub = null;
 
-// ══ Toast ══
+// PP Toast PP
 window.showToast = function(msg, type='success') {
   document.querySelectorAll('.toast-msg').forEach(t=>t.remove());
   const colors = {success:'#059669',error:'#dc2626',info:'#1a78c2',warning:'#d97706'};
@@ -312,7 +312,7 @@ window.showToast = function(msg, type='success') {
   setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);},2500);
 };
 
-// ══ Switch View ══
+// PP Switch View PP
 window.switchView = function(viewId) {
   document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
@@ -322,7 +322,7 @@ window.switchView = function(viewId) {
   if(viewId==='view-archive') setDefaultDates();
 };
 
-// ══ Init ══
+// PP Init PP
 document.addEventListener('DOMContentLoaded', async () => {
   const saved = localStorage.getItem('hs_user');
   if(!saved) { window.location.replace('index.html'); return; }
@@ -332,30 +332,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.replace('index.html'); return;
   }
 
-  document.getElementById('lbl-nurse-title').innerHTML = `<i class="bi bi-heart-pulse-fill"></i> أ. ${currentUser.name||'الممرض'}`;
-  document.getElementById('lbl-nurse-school').textContent = currentUser.schoolName||'المنظومة الرقمية';
+  document.getElementById('lbl-nurse-title').innerHTML = `<i class="bi bi-heart-pulse-fill"></i> #. ${currentUser.name||''DEE16'}`;
+  document.getElementById('lbl-nurse-school').textContent = currentUser.schoolName||''DEF8HE) 'D1BEJ)';
   document.getElementById('splash-school').textContent = currentUser.schoolName||'';
 
-  // تحميل الفصول
+  // *-EJD 'DA5HD
   const classes = await getSchoolClasses(db, getActiveSchoolId());
   const sel = document.getElementById('nurse-class');
-  sel.innerHTML = '<option value="">-- اختر الفصل --</option>' +
+  sel.innerHTML = '<option value="">-- '.*1 'DA5D --</option>' +
     classes.map(c=>`<option value="${c}">${c}</option>`).join('');
 
-  // إحصائيات اليوم (live)
+  // %-5'&J'* 'DJHE (live)
   loadStats();
 
-  // تحميل بيانات الملف الشخصي
+  // *-EJD (J'F'* 'DEDA 'D4.5J
   loadProfile();
 
   document.getElementById('splash').classList.add('hide');
 });
 
-// ══ تحميل الطلاب ══
+// PP *-EJD 'D7D'( PP
 window.loadStudents = async function(classId) {
   const sel = document.getElementById('nurse-student');
-  if(!classId) { sel.innerHTML='<option value="">-- اختر الفصل أولاً --</option>'; sel.disabled=true; return; }
-  sel.innerHTML='<option value="">⏳ جاري التحميل...</option>';
+  if(!classId) { sel.innerHTML='<option value="">-- '.*1 'DA5D #HD'K --</option>'; sel.disabled=true; return; }
+  sel.innerHTML='<option value="">� ,'1J 'D*-EJD...</option>';
   sel.disabled=true;
   try {
     const snap = await getDocs(query(collection(db,'students'),
@@ -363,12 +363,12 @@ window.loadStudents = async function(classId) {
     const names=[];
     snap.forEach(d=>{ if(d.data().name) names.push(d.data().name.trim()); });
     names.sort((a,b)=>a.localeCompare(b,'ar'));
-    sel.innerHTML='<option value="">-- اختر الطالب --</option>'+names.map(n=>`<option value="${n}">${n}</option>`).join('');
+    sel.innerHTML='<option value="">-- '.*1 'D7'D( --</option>'+names.map(n=>`<option value="${n}">${n}</option>`).join('');
     sel.disabled=false;
-  } catch(e) { sel.innerHTML='<option value="">❌ خطأ</option>'; }
+  } catch(e) { sel.innerHTML='<option value="">L .7#</option>'; }
 };
 
-// ══ حفظ المراجعة ══
+// PP -A8 'DE1',9) PP
 window.saveVisit = async function() {
   const classId   = document.getElementById('nurse-class').value;
   const student   = document.getElementById('nurse-student').value;
@@ -377,7 +377,7 @@ window.saveVisit = async function() {
   const result    = document.getElementById('nurse-result').value;
   const notes     = document.getElementById('nurse-notes').value.trim();
 
-  if(!classId||!student) { showToast('اختر الفصل والطالب','error'); return; }
+  if(!classId||!student) { showToast(''.*1 'DA5D H'D7'D(','error'); return; }
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString('ar-KW',{hour:'2-digit',minute:'2-digit'});
@@ -388,26 +388,26 @@ window.saveVisit = async function() {
       classId,
       studentName: student,
       complaint,
-      treatment:   treatment||'—',
+      treatment:   treatment||'',
       result,
       notes,
       date:        getTodayISO(),
       timeStr,
       nurseName:   currentUser.name||'',
-      status:      result==='داخل العيادة'?'active':'done',
+      status:      result==='/'.D 'D9J'/)'?'active':'done',
       createdAt:   serverTimestamp()
     });
 
-    showToast(`✅ تم تسجيل مراجعة ${student}`);
+    showToast(` *E *3,JD E1',9) ${student}`);
     document.getElementById('nurse-class').value='';
-    document.getElementById('nurse-student').innerHTML='<option value="">-- اختر الفصل أولاً --</option>';
+    document.getElementById('nurse-student').innerHTML='<option value="">-- '.*1 'DA5D #HD'K --</option>';
     document.getElementById('nurse-student').disabled=true;
     document.getElementById('nurse-treatment').value='';
     document.getElementById('nurse-notes').value='';
-  } catch(e) { showToast('❌ '+e.message,'error'); }
+  } catch(e) { showToast('L '+e.message,'error'); }
 };
 
-// ══ إحصائيات اليوم ══
+// PP %-5'&J'* 'DJHE PP
 function loadStats() {
   const schoolId = getActiveSchoolId();
   const today = getTodayISO();
@@ -416,9 +416,9 @@ function loadStats() {
     let inside=0, returned=0, sentHome=0;
     snap.forEach(d=>{
       const r=d.data().result||'';
-      if(r==='داخل العيادة') inside++;
-      else if(r==='رجع للفصل') returned++;
-      else if(r==='أُرسل للبيت') sentHome++;
+      if(r==='/'.D 'D9J'/)') inside++;
+      else if(r==='1,9 DDA5D') returned++;
+      else if(r==='#O13D DD(J*') sentHome++;
     });
     document.getElementById('stat-today').textContent=snap.size;
     document.getElementById('stat-inside').textContent=inside;
@@ -427,7 +427,7 @@ function loadStats() {
   });
 }
 
-// ══ مراجعات اليوم ══
+// PP E1',9'* 'DJHE PP
 function loadTodayLive() {
   if(todayUnsub) todayUnsub();
   const schoolId=getActiveSchoolId();
@@ -436,7 +436,7 @@ function loadTodayLive() {
   todayUnsub=onSnapshot(q, snap=>{
     const list=document.getElementById('today-list');
     if(snap.empty){
-      list.innerHTML='<div style="text-align:center;padding:30px;color:var(--mid);font-weight:700">لا توجد مراجعات اليوم بعد</div>';
+      list.innerHTML='<div style="text-align:center;padding:30px;color:var(--mid);font-weight:700">D' *H,/ E1',9'* 'DJHE (9/</div>';
       return;
     }
     const docs=[...snap.docs].sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
@@ -446,33 +446,33 @@ function loadTodayLive() {
       return `
       <div class="record-card" style="${isDone?'opacity:.6':''}">
         <div class="record-info">
-          <h3>👤 ${v.studentName} — ${v.classId}</h3>
+          <h3>=d ${v.studentName}  ${v.classId}</h3>
           <span class="complaint-badge">${v.complaint}</span>
-          <p style="margin-top:6px">💊 ${v.treatment} | <b>${v.result}</b></p>
-          ${v.notes?`<p style="color:var(--mid);font-size:11px;margin-top:3px">📝 ${v.notes}</p>`:''}
+          <p style="margin-top:6px">=� ${v.treatment} | <b>${v.result}</b></p>
+          ${v.notes?`<p style="color:var(--mid);font-size:11px;margin-top:3px">=� ${v.notes}</p>`:''}
         </div>
         <div style="text-align:left;flex-shrink:0;">
           <div class="record-time">${v.timeStr||''}</div>
           ${v.status==='active'?`
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
-            <button class="btn-exit-student" onclick="updateResult('${d.id}','رجع للفصل')" style="background:var(--green)">✅ رجع الفصل</button>
-            <button class="btn-exit-student" onclick="updateResult('${d.id}','أُرسل للبيت')">🏠 أُرسل للبيت</button>
-          </div>`:'<div style="color:var(--green);font-weight:700;font-size:12px;margin-top:8px">✔ مكتمل</div>'}
+            <button class="btn-exit-student" onclick="updateResult('${d.id}','1,9 DDA5D')" style="background:var(--green)"> 1,9 'DA5D</button>
+            <button class="btn-exit-student" onclick="updateResult('${d.id}','#O13D DD(J*')"><� #O13D DD(J*</button>
+          </div>`:'<div style="color:var(--green);font-weight:700;font-size:12px;margin-top:8px"> EC*ED</div>'}
         </div>
       </div>`;
     }).join('');
   });
 }
 
-// ══ تحديث نتيجة ══
+// PP *-/J+ F*J,) PP
 window.updateResult = async function(docId, newResult) {
   try {
     await updateDoc(doc(db,'clinic',docId), { result:newResult, status:'done' });
-    showToast(`✅ تم تحديث الحالة: ${newResult}`);
-  } catch(e){ showToast('❌ '+e.message,'error'); }
+    showToast(` *E *-/J+ 'D-'D): ${newResult}`);
+  } catch(e){ showToast('L '+e.message,'error'); }
 };
 
-// ══ الأرشيف ══
+// PP 'D#14JA PP
 function setDefaultDates() {
   const today=getTodayISO();
   const weekAgo=new Date(); weekAgo.setDate(weekAgo.getDate()-7);
@@ -483,29 +483,29 @@ function setDefaultDates() {
 window.loadArchive = async function() {
   const from=document.getElementById('archive-date-from').value;
   const to=document.getElementById('archive-date-to').value;
-  if(!from||!to){ showToast('اختر نطاق التاريخ','info'); return; }
+  if(!from||!to){ showToast(''.*1 F7'B 'D*'1J.','info'); return; }
   const tbody=document.getElementById('archive-tbody');
-  tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px">⏳ جاري البحث...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px">� ,'1J 'D(-+...</td></tr>';
   try {
     const snap=await getDocs(query(collection(db,'clinic'),
       where('schoolId','==',getActiveSchoolId()),
       where('date','>=',from), where('date','<=',to)));
-    if(snap.empty){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--mid)">لا توجد سجلات</td></tr>'; return; }
+    if(snap.empty){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--mid)">D' *H,/ 3,D'*</td></tr>'; return; }
     const docs=[...snap.docs].sort((a,b)=>b.data().date.localeCompare(a.data().date));
     tbody.innerHTML=docs.map(d=>{
       const v=d.data();
       return `<tr>
-        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.date||'—'} ${v.timeStr?'('+v.timeStr+')':''}</td>
-        <td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700">${v.studentName||'—'}</td>
-        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.classId||'—'}</td>
-        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.complaint||'—'}</td>
-        <td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700;color:var(--green)">${v.result||'—'}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.date||''} ${v.timeStr?'('+v.timeStr+')':''}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700">${v.studentName||''}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.classId||''}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.complaint||''}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700;color:var(--green)">${v.result||''}</td>
       </tr>`;
     }).join('');
-  } catch(e){ tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:red;padding:20px">❌ ${e.message}</td></tr>`; }
+  } catch(e){ tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:red;padding:20px">L ${e.message}</td></tr>`; }
 };
 
-// ══ ملف شخصي ══
+// PP EDA 4.5J PP
 async function loadProfile() {
   try {
     const snap=await getDocs(query(collection(db,'users'),
@@ -523,29 +523,29 @@ window.saveProfile = async function() {
   const phone=document.getElementById('nurse-phone').value.trim();
   const email=document.getElementById('nurse-email').value.trim();
   const pass=document.getElementById('nurse-pass').value.trim();
-  if(!name){ showToast('الاسم مطلوب','error'); return; }
+  if(!name){ showToast(''D'3E E7DH(','error'); return; }
   try {
     const snap=await getDocs(query(collection(db,'users'),
       where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId)));
-    if(snap.empty){ showToast('⚠️ تعذر إيجاد حسابك','error'); return; }
+    if(snap.empty){ showToast('� *901 %J,'/ -3'(C','error'); return; }
     await updateDoc(snap.docs[0].ref,{name,phone,email});
     if(pass){
       try {
         const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
         const fns=getFunctions(undefined, 'me-central1');
         await httpsCallable(fns,'resetUserPassword')({userDocId:snap.docs[0].id,newPassword:pass});
-      } catch(pe){ showToast('⚠️ تم الحفظ لكن تعذر تغيير كلمة المرور','warning'); }
+      } catch(pe){ showToast('� *E 'D-A8 DCF *901 *:JJ1 CDE) 'DE1H1','warning'); }
     }
     currentUser.name=name;
     localStorage.setItem('hs_user',JSON.stringify(currentUser));
-    document.getElementById('lbl-nurse-title').innerHTML=`<i class="bi bi-heart-pulse-fill"></i> أ. ${name}`;
+    document.getElementById('lbl-nurse-title').innerHTML=`<i class="bi bi-heart-pulse-fill"></i> #. ${name}`;
     document.getElementById('nurse-pass').value='';
-    showToast('✅ تم حفظ بياناتك بنجاح');
-  } catch(e){ showToast('❌ '+e.message,'error'); }
+    showToast(' *E -A8 (J'F'*C (F,'-');
+  } catch(e){ showToast('L '+e.message,'error'); }
 };
 
 
-// ══ واتساب ولي الأمر من العيادة ══
+// PP H'*3'( HDJ 'D#E1 EF 'D9J'/) PP
 window.sendClinicWhatsApp = async function(studentName, classId, complaint, result) {
     try {
         const { collection, query, where, getDocs } =
@@ -557,21 +557,21 @@ window.sendClinicWhatsApp = async function(studentName, classId, complaint, resu
             where('name','==',studentName),
             where('classId','==',classId)));
 
-        if(snap.empty){ showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
+        if(snap.empty){ showToast('� DE JO9+1 9DI (J'F'* 'D7'D(','warning'); return; }
         const phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
-        if(!phone){ showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
+        if(!phone){ showToast('� D' JH,/ 1BE G'*A DHDJ 'D#E1','warning'); return; }
 
         const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-        const schoolName = JSON.parse(localStorage.getItem('hs_user')||'{}').schoolName || 'المدرسة';
+        const schoolName = JSON.parse(localStorage.getItem('hs_user')||'{}').schoolName || ''DE/13)';
         const msg = encodeURIComponent(
-            `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
-            `نُعلمكم بأن ابنكم راجع عيادة ${schoolName} اليوم ${today}.\n` +
-            `الشكوى: ${complaint||'—'}\n` +
-            `النتيجة: ${result||'—'}\n` +
-            `للاستفسار تواصلوا مع إدارة المدرسة.`
+            `'D3D'E 9DJCE HDJ #E1 'D7'D( ${studentName}\n` +
+            `FO9DECE (#F '(FCE 1',9 9J'/) ${schoolName} 'DJHE ${today}.\n` +
+            `'D4CHI: ${complaint||''}\n` +
+            `'DF*J,): ${result||''}\n` +
+            `DD'3*A3'1 *H'5DH' E9 %/'1) 'DE/13).`
         );
         window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
-    } catch(e){ showToast('❌ '+e.message,'error'); }
+    } catch(e){ showToast('L '+e.message,'error'); }
 };
 
 window.doLogout=function(){
@@ -585,10 +585,10 @@ if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').cat
 
 
 <script>
-// ══ Service Worker — تسجيل بسيط بدون reload ══
+// PP Service Worker  *3,JD (3J7 (/HF reload PP
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(function(reg) {
-        // تحقق من التحديثات كل 5 دقائق
+        // *-BB EF 'D*-/J+'* CD 5 /B'&B
         setInterval(function() { reg.update(); }, 5 * 60 * 1000);
     }).catch(function() {});
 }

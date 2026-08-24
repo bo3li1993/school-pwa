@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ترحيل بيانات الحسينان</title>
+<title>*1-JD (J'F'* 'D-3JF'F</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -25,15 +25,15 @@ p{font-size:13px;color:#6b7280;margin-bottom:24px;line-height:1.7}
 </head>
 <body>
 <div class="box">
-  <h1>🔄 ترحيل بيانات متوسطة سالم الحسينان</h1>
-  <div class="warn">⚠️ شغّلها مرة وحدة فقط — هذي الأداة تضيف schoolId: "hosainan" لكل سجلات المدرسة القديمة</div>
+  <h1>= *1-JD (J'F'* E*H37) 3'DE 'D-3JF'F</h1>
+  <div class="warn">� 4:QDG' E1) H-/) AB7  G0J 'D#/') *6JA schoolId: "hosainan" DCD 3,D'* 'DE/13) 'DB/JE)</div>
   <p>
-    تضيف <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px">schoolId: "hosainan"</code>
-    لكل سجلات الطلاب، الغياب، الزيارات وكل البيانات القديمة التي رُفعت قبل نظام تعدد المدارس.
+    *6JA <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px">schoolId: "hosainan"</code>
+    DCD 3,D'* 'D7D'( 'D:J'( 'D2J'1'* HCD 'D(J'F'* 'DB/JE) 'D*J 1OA9* B(D F8'E *9// 'DE/'13.
   </p>
 
   <button class="btn" id="btn-start" onclick="startMigration()">
-    🚀 ابدأ الترحيل الآن
+    =� '(/# 'D*1-JD 'D"F
   </button>
 
   <div class="progress" id="prog">
@@ -70,7 +70,7 @@ function setProgress(pct) { document.getElementById('prog-bar').style.width = pc
 window.startMigration = async function() {
     const btn = document.getElementById('btn-start');
     btn.disabled = true;
-    btn.innerHTML = '⏳ جاري الترحيل...';
+    btn.innerHTML = '� ,'1J 'D*1-JD...';
     document.getElementById('prog').style.display = 'block';
 
     let totalUpdated = 0, totalSkipped = 0, totalErrors = 0;
@@ -81,13 +81,13 @@ window.startMigration = async function() {
 
         try {
             const snap = await getDocs(collection(db, colName));
-            if(snap.empty) { log(`⏭ ${colName}: فارغة`); continue; }
+            if(snap.empty) { log(`� ${colName}: A'1:)`); continue; }
 
             const needsUpdate = snap.docs.filter(d => !d.data().schoolId);
             const alreadyHas  = snap.docs.length - needsUpdate.length;
 
             if(needsUpdate.length === 0) {
-                log(`✅ ${colName}: كل الـ ${alreadyHas} سجل لديه schoolId بالفعل`);
+                log(` ${colName}: CD 'D@ ${alreadyHas} 3,D D/JG schoolId ('DA9D`);
                 totalSkipped += alreadyHas;
                 continue;
             }
@@ -102,36 +102,36 @@ window.startMigration = async function() {
                 await batch.commit();
             }
 
-            log(`✅ ${colName}: رحّلت ${needsUpdate.length} سجل${alreadyHas ? ` (${alreadyHas} موجود مسبقاً)` : ''}`);
+            log(` ${colName}: 1-QD* ${needsUpdate.length} 3,D${alreadyHas ? ` (${alreadyHas} EH,H/ E3(B'K)` : ''}`);
             totalUpdated += needsUpdate.length;
             totalSkipped += alreadyHas;
 
         } catch(err) {
-            log(`❌ ${colName}: ${err.message}`);
+            log(`L ${colName}: ${err.message}`);
             totalErrors++;
         }
     }
 
     setProgress(100);
 
-    // إنشاء/تأكيد سجل المدرسة
+    // %F4'!/*#CJ/ 3,D 'DE/13)
     try {
         const schoolRef = doc(db, 'schools', SCHOOL_ID);
         const schoolSnap = await getDoc(schoolRef);
         if(!schoolSnap.exists()) {
             await setDoc(schoolRef, {
-                name: 'متوسطة سالم الحسينان للبنين',
+                name: 'E*H37) 3'DE 'D-3JF'F DD(FJF',
                 plan: 'enterprise', status: 'active',
                 subscriptionEnd: '2027-12-31',
                 createdAt: new Date().toISOString()
             });
-            log(`✅ schools/${SCHOOL_ID}: تم إنشاء سجل المدرسة`);
+            log(` schools/${SCHOOL_ID}: *E %F4'! 3,D 'DE/13)`);
         } else {
-            log(`✅ schools/${SCHOOL_ID}: موجود بالفعل`);
+            log(` schools/${SCHOOL_ID}: EH,H/ ('DA9D`);
         }
-    } catch(e) { log(`⚠️ schools: ${e.message}`); }
+    } catch(e) { log(`� schools: ${e.message}`); }
 
-    // تأكيد ربط حساب 6464 بالمدرسة
+    // *#CJ/ 1(7 -3'( 6464 ('DE/13)
     try {
         const usersSnap = await getDocs(collection(db, 'users'));
         let fixedAdmin = 0;
@@ -143,14 +143,14 @@ window.startMigration = async function() {
                 fixedAdmin++;
             }
         });
-        if(fixedAdmin > 0) { await batch.commit(); log(`✅ تم ربط حساب المدير 6464 بـ schoolId: ${SCHOOL_ID}`); }
-    } catch(e) { log(`⚠️ users: ${e.message}`); }
+        if(fixedAdmin > 0) { await batch.commit(); log(` *E 1(7 -3'( 'DE/J1 6464 (@ schoolId: ${SCHOOL_ID}`); }
+    } catch(e) { log(`� users: ${e.message}`); }
 
     const summaryEl = document.getElementById('summary');
     summaryEl.style.display = 'block';
-    summaryEl.innerHTML = `🎉 اكتمل الترحيل!<br>✅ رُحِّل: ${totalUpdated} سجل<br>⏭ موجود مسبقاً: ${totalSkipped} سجل<br>${totalErrors ? `❌ أخطاء: ${totalErrors}` : '✅ صفر أخطاء'}`;
+    summaryEl.innerHTML = `<� 'C*ED 'D*1-JD!<br> 1O-PQD: ${totalUpdated} 3,D<br>� EH,H/ E3(B'K: ${totalSkipped} 3,D<br>${totalErrors ? `L #.7'!: ${totalErrors}` : ' 5A1 #.7'!'}`;
 
-    btn.innerHTML = '✅ اكتمل الترحيل';
+    btn.innerHTML = ' 'C*ED 'D*1-JD';
     btn.className = 'btn green';
     btn.disabled = false;
     btn.onclick = null;

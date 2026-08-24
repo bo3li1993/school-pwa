@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>تسجيل ولي الأمر — المنظومة الرقمية</title>
+<title>*3,JD HDJ 'D#E1  'DEF8HE) 'D1BEJ)</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -53,101 +53,101 @@ input:focus,select:focus{border-color:var(--sky)}
 
 <div class="card">
   <div class="header">
-    <h1>👨‍👩‍👦 تسجيل ولي الأمر</h1>
-    <p id="school-name-header">المنظومة الرقمية</p>
+    <h1>=h=i=f *3,JD HDJ 'D#E1</h1>
+    <p id="school-name-header">'DEF8HE) 'D1BEJ)</p>
   </div>
 
   <div class="steps">
-    <div class="step active" id="step1"><div class="step-num">1</div> بيانات الطالب</div>
-    <div class="step-sep">›</div>
-    <div class="step" id="step2"><div class="step-num">2</div> رمز التحقق</div>
-    <div class="step-sep">›</div>
-    <div class="step" id="step3"><div class="step-num">3</div> كلمة المرور</div>
+    <div class="step active" id="step1"><div class="step-num">1</div> (J'F'* 'D7'D(</div>
+    <div class="step-sep">:</div>
+    <div class="step" id="step2"><div class="step-num">2</div> 1E2 'D*-BB</div>
+    <div class="step-sep">:</div>
+    <div class="step" id="step3"><div class="step-num">3</div> CDE) 'DE1H1</div>
   </div>
 
-  <!-- الصفحة 1: بيانات الطالب -->
+  <!-- 'D5A-) 1: (J'F'* 'D7'D( -->
   <div class="body">
     <div class="page active" id="page1">
-      <label>المدرسة (كود المدرسة)</label>
-      <input type="text" id="inp-school" placeholder="مثال: hosainan" autocomplete="off">
-      <div class="hint">اسأل مدير المدرسة عن كود المدرسة</div>
+      <label>'DE/13) (CH/ 'DE/13))</label>
+      <input type="text" id="inp-school" placeholder="E+'D: hosainan" autocomplete="off">
+      <div class="hint">'3#D E/J1 'DE/13) 9F CH/ 'DE/13)</div>
 
-      <label>الرقم المدني للطالب</label>
-      <input type="text" id="inp-student-civil" placeholder="الرقم المدني للابن/البنت" inputmode="numeric" maxlength="12">
+      <label>'D1BE 'DE/FJ DD7'D(</label>
+      <input type="text" id="inp-student-civil" placeholder="'D1BE 'DE/FJ DD'(F/'D(F*" inputmode="numeric" maxlength="12">
 
-      <label>رقم هاتفك (المسجل لدى المدرسة)</label>
-      <input type="tel" id="inp-phone" placeholder="مثال: 65012345" inputmode="numeric" maxlength="8">
-      <div class="hint">يجب أن يكون نفس الرقم المسجل في ملف الطالب</div>
+      <label>1BE G'*AC ('DE3,D D/I 'DE/13))</label>
+      <input type="tel" id="inp-phone" placeholder="E+'D: 65012345" inputmode="numeric" maxlength="8">
+      <div class="hint">J,( #F JCHF FA3 'D1BE 'DE3,D AJ EDA 'D7'D(</div>
 
       <div class="err" id="err1"></div>
       <button class="btn" id="btn-send-otp" onclick="sendOTP()">
-        <i class="bi bi-send-fill"></i> إرسال رمز التحقق
+        <i class="bi bi-send-fill"></i> %13'D 1E2 'D*-BB
       </button>
       <button class="btn-link" onclick="window.location.href='index.html'">
-        لدي حساب بالفعل — تسجيل الدخول
+        D/J -3'( ('DA9D  *3,JD 'D/.HD
       </button>
     </div>
 
-    <!-- الصفحة 2: رمز التحقق -->
+    <!-- 'D5A-) 2: 1E2 'D*-BB -->
     <div class="page" id="page2">
       <div style="text-align:center;margin-bottom:16px">
         <i class="bi bi-phone-fill" style="font-size:40px;color:var(--sky)"></i>
         <p style="font-size:13px;font-weight:700;color:var(--mid);margin-top:8px">
-          أُرسل رمز التحقق إلى رقمك المسجل
+          #O13D 1E2 'D*-BB %DI 1BEC 'DE3,D
         </p>
       </div>
 
-      <label>رمز التحقق (6 أرقام)</label>
+      <label>1E2 'D*-BB (6 #1B'E)</label>
       <input type="text" id="inp-otp" class="otp-input" placeholder="------" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
-      <div class="timer" id="timer-text">⏱ صالح لـ 10 دقائق</div>
+      <div class="timer" id="timer-text">� 5'D- D@ 10 /B'&B</div>
 
       <div class="err" id="err2"></div>
       <button class="btn" id="btn-verify-otp" onclick="verifyStep()">
-        <i class="bi bi-check2-circle"></i> التحقق من الرمز
+        <i class="bi bi-check2-circle"></i> 'D*-BB EF 'D1E2
       </button>
       <button class="btn-link" id="btn-resend" onclick="resendOTP()" style="margin-top:14px">
-        إعادة إرسال الرمز
+        %9'/) %13'D 'D1E2
       </button>
       <button class="btn-link" onclick="goBack(1)" style="color:var(--mid)">
-        → رجوع
+        � 1,H9
       </button>
     </div>
 
-    <!-- الصفحة 3: كلمة المرور -->
+    <!-- 'D5A-) 3: CDE) 'DE1H1 -->
     <div class="page" id="page3">
-      <label>الرقم المدني لولي الأمر</label>
-      <input type="text" id="inp-civil" placeholder="رقمك المدني" inputmode="numeric" maxlength="12">
+      <label>'D1BE 'DE/FJ DHDJ 'D#E1</label>
+      <input type="text" id="inp-civil" placeholder="1BEC 'DE/FJ" inputmode="numeric" maxlength="12">
 
-      <label>كلمة المرور</label>
-      <input type="password" id="inp-pass" placeholder="8 أحرف على الأقل" autocomplete="new-password">
+      <label>CDE) 'DE1H1</label>
+      <input type="password" id="inp-pass" placeholder="8 #-1A 9DI 'D#BD" autocomplete="new-password">
 
-      <label>تأكيد كلمة المرور</label>
-      <input type="password" id="inp-pass2" placeholder="أعد كتابة كلمة المرور" autocomplete="new-password">
+      <label>*#CJ/ CDE) 'DE1H1</label>
+      <input type="password" id="inp-pass2" placeholder="#9/ C*'() CDE) 'DE1H1" autocomplete="new-password">
 
       <div class="err" id="err3"></div>
       <button class="btn green" id="btn-register" onclick="doRegister()">
-        <i class="bi bi-person-check-fill"></i> إنشاء الحساب
+        <i class="bi bi-person-check-fill"></i> %F4'! 'D-3'(
       </button>
       <button class="btn-link" onclick="goBack(2)" style="color:var(--mid)">
-        → رجوع
+        � 1,H9
       </button>
     </div>
 
-    <!-- صفحة النجاح -->
+    <!-- 5A-) 'DF,'- -->
     <div class="page" id="page-success">
       <div class="success-screen">
-        <div class="success-icon">🎉</div>
-        <h2>تم إنشاء حسابك بنجاح!</h2>
-        <p>يمكنك الآن الدخول لمتابعة بياناتك وبيانات ابنك/ابنتك</p>
+        <div class="success-icon"><�</div>
+        <h2>*E %F4'! -3'(C (F,'-!</h2>
+        <p>JECFC 'D"F 'D/.HD DE*'(9) (J'F'*C H(J'F'* '(FC/'(F*C</p>
       </div>
       <button class="btn green" onclick="goToLogin()">
-        <i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول الآن
+        <i class="bi bi-box-arrow-in-left"></i> *3,JD 'D/.HD 'D"F
       </button>
     </div>
   </div>
 
   <div class="footer">
-    <a href="privacy.html"><i class="bi bi-shield-lock"></i> سياسة الخصوصية</a>
+    <a href="privacy.html"><i class="bi bi-shield-lock"></i> 3J'3) 'D.5H5J)</a>
   </div>
 </div>
 
@@ -214,22 +214,22 @@ window.sendOTP = async function() {
     const studentCivilId = document.getElementById('inp-student-civil').value.trim();
     const phone = document.getElementById('inp-phone').value.trim();
 
-    if (!schoolId || !studentCivilId || !phone) return showErr('err1','⚠️ أكمل جميع الحقول');
-    if (phone.length < 7) return showErr('err1','⚠️ رقم الهاتف غير صحيح');
+    if (!schoolId || !studentCivilId || !phone) return showErr('err1','� #CED ,EJ9 'D-BHD');
+    if (phone.length < 7) return showErr('err1','� 1BE 'DG'*A :J1 5-J-');
 
     const btn = document.getElementById('btn-send-otp');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الإرسال...';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> ,'1J 'D%13'D...';
 
     try {
         await sendParentOTPFn({ schoolId, phone: '965'+phone, studentCivilId });
         window._regData = { schoolId, phone: '965'+phone, studentCivilId };
         setStep(2);
     } catch(e) {
-        showErr('err1', '❌ ' + (e.message || 'تعذر الإرسال، تأكد من البيانات'));
+        showErr('err1', 'L ' + (e.message || '*901 'D%13'D *#C/ EF 'D(J'F'*'));
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-send-fill"></i> إرسال رمز التحقق';
+        btn.innerHTML = '<i class="bi bi-send-fill"></i> %13'D 1E2 'D*-BB';
     }
 };
 
@@ -241,7 +241,7 @@ window.resendOTP = async function() {
         document.getElementById('err2').classList.remove('show');
         document.getElementById('inp-otp').value = '';
     } catch(e) {
-        showErr('err2', '❌ ' + (e.message || 'تعذر إعادة الإرسال'));
+        showErr('err2', 'L ' + (e.message || '*901 %9'/) 'D%13'D'));
     } finally {
         document.getElementById('btn-resend').disabled = false;
     }
@@ -250,7 +250,7 @@ window.resendOTP = async function() {
 window.verifyStep = function() {
     hideErr('err2');
     const otp = document.getElementById('inp-otp').value.trim();
-    if (otp.length !== 6) return showErr('err2','⚠️ أدخل رمز التحقق المكون من 6 أرقام');
+    if (otp.length !== 6) return showErr('err2','� #/.D 1E2 'D*-BB 'DECHF EF 6 #1B'E');
     window._otp = otp;
     setStep(3);
 };
@@ -261,13 +261,13 @@ window.doRegister = async function() {
     const pass = document.getElementById('inp-pass').value;
     const pass2 = document.getElementById('inp-pass2').value;
 
-    if (!civilId) return showErr('err3','⚠️ أدخل رقمك المدني');
-    if (pass.length < 8) return showErr('err3','⚠️ كلمة المرور يجب أن تكون 8 أحرف على الأقل');
-    if (pass !== pass2) return showErr('err3','⚠️ كلمتا المرور غير متطابقتين');
+    if (!civilId) return showErr('err3','� #/.D 1BEC 'DE/FJ');
+    if (pass.length < 8) return showErr('err3','� CDE) 'DE1H1 J,( #F *CHF 8 #-1A 9DI 'D#BD');
+    if (pass !== pass2) return showErr('err3','� CDE*' 'DE1H1 :J1 E*7'(B*JF');
 
     const btn = document.getElementById('btn-register');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الإنشاء...';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> ,'1J 'D%F4'!...';
 
     try {
         await verifyOTPFn({
@@ -280,15 +280,15 @@ window.doRegister = async function() {
         setStepSuccess();
     } catch(e) {
         const msgs = {
-            'functions/already-exists': '❌ هذا الحساب موجود مسبقاً، يمكنك تسجيل الدخول مباشرة',
-            'functions/unauthenticated': '❌ رمز التحقق غير صحيح أو منتهي الصلاحية',
-            'functions/deadline-exceeded': '❌ انتهت صلاحية رمز التحقق — أعد الإرسال',
-            'functions/not-found': '❌ لم يتم طلب رمز تحقق'
+            'functions/already-exists': 'L G0' 'D-3'( EH,H/ E3(B'K JECFC *3,JD 'D/.HD E('41)',
+            'functions/unauthenticated': 'L 1E2 'D*-BB :J1 5-J- #H EF*GJ 'D5D'-J)',
+            'functions/deadline-exceeded': 'L 'F*G* 5D'-J) 1E2 'D*-BB  #9/ 'D%13'D',
+            'functions/not-found': 'L DE J*E 7D( 1E2 *-BB'
         };
-        showErr('err3', msgs[e.code] || ('❌ ' + (e.message || 'حدث خطأ، حاول مرة أخرى')));
+        showErr('err3', msgs[e.code] || ('L ' + (e.message || '-/+ .7# -'HD E1) #.1I')));
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-person-check-fill"></i> إنشاء الحساب';
+        btn.innerHTML = '<i class="bi bi-person-check-fill"></i> %F4'! 'D-3'(';
     }
 };
 

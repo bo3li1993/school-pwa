@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>دخول ولي الأمر — المنظومة الرقمية</title>
+<title>/.HD HDJ 'D#E1  'DEF8HE) 'D1BEJ)</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -41,40 +41,40 @@ input:focus{border-color:var(--sky)}
 
 <div class="card">
   <div class="header">
-    <div class="icon">👨‍👩‍👦</div>
-    <h1>بوابة ولي الأمر</h1>
-    <p id="school-name-header">المنظومة الرقمية</p>
+    <div class="icon">=h=i=f</div>
+    <h1>(H'() HDJ 'D#E1</h1>
+    <p id="school-name-header">'DEF8HE) 'D1BEJ)</p>
   </div>
 
   <div class="body">
-    <label>كود المدرسة</label>
-    <input type="text" id="inp-school" placeholder="مثال: hosainan" autocomplete="off">
+    <label>CH/ 'DE/13)</label>
+    <input type="text" id="inp-school" placeholder="E+'D: hosainan" autocomplete="off">
 
-    <label>الرقم المدني لولي الأمر</label>
-    <input type="text" id="inp-civil" placeholder="رقمك المدني" inputmode="numeric" maxlength="12">
+    <label>'D1BE 'DE/FJ DHDJ 'D#E1</label>
+    <input type="text" id="inp-civil" placeholder="1BEC 'DE/FJ" inputmode="numeric" maxlength="12">
 
-    <label>كلمة المرور</label>
-    <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password">
+    <label>CDE) 'DE1H1</label>
+    <input type="password" id="inp-pass" placeholder="""""""""" autocomplete="current-password">
 
     <div class="err" id="err-login"></div>
 
     <button class="btn" id="btn-login" onclick="doLogin()">
-      <i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول
+      <i class="bi bi-box-arrow-in-left"></i> *3,JD 'D/.HD
     </button>
 
-    <div class="divider">أو</div>
+    <div class="divider">#H</div>
 
     <button class="btn-link" onclick="goRegister()">
-      <i class="bi bi-person-plus-fill"></i> تسجيل حساب جديد
+      <i class="bi bi-person-plus-fill"></i> *3,JD -3'( ,/J/
     </button>
 
     <button class="btn-link" style="color:var(--mid);font-size:12px;margin-top:6px" onclick="window.location.href='index.html'">
-      دخول الموظفين ←
+      /.HD 'DEH8AJF �
     </button>
   </div>
 
   <div class="footer">
-    <a href="privacy.html"><i class="bi bi-shield-lock"></i> سياسة الخصوصية</a>
+    <a href="privacy.html"><i class="bi bi-shield-lock"></i> 3J'3) 'D.5H5J)</a>
   </div>
 </div>
 
@@ -96,7 +96,7 @@ if (schoolFromUrl) {
     loadSchoolName(schoolFromUrl);
 }
 
-// تحقق لو مسجل دخول بالفعل
+// *-BB DH E3,D /.HD ('DA9D
 const saved = localStorage.getItem('hs_parent');
 if (saved) {
     try { JSON.parse(saved); window.location.replace('parent.html'); } catch(e) {}
@@ -121,11 +121,11 @@ window.doLogin = async function() {
     const civilId = document.getElementById('inp-civil').value.trim();
     const pass = document.getElementById('inp-pass').value;
 
-    if (!schoolId || !civilId || !pass) return showErr('⚠️ أكمل جميع الحقول');
+    if (!schoolId || !civilId || !pass) return showErr('� #CED ,EJ9 'D-BHD');
 
     const btn = document.getElementById('btn-login');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> ,'1J 'D*-BB...';
 
     try {
         const result = await loginParentFn({ schoolId, civilId, password: pass });
@@ -148,15 +148,15 @@ window.doLogin = async function() {
 
     } catch(e) {
         const msgs = {
-            'functions/unauthenticated': '❌ كلمة المرور غير صحيحة',
-            'functions/not-found': '❌ الحساب غير موجود — سجّل أولاً',
-            'functions/resource-exhausted': '⏳ ' + (e.message || 'تجاوزت المحاولات، انتظر قليلاً'),
-            'functions/invalid-argument': '⚠️ أدخل البيانات بشكل صحيح'
+            'functions/unauthenticated': 'L CDE) 'DE1H1 :J1 5-J-)',
+            'functions/not-found': 'L 'D-3'( :J1 EH,H/  3,QD #HD'K',
+            'functions/resource-exhausted': '� ' + (e.message || '*,'H2* 'DE-'HD'* 'F*81 BDJD'K'),
+            'functions/invalid-argument': '� #/.D 'D(J'F'* (4CD 5-J-'
         };
-        showErr(msgs[e.code] || ('❌ ' + (e.message || 'حدث خطأ، حاول مرة أخرى')));
+        showErr(msgs[e.code] || ('L ' + (e.message || '-/+ .7# -'HD E1) #.1I')));
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول';
+        btn.innerHTML = '<i class="bi bi-box-arrow-in-left"></i> *3,JD 'D/.HD';
     }
 };
 

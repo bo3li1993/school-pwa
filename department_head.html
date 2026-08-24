@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link class="apple-touch-icon" href="./logo.png">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
-<title>لوحة رئيس القسم - المنظومة الرقمية</title>
+<title>DH-) 1&J3 'DB3E - 'DEF8HE) 'D1BEJ)</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
@@ -78,26 +78,26 @@ body.dark-mode .stat-box{background:#1e2535!important;border-color:#2a3650!impor
 
 <div class="splash" id="splash">
   <div class="splash-mark">
-    <div class="splash-badge">م</div>
-    <h1>المنظومة الرقمية</h1>
-    <p id="splash-school">جاري التحميل...</p>
+    <div class="splash-badge">E</div>
+    <h1>'DEF8HE) 'D1BEJ)</h1>
+    <p id="splash-school">,'1J 'D*-EJD...</p>
   </div>
 </div>
 
 <div class="header-nav">
   <div>
-    <h1 id="lbl-dept-title"><i class="bi bi-diagram-3-fill"></i> رئيس القسم</h1>
-    <p id="lbl-dept-school">جاري التحميل...</p>
+    <h1 id="lbl-dept-title"><i class="bi bi-diagram-3-fill"></i> 1&J3 'DB3E</h1>
+    <p id="lbl-dept-school">,'1J 'D*-EJD...</p>
   </div>
   <div class="header-actions">
     <button class="btn-header" onclick="window.location.href='teacher.html'" style="background:#1a78c2;color:#fff;">
-      <i class="bi bi-easel2-fill"></i> حصصي
+      <i class="bi bi-easel2-fill"></i> -55J
     </button>
     <button class="btn-header" onclick="toggleDark()" style="background:#334155;color:#fff;">
       <i class="bi bi-moon-fill"></i>
     </button>
     <button class="btn-header" onclick="doLogout()" style="background:#ef4444;color:#fff;">
-      <i class="bi bi-box-arrow-left"></i> خروج
+      <i class="bi bi-box-arrow-left"></i> .1H,
     </button>
   </div>
 </div>
@@ -107,134 +107,134 @@ body.dark-mode .stat-box{background:#1e2535!important;border-color:#2a3650!impor
   <div class="stats-grid">
     <div class="stat-box" style="border-top:3px solid #1a78c2;">
       <div class="num" id="stat-teachers" style="color:#1a78c2;">--</div>
-      <div class="lbl">معلمو القسم</div>
+      <div class="lbl">E9DEH 'DB3E</div>
     </div>
     <div class="stat-box" style="border-top:3px solid #ef4444;">
       <div class="num" id="stat-absent" style="color:#ef4444;">--</div>
-      <div class="lbl">غياب اليوم</div>
+      <div class="lbl">:J'( 'DJHE</div>
     </div>
     <div class="stat-box" style="border-top:3px solid #d4920a;">
       <div class="num" id="stat-visits" style="color:#d4920a;">--</div>
-      <div class="lbl">زياراتي</div>
+      <div class="lbl">2J'1'*J</div>
     </div>
     <div class="stat-box" style="border-top:3px solid #059669;">
       <div class="num" id="stat-msgs" style="color:#059669;">--</div>
-      <div class="lbl">رسائل جديدة</div>
+      <div class="lbl">13'&D ,/J/)</div>
     </div>
   </div>
 
-  <!-- معلمو القسم -->
+  <!-- E9DEH 'DB3E -->
   <div class="dept-view active" id="view-teachers">
     <div class="card" style="border-top:4px solid #1a78c2;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <h2 style="margin:0;"><i class="bi bi-people-fill" style="color:#1a78c2;"></i> معلمو القسم</h2>
+        <h2 style="margin:0;"><i class="bi bi-people-fill" style="color:#1a78c2;"></i> E9DEH 'DB3E</h2>
         <button onclick="exportTeachersPDF()" style="background:#dc2626;color:#fff;border:none;padding:7px 14px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;font-size:12px;cursor:pointer;">
           <i class="bi bi-file-earmark-pdf-fill"></i> PDF
         </button>
       </div>
       <div style="overflow-x:auto;">
         <table>
-          <thead><tr><th>الاسم</th><th>المعرف</th><th>الهاتف</th><th>الايميل</th><th>القسم</th><th>تعديل</th></tr></thead>
+          <thead><tr><th>'D'3E</th><th>'DE91A</th><th>'DG'*A</th><th>'D'JEJD</th><th>'DB3E</th><th>*9/JD</th></tr></thead>
           <tbody id="teachers-tbody">
-            <tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">جاري التحميل...</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">,'1J 'D*-EJD...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- الزيارات -->
+  <!-- 'D2J'1'* -->
   <div class="dept-view" id="view-visits">
     <div class="card" style="border-top:4px solid #d4920a;">
-      <h2><i class="bi bi-eye-fill" style="color:#d4920a;"></i> تسجيل زيارة تفقدية</h2>
-      <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">المعلم المزار</label>
-      <select id="visit-teacher"><option value="">جاري تحميل المعلمين...</option></select>
-      <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">الفصل</label>
-      <select id="visit-class"><option value="">-- اختر الفصل --</option></select>
-      <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">الحصة</label>
+      <h2><i class="bi bi-eye-fill" style="color:#d4920a;"></i> *3,JD 2J'1) *AB/J)</h2>
+      <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">'DE9DE 'DE2'1</label>
+      <select id="visit-teacher"><option value="">,'1J *-EJD 'DE9DEJF...</option></select>
+      <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">'DA5D</label>
+      <select id="visit-class"><option value="">-- '.*1 'DA5D --</option></select>
+      <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">'D-5)</label>
       <select id="visit-period">
-        <option value="1">الحصة الاولى</option>
-        <option value="2">الحصة الثانية</option>
-        <option value="3">الحصة الثالثة</option>
-        <option value="4">الحصة الرابعة</option>
-        <option value="5">الحصة الخامسة</option>
-        <option value="6">الحصة السادسة</option>
-        <option value="7">الحصة السابعة</option>
+        <option value="1">'D-5) 'D'HDI</option>
+        <option value="2">'D-5) 'D+'FJ)</option>
+        <option value="3">'D-5) 'D+'D+)</option>
+        <option value="4">'D-5) 'D1'(9)</option>
+        <option value="5">'D-5) 'D.'E3)</option>
+        <option value="6">'D-5) 'D3'/3)</option>
+        <option value="7">'D-5) 'D3'(9)</option>
       </select>
-      <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">ملاحظات الزيارة</label>
-      <textarea id="visit-notes" rows="3" placeholder="اكتب ملاحظاتك هنا..."></textarea>
+      <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">ED'-8'* 'D2J'1)</label>
+      <textarea id="visit-notes" rows="3" placeholder="'C*( ED'-8'*C GF'..."></textarea>
       <button class="btn-submit" onclick="saveVisit()">
-        <i class="bi bi-check-circle-fill"></i> حفظ الزيارة
+        <i class="bi bi-check-circle-fill"></i> -A8 'D2J'1)
       </button>
     </div>
     <div class="card" style="border-top:4px solid #0b2545;">
-      <h2><i class="bi bi-clock-history" style="color:#0b2545;"></i> سجل زياراتي</h2>
+      <h2><i class="bi bi-clock-history" style="color:#0b2545;"></i> 3,D 2J'1'*J</h2>
       <div style="overflow-x:auto;">
         <table>
-          <thead><tr><th>المعلم</th><th>الفصل</th><th>الحصة</th><th>الملاحظات</th><th>التاريخ</th><th>حذف</th></tr></thead>
+          <thead><tr><th>'DE9DE</th><th>'DA5D</th><th>'D-5)</th><th>'DED'-8'*</th><th>'D*'1J.</th><th>-0A</th></tr></thead>
           <tbody id="visits-tbody">
-            <tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">جاري التحميل...</td></tr>
+            <tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">,'1J 'D*-EJD...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- الرسائل -->
+  <!-- 'D13'&D -->
   <div class="dept-view" id="view-messages">
     <div class="card" style="border-top:4px solid #059669;">
-      <h2><i class="bi bi-chat-left-text-fill" style="color:#059669;"></i> رسائل اولياء الامور</h2>
+      <h2><i class="bi bi-chat-left-text-fill" style="color:#059669;"></i> 13'&D 'HDJ'! 'D'EH1</h2>
       <div id="messages-list" style="max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">
-        <p style="text-align:center;color:#999;padding:15px;">جاري التحميل...</p>
+        <p style="text-align:center;color:#999;padding:15px;">,'1J 'D*-EJD...</p>
       </div>
     </div>
   </div>
 
 </div>
 
-<!-- Modal تعديل معلم -->
+<!-- Modal *9/JD E9DE -->
 <div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:16px;">
   <div style="background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;direction:rtl;">
-    <h3 style="color:#0b2545;font-weight:900;margin-bottom:14px;"><i class="bi bi-pencil-square"></i> تعديل بيانات المعلم</h3>
+    <h3 style="color:#0b2545;font-weight:900;margin-bottom:14px;"><i class="bi bi-pencil-square"></i> *9/JD (J'F'* 'DE9DE</h3>
     <input type="hidden" id="edit-id">
-    <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">الاسم الكامل</label>
+    <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">'D'3E 'DC'ED</label>
     <input type="text" id="edit-name">
-    <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">رقم الهاتف</label>
+    <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">1BE 'DG'*A</label>
     <input type="tel" id="edit-phone">
-    <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">البريد الالكتروني</label>
+    <label style="display:block;font-weight:700;font-size:13px;margin-bottom:6px;">'D(1J/ 'D'DC*1HFJ</label>
     <input type="email" id="edit-email">
     <button onclick="saveEdit()" class="btn-submit" style="background:#059669;margin-bottom:8px;">
-      <i class="bi bi-check-circle-fill"></i> حفظ التعديلات
+      <i class="bi bi-check-circle-fill"></i> -A8 'D*9/JD'*
     </button>
-    <button onclick="closeEditModal()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;color:#666;">الغاء</button>
+    <button onclick="closeEditModal()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;color:#666;">'D:'!</button>
   </div>
 </div>
 
-<!-- Modal رد -->
+<!-- Modal 1/ -->
 <div id="reply-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:16px;">
   <div style="background:#fff;border-radius:16px;padding:24px;max-width:420px;width:100%;direction:rtl;">
-    <h3 style="color:#0b2545;font-weight:900;margin-bottom:6px;"><i class="bi bi-reply-fill"></i> الرد على ولي الامر</h3>
+    <h3 style="color:#0b2545;font-weight:900;margin-bottom:6px;"><i class="bi bi-reply-fill"></i> 'D1/ 9DI HDJ 'D'E1</h3>
     <p id="reply-context" style="font-size:12px;color:#666;margin-bottom:12px;"></p>
     <input type="hidden" id="reply-thread-id">
     <input type="hidden" id="reply-student-name">
-    <textarea id="reply-text" rows="3" placeholder="اكتب ردك هنا..."></textarea>
+    <textarea id="reply-text" rows="3" placeholder="'C*( 1/C GF'..."></textarea>
     <button onclick="sendReply()" class="btn-submit" style="background:#1a78c2;margin-bottom:8px;">
-      <i class="bi bi-send-fill"></i> ارسال الرد
+      <i class="bi bi-send-fill"></i> '13'D 'D1/
     </button>
-    <button onclick="closeReplyModal()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;color:#666;">الغاء</button>
+    <button onclick="closeReplyModal()" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;color:#666;">'D:'!</button>
   </div>
 </div>
 
 <!-- Bottom Nav -->
 <div class="bottom-nav">
   <button class="bn-item active" onclick="switchView('view-teachers')" id="bn-teachers">
-    <i class="bi bi-people-fill"></i>المعلمون
+    <i class="bi bi-people-fill"></i>'DE9DEHF
   </button>
   <button class="bn-item" onclick="switchView('view-visits')" id="bn-visits">
-    <i class="bi bi-eye-fill"></i>الزيارات
+    <i class="bi bi-eye-fill"></i>'D2J'1'*
   </button>
   <button class="bn-item" onclick="switchView('view-messages')" id="bn-messages">
-    <i class="bi bi-chat-left-text-fill"></i>الرسائل
+    <i class="bi bi-chat-left-text-fill"></i>'D13'&D
   </button>
 </div>
 
@@ -281,10 +281,10 @@ document.addEventListener('DOMContentLoaded', async function(){
   if(currentUser.role!=='department_head'){window.location.replace('index.html');return;}
   myDepartment=currentUser.department||'';
   mySchoolId=currentUser.schoolId||getActiveSchoolId();
-  document.getElementById('lbl-dept-title').textContent='رئيس قسم '+myDepartment+' - '+(currentUser.name||'');
-  document.getElementById('lbl-dept-school').textContent=currentUser.schoolName||'المنظومة الرقمية';
-  document.getElementById('splash-school').textContent=currentUser.schoolName||'المنظومة الرقمية';
-  if(!myDepartment){showToast('لم يتم تحديد قسمك - راجع الادارة','error');}
+  document.getElementById('lbl-dept-title').textContent='1&J3 B3E '+myDepartment+' - '+(currentUser.name||'');
+  document.getElementById('lbl-dept-school').textContent=currentUser.schoolName||''DEF8HE) 'D1BEJ)';
+  document.getElementById('splash-school').textContent=currentUser.schoolName||''DEF8HE) 'D1BEJ)';
+  if(!myDepartment){showToast('DE J*E *-/J/ B3EC - 1',9 'D'/'1)','error');}
   await loadTeachers();
   await loadClasses();
   await loadStats();
@@ -302,9 +302,9 @@ async function loadTeachers(){
     var names=[];
     snap.forEach(function(d){if(d.data().name)names.push(d.data().name);});
     names.sort(function(a,b){return a.localeCompare(b,'ar');});
-    teacherSel.innerHTML='<option value="">-- اختر المعلم --</option>';
+    teacherSel.innerHTML='<option value="">-- '.*1 'DE9DE --</option>';
     names.forEach(function(n){teacherSel.innerHTML+='<option value="'+n+'">'+n+'</option>';});
-    if(snap.empty){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">لا يوجد معلمون مسجلون بقسمك</td></tr>';return;}
+    if(snap.empty){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">D' JH,/ E9DEHF E3,DHF (B3EC</td></tr>';return;}
     var html='';
     snap.forEach(function(d){
       var t=d.data();
@@ -315,11 +315,11 @@ async function loadTeachers(){
       html+='<td style="font-size:11px;">'+(t.email||'-')+'</td>';
       html+='<td>'+(t.department||'-')+'</td>';
       var esc=d.id;var n2=(t.name||'').replace(/'/g,"\\'");var p2=t.phone||'';var e2=t.email||'';
-      html+='<td><button onclick="window.openEditModal(\''+esc+'\',\''+n2+'\',\''+p2+'\',\''+e2+'\')" style="background:#1a78c2;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;font-family:Cairo,sans-serif;"><i class="bi bi-pencil-fill"></i> تعديل</button></td>';
+      html+='<td><button onclick="window.openEditModal(\''+esc+'\',\''+n2+'\',\''+p2+'\',\''+e2+'\')" style="background:#1a78c2;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;font-family:Cairo,sans-serif;"><i class="bi bi-pencil-fill"></i> *9/JD</button></td>';
       html+='</tr>';
     });
     tbody.innerHTML=html;
-  }catch(e){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:red;padding:20px;">خطا: '+e.message+'</td></tr>';}
+  }catch(e){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:red;padding:20px;">.7': '+e.message+'</td></tr>';}
 }
 
 async function loadClasses(){
@@ -328,7 +328,7 @@ async function loadClasses(){
     var cls={};
     snap.forEach(function(d){var c=d.data().classId;if(c)cls[c]=1;});
     var sel=document.getElementById('visit-class');
-    sel.innerHTML='<option value="">-- اختر الفصل --</option>';
+    sel.innerHTML='<option value="">-- '.*1 'DA5D --</option>';
     Object.keys(cls).sort().forEach(function(c){sel.innerHTML+='<option value="'+c+'">'+c+'</option>';});
   }catch(e){}
 }
@@ -347,7 +347,7 @@ function loadVisits(){
   if(visitsUnsub)visitsUnsub();
   visitsUnsub=onSnapshot(q,function(snap){
     document.getElementById('stat-visits').textContent=snap.size;
-    if(snap.empty){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">لا توجد زيارات مسجلة بعد</td></tr>';return;}
+    if(snap.empty){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#999;">D' *H,/ 2J'1'* E3,D) (9/</td></tr>';return;}
     var docs=snap.docs.sort(function(a,b){return(b.data().createdAt&&b.data().createdAt.seconds||0)-(a.data().createdAt&&a.data().createdAt.seconds||0);});
     var html='';
     docs.forEach(function(d){
@@ -355,7 +355,7 @@ function loadVisits(){
       html+='<tr>';
       html+='<td style="font-weight:900;">'+(v.teacherName||'-')+'</td>';
       html+='<td>'+(v.classId||'-')+'</td>';
-      html+='<td>'+(v.period?'الحصة '+v.period:'-')+'</td>';
+      html+='<td>'+(v.period?''D-5) '+v.period:'-')+'</td>';
       html+='<td style="font-size:11px;">'+(v.notes||'-')+'</td>';
       html+='<td style="font-size:11px;">'+(v.createdAt&&v.createdAt.toDate?v.createdAt.toDate().toLocaleDateString('ar-KW'):'-')+'</td>';
       html+='<td><button onclick="window.deleteVisit(\''+d.id+'\')" style="background:#dc2626;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:Cairo,sans-serif;"><i class="bi bi-trash-fill"></i></button></td>';
@@ -370,22 +370,22 @@ window.saveVisit=async function(){
   var classId=document.getElementById('visit-class').value.trim();
   var period=document.getElementById('visit-period').value;
   var notes=document.getElementById('visit-notes').value.trim();
-  if(!teacher){showToast('يرجى اختيار المعلم','error');return;}
-  if(!classId){showToast('يرجى اختيار الفصل','error');return;}
+  if(!teacher){showToast('J1,I '.*J'1 'DE9DE','error');return;}
+  if(!classId){showToast('J1,I '.*J'1 'DA5D','error');return;}
   try{
-    await addDoc(collection(db,'manager_visits'),{schoolId:mySchoolId,teacherName:teacher,classId:classId,period:parseInt(period),notes:notes,visitorName:currentUser.name||'رئيس القسم',department:myDepartment,createdAt:serverTimestamp()});
-    showToast('تم حفظ الزيارة بنجاح');
+    await addDoc(collection(db,'manager_visits'),{schoolId:mySchoolId,teacherName:teacher,classId:classId,period:parseInt(period),notes:notes,visitorName:currentUser.name||'1&J3 'DB3E',department:myDepartment,createdAt:serverTimestamp()});
+    showToast('*E -A8 'D2J'1) (F,'-');
     document.getElementById('visit-teacher').value='';
     document.getElementById('visit-class').value='';
     document.getElementById('visit-period').value='1';
     document.getElementById('visit-notes').value='';
-  }catch(e){showToast('خطا: '+e.message,'error');}
+  }catch(e){showToast('.7': '+e.message,'error');}
 };
 
 window.deleteVisit=async function(id){
-  if(!confirm('هل تريد حذف هذه الزيارة؟'))return;
-  try{await deleteDoc(doc(db,'manager_visits',id));showToast('تم حذف الزيارة');}
-  catch(e){showToast('خطا: '+e.message,'error');}
+  if(!confirm('GD *1J/ -0A G0G 'D2J'1)'))return;
+  try{await deleteDoc(doc(db,'manager_visits',id));showToast('*E -0A 'D2J'1)');}
+  catch(e){showToast('.7': '+e.message,'error');}
 };
 
 function loadMessages(){
@@ -393,7 +393,7 @@ function loadMessages(){
   var q=query(collection(db,'school_threads'),where('schoolId','==',mySchoolId),where('department','==',myDepartment));
   if(messagesUnsub)messagesUnsub();
   messagesUnsub=onSnapshot(q,function(snap){
-    if(snap.empty){listEl.innerHTML='<p style="text-align:center;color:#999;padding:15px;">لا توجد رسائل موجهة لقسمك حاليا</p>';document.getElementById('stat-msgs').textContent='0';return;}
+    if(snap.empty){listEl.innerHTML='<p style="text-align:center;color:#999;padding:15px;">D' *H,/ 13'&D EH,G) DB3EC -'DJ'</p>';document.getElementById('stat-msgs').textContent='0';return;}
     var docs=snap.docs.sort(function(a,b){return(b.data().createdAt&&b.data().createdAt.seconds||0)-(a.data().createdAt&&a.data().createdAt.seconds||0);});
     var unread=0;var html='';
     docs.forEach(function(d){
@@ -401,11 +401,11 @@ function loadMessages(){
       if(isParent&&!m.replied)unread++;
       html+='<div style="border:1px solid #eee;border-radius:10px;padding:12px;background:'+(isParent?'#f8fafc':'#eaf4fd')+';">';
       html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">';
-      html+='<b style="font-size:13px;color:#0b2545;">'+(isParent?'ولي امر: '+(m.studentName||''):'ردك')+'</b>';
+      html+='<b style="font-size:13px;color:#0b2545;">'+(isParent?'HDJ 'E1: '+(m.studentName||''):'1/C')+'</b>';
       html+='<span style="font-size:10px;color:#999;">'+(m.createdAt&&m.createdAt.toDate?m.createdAt.toDate().toLocaleDateString('ar-KW'):'')+'</span>';
       html+='</div>';
       html+='<p style="font-size:13px;margin-bottom:8px;">'+(m.message||'')+'</p>';
-      if(isParent){var sn=(m.studentName||'').replace(/'/g,"\\'");html+='<button onclick="window.openReplyModal(\''+d.id+'\',\''+sn+'\')" style="background:#d4920a;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;font-family:Cairo,sans-serif;"><i class="bi bi-reply-fill"></i> رد</button>';}
+      if(isParent){var sn=(m.studentName||'').replace(/'/g,"\\'");html+='<button onclick="window.openReplyModal(\''+d.id+'\',\''+sn+'\')" style="background:#d4920a;color:#fff;border:none;padding:6px 14px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;font-family:Cairo,sans-serif;"><i class="bi bi-reply-fill"></i> 1/</button>';}
       html+='</div>';
     });
     listEl.innerHTML=html;document.getElementById('stat-msgs').textContent=unread;
@@ -425,15 +425,15 @@ window.saveEdit=async function(){
   var name=document.getElementById('edit-name').value.trim();
   var phone=document.getElementById('edit-phone').value.trim();
   var email=document.getElementById('edit-email').value.trim();
-  if(!name){showToast('الاسم مطلوب','error');return;}
-  try{await updateDoc(doc(db,'users',id),{name:name,phone:phone,email:email});showToast('تم تحديث بيانات المعلم');window.closeEditModal();loadTeachers();}
-  catch(e){showToast('خطا: '+e.message,'error');}
+  if(!name){showToast(''D'3E E7DH(','error');return;}
+  try{await updateDoc(doc(db,'users',id),{name:name,phone:phone,email:email});showToast('*E *-/J+ (J'F'* 'DE9DE');window.closeEditModal();loadTeachers();}
+  catch(e){showToast('.7': '+e.message,'error');}
 };
 
 window.openReplyModal=function(threadId,studentName){
   document.getElementById('reply-thread-id').value=threadId;
   document.getElementById('reply-student-name').value=studentName;
-  document.getElementById('reply-context').textContent='الرد على رسالة بخصوص: '+studentName;
+  document.getElementById('reply-context').textContent=''D1/ 9DI 13'D) (.5H5: '+studentName;
   document.getElementById('reply-text').value='';
   document.getElementById('reply-modal').style.display='flex';
 };
@@ -442,12 +442,12 @@ window.sendReply=async function(){
   var threadId=document.getElementById('reply-thread-id').value;
   var studentName=document.getElementById('reply-student-name').value;
   var text=document.getElementById('reply-text').value.trim();
-  if(!text){showToast('يرجى كتابة نص الرد','error');return;}
+  if(!text){showToast('J1,I C*'() F5 'D1/','error');return;}
   try{
-    await addDoc(collection(db,'school_threads'),{schoolId:mySchoolId,studentName:studentName,department:myDepartment,message:text,senderRole:'department_head',senderName:currentUser.name||'رئيس القسم',createdAt:serverTimestamp()});
+    await addDoc(collection(db,'school_threads'),{schoolId:mySchoolId,studentName:studentName,department:myDepartment,message:text,senderRole:'department_head',senderName:currentUser.name||'1&J3 'DB3E',createdAt:serverTimestamp()});
     await updateDoc(doc(db,'school_threads',threadId),{replied:true});
-    showToast('تم ارسال الرد بنجاح');window.closeReplyModal();
-  }catch(e){showToast('خطا: '+e.message,'error');}
+    showToast('*E '13'D 'D1/ (F,'-');window.closeReplyModal();
+  }catch(e){showToast('.7': '+e.message,'error');}
 };
 
 window.exportTeachersPDF=async function(){
@@ -456,7 +456,7 @@ window.exportTeachersPDF=async function(){
     var rows='';var i=0;
     snap.forEach(function(d){var t=d.data();i++;rows+='<tr><td>'+i+'</td><td>'+(t.name||'--')+'</td><td>'+(t.userId||'--')+'</td><td>'+(t.phone||'--')+'</td><td>'+(t.email||'--')+'</td></tr>';});
     var win=window.open('','_blank');
-    win.document.write('<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;padding:20px;direction:rtl}h1{font-size:18px;color:#0b2545;margin-bottom:4px}p{font-size:12px;color:#666;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0b2545;color:#fff;padding:9px;text-align:right}td{padding:8px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#f8fafc}</style></head><body><h1>قائمة معلمي قسم '+myDepartment+'</h1><p>المدرسة: '+(currentUser.schoolName||'')+' | التاريخ: '+new Date().toLocaleDateString('ar-KW')+'</p><table><thead><tr><th>#</th><th>الاسم</th><th>المعرف</th><th>الهاتف</th><th>الايميل</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
+    win.document.write('<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;padding:20px;direction:rtl}h1{font-size:18px;color:#0b2545;margin-bottom:4px}p{font-size:12px;color:#666;margin-bottom:16px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0b2545;color:#fff;padding:9px;text-align:right}td{padding:8px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#f8fafc}</style></head><body><h1>B'&E) E9DEJ B3E '+myDepartment+'</h1><p>'DE/13): '+(currentUser.schoolName||'')+' | 'D*'1J.: '+new Date().toLocaleDateString('ar-KW')+'</p><table><thead><tr><th>#</th><th>'D'3E</th><th>'DE91A</th><th>'DG'*A</th><th>'D'JEJD</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>');
     win.document.close();setTimeout(function(){win.print();},600);
   }catch(e){showToast(e.message,'error');}
 };
