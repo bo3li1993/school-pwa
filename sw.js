@@ -1,4 +1,4 @@
-const CACHE_NAME = 'manzoma-v9';
+const CACHE_NAME = 'manzoma-v10';
 const STATIC_ASSETS = [
     './',
     './index.html',
@@ -16,7 +16,7 @@ const STATIC_ASSETS = [
     './js/pagination.js'
 ];
 
-// تثبيت: خزّن الملفات الأساسية
+// طھط«ط¨ظٹطھ: ط®ط²ظ‘ظ† ط§ظ„ظ…ظ„ظپط§طھ ط§ظ„ط£ط³ط§ط³ظٹط©
 self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {
@@ -31,7 +31,7 @@ self.addEventListener('install', function(event) {
     );
 });
 
-// تفعيل: احذف الكاش القديم
+// طھظپط¹ظٹظ„: ط§ط­ط°ظپ ط§ظ„ظƒط§ط´ ط§ظ„ظ‚ط¯ظٹظ…
 self.addEventListener('activate', function(event) {
     event.waitUntil(
         caches.keys().then(function(keys) {
@@ -45,11 +45,11 @@ self.addEventListener('activate', function(event) {
     );
 });
 
-// الطلبات: Network First للـ HTML، Cache First للملفات الثابتة
+// ط§ظ„ط·ظ„ط¨ط§طھ: Network First ظ„ظ„ظ€ HTMLطŒ Cache First ظ„ظ„ظ…ظ„ظپط§طھ ط§ظ„ط«ط§ط¨طھط©
 self.addEventListener('fetch', function(event) {
     var url = event.request.url;
 
-    // تجاهل Firebase وGoogle
+    // طھط¬ط§ظ‡ظ„ Firebase ظˆGoogle
     if (url.includes('firestore.googleapis.com') ||
         url.includes('firebase.googleapis.com') ||
         url.includes('identitytoolkit.googleapis.com') ||
@@ -60,7 +60,7 @@ self.addEventListener('fetch', function(event) {
         return;
     }
 
-    // HTML: Network First مع fallback
+    // HTML: Network First ظ…ط¹ fallback
     if (event.request.mode === 'navigate' ||
         (event.request.method === 'GET' &&
          event.request.headers.get('accept') &&
@@ -83,7 +83,7 @@ self.addEventListener('fetch', function(event) {
         return;
     }
 
-    // ملفات ثابتة: Cache First
+    // ظ…ظ„ظپط§طھ ط«ط§ط¨طھط©: Cache First
     if (event.request.method === 'GET') {
         event.respondWith(
             caches.match(event.request).then(function(cached) {
