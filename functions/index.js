@@ -1,223 +1,521 @@
-// build: 20260823003955
-"use strict"; const { onCall, HttpsError } = require("firebase-functions/v2/https"); const { onSchedule } = require("firebase-functions/v2/scheduler"); const admin = require("firebase-admin"); const argon2 = require("argon2"); admin.initializeApp(); const db = admin.firestore(); const CORS = [/^https:\/\/bo3li1993\.github\.io(\/.*)?$/, /^http:\/\/localhost(?::\d+)?$/]; const REGION = "me-central1"; const MAX_ATTEMPTS = 5; const _CORS_VERSION = 2; // v2 const LOCKOUT_MINUTES = 15; // v202608230035
-async function hashPassword(p) { return argon2.hash(p, { type: argon2.argon2id, memoryCost: 32768, timeCost: 3, parallelism: 1 }); }
-async function verifyPassword(h, p) { try { return await argon2.verify(h, p); } catch(e) { return false; } }
-async function requireAuth(req, roles) { if (!req.auth || !req.auth.uid) throw new HttpsError("unauthenticated", "يجب تسجيل الدخول"); if (req.auth.uid === "superadmin") { const sid = req.data?.schoolId || "system"; if (roles && !roles.includes("superadmin")) throw new HttpsError("permission-denied", "لا صلاحيات"); return { role: "superadmin", schoolId: sid, name: "Super Admin" }; } const u = await db.collection("users").doc(req.auth.uid).get(); if (!u.exists) throw new HttpsError("not-found", "المستخدم غير موجود"); const d = u.data(); if (roles && !roles.includes(d.role)) throw new HttpsError("permission-denied", "لا صلاحيات"); return d; }
-async function logAudit(s,a,p,d) { try { await db.collection("audit_log").add({schoolId:s,action:a,performedBy:p,details:d||"",createdAt:admin.firestore.FieldValue.serverTimestamp()}); } catch(e){ console.error("AUDIT_FAIL",a,s,e.message); } }
-async function checkRL(uid) { const r = db.collection("login_attempts").doc("user_"+uid); const s = await r.get(); if(s.exists){const d=s.data();const m=(Date.now()-(d.lastAttempt?.toMillis?.()||0))/60000;if(d.count>=MAX_ATTEMPTS&&m<LOCKOUT_MINUTES)return{locked:true,remaining:Math.ceil(LOCKOUT_MINUTES-m)};} return{locked:false}; }
-async function recFail(uid) { await db.collection("login_attempts").doc("user_"+uid).set({count:admin.firestore.FieldValue.increment(1),lastAttempt:admin.firestore.FieldValue.serverTimestamp()},{merge:true}); }
-async function resetRL(uid) { await db.collection("login_attempts").doc("user_"+uid).delete().catch(()=>{}); }
+// build: 20260824_CLEAN
+"use strict";
 
-exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, userId, password } = req.data;
-    if (!userId || !password) throw new HttpsError("invalid-argument", "userId و password مطلوبان");
-    const rlKey = userId === "superadmin" ? "system:superadmin" : (schoolId || "system") + ":" + userId; const rl = await checkRL(rlKey);
-    if (rl.locked) throw new HttpsError("resource-exhausted", `انتظر ${rl.remaining} دقيقة`);
-    if (userId === "superadmin") {
-        const SH = process.env.SUPER_ADMIN_HASH || "$argon2id$v=19$m=32768,p=1,t=3$9eHJjxLi3tItjTR/yMYOGg$rajvGTnACsfdGBGdmVSVeoxF2GALWLO+JaZqiGowy38";
-        if (!SH) throw new HttpsError("internal", "خطا في الاعدادات");
-        const v = await verifyPassword(SH, password);
-        if (!v) { await recFail(rlKey); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
-        await resetRL(rlKey);
-        const token = await admin.auth().createCustomToken("superadmin", { role: "superadmin", schoolId: "system", superadmin: true });
-        return { token, role: "superadmin", schoolId: "system", name: "Super Admin", userId: "superadmin" };
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
+const admin = require("firebase-admin");
+const argon2 = require("argon2");
+
+admin.initializeApp();
+const db = admin.firestore();
+
+const CORS = [
+  /^https:\/\/bo3li1993\.github\.io(\/.*)?$/,
+  /^http:\/\/localhost(?::\d+)?$/
+];
+const REGION = "me-central1";
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MINUTES = 15;
+
+// ===== Password Helpers =====
+async function hashPassword(p) {
+  return argon2.hash(p, {
+    type: argon2.argon2id,
+    memoryCost: 32768,
+    timeCost: 3,
+    parallelism: 1
+  });
+}
+
+async function verifyPassword(h, p) {
+  try {
+    return await argon2.verify(h, p);
+  } catch (e) {
+    return false;
+  }
+}
+
+// ===== Auth Helper =====
+async function requireAuth(req, roles) {
+  if (!req.auth || !req.auth.uid) {
+    throw new HttpsError("unauthenticated", "يجب تسجيل الدخول");
+  }
+  if (req.auth.uid === "superadmin") {
+    const sid = req.data?.schoolId || "system";
+    if (roles && !roles.includes("superadmin")) {
+      throw new HttpsError("permission-denied", "لا صلاحيات");
     }
-    if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
-    let q = db.collection("users").where("userId", "==", userId).where("schoolId", "==", schoolId);
-    const snap = await q.limit(1).get();
-    if (snap.empty) { await recFail(rlKey); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
-    const user = snap.docs[0].data();
+    return { role: "superadmin", schoolId: sid, name: "Super Admin" };
+  }
+  const u = await db.collection("users").doc(req.auth.uid).get();
+  if (!u.exists) throw new HttpsError("not-found", "المستخدم غير موجود");
+  const d = u.data();
+  if (roles && !roles.includes(d.role)) {
+    throw new HttpsError("permission-denied", "لا صلاحيات");
+  }
+  return d;
+}
 
-    const docId = snap.docs[0].id;
-    if (!user.passHash) { await recFail(rlKey); throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة"); }
-    const v = await verifyPassword(user.passHash, password);
-    if (!v) { await recFail(rlKey); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
-    if (user.status === "suspended") throw new HttpsError("permission-denied", "الحساب موقوف");
-    await resetRL(rlKey);
-
-
-
-
-
-
-
-
-
-
-    const schoolSnap = await db.collection("schools").doc(user.schoolId).get();
-    const sd = schoolSnap.exists ? schoolSnap.data() : {};
-    const token = await admin.auth().createCustomToken(docId, { role: user.role, schoolId: user.schoolId, userId: user.userId });
-    return { token, role: user.role, schoolId: user.schoolId, userId: user.userId, name: user.name||"", schoolName: sd.name||"", email: user.email||"", phone: user.phone||"", department: user.department||"", classId: user.classId||"" };
-});
-
-exports.createUser = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const au = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
-    const sid = au.role === "superadmin" ? req.data.schoolId : au.schoolId;
-    const { userId, name, password, role, email, phone, department, classId } = req.data;
-    if (!userId || !name || !password || !role || !sid) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
-    const ALLOWED_ROLES = ["admin","assistant_manager","wing_supervisor","department_head","social_worker","nurse","guard","teacher","parent"];
-    if (!ALLOWED_ROLES.includes(role)) throw new HttpsError("invalid-argument", "دور غير صالح");
-    if (role === "superadmin") throw new HttpsError("permission-denied", "لا يمكن انشاء superadmin");
-    const ROLE_RANK = { superadmin:99, admin:3, assistant_manager:2, wing_supervisor:1, department_head:1, social_worker:1, nurse:1, guard:1, teacher:1, parent:0 }; if ((ROLE_RANK[role]||0) >= (ROLE_RANK[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إنشاء دور أعلى أو مساوٍ لدورك");
-    if (password.length < 8) throw new HttpsError("invalid-argument", "كلمة المرور قصيرة");
-    const userDocId = "user_" + sid + "_" + userId;
-    const userRef = db.collection("users").doc(userDocId);
-    const passHash = await hashPassword(password);
-    await db.runTransaction(async (t) => { const existing = await t.get(userRef); if (existing.exists) throw new HttpsError("already-exists", "المستخدم موجود"); t.set(userRef, { schoolId:sid, userId, name, passHash, role, email:email||"", phone:phone||"", department:department||"", classId:classId||"", status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() }); });
-    await logAudit(sid, "create_user", au.name, `userId: ${userId}`);
-    return { success: true };
-});
-
-exports.resetUserPassword = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const au = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
-    const sid = au.role === "superadmin" ? req.data.schoolId : au.schoolId;
-    const { targetUserId, newPassword } = req.data;
-    if (!newPassword || newPassword.length < 8) throw new HttpsError("invalid-argument", "كلمة المرور قصيرة");
-    if (!targetUserId) throw new HttpsError("invalid-argument", "يجب تحديد المستخدم");
-    const s = await db.collection("users").where("userId","==",targetUserId).where("schoolId","==",sid).limit(1).get();
-    if (s.empty) throw new HttpsError("not-found", "المستخدم غير موجود");
-    const targetDoc = s.docs[0]; const targetRole = targetDoc.data().role;
-    const ROLE_RANK2 = { superadmin:99, admin:3, assistant_manager:2, wing_supervisor:1, department_head:1, social_worker:1, nurse:1, guard:1, teacher:1, parent:0 }; if (!(targetRole in ROLE_RANK2)) throw new HttpsError("permission-denied", "دور غير معروف"); if ((ROLE_RANK2[targetRole]||0) >= (ROLE_RANK2[au.role]||0) && au.role !== "superadmin") throw new HttpsError("permission-denied", "لا يمكنك إعادة تعيين كلمة مرور هذا الدور");
-    const docId = targetDoc.id;
-    if (!docId) throw new HttpsError("not-found", "المستخدم غير موجود");
-    const passHash = await hashPassword(newPassword);
-    await db.collection("users").doc(docId).update({ passHash, passwordResetRequired: true, resetAt: admin.firestore.FieldValue.serverTimestamp() });
-    await logAudit(sid, "reset_password", au.name, `userId: ${targetUserId}`);
-    return { success: true, message: "تم تحديث كلمة المرور" };
-});
-
-
-
-exports.getRegistrationClasses = onCall({ cors: CORS, region: REGION }, async (req) => {
-    if (!req.auth || !req.auth.uid) throw new HttpsError("unauthenticated", "يجب تسجيل الدخول");
-    const au2 = await requireAuth(req, ["admin","assistant_manager","superadmin","teacher"]);
-    const { schoolId: scId } = req.data; const schoolId = au2.role === "superadmin" ? scId : au2.schoolId;
-    if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
-    const snap = await db.collection("students").where("schoolId","==",schoolId).get();
-    const cls = {};
-    snap.forEach(d => { const c=d.data().classId; if(c) cls[c]=1; });
-    return { classes: Object.keys(cls).sort() };
-});
-
-exports.getRegistrationStudents = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const au3 = await requireAuth(req, ["admin","assistant_manager","superadmin","teacher"]);
-    const { schoolId: scId2, classId } = req.data;
-    const schoolId2 = au3.role === "superadmin" ? scId2 : au3.schoolId;
-    if (!schoolId2) throw new HttpsError("invalid-argument", "schoolId مطلوب");
-    let q = db.collection("students").where("schoolId","==",schoolId2);
-    if (classId) q = q.where("classId","==",classId);
-    const snap = await q.get();
-    const students = [];
-    snap.forEach(d => { const data=d.data(); students.push({name:data.name,classId:data.classId,studentId:data.studentId||d.id}); });
-    return { students };
-});
-
-exports.addStudentIds = onCall({ cors: CORS, region: REGION }, async (req) => {
-    if (!req.auth || req.auth.uid !== "superadmin") throw new HttpsError("permission-denied", "Super Admin فقط");
-
-    let updated = 0; const docs = (await db.collection("students").get()).docs.filter(d => !d.data().studentId);
-    const BATCH_SIZE = 499;
-
-    for (let i = 0; i < docs.length; i += BATCH_SIZE) { const batch = db.batch(); docs.slice(i, i+BATCH_SIZE).forEach(d => { batch.update(d.ref, { studentId:"STU-"+d.id.substring(0,8).toUpperCase() }); updated++; }); await batch.commit(); }
-    return { success: true, updated };
-});
-
-exports.createBackup = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const au = await requireAuth(req, ["admin", "superadmin"]);
-    const sid = au.role === "superadmin" ? req.data.schoolId : au.schoolId;
-    const cols = ["students","users","attendance","behavior","warnings","classes","departments"];
-    const summary = {};
-    for (const c of cols) { const s = await db.collection(c).where("schoolId","==",sid).get(); summary[c]=s.size; }
-    const ref = await db.collection("backups").add({ schoolId:sid, summary, createdBy:au.name, createdAt:admin.firestore.FieldValue.serverTimestamp() });
-    return { success:true, backupId:ref.id };
-});
-
-exports.getAuditLog = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const au = await requireAuth(req, ["admin","assistant_manager","superadmin"]);
-    const lim = Math.min(req.data?.limit||50, 200);
-    const sid = au.role === "superadmin" ? (req.data?.schoolId || null) : au.schoolId;
-    let q = db.collection("audit_log").orderBy("createdAt","desc").limit(lim); if (sid && sid !== "system") q = q.where("schoolId","==",sid);
-    const snap = await q.get();
-    return { logs: snap.docs.map(d => ({ id:d.id, action:d.data().action, performedBy:d.data().performedBy, details:d.data().details||"", createdAt:d.data().createdAt?.toDate?.()?.toISOString()||null })) };
-});
-
-exports.generateReportNow = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const au = await requireAuth(req, ["admin","assistant_manager","superadmin"]);
-    const sid = au.role==="superadmin" ? req.data.schoolId : au.schoolId;
-    const { fromDate, toDate } = req.data;
-    if (!sid||!fromDate||!toDate) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
-    const [a,b,c] = await Promise.all([
-        db.collection("attendance").where("schoolId","==",sid).where("status","==","absent").where("date",">=",fromDate).where("date","<=",toDate).get(),
-        db.collection("behavior").where("schoolId","==",sid).where("date",">=",fromDate).where("date","<=",toDate).get(),
-        db.collection("warnings").where("schoolId","==",sid).where("date",">=",fromDate).where("date","<=",toDate).get()
-    ]);
-    return { absences:a.size, behavior:b.size, warnings:c.size };
-});
-
-exports.scheduledDailyBackup = onSchedule({ schedule:"0 2 * * *", region:REGION, timeZone:"Asia/Kuwait" }, async () => {
-    const snap = await db.collection("schools").get();
-    for (const s of snap.docs) { try { await db.collection("backups").add({ schoolId:s.id, type:"scheduled", createdAt:admin.firestore.FieldValue.serverTimestamp() }); } catch(e){} }
-    return null;
-});
-
-
-exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, phone, studentCivilId } = req.data;
-    if (!schoolId || !phone || !studentCivilId) throw new HttpsError("invalid-argument", "schoolId والهاتف والرقم المدني للطالب مطلوبة");
-    const otpSendRef = db.collection("otp_rate_limits").doc("send_"+schoolId+"_"+phone); const otpSendDoc = await otpSendRef.get(); if (otpSendDoc.exists) { const d = otpSendDoc.data(); const minsPassed = (Date.now() - (d.lastSentAt?.toMillis?.() || 0)) / 60000; if (d.sendCount >= 5 && minsPassed < 60) throw new HttpsError("resource-exhausted", "تجاوزت الحد المسموح، انتظر ساعة"); if (minsPassed < 1) throw new HttpsError("resource-exhausted", "انتظر دقيقة قبل إرسال رمز جديد"); }
-    const lastOtp = await db.collection("otp_requests").doc(phone).get(); if (lastOtp.exists && !lastOtp.data().used) { const created = lastOtp.data().createdAt?.toMillis?.() || 0; if (Date.now() - created < 60000) throw new HttpsError("resource-exhausted", "انتظر دقيقة قبل طلب رمز جديد"); }
-    const ss = await db.collection("students").where("schoolId","==",schoolId).where("civilId","==",studentCivilId).limit(1).get();
-    if (ss.empty) { await recFail("otp_student_"+phone); throw new HttpsError("failed-precondition", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); }
-    const st = ss.docs[0].data(); const regPhone = st.parentPhone || ""; if (!regPhone) { throw new HttpsError("failed-precondition", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); } if (regPhone !== phone) { await recFail("otp_"+phone); throw new HttpsError("failed-precondition", "تعذر إتمام العملية، تحقق من البيانات المدخلة"); }
-    const otp = require("crypto").randomInt(100000, 1000000).toString(); const expires = Date.now() + 10*60*1000;
-    const otpHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-    await db.collection("otp_requests").doc(phone).set({ otpHash, expires, schoolId, studentDocId: ss.docs[0].id, studentId: ss.docs[0].data().studentId || ss.docs[0].id, studentCivilId: studentCivilId, used: false, createdAt: admin.firestore.FieldValue.serverTimestamp() });
-    await otpSendRef.set({ lastSentAt: admin.firestore.FieldValue.serverTimestamp(), sendCount: admin.firestore.FieldValue.increment(1) }, { merge: true });
-    return { success: true, message: "تم إرسال رمز التحقق" };
-});
-exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, civilId, phone, password, otp } = req.data || {};
-    if (!schoolId || !civilId || !phone || !password || !otp || password.length < 8) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
-    const rl2 = await checkRL("otp_verify_"+phone); if (rl2.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl2.remaining + " دقيقة");
-    const parentDocId = "parent_" + schoolId + "_" + civilId;
-    const otpRef = db.collection("otp_requests").doc(phone);
-    const parentRef = db.collection("users").doc(parentDocId);
-    const passHash = await hashPassword(password);
-    let otpData;
-    await db.runTransaction(async (t) => {
-        const otpDoc = await t.get(otpRef);
-        if (!otpDoc.exists) throw new HttpsError("not-found", "لم يتم طلب رمز تحقق");
-        otpData = otpDoc.data();
-        if (!otpData.expires || Date.now() > otpData.expires) { t.delete(otpRef); throw new HttpsError("deadline-exceeded", "انتهت صلاحية رمز التحقق"); }
-        if (otpData.used === true) throw new HttpsError("already-exists", "تم استخدام هذا الرمز");
-        const inputHash = require("crypto").createHash(["sh","a2","56"].join("")).update(otp).digest("hex");
-        if (otpData.otpHash !== inputHash) { const attempts = (otpData.attempts||0)+1; if (attempts>=5) { t.delete(otpRef); throw new HttpsError("unauthenticated", "تم تجاوز الحد المسموح"); } t.update(otpRef, {attempts}); throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح"); }
-        if (otpData.schoolId !== schoolId) throw new HttpsError("permission-denied", "بيانات غير متطابقة");
-        if (otpData.studentCivilId && otpData.studentCivilId !== civilId) throw new HttpsError("permission-denied", "الرقم المدني غير مطابق");
-        const parentSnap = await t.get(parentRef);
-        if (parentSnap.exists) throw new HttpsError("already-exists", "الحساب موجود");
-        t.delete(otpRef);
-        t.set(parentRef, { schoolId, userId:"P-"+civilId, civilId, phone, passHash, role:"parent", studentId:otpData.studentId||otpData.studentDocId||"", childIds:[otpData.studentId||otpData.studentDocId||""], status:"active", createdAt:admin.firestore.FieldValue.serverTimestamp() });
+// ===== Audit Log =====
+async function logAudit(s, a, p, d) {
+  try {
+    await db.collection("audit_log").add({
+      schoolId: s,
+      action: a,
+      performedBy: p,
+      details: d || "",
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    await resetRL("otp_verify_"+phone);
-    return { success: true, userId:"P-"+civilId };
+  } catch (e) {
+    console.error("AUDIT_FAIL", a, s, e.message);
+  }
+}
+
+// ===== Rate Limiting =====
+async function checkRL(uid) {
+  const r = db.collection("login_attempts").doc("user_" + uid);
+  const s = await r.get();
+  if (s.exists) {
+    const d = s.data();
+    const m = (Date.now() - (d.lastAttempt?.toMillis?.() || 0)) / 60000;
+    if (d.count >= MAX_ATTEMPTS && m < LOCKOUT_MINUTES) {
+      return { locked: true, remaining: Math.ceil(LOCKOUT_MINUTES - m) };
+    }
+  }
+  return { locked: false };
+}
+
+async function recFail(uid) {
+  await db.collection("login_attempts").doc("user_" + uid).set(
+    {
+      count: admin.firestore.FieldValue.increment(1),
+      lastAttempt: admin.firestore.FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
+}
+
+async function resetRL(uid) {
+  await db.collection("login_attempts").doc("user_" + uid).delete().catch(() => {});
+}
+
+// ===== loginUser =====
+exports.loginUser = onCall({ cors: CORS, region: REGION }, async (req) => {
+  const { schoolId, userId, password } = req.data;
+
+  if (!userId || !password) {
+    throw new HttpsError("invalid-argument", "userId و password مطلوبان");
+  }
+
+  const rlKey = userId === "superadmin"
+    ? "system:superadmin"
+    : (schoolId || "system") + ":" + userId;
+
+  const rl = await checkRL(rlKey);
+  if (rl.locked) {
+    throw new HttpsError("resource-exhausted", `انتظر ${rl.remaining} دقيقة`);
+  }
+
+  // Superadmin
+  if (userId === "superadmin") {
+    const SH = process.env.SUPER_ADMIN_HASH || "";
+    if (!SH) throw new HttpsError("internal", "خطأ في الإعدادات");
+    const v = await verifyPassword(SH, password);
+    if (!v) {
+      await recFail(rlKey);
+      throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة");
+    }
+    await resetRL(rlKey);
+    const token = await admin.auth().createCustomToken("superadmin", {
+      role: "superadmin",
+      schoolId: "system",
+      superadmin: true
+    });
+    return { token, role: "superadmin", schoolId: "system", name: "Super Admin", userId: "superadmin" };
+  }
+
+  if (!schoolId) {
+    throw new HttpsError("invalid-argument", "schoolId مطلوب");
+  }
+
+  const snap = await db.collection("users")
+    .where("userId", "==", userId)
+    .where("schoolId", "==", schoolId)
+    .limit(1)
+    .get();
+
+  if (snap.empty) {
+    await recFail(rlKey);
+    throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة");
+  }
+
+  const userDoc = snap.docs[0];
+  const user = userDoc.data();
+  const docId = userDoc.id;
+
+  if (!user.passHash) {
+    await recFail(rlKey);
+    throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة");
+  }
+
+  const v = await verifyPassword(user.passHash, password);
+  if (!v) {
+    await recFail(rlKey);
+    throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة");
+  }
+
+  if (user.status === "suspended") {
+    throw new HttpsError("permission-denied", "الحساب موقوف");
+  }
+
+  await resetRL(rlKey);
+
+  const token = await admin.auth().createCustomToken(docId, {
+    role: user.role,
+    schoolId: user.schoolId,
+    userId: user.userId
+  });
+
+  await logAudit(schoolId, "LOGIN", userId, `دخول من ${user.role}`);
+
+  return {
+    token,
+    role: user.role,
+    schoolId: user.schoolId,
+    userId: user.userId,
+    name: user.name || "",
+    classId: user.classId || "",
+    docId
+  };
 });
 
-
+// ===== loginParent =====
 exports.loginParent = onCall({ cors: CORS, region: REGION }, async (req) => {
-    const { schoolId, civilId, password } = req.data;
-    if (!schoolId || !civilId || !password) throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
-    const rl = await checkRL("parent_"+civilId);
-    if (rl.locked) throw new HttpsError("resource-exhausted", "انتظر " + rl.remaining + " دقيقة");
-    const snap = await db.collection("users").where("schoolId","==",schoolId).where("civilId","==",civilId).where("role","==","parent").limit(1).get();
-    if (snap.empty) { await recFail("parent_"+civilId); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
-    const user = snap.docs[0].data();
-    const v = await verifyPassword(user.passHash, password);
-    if (!v) { await recFail("parent_"+civilId); throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة"); }
-    await resetRL("parent_"+civilId);
-    const token = await admin.auth().createCustomToken(snap.docs[0].id, { role:"parent", schoolId:user.schoolId, userId:user.userId });
-    const sd = await db.collection("schools").doc(user.schoolId).get();
-    return { token, role:"parent", schoolId:user.schoolId, userId:user.userId, studentName:user.studentName||"", studentId:user.studentId||"", classId:user.classId||"", schoolName:sd.exists?sd.data().name:"" };
+  const { schoolId, phone, password } = req.data;
+  if (!schoolId || !phone || !password) {
+    throw new HttpsError("invalid-argument", "schoolId و phone و password مطلوبة");
+  }
+
+  const rlKey = schoolId + ":parent:" + phone;
+  const rl = await checkRL(rlKey);
+  if (rl.locked) {
+    throw new HttpsError("resource-exhausted", `انتظر ${rl.remaining} دقيقة`);
+  }
+
+  const snap = await db.collection("parents")
+    .where("schoolId", "==", schoolId)
+    .where("phone", "==", phone)
+    .limit(1)
+    .get();
+
+  if (snap.empty) {
+    await recFail(rlKey);
+    throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة");
+  }
+
+  const parentDoc = snap.docs[0];
+  const parent = parentDoc.data();
+
+  if (!parent.passHash) {
+    await recFail(rlKey);
+    throw new HttpsError("unauthenticated", "كلمة المرور غير صحيحة");
+  }
+
+  const v = await verifyPassword(parent.passHash, password);
+  if (!v) {
+    await recFail(rlKey);
+    throw new HttpsError("unauthenticated", "بيانات الدخول غير صحيحة");
+  }
+
+  await resetRL(rlKey);
+
+  const token = await admin.auth().createCustomToken(parentDoc.id, {
+    role: "parent",
+    schoolId,
+    phone
+  });
+
+  return {
+    token,
+    role: "parent",
+    schoolId,
+    phone,
+    name: parent.name || "",
+    studentIds: parent.studentIds || []
+  };
 });
 
-// rebuild-marker-20260822131022
+// ===== createUser =====
+exports.createUser = onCall({ cors: CORS, region: REGION }, async (req) => {
+  const caller = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
+
+  const { schoolId, userId, name, role, password, phone, classId, department } = req.data;
+  if (!schoolId || !userId || !name || !role || !password) {
+    throw new HttpsError("invalid-argument", "الحقول المطلوبة ناقصة");
+  }
+
+  if (caller.role !== "superadmin" && caller.schoolId !== schoolId) {
+    throw new HttpsError("permission-denied", "لا صلاحية لإنشاء مستخدم في مدرسة أخرى");
+  }
+
+  const existing = await db.collection("users")
+    .where("userId", "==", userId)
+    .where("schoolId", "==", schoolId)
+    .limit(1)
+    .get();
+
+  if (!existing.empty) {
+    throw new HttpsError("already-exists", "اسم المستخدم موجود مسبقاً");
+  }
+
+  const passHash = await hashPassword(password);
+
+  const ref = await db.collection("users").add({
+    schoolId, userId, name, role,
+    phone: phone || "",
+    classId: classId || "",
+    department: department || "",
+    passHash,
+    status: "active",
+    createdAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  await logAudit(schoolId, "CREATE_USER", caller.userId || "superadmin", `إنشاء ${role}: ${userId}`);
+
+  return { success: true, docId: ref.id };
+});
+
+// ===== resetUserPassword =====
+exports.resetUserPassword = onCall({ cors: CORS, region: REGION }, async (req) => {
+  const caller = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
+
+  const { targetUserDocId, newPassword } = req.data;
+  if (!targetUserDocId || !newPassword) {
+    throw new HttpsError("invalid-argument", "targetUserDocId و newPassword مطلوبان");
+  }
+
+  const userDoc = await db.collection("users").doc(targetUserDocId).get();
+  if (!userDoc.exists) {
+    throw new HttpsError("not-found", "المستخدم غير موجود");
+  }
+
+  const userData = userDoc.data();
+  if (caller.role !== "superadmin" && caller.schoolId !== userData.schoolId) {
+    throw new HttpsError("permission-denied", "لا صلاحية");
+  }
+
+  const passHash = await hashPassword(newPassword);
+  await db.collection("users").doc(targetUserDocId).update({ passHash });
+
+  await logAudit(userData.schoolId, "RESET_PASSWORD", caller.userId || "superadmin", `تغيير كلمة مرور: ${userData.userId}`);
+
+  return { success: true };
+});
+
+// ===== sendParentOTP =====
+exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
+  const { schoolId, studentCivilId, parentPhone } = req.data;
+  if (!schoolId || !studentCivilId || !parentPhone) {
+    throw new HttpsError("invalid-argument", "schoolId و studentCivilId و parentPhone مطلوبة");
+  }
+
+  const snap = await db.collection("students")
+    .where("schoolId", "==", schoolId)
+    .where("civilId", "==", studentCivilId)
+    .limit(1)
+    .get();
+
+  if (snap.empty) {
+    throw new HttpsError("not-found", "الطالب غير موجود");
+  }
+
+  const studentDoc = snap.docs[0];
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+  await db.collection("otp_requests").doc(schoolId + "_" + studentCivilId).set({
+    schoolId,
+    studentDocId: studentDoc.id,
+    studentCivilId,
+    parentPhone,
+    otp,
+    expiresAt: admin.firestore.Timestamp.fromDate(expiresAt),
+    createdAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  console.log(`OTP for ${parentPhone}: ${otp}`);
+
+  return { success: true, message: "تم إرسال رمز التحقق" };
+});
+
+// ===== verifyOTPAndRegister =====
+exports.verifyOTPAndRegister = onCall({ cors: CORS, region: REGION }, async (req) => {
+  const { schoolId, studentCivilId, parentPhone, otp, password } = req.data;
+  if (!schoolId || !studentCivilId || !parentPhone || !otp || !password) {
+    throw new HttpsError("invalid-argument", "جميع الحقول مطلوبة");
+  }
+
+  const otpRef = db.collection("otp_requests").doc(schoolId + "_" + studentCivilId);
+
+  return await db.runTransaction(async (t) => {
+    const otpDoc = await t.get(otpRef);
+    if (!otpDoc.exists) throw new HttpsError("not-found", "لم يتم طلب OTP");
+
+    const data = otpDoc.data();
+    if (data.otp !== otp) throw new HttpsError("unauthenticated", "رمز التحقق غير صحيح");
+    if (data.expiresAt.toDate() < new Date()) throw new HttpsError("deadline-exceeded", "انتهت صلاحية الرمز");
+    if (data.parentPhone !== parentPhone) throw new HttpsError("permission-denied", "رقم الهاتف غير مطابق");
+
+    const passHash = await hashPassword(password);
+
+    const parentRef = db.collection("parents").doc();
+    t.set(parentRef, {
+      schoolId,
+      phone: parentPhone,
+      studentDocId: data.studentDocId,
+      studentCivilId,
+      passHash,
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    t.delete(otpRef);
+
+    return { success: true, parentId: parentRef.id };
+  });
+});
+
+// ===== getRegistrationClasses =====
+exports.getRegistrationClasses = onCall({ cors: CORS, region: REGION }, async (req) => {
+  await requireAuth(req, ["admin", "assistant_manager", "superadmin", "wing_supervisor"]);
+  const { schoolId } = req.data;
+  if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
+
+  const snap = await db.collection("classes")
+    .where("schoolId", "==", schoolId)
+    .get();
+
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+});
+
+// ===== getRegistrationStudents =====
+exports.getRegistrationStudents = onCall({ cors: CORS, region: REGION }, async (req) => {
+  await requireAuth(req, ["admin", "assistant_manager", "superadmin", "wing_supervisor", "teacher"]);
+  const { schoolId, classId } = req.data;
+  if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
+
+  let q = db.collection("students").where("schoolId", "==", schoolId);
+  if (classId) q = q.where("classId", "==", classId);
+
+  const snap = await q.get();
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+});
+
+// ===== addStudentIds =====
+exports.addStudentIds = onCall({ cors: CORS, region: REGION }, async (req) => {
+  await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
+  const { schoolId, students } = req.data;
+  if (!schoolId || !Array.isArray(students)) {
+    throw new HttpsError("invalid-argument", "schoolId و students مطلوبان");
+  }
+
+  const batch = db.batch();
+  students.slice(0, 499).forEach(s => {
+    const ref = db.collection("students").doc(s.id || db.collection("students").doc().id);
+    batch.set(ref, { schoolId, ...s }, { merge: true });
+  });
+  await batch.commit();
+
+  return { success: true, count: students.length };
+});
+
+// ===== createBackup =====
+exports.createBackup = onCall({ cors: CORS, region: REGION }, async (req) => {
+  await requireAuth(req, ["admin", "superadmin"]);
+  const { schoolId } = req.data;
+  if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
+
+  const collections = ["users", "students", "classes", "attendance"];
+  const backup = {};
+
+  for (const col of collections) {
+    const snap = await db.collection(col).where("schoolId", "==", schoolId).get();
+    backup[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+
+  const ref = await db.collection("backups").add({
+    schoolId,
+    data: JSON.stringify(backup),
+    createdAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  return { success: true, backupId: ref.id };
+});
+
+// ===== getAuditLog =====
+exports.getAuditLog = onCall({ cors: CORS, region: REGION }, async (req) => {
+  await requireAuth(req, ["admin", "superadmin"]);
+  const { schoolId, limit: lim = 50 } = req.data;
+  if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
+
+  const snap = await db.collection("audit_log")
+    .where("schoolId", "==", schoolId)
+    .orderBy("createdAt", "desc")
+    .limit(lim)
+    .get();
+
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+});
+
+// ===== generateReportNow =====
+exports.generateReportNow = onCall({ cors: CORS, region: REGION }, async (req) => {
+  await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
+  const { schoolId, type } = req.data;
+  if (!schoolId) throw new HttpsError("invalid-argument", "schoolId مطلوب");
+
+  const snap = await db.collection("attendance")
+    .where("schoolId", "==", schoolId)
+    .orderBy("date", "desc")
+    .limit(500)
+    .get();
+
+  const report = {
+    schoolId, type, generatedAt: new Date().toISOString(),
+    records: snap.docs.map(d => d.data())
+  };
+
+  const ref = await db.collection("reports").add({
+    schoolId, type, data: JSON.stringify(report),
+    createdAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  return { success: true, reportId: ref.id };
+});
+
+// ===== scheduledDailyBackup =====
+exports.scheduledDailyBackup = onSchedule(
+  { schedule: "0 1 * * *", region: REGION, timeZone: "Asia/Kuwait" },
+  async () => {
+    const schoolsSnap = await db.collection("schools")
+      .where("status", "==", "active")
+      .get();
+
+    for (const schoolDoc of schoolsSnap.docs) {
+      const schoolId = schoolDoc.id;
+      try {
+        const collections = ["users", "students", "classes", "attendance"];
+        const backup = {};
+        for (const col of collections) {
+          const snap = await db.collection(col).where("schoolId", "==", schoolId).get();
+          backup[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        }
+        await db.collection("backups").add({
+          schoolId, automatic: true,
+          data: JSON.stringify(backup),
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (e) {
+        console.error("BACKUP_FAIL", schoolId, e.message);
+      }
+    }
+  }
+);
