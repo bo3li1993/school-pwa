@@ -293,7 +293,18 @@ window.ManzoumaReport={
 };
 
 // init
-window.switchTab('tab-index').then(()=>{document.getElementById('splash')?.classList.add('hide')}).catch(()=>{document.getElementById('splash')?.classList.add('hide')});
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { auth } from './js/firebase-config.js';
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        window.switchTab('tab-index')
+            .then(() => { document.getElementById('splash')?.classList.add('hide'); })
+            .catch(() => { document.getElementById('splash')?.classList.add('hide'); });
+    } else {
+        window.location.replace('index.html');
+    }
+});
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
