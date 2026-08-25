@@ -2,676 +2,301 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة المدير - متوسطة سالم الحسينان</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#f5f5f5;color:#333;line-height:1.6}
-.header{background:#1a1a2e;color:#fff;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
-.header h1{font-size:18px}
-.header-right{display:flex;gap:12px;align-items:center;font-size:14px}
-.tabs{background:#fff;display:flex;gap:4px;padding:8px;overflow-x:auto;border-bottom:1px solid #ddd}
-.tab{padding:8px 16px;border:none;background:transparent;cursor:pointer;font-size:14px;white-space:nowrap;border-radius:4px;transition:background .2s}
-.tab:hover{background:#f5f5f5}
-.tab.active{background:#1a1a2e;color:#fff}
-.content{max-width:1200px;margin:0 auto;padding:1.5rem}
-.card{background:#fff;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
-.stat-card{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:1.5rem;border-radius:8px;text-align:center}
-.stat-card h3{font-size:32px;margin-bottom:8px}
-.stat-card p{font-size:14px;opacity:.9}
-.dept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
-.dept-card{background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s}
-.dept-card:hover{background:#e9ecef;transform:translateY(-2px)}
-.dept-card .icon{font-size:48px;margin-bottom:12px}
-.dept-card h3{font-size:16px;margin-bottom:4px}
-.dept-card p{font-size:13px;color:#666}
-button{background:#1a1a2e;color:#fff;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;font-size:14px}
-button:hover{background:#2a2a3e}
-button.secondary{background:#fff;color:#333;border:1px solid #ddd}
-input,select,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;margin-bottom:12px}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
-.modal-content{background:#fff;border-radius:8px;padding:2rem;max-width:800px;width:90%;max-height:90vh;overflow-y:auto}
-.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:1rem}
-table{width:100%;border-collapse:collapse;font-size:14px}
-table th{background:#f5f5f5;padding:12px;text-align:right;border-bottom:2px solid #ddd}
-table td{padding:12px;border-bottom:1px solid #eee}
-.badge{display:inline-block;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:500}
-.badge.success{background:#d4edda;color:#155724}
-.badge.warning{background:#fff3cd;color:#856404}
-.badge.danger{background:#f8d7da;color:#721c24}
-.hidden{display:none!important}
-.back-btn{background:#6c757d;margin-bottom:1rem}
-.score-high{color:#28a745;font-weight:500}
-.score-mid{color:#ffc107;font-weight:500}
-.score-low{color:#dc3545;font-weight:500}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>لوحة الإدارة — المنظومة الرقمية</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b2545">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// دوال عامة — قبل HTML
+function toggleSec(t){var b=t.nextElementSibling;if(!b)return;if(!b.classList.contains('closed')){b.style.maxHeight=b.scrollHeight+'px';setTimeout(function(){b.style.maxHeight='0';b.classList.add('closed');t.classList.add('closed')},10)}else{b.classList.remove('closed');t.classList.remove('closed');b.style.maxHeight=b.scrollHeight+'px';setTimeout(function(){if(!b.classList.contains('closed'))b.style.maxHeight='none'},300)}}
+window.toggleDarkMode=function(){var d=document.body.classList.toggle('dark-mode');try{localStorage.setItem('hs_dark_mode',d?'1':'0')}catch(e){}var i=document.getElementById('dark-icon'),l=document.getElementById('dark-label');if(i)i.textContent=d?'🌙':'☀️';if(l)l.textContent=d?'ليلي':'نهاري'};
+try{if(localStorage.getItem('hs_dark_mode')==='1')document.body.classList.add('dark-mode')}catch(e){}
+setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.add('hide')},3000);
+</script>
 </head>
 <body>
 
-<div class="header">
-  <div>
-    <h1>أهلاً، <span id="user-name">المدير</span></h1>
-    <p style="font-size:12px;opacity:.8">متوسطة سالم الحسينان</p>
-  </div>
-  <div class="header-right">
-    <span id="current-date"></span>
-    <button onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">🖨️</button>
-    <button onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">خروج</button>
+<div class="splash" id="splash">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+    <div class="splash-badge">🏫</div>
+    <h1 style="color:#fff;font-size:16px;font-weight:900">المنظومة الرقمية</h1>
+    <p id="splash-school" style="color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600">جاري التحميل...</p>
   </div>
 </div>
 
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('today')">📊 اليوم</button>
-  <button class="tab" onclick="switchTab('classes')">🏫 الفصول</button>
-  <button class="tab" onclick="switchTab('absent')">🔴 الغائبون</button>
-  <button class="tab" onclick="switchTab('repeat')">⚠️ متكرر</button>
-  <button class="tab" onclick="switchTab('student')">👤 طالب</button>
-  <button class="tab" onclick="switchTab('date')">📅 تاريخ</button>
-  <button class="tab" onclick="switchTab('visits')">🏫 الزيارات</button>
-  <button class="tab" onclick="switchTab('users')">👥 المستخدمون</button>
-</div>
+<div id="sidebar-overlay" onclick="document.getElementById('sidebar').classList.remove('open');this.classList.remove('show')" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35"></div>
 
-<div class="content">
-  <!-- اليوم -->
-  <div id="tab-today">
-    <div class="stats-grid" id="stats-cards"></div>
-    <div class="card">
-      <h2 style="margin-bottom:1rem">حالة تسجيل الفصول</h2>
-      <div id="class-status"></div>
-    </div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-head"><h2>المنظومة الرقمية</h2><p id="lbl-school-name">لوحة الإدارة</p></div>
+
+  <div class="menu-item active" data-tab="tab-index" onclick="window.switchTab('tab-index')"><i class="bi bi-speedometer2"></i> الرئيسية</div>
+  <div class="menu-divider"></div>
+
+  <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-people-fill" style="color:var(--sky);margin-left:6px"></i>الطلاب</span><i class="bi bi-chevron-down sec-chev"></i></div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person-lines-fill"></i> ملف الطالب</div>
+    <div class="menu-item" data-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-person-gear"></i> إدارة الطلاب</div>
+    <div class="menu-item" data-tab="tab-classes" onclick="window.switchTab('tab-classes')"><i class="bi bi-grid-3x3"></i> الفصول والتوزيع</div>
+    <div class="menu-item" data-tab="tab-import" onclick="window.switchTab('tab-import')"><i class="bi bi-upload"></i> رفع بيانات المدرسة</div>
+    <div class="menu-item" data-tab="tab-promotion" onclick="window.switchTab('tab-promotion')"><i class="bi bi-arrow-up-circle"></i> الترقية السنوية</div>
   </div>
+  <div class="menu-divider"></div>
 
-  <!-- الفصول -->
-  <div id="tab-classes" class="hidden">
-    <div class="card">
-      <h2 style="margin-bottom:1rem">اختر الفصل</h2>
-      <div id="classes-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px"></div>
-    </div>
-    <div id="class-detail" class="hidden"></div>
+  <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-clipboard-check-fill" style="color:#16a34a;margin-left:6px"></i>الحضور والسلوك</span><i class="bi bi-chevron-down sec-chev"></i></div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-person-check"></i> تسجيل الغياب</div>
+    <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-file-text"></i> التقرير اليومي</div>
+    <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-circle"></i> الغياب المتكرر</div>
+    <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
+    <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
+    <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
+    <div class="menu-item" data-tab="tab-warnings" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill"></i> الإنذارات</div>
   </div>
+  <div class="menu-divider"></div>
 
-  <!-- الغائبون -->
-  <div id="tab-absent" class="hidden">
-    <div class="card">
-      <h2 style="margin-bottom:1rem">🔴 الغائبون اليوم</h2>
-      <div id="absent-list"></div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-bar-chart-fill" style="color:var(--gold);margin-left:6px"></i>التقارير</span><i class="bi bi-chevron-down sec-chev"></i></div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-graph-up"></i> التقارير الأسبوعية</div>
+    <div class="menu-item" data-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-calendar-month"></i> التقارير الشهرية</div>
   </div>
+  <div class="menu-divider"></div>
 
-  <!-- غياب متكرر -->
-  <div id="tab-repeat" class="hidden">
-    <div class="card">
-      <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
-      <div id="repeat-list"></div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-person-workspace" style="color:#7c3aed;margin-left:6px"></i>المعلمون</span><i class="bi bi-chevron-down sec-chev"></i></div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-teachers" onclick="window.switchTab('tab-teachers')"><i class="bi bi-person-badge"></i> دليل المعلمين</div>
+    <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> الزيارات الفنية</div>
+    <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-eye"></i> زيارات المدير</div>
+    <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-binoculars"></i> جولة الجناح</div>
   </div>
+  <div class="menu-divider"></div>
 
-  <!-- بحث طالب -->
-  <div id="tab-student" class="hidden">
-    <div class="card">
-      <h2 style="margin-bottom:1rem">👤 بحث عن طالب</h2>
-      <div class="form-grid">
-        <select id="search-class" onchange="loadStudentNames()"><option value="">اختر الفصل</option></select>
-        <select id="search-student"><option value="">اختر الطالب</option></select>
-      </div>
-      <button onclick="searchStudent()">بحث</button>
-      <div id="student-result" style="margin-top:1.5rem"></div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-megaphone-fill" style="color:#0891b2;margin-left:6px"></i>التواصل</span><i class="bi bi-chevron-down sec-chev"></i></div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i> المراسلات</div>
+    <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
+    <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-star"></i> الحوافز</div>
   </div>
+  <div class="menu-divider"></div>
 
-  <!-- بحث بتاريخ -->
-  <div id="tab-date" class="hidden">
-    <div class="card">
-      <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
-      <div class="form-grid">
-        <select id="date-class"><option value="">اختر الفصل</option></select>
-        <input type="date" id="date-search">
-      </div>
-      <button onclick="searchByDate()">بحث</button>
-      <div id="date-result" style="margin-top:1.5rem"></div>
-    </div>
-  </div>
-
-  <!-- الزيارات -->
-  <div id="tab-visits" class="hidden">
-    <!-- قائمة الأقسام -->
-    <div id="dept-list" class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-        <h2>🏫 الأقسام الدراسية</h2>
-        <button onclick="openNewVisit()" style="background:#28a745">+ زيارة جديدة</button>
-      </div>
-      <div class="dept-grid">
-        <div class="dept-card" onclick="selectDept('اللغة العربية')">
-          <div class="icon">📝</div>
-          <h3>اللغة العربية</h3>
-          <p id="arabic-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('الرياضيات')">
-          <div class="icon">🔢</div>
-          <h3>الرياضيات</h3>
-          <p id="math-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('العلوم')">
-          <div class="icon">🔬</div>
-          <h3>العلوم</h3>
-          <p id="science-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('التربية الإسلامية')">
-          <div class="icon">☪️</div>
-          <h3>التربية الإسلامية</h3>
-          <p id="islamic-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('اللغة الإنجليزية')">
-          <div class="icon">🇬🇧</div>
-          <h3>اللغة الإنجليزية</h3>
-          <p id="english-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('الاجتماعيات')">
-          <div class="icon">🌍</div>
-          <h3>الاجتماعيات</h3>
-          <p id="social-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('التربية البدنية')">
-          <div class="icon">⚽</div>
-          <h3>التربية البدنية</h3>
-          <p id="pe-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('الحاسوب')">
-          <div class="icon">💻</div>
-          <h3>الحاسوب</h3>
-          <p id="computer-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('الكهرباء')">
-          <div class="icon">⚡</div>
-          <h3>الكهرباء</h3>
-          <p id="electric-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('الديكور')">
-          <div class="icon">🎨</div>
-          <h3>الديكور</h3>
-          <p id="decor-count">0 زيارة</p>
-        </div>
-        <div class="dept-card" onclick="selectDept('الفنية')">
-          <div class="icon">🖌️</div>
-          <h3>الفنية</h3>
-          <p id="art-count">0 زيارة</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- قائمة زيارات القسم -->
-    <div id="dept-visits" class="hidden">
-      <button class="back-btn" onclick="backToDepts()">← رجوع للأقسام</button>
-      <div class="card">
-        <h2 style="margin-bottom:1rem">زيارات قسم <span id="selected-dept-name"></span></h2>
-        <div id="visits-list"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- المستخدمون -->
-  <div id="tab-users" class="hidden">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-        <h2>👥 إدارة المستخدمين</h2>
-        <button onclick="openAddUser()">+ إضافة مستخدم</button>
-      </div>
-      <div id="users-list"></div>
-    </div>
+  <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-gear-fill" style="color:var(--mid);margin-left:6px"></i>الإدارة</span><i class="bi bi-chevron-down sec-chev"></i></div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people"></i> المستخدمون</div>
+    <div class="menu-item" data-tab="tab-audit" onclick="window.switchTab('tab-audit')"><i class="bi bi-clock-history"></i> سجل العمليات</div>
+    <div class="menu-item" data-tab="tab-backup" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-up"></i> النسخ الاحتياطية</div>
+    <div class="menu-item" data-tab="tab-departments" onclick="window.switchTab('tab-departments')"><i class="bi bi-building"></i> أقسام المدرسة</div>
+    <div class="menu-item" data-tab="tab-school-settings" onclick="window.switchTab('tab-school-settings')"><i class="bi bi-palette-fill"></i> صفحة الدخول</div>
+    <div class="menu-item" data-tab="tab-myaccount" onclick="window.switchTab('tab-myaccount')"><i class="bi bi-person-circle"></i> حسابي</div>
   </div>
 </div>
 
-<!-- نموذج زيارة جديدة -->
-<div id="visit-form-modal" class="modal">
-  <div class="modal-content">
-    <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
-    
-    <select id="visit-dept" onchange="loadVisitCriteria()">
-      <option value="">اختر القسم</option>
-      <option value="اللغة العربية">اللغة العربية</option>
-      <option value="الرياضيات">الرياضيات</option>
-      <option value="العلوم">العلوم</option>
-      <option value="التربية الإسلامية">التربية الإسلامية</option>
-      <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
-      <option value="الاجتماعيات">الاجتماعيات</option>
-      <option value="التربية البدنية">التربية البدنية</option>
-      <option value="الحاسوب">الحاسوب</option>
-      <option value="الكهرباء">الكهرباء</option>
-      <option value="الديكور">الديكور</option>
-      <option value="الفنية">الفنية</option>
-    </select>
-    
-    <div class="form-grid">
-      <input type="text" id="visit-teacher" placeholder="اسم المعلم">
-      <input type="text" id="visit-subject" placeholder="المادة">
-      <input type="text" id="visit-class" placeholder="الصف (مثال: 9/1)">
-      <input type="number" id="visit-period" placeholder="الحصة" min="1" max="7">
-      <input type="date" id="visit-date">
+<div class="main">
+  <div class="topbar">
+    <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').style.display=document.getElementById('sidebar').classList.contains('open')?'block':'none'"><i class="bi bi-list"></i></button>
+    <div class="topbar-info"><span id="lbl-admin-name">جاري التحميل...</span></div>
+    <button class="dark-toggle" onclick="window.toggleDarkMode()"><span id="dark-icon">☀️</span><span id="dark-label" style="font-size:11px;font-weight:800">نهاري</span></button>
+    <button class="logout-btn" onclick="window.doLogout()"><i class="bi bi-box-arrow-left"></i> خروج</button>
+  </div>
+
+  <div class="content" id="main-content">
+    <div id="tab-index" class="tab-content active"><div class="loading-box">⏳</div></div>
+    <div id="tab-student" class="tab-content"></div>
+    <div id="tab-students-manage" class="tab-content"></div>
+    <div id="tab-classes" class="tab-content"></div>
+    <div id="tab-import" class="tab-content"></div>
+    <div id="tab-promotion" class="tab-content"></div>
+    <div id="tab-attendance" class="tab-content"></div>
+    <div id="tab-daily-report" class="tab-content"></div>
+    <div id="tab-date" class="tab-content"></div>
+    <div id="tab-repeat" class="tab-content"></div>
+    <div id="tab-behavior" class="tab-content"></div>
+    <div id="tab-gatepass" class="tab-content"></div>
+    <div id="tab-clinic" class="tab-content"></div>
+    <div id="tab-warnings" class="tab-content"></div>
+    <div id="tab-reports" class="tab-content"></div>
+    <div id="tab-monthly" class="tab-content"></div>
+    <div id="tab-teachers" class="tab-content"></div>
+    <div id="tab-visits" class="tab-content"></div>
+    <div id="tab-manager-visits" class="tab-content"></div>
+    <div id="tab-rounds" class="tab-content"></div>
+    <div id="tab-mailbox" class="tab-content"></div>
+    <div id="tab-honors" class="tab-content"></div>
+    <div id="tab-rewards" class="tab-content"></div>
+    <div id="tab-users" class="tab-content"></div>
+    <div id="tab-audit" class="tab-content"></div>
+    <div id="tab-backup" class="tab-content"></div>
+    <div id="tab-departments" class="tab-content"></div>
+    <div id="tab-school-settings" class="tab-content">
+      <div style="max-width:600px;margin:0 auto;padding:16px">
+        <h2 style="font-size:17px;font-weight:900;color:var(--navy)"><i class="bi bi-palette-fill" style="color:var(--sky)"></i> إعدادات صفحة الدخول</h2>
+        <div class="card">
+          <h3>🎨 الألوان والشعار</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div><label style="font-size:11px;font-weight:800;color:var(--mid)">اللون الأساسي</label><input type="color" id="set-primary-color" value="#0b2545" style="height:40px;padding:3px"></div>
+            <div><label style="font-size:11px;font-weight:800;color:var(--mid)">اللون الثانوي</label><input type="color" id="set-accent-color" value="#d4920a" style="height:40px;padding:3px"></div>
+          </div>
+          <label style="font-size:11px;font-weight:800;color:var(--mid)">شعار المدرسة</label>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+            <label style="flex:1;padding:10px;background:var(--off);border:1.5px dashed var(--line);border-radius:8px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:var(--mid)">📷 اختر صورة<input type="file" accept="image/*" onchange="window.previewLogo(this)" style="display:none"></label>
+            <img id="set-logo-preview" style="width:50px;height:50px;border-radius:8px;object-fit:contain;display:none">
+          </div>
+          <input type="hidden" id="set-logo-url">
+          <button onclick="window.saveSchoolBranding()" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer"><i class="bi bi-check-circle-fill"></i> حفظ</button>
+        </div>
+        <div class="card">
+          <h3>📢 إعلانات صفحة الدخول</h3>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <input id="new-announcement" placeholder="اكتب إعلاناً جديداً..." style="flex:1">
+            <button onclick="window.addAnnouncement()" style="background:var(--sky);color:#fff;border:none;padding:10px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:13px;cursor:pointer"><i class="bi bi-plus-lg"></i></button>
+          </div>
+          <div id="announcements-list"></div>
+        </div>
+      </div>
     </div>
-    
-    <h3 style="margin:1.5rem 0 1rem">معايير التقييم</h3>
-    <div id="visit-criteria-list"></div>
-    
-    <h3 style="margin:1.5rem 0 .5rem">ملاحظات المدير</h3>
-    <textarea id="visit-notes" rows="4" placeholder="اكتب ملاحظاتك هنا..."></textarea>
-    
-    <div style="display:flex;gap:12px;margin-top:1.5rem">
-      <button onclick="saveVisit()" style="flex:1">💾 حفظ الزيارة</button>
-      <button onclick="closeVisitForm()" class="secondary" style="flex:1">إلغاء</button>
+    <div id="tab-myaccount" class="tab-content">
+      <div class="card" style="max-width:520px"><h2><i class="bi bi-person-gear"></i> بياناتي</h2>
+        <label>الاسم الكامل</label><input id="acc-name">
+        <label>رقم الهاتف</label><input id="acc-phone" type="tel">
+        <label>القسم / التخصص</label><input id="acc-dept">
+        <label>الرقم المدني</label><input id="acc-civil">
+        <label>رقم الملف</label><input id="acc-filenum">
+        <label>تاريخ التعيين</label><input id="acc-hiredate" type="date">
+        <label>البريد الإلكتروني</label><input id="acc-email" type="email">
+        <label>كلمة مرور جديدة (اتركها فارغة لو ما تبي تغيير)</label><input id="acc-pass" type="password" placeholder="••••••">
+        <button onclick="window.saveMyAccount()" style="width:100%;padding:12px;background:var(--sky);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer"><i class="bi bi-check-circle-fill"></i> حفظ التعديلات</button>
+      </div>
     </div>
+    <div id="tab-ai-insights" class="tab-content"></div>
   </div>
 </div>
 
-<!-- عرض تفاصيل زيارة -->
-<div id="visit-detail-modal" class="modal">
-  <div class="modal-content">
-    <div id="visit-detail-content"></div>
-    <button onclick="closeVisitDetail()" style="margin-top:1.5rem;width:100%">إغلاق</button>
-  </div>
-</div>
-
-<!-- نموذج إضافة مستخدم -->
-<div id="add-user-modal" class="modal">
-  <div class="modal-content">
-    <h2 style="margin-bottom:1.5rem">إضافة مستخدم جديد</h2>
-    <input type="text" id="new-user-name" placeholder="الاسم الكامل">
-    <input type="text" id="new-user-id" placeholder="رقم المستخدم">
-    <input type="password" id="new-user-pass" placeholder="كلمة المرور">
-    <select id="new-user-role">
-      <option value="">اختر الصلاحية</option>
-      <option value="admin">مدير</option>
-      <option value="teacher">معلم</option>
-    </select>
-    <input type="text" id="new-user-class" placeholder="الفصل (للمعلمين فقط)">
-    <div style="display:flex;gap:12px;margin-top:1rem">
-      <button onclick="addUser()" style="flex:1">إضافة</button>
-      <button onclick="closeAddUser()" class="secondary" style="flex:1">إلغاء</button>
-    </div>
-  </div>
+<div class="bottom-nav">
+  <button class="bn-item active" data-bn-tab="tab-index" onclick="window.switchTab('tab-index')"><i class="bi bi-graph-up"></i>المؤشرات</button>
+  <button class="bn-item" data-bn-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-clipboard-check"></i>الغياب</button>
+  <button class="bn-item" data-bn-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-people"></i>الطلاب</button>
+  <button class="bn-item" data-bn-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i>المراسلات</button>
+  <button class="bn-item" data-bn-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-bar-chart-fill"></i>التقارير</button>
 </div>
 
 <script type="module">
-import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import {getAuth,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import {getFirestore,collection,doc,getDoc,getDocs,addDoc,query,where,orderBy,deleteDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from './js/firebase-config.js';
+import { collection, getDocs, addDoc, deleteDoc, updateDoc, doc, getDoc, query, where, onSnapshot, serverTimestamp }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const firebaseConfig={apiKey:"AIzaSyDEA77qGfSK7w5rYynyzP9-mvD13rRT0tU",authDomain:"hosainan-school.firebaseapp.com",projectId:"hosainan-school",storageBucket:"hosainan-school.firebasestorage.app",messagingSenderId:"264264994076",appId:"1:264264994076:web:1a87730b7d3c684bdf3ed9",measurementId:"G-FG9NLDJZQN"};
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+var saved = localStorage.getItem('hs_user');
+if(!saved) window.location.replace('index.html');
+var currentUser = {};
+try {
+    currentUser = JSON.parse(saved);
+    var _role = String(currentUser.role||'').trim().toLowerCase();
+    if(!['admin','assistant_manager','wing_supervisor'].includes(_role)) window.location.replace('teacher.html');
+    document.getElementById('lbl-admin-name').textContent = 'مرحباً '+(currentUser.name||'');
+    document.getElementById('lbl-school-name').textContent = currentUser.schoolName||'';
+    document.getElementById('splash-school').textContent = currentUser.schoolName||'';
+} catch(e) { console.error(e); }
 
-window.db = db;
-window.auth = auth;
-window.collection = collection;
-window.doc = doc;
-window.getDoc = getDoc;
-window.getDocs = getDocs;
-window.addDoc = addDoc;
-window.query = query;
-window.where = where;
-window.orderBy = orderBy;
-window.deleteDoc = deleteDoc;
-window.serverTimestamp = serverTimestamp;
+var schoolId = getActiveSchoolId();
 
-let currentUser=null;
+// تحديث role من Firestore
+(async()=>{try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(!s.empty){var f=s.docs[0].data();var nr=String(f.role||'').trim().toLowerCase();if(nr!==currentUser.role){currentUser.role=nr;currentUser.name=f.name||currentUser.name;localStorage.setItem('hs_user',JSON.stringify(currentUser));if(!['admin','assistant_manager','wing_supervisor'].includes(nr))window.location.replace('teacher.html')}}}catch(e){}})();
 
-onAuthStateChanged(auth,async user=>{
-  if(!user){window.location.href='index.html';return}
-  const userDoc=await getDoc(doc(db,'users',user.uid));
-  if(!userDoc.exists()||userDoc.data().role!=='admin'){
-    await signOut(auth);
-    window.location.href='index.html';
-    return;
-  }
-  currentUser=userDoc.data();
-  document.getElementById('user-name').textContent=currentUser.name||'المدير';
-  loadDashboard();
-});
-
-window.logout=async()=>{
-  await signOut(auth);
-  window.location.href='index.html';
-};
-
-document.getElementById('current-date').textContent=new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
-window.switchTab=t=>{
-  document.querySelectorAll('.tab').forEach(tab=>tab.classList.remove('active'));
-  event.target.classList.add('active');
-  document.querySelectorAll('[id^="tab-"]').forEach(tab=>tab.classList.add('hidden'));
-  document.getElementById('tab-'+t).classList.remove('hidden');
-};
-
-async function loadDashboard(){
-  await Promise.all([loadStats(),loadUsers(),loadVisitCounts()]);
-}
-
-async function loadStats(){
-  const attendanceSnap=await getDocs(collection(db,'attendance'));
-  const studentsSnap=await getDocs(collection(db,'students'));
-  const today=new Date().toISOString().split('T')[0].replace(/-/g,'/');
-  
-  const totalStudents=studentsSnap.size;
-  let absentToday=0;
-  const classesRegistered=new Set();
-  
-  attendanceSnap.forEach(doc=>{
-    const d=doc.data();
-    if(d.date===today){
-      classesRegistered.add(d.classId);
-      if(d.status==='absent')absentToday++;
-    }
-  });
-  
-  const presentToday=totalStudents-absentToday;
-  
-  document.getElementById('stats-cards').innerHTML=`
-    <div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي الطلاب</p></div>
-    <div class="stat-card"><h3>${presentToday}</h3><p>حاضرون اليوم</p></div>
-    <div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div>
-    <div class="stat-card"><h3>${classesRegistered.size}</h3><p>فصول سجّلت</p></div>
-  `;
-}
-
-const visitCriteria={
-  'اللغة العربية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','استخدام اللغة العربية الفصحى','تنمية مهارات القراءة','تنمية مهارات الكتابة','تنمية مهارات الاستماع','تنمية مهارات التحدث','ربط الدرس بالحياة','استخدام السبورة','الالتزام بالوقت'],
-  'الرياضيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','حل المسائل','الربط بالواقع','استخدام الأمثلة','التدرج في الصعوبة','تنمية مهارات التفكير','استخدام السبورة','الالتزام بالوقت'],
-  'العلوم':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','التجارب العملية','المختبر والسلامة','الربط بالبيئة','التفكير العلمي','الملاحظة والاستنتاج','استخدام السبورة','الالتزام بالوقت'],
-  'التربية الإسلامية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','تلاوة القرآن','حفظ الآيات','الأحاديث النبوية','القيم الإسلامية','الربط بالسلوك','استخدام السبورة','الالتزام بالوقت'],
-  'اللغة الإنجليزية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','Speaking skills','Listening skills','Reading skills','Writing skills','Vocabulary','Grammar','Pronunciation'],
-  'الاجتماعيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','الخرائط','الأحداث التاريخية','الجغرافيا','الوطنية','التفكير الناقد','استخدام السبورة'],
-  'التربية البدنية':['التخطيط للدرس','وضوح الأهداف','الإحماء','التمارين البدنية','المهارات الحركية','السلامة','إدارة الصف','التحفيز','التقويم','الانضباط','اللياقة البدنية','الألعاب الجماعية','الألعاب الفردية','الروح الرياضية','استخدام الأدوات','الالتزام بالوقت','الزي الرياضي'],
-  'الحاسوب':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','البرمجيات','الإنترنت','السلامة الرقمية','حل المشكلات','التفكير المنطقي','الالتزام بالوقت'],
-  'الكهرباء':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','السلامة المهنية','الأدوات والمعدات','المهارات اليدوية','قراءة المخططات','حل المشكلات','الالتزام بالوقت'],
-  'الديكور':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','الإبداع','الألوان','التصميم','المهارات اليدوية','السلامة','الالتزام بالوقت'],
-  'الفنية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الإبداع','المهارات الفنية','الخامات','النظافة','الذوق الفني','الالتزام بالوقت']
-};
-
-window.visitCriteria = visitCriteria;
-
-async function loadVisitCounts(){
-  const visitsSnap=await getDocs(collection(db,'visits'));
-  const counts={'اللغة العربية':0,'الرياضيات':0,'العلوم':0,'التربية الإسلامية':0,'اللغة الإنجليزية':0,'الاجتماعيات':0,'التربية البدنية':0,'الحاسوب':0,'الكهرباء':0,'الديكور':0,'الفنية':0};
-  visitsSnap.forEach(doc=>{
-    const dept=doc.data().dept;
-    if(counts[dept]!==undefined)counts[dept]++;
-  });
-  
-  const idMap={'اللغة العربية':'arabic','الرياضيات':'math','العلوم':'science','التربية الإسلامية':'islamic','اللغة الإنجليزية':'english','الاجتماعيات':'social','التربية البدنية':'pe','الحاسوب':'computer','الكهرباء':'electric','الديكور':'decor','الفنية':'art'};
-  
-  for(let dept in counts){
-    const el=document.getElementById(idMap[dept]+'-count');
-    if(el)el.textContent=counts[dept]+' زيارة';
-  }
-}
-
-window.openNewVisit=()=>{
-  document.getElementById('visit-form-modal').style.display='flex';
-  document.getElementById('visit-date').valueAsDate=new Date();
-};
-
-window.closeVisitForm=()=>{
-  document.getElementById('visit-form-modal').style.display='none';
-  document.getElementById('visit-dept').value='';
-  document.getElementById('visit-criteria-list').innerHTML='';
-};
-
-window.loadVisitCriteria=()=>{
-  const dept=document.getElementById('visit-dept').value;
-  const list=document.getElementById('visit-criteria-list');
-  if(!dept){list.innerHTML='';return}
-  
-  const criteria=visitCriteria[dept]||[];
-  let html='';
-  criteria.forEach((c,i)=>{
-    html+=`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:0.5px solid #ddd">
-      <span style="font-size:13px">${c}</span>
-      <select id="score${i}" style="width:140px;font-size:13px">
-        <option value="">اختر</option>
-        <option value="5">ممتاز</option>
-        <option value="4">جيد جداً</option>
-        <option value="3">جيد</option>
-        <option value="2">مقبول</option>
-        <option value="1">ضعيف</option>
-      </select>
-    </div>`;
-  });
-  list.innerHTML=html;
-};
-
-window.saveVisit=async()=>{
-  const dept=document.getElementById('visit-dept').value;
-  const teacher=document.getElementById('visit-teacher').value;
-  const subject=document.getElementById('visit-subject').value;
-  const className=document.getElementById('visit-class').value;
-  const period=document.getElementById('visit-period').value;
-  const date=document.getElementById('visit-date').value.split('-').reverse().join('/');
-  const notes=document.getElementById('visit-notes').value;
-  
-  if(!dept||!teacher||!className||!period||!date){
-    alert('يرجى ملء كل الحقول المطلوبة');
-    return;
-  }
-  
-  const criteria=visitCriteria[dept]||[];
-  const scores=[];
-  for(let i=0;i<criteria.length;i++){
-    const sel=document.getElementById('score'+i);
-    scores.push(sel?parseInt(sel.value)||0:0);
-  }
-  
-  try{
-    await addDoc(collection(db,'visits'),{
-      dept,
-      teacherName:teacher,
-      subject,
-      className,
-      period,
-      date,
-      scores,
-      notes,
-      createdAt:serverTimestamp(),
-      createdBy:currentUser.userId,
-      teacherSigned:false
+// صلاحيات المشرف
+var _role2 = String(currentUser.role||'').trim().toLowerCase();
+if(_role2==='wing_supervisor'){
+    var hide=['tab-students-manage','tab-import','tab-classes','tab-promotion','tab-attendance','tab-date','tab-behavior','tab-gatepass','tab-clinic','tab-reports','tab-monthly','tab-archive','tab-teachers','tab-teacher-workload','tab-teacher-perf','tab-manager-visits','tab-visits','tab-coverage','tab-announcements','tab-honors','tab-rewards','tab-users','tab-audit','tab-backup','tab-departments','tab-school-settings','tab-ai-insights'];
+    hide.forEach(t=>{
+        var m=document.querySelector('.menu-item[data-tab="'+t+'"]');if(m)m.style.display='none';
+        var d=document.getElementById(t);if(d)d.style.display='none';
+        var b=document.querySelector('.bn-item[data-bn-tab="'+t+'"]');if(b)b.style.display='none';
     });
-    alert('تم حفظ الزيارة بنجاح');
-    closeVisitForm();
-    loadVisitCounts();
-  }catch(e){
-    alert('خطأ: '+e.message);
-  }
-};
-
-let selectedDept='';
-window.selectDept=async dept=>{
-  selectedDept=dept;
-  document.getElementById('dept-list').style.display='none';
-  document.getElementById('dept-visits').classList.remove('hidden');
-  document.getElementById('selected-dept-name').textContent=dept;
-  await loadDeptVisits(dept);
-};
-
-window.backToDepts=()=>{
-  document.getElementById('dept-visits').classList.add('hidden');
-  document.getElementById('dept-list').style.display='block';
-};
-
-async function loadDeptVisits(dept){
-  const list=document.getElementById('visits-list');
-  list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">جاري التحميل...</p>';
-  
-  try{
-    const q=query(collection(db,'visits'),where('dept','==',dept),orderBy('createdAt','desc'));
-    const snap=await getDocs(q);
-    
-    if(snap.empty){
-      list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">لا توجد زيارات مسجلة لهذا القسم</p>';
-      return;
-    }
-    
-    let html='';
-    snap.forEach(doc=>{
-      const v=doc.data();
-      const avgScore=v.scores?(v.scores.reduce((a,b)=>a+b,0)/v.scores.length).toFixed(1):'-';
-      const scoreClass=avgScore>=4?'score-high':avgScore>=3?'score-mid':'score-low';
-      
-      html+=`<div style="background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:1rem;margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
-          <div>
-            <div style="font-weight:500;margin-bottom:4px">${v.teacherName}</div>
-            <div style="font-size:13px;color:#666">${v.className} • الحصة ${v.period} • ${v.date}</div>
-          </div>
-          <div class="${scoreClass}" style="font-size:20px">${avgScore}</div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="viewVisit('${doc.id}')" style="flex:1;font-size:13px">عرض التفاصيل</button>
-          <button onclick="printVisit('${doc.id}')" style="flex:1;font-size:13px;background:#fff;color:#333;border:1px solid #ddd">🖨️ طباعة</button>
-        </div>
-      </div>`;
-    });
-    
-    list.innerHTML=html;
-  }catch(e){
-    list.innerHTML='<p style="text-align:center;color:#dc3545;padding:2rem">خطأ في تحميل الزيارات</p>';
-  }
+    document.querySelectorAll('.menu-sec-body').forEach(b=>{if(!b.querySelector('.menu-item:not([style*="display: none"])'))b.previousElementSibling&&(b.previousElementSibling.style.display='none',b.style.display='none')});
 }
 
-window.viewVisit=async id=>{
-  const docSnap=await getDoc(doc(db,'visits',id));
-  if(!docSnap.exists())return;
-  
-  const v=docSnap.data();
-  const criteria=visitCriteria[v.dept]||[];
-  const scoreLabels=['','ضعيف','مقبول','جيد','جيد جداً','ممتاز'];
-  
-  let critHTML='';
-  criteria.forEach((c,i)=>{
-    const score=v.scores?.[i]||0;
-    critHTML+=`<tr><td style="padding:8px;border-bottom:0.5px solid #eee">${c}</td><td style="padding:8px;border-bottom:0.5px solid #eee;text-align:center">${scoreLabels[score]||'-'}</td></tr>`;
-  });
-  
-  document.getElementById('visit-detail-content').innerHTML=`
-    <div style="margin-bottom:1.5rem">
-      <h3 style="margin:0 0 8px">${v.teacherName}</h3>
-      <p style="margin:0;color:#666;font-size:14px">${v.dept} • ${v.className} • الحصة ${v.period} • ${v.date}</p>
-    </div>
-    <table style="width:100%;font-size:13px;margin-bottom:1.5rem">
-      <thead><tr style="background:#f5f5f5"><th style="padding:8px;text-align:right">المعيار</th><th style="padding:8px;text-align:center;width:120px">التقييم</th></tr></thead>
-      <tbody>${critHTML}</tbody>
-    </table>
-    ${v.notes?`<div style="background:#f8f9fa;padding:1rem;border-radius:8px;margin-bottom:1rem"><div style="font-weight:500;margin-bottom:8px">ملاحظات المدير:</div><p style="margin:0;white-space:pre-wrap">${v.notes}</p></div>`:''}
-    ${v.teacherSigned?`<p style="color:#28a745;font-size:13px">✓ المعلم وقّع على الزيارة</p>`:''}
-  `;
-  
-  document.getElementById('visit-detail-modal').style.display='flex';
+window.doLogout=function(){localStorage.removeItem('hs_user');window.location.replace('index.html')};
+
+var moduleMap={
+    'tab-index':{file:'./js/modules/today.js',init:'initTodayModule'},
+    'tab-student':{file:'./js/modules/student.js',init:'initStudentModule'},
+    'tab-students-manage':{file:'./js/modules/students_manage.js',init:'initStudentsManageModule'},
+    'tab-classes':{file:'./js/modules/classes.js',init:'initClassesModule'},
+    'tab-import':{file:'./js/modules/students_manage.js',init:'initStudentsManageModule'},
+    'tab-attendance':{file:'./js/modules/attendance.js',init:'initAttendanceModule'},
+    'tab-daily-report':{file:'./js/modules/daily_report.js',init:'initDailyReportModule'},
+    'tab-repeat':{file:'./js/modules/repeat.js',init:'initRepeatModule'},
+    'tab-behavior':{file:'./js/modules/behavior.js',init:'initBehaviorModule'},
+    'tab-gatepass':{file:'./js/modules/gatepass.js',init:'initGatepassModule'},
+    'tab-clinic':{file:'./js/modules/clinic.js',init:'initClinicModule'},
+    'tab-warnings':{file:'./js/modules/warnings.js',init:'initWarningsModule'},
+    'tab-reports':{file:'./js/modules/reports.js',init:'initReportsModule'},
+    'tab-monthly':{file:'./js/modules/monthly.js',init:'initMonthlyModule'},
+    'tab-teachers':{file:'./js/modules/teachers.js',init:'initTeachersModule'},
+    'tab-visits':{file:'./js/modules/visits.js',init:'initVisitsModule'},
+    'tab-manager-visits':{file:'./js/modules/manager_visits.js',init:'initManagerVisitsModule'},
+    'tab-rounds':{file:'./js/modules/rounds.js',init:'initRoundsModule'},
+    'tab-mailbox':{file:'./js/modules/mailbox.js',init:'initMailboxModule'},
+    'tab-honors':{file:'./js/modules/honors.js',init:'initHonorsModule'},
+    'tab-rewards':{file:'./js/modules/rewards.js',init:'initRewardsModule'},
+    'tab-users':{file:'./js/modules/users.js',init:'initUsersModule'},
+    'tab-audit':{file:'./js/modules/audit.js',init:'initAuditModule'},
+    'tab-backup':{file:'./js/modules/backup_manager.js',init:'initBackupModule'},
+    'tab-departments':{file:'./js/modules/departments.js',init:'initDepartmentsModule'},
+    'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
+};
+var loadedTabs=new Set();
+
+window.showToast=function(msg,type){document.querySelectorAll('.toast-msg').forEach(t=>t.remove());var t=document.createElement('div');t.className='toast-msg';t.style.background=type==='error'?'#dc2626':type==='warning'?'#d97706':'#059669';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400)},2500)};
+
+window.switchTab=async function(tabId){
+    document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+    document.querySelectorAll('.menu-item').forEach(el=>el.classList.remove('active'));
+    document.querySelectorAll('.bn-item').forEach(el=>el.classList.remove('active'));
+    var t=document.getElementById(tabId);if(t)t.classList.add('active');
+    var m=document.querySelector('.menu-item[data-tab="'+tabId+'"]');if(m)m.classList.add('active');
+    var b=document.querySelector('.bn-item[data-bn-tab="'+tabId+'"]');if(b)b.classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').style.display='none';
+    if(loadedTabs.has(tabId))return;
+    if(tabId==='tab-myaccount'){loadMyAccount();loadedTabs.add(tabId);return}
+    var entry=moduleMap[tabId];if(!entry)return;
+    try{var mod=await import(entry.file);if(mod[entry.init]){mod[entry.init]();loadedTabs.add(tabId)}}
+    catch(err){document.getElementById(tabId).innerHTML='<div class="loading-box" style="color:#dc2626">❌ '+err.message+'</div>'}
 };
 
-window.closeVisitDetail=()=>{
-  document.getElementById('visit-detail-modal').style.display='none';
+async function loadMyAccount(){try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;var d=s.docs[0].data();document.getElementById('acc-name').value=d.name||'';document.getElementById('acc-email').value=d.email||'';document.getElementById('acc-dept').value=d.department||'';document.getElementById('acc-phone').value=d.phone||'';document.getElementById('acc-civil').value=d.civilId||'';document.getElementById('acc-filenum').value=d.fileNumber||'';document.getElementById('acc-hiredate').value=d.hireDate||''}catch(e){}}
+
+window.saveMyAccount=async function(){var n=document.getElementById('acc-name').value.trim();if(!n){showToast('الاسم مطلوب','error');return}try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;var updateData={name:n,email:document.getElementById('acc-email').value.trim(),department:document.getElementById('acc-dept').value.trim(),phone:document.getElementById('acc-phone').value.trim(),civilId:document.getElementById('acc-civil').value.trim(),fileNumber:document.getElementById('acc-filenum').value.trim(),hireDate:document.getElementById('acc-hiredate').value.trim()};
+        await updateDoc(s.docs[0].ref,updateData);
+        var newPass=document.getElementById('acc-pass').value.trim();
+        if(newPass){try{var{getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');var fns=getFunctions(undefined,'me-central1');var reset=httpsCallable(fns,'resetUserPassword');await reset({docId:s.docs[0].id,newPassword:newPass});document.getElementById('acc-pass').value='';showToast('✅ تم تغيير كلمة المرور')}catch(pe){showToast('⚠️ تم حفظ البيانات لكن كلمة المرور ما تغيرت','warning')}}currentUser.name=n;localStorage.setItem('hs_user',JSON.stringify(currentUser));document.getElementById('lbl-admin-name').textContent='مرحباً '+n;showToast('✅ تم الحفظ')}catch(e){showToast('❌ '+e.message,'error')}};
+
+window.previewLogo=function(input){var f=input.files[0];if(!f)return;if(f.size>500000){showToast('الصورة كبيرة','warning');return}var r=new FileReader();r.onload=function(e){document.getElementById('set-logo-url').value=e.target.result;var p=document.getElementById('set-logo-preview');if(p){p.src=e.target.result;p.style.display='block'}};r.readAsDataURL(f)};
+
+window.saveSchoolBranding=async function(){try{await updateDoc(doc(db,'schools',schoolId),{primaryColor:document.getElementById('set-primary-color')?.value||'#0b2545',accentColor:document.getElementById('set-accent-color')?.value||'#d4920a',logoUrl:document.getElementById('set-logo-url')?.value?.trim()||''});showToast('✅ تم الحفظ')}catch(e){showToast('❌ '+e.message,'error')}};
+
+window.addAnnouncement=async function(){var t=document.getElementById('new-announcement')?.value?.trim();if(!t)return;try{await addDoc(collection(db,'school_announcements'),{schoolId,text:t,active:true,createdAt:serverTimestamp()});document.getElementById('new-announcement').value='';showToast('✅ تم الإضافة');loadAnnouncements()}catch(e){showToast('❌ '+e.message,'error')}};
+
+async function loadAnnouncements(){var l=document.getElementById('announcements-list');if(!l)return;try{var s=await getDocs(query(collection(db,'school_announcements'),where('schoolId','==',schoolId)));if(s.empty){l.innerHTML='<div style="text-align:center;color:#aaa;padding:16px">لا توجد إعلانات</div>';return}l.innerHTML=s.docs.map(d=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;background:#fff"><span style="font-weight:700">'+d.data().text+'</span><button onclick="window.deleteAnn(\''+d.id+'\')" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer">حذف</button></div>').join('')}catch(e){}}
+
+window.deleteAnn=async function(id){if(!confirm('حذف؟'))return;try{await deleteDoc(doc(db,'school_announcements',id));showToast('✅');loadAnnouncements()}catch(e){}};
+
+// الطباعة
+window.ManzoumaReport={
+    getSchoolInfo(){var u=JSON.parse(localStorage.getItem('hs_user')||'{}');return{schoolName:u.schoolName||'',userName:u.name||''}},
+    buildHeader(title,sub){var s=this.getSchoolInfo();var d=new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'});return '<div style="border-bottom:3px double #0b2545;padding-bottom:12px;margin-bottom:20px;text-align:center"><div style="display:flex;justify-content:space-between"><div style="text-align:right;font-size:11px"><b>دولة الكويت</b><br>وزارة التربية</div><div style="font-size:16px;font-weight:900;color:#0b2545">'+title+'</div><div style="text-align:left;font-size:11px"><b>'+s.schoolName+'</b><br>'+d+'</div></div></div>'},
+    buildFooter(){return '<div style="margin-top:30px;border-top:1px solid #ddd;padding-top:10px;display:flex;justify-content:space-between;font-size:10px;color:#666"><div>المنظومة الرقمية</div><div>توقيع: ______________</div></div>'},
+    printDirect(content,title,sub){var h='<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;direction:rtl;padding:20px}</style></head><body>'+this.buildHeader(title,sub||'')+content+this.buildFooter()+'</body></html>';var b=new Blob([h],{type:'text/html;charset=utf-8'});var u=URL.createObjectURL(b);var w=window.open(u,'_blank');if(w)setTimeout(function(){w.print();URL.revokeObjectURL(u)},800)}
 };
 
-window.printVisit=async id=>{
-  const docSnap=await getDoc(doc(db,'visits',id));
-  if(!docSnap.exists())return;
-  
-  const v=docSnap.data();
-  const criteria=visitCriteria[v.dept]||[];
-  const scoreLabels=['','ضعيف','مقبول','جيد','جيد جداً','ممتاز'];
-  
-  let critRows='';
-  criteria.forEach((c,i)=>{
-    const score=v.scores?.[i]||0;
-    critRows+=`<tr><td style="padding:8px;border:1px solid #ddd">${c}</td><td style="padding:8px;border:1px solid #ddd;text-align:center">${scoreLabels[score]||'-'}</td></tr>`;
-  });
-  
-  const printContent=`<html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة - ${v.teacherName}</title><style>body{font-family:Arial,sans-serif;padding:2cm}h2{text-align:center;margin-bottom:1cm}table{width:100%;border-collapse:collapse;margin:1cm 0}th{background:#f5f5f5;padding:8px;border:1px solid #ddd}.info{margin:1cm 0}.info div{margin:8px 0}.signatures{margin-top:2cm;display:flex;justify-content:space-between}.sig-box{text-align:center}</style></head><body><h2>نموذج زيارة صفية - ${v.dept}</h2><div class="info"><div><strong>اسم المعلم:</strong> ${v.teacherName}</div><div><strong>المادة:</strong> ${v.subject||'-'}</div><div><strong>الصف:</strong> ${v.className}</div><div><strong>الحصة:</strong> ${v.period}</div><div><strong>التاريخ:</strong> ${v.date}</div></div><table><thead><tr><th>المعيار</th><th style="width:120px">التقييم</th></tr></thead><tbody>${critRows}</tbody></table>${v.notes?`<div style="border:1px solid #ddd;padding:1cm;margin:1cm 0"><strong>ملاحظات المدير:</strong><p>${v.notes}</p></div>`:''}<div class="signatures"><div class="sig-box"><div>التوقيع: _____________</div><div>المعلم</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>رئيس القسم</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>المدير</div></div></div></body></html>`;
-  
-  const printWin=window.open('','','width=800,height=600');
-  printWin.document.write(printContent);
-  printWin.document.close();
-  printWin.focus();
-  setTimeout(()=>printWin.print(),250);
-};
+// init
+window.switchTab('tab-index').then(()=>{document.getElementById('splash')?.classList.add('hide')}).catch(()=>{document.getElementById('splash')?.classList.add('hide')});
 
-async function loadUsers(){
-  const list=document.getElementById('users-list');
-  list.innerHTML='<p style="text-align:center;color:#666">جاري التحميل...</p>';
-  
-  try{
-    const snap=await getDocs(collection(db,'users'));
-    let html='<table><thead><tr><th>الاسم</th><th>رقم المستخدم</th><th>الصلاحية</th><th>الفصل</th><th>كلمة المرور</th><th>إجراءات</th></tr></thead><tbody>';
-    
-    snap.forEach(doc=>{
-      const u=doc.data();
-      const roleText=u.role==='admin'?'مدير':'معلم';
-      const roleBadge=u.role==='admin'?'success':'warning';
-      html+=`<tr>
-        <td>${u.name||'-'}</td>
-        <td>${u.userId}</td>
-        <td><span class="badge ${roleBadge}">${roleText}</span></td>
-        <td>${u.classId||'-'}</td>
-        <td>${u.plainPass?'<span style="font-family:monospace">'+u.plainPass+'</span>':'-'}</td>
-        <td><button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px">حذف</button></td>
-      </tr>`;
-    });
-    
-    html+='</tbody></table>';
-    list.innerHTML=html;
-  }catch(e){
-    list.innerHTML='<p style="text-align:center;color:#dc3545">خطأ في تحميل المستخدمين</p>';
-  }
-}
-
-window.openAddUser=()=>{
-  document.getElementById('add-user-modal').style.display='flex';
-};
-
-window.closeAddUser=()=>{
-  document.getElementById('add-user-modal').style.display='none';
-};
-
-window.addUser=async()=>{
-  const name=document.getElementById('new-user-name').value.trim();
-  const userId=document.getElementById('new-user-id').value.trim();
-  const pass=document.getElementById('new-user-pass').value;
-  const role=document.getElementById('new-user-role').value;
-  const classId=document.getElementById('new-user-class').value.trim();
-  
-  if(!name||!userId||!pass||!role){
-    alert('يرجى ملء كل الحقول المطلوبة');
-    return;
-  }
-  
-  try{
-    await addDoc(collection(db,'users'),{
-      name,
-      userId,
-      plainPass:pass,
-      email:userId+'@hosainan.edu',
-      role,
-      classId:role==='teacher'?classId:'',
-      createdAt:serverTimestamp()
-    });
-    
-    alert('تم إضافة المستخدم بنجاح');
-    closeAddUser();
-    loadUsers();
-  }catch(e){
-    alert('خطأ: '+e.message);
-  }
-};
-
-window.deleteUser=async id=>{
-  if(!confirm('هل أنت متأكد من حذف هذا المستخدم؟'))return;
-  try{
-    await deleteDoc(doc(db,'users',id));
-    alert('تم حذف المستخدم');
-    loadUsers();
-  }catch(e){
-    alert('خطأ: '+e.message);
-  }
-};
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
+
 </body>
 </html>
