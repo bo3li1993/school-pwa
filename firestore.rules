@@ -6,7 +6,7 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // استخدام token claims مباشرة بدل قراءة Firestore
+    // ط·آ§ط·آ³ط·ع¾ط·آ®ط·آ¯ط·آ§ط¸â€¦ token claims ط¸â€¦ط·آ¨ط·آ§ط·آ´ط·آ±ط·آ© ط·آ¨ط·آ¯ط¸â€‍ ط¸â€ڑط·آ±ط·آ§ط·طŒط·آ© Firestore
     function userSchool() {
       return request.auth.token.schoolId;
     }
@@ -71,10 +71,11 @@ service cloud.firestore {
     }
 
     // Students
-    match /students/{docId} {
+       match /students/{docId} {
       allow read: if isAuth() && (
         isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId)
+        isParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds &&
+          resource.data.studentId in request.auth.token.childIds
       );
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
@@ -85,7 +86,7 @@ service cloud.firestore {
     match /attendance/{docId} {
       allow read: if isAuth() && (
         isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId)
+        isParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds
       );
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
@@ -96,7 +97,7 @@ service cloud.firestore {
     match /behavior/{docId} {
       allow read: if isAuth() && (
         isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId)
+        isParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds
       );
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
@@ -107,7 +108,7 @@ service cloud.firestore {
     match /warnings/{docId} {
       allow read: if isAuth() && (
         isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId)
+        isParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds
       );
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
@@ -331,6 +332,11 @@ service cloud.firestore {
     match /parent_accounts/{docId} {
       allow read: if isAuth() && (isAdmin() && sameSchool(resource.data.schoolId) || request.auth.uid == docId);
       allow write: if false;
+    }
+
+    // user_secrets - passHash منفصل ومغلق تماماً
+    match /user_secrets/{docId} {
+      allow read, write: if false;
     }
 
     // Default deny
