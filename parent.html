@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>(H'() HDJ 'D#E1  'DEF8HE) 'D1BEJ)</title>
+<title>بوابة ولي الأمر — المنظومة الرقمية</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -19,118 +19,86 @@ body{font-family:'Cairo',sans-serif;background:var(--off);min-height:100vh;paddi
 .page{display:none;padding:16px;max-width:600px;margin:0 auto}
 .page.active{display:block}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
-.card h2{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h2{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:10px}
 .empty{text-align:center;padding:30px;color:#aaa;font-weight:700;font-size:13px}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;z-index:40;padding-bottom:env(safe-area-inset-bottom)}
 .nav-btn{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 8px;font-family:'Cairo',sans-serif;font-size:10px;font-weight:800;color:var(--mid);cursor:pointer}
 .nav-btn i{font-size:20px}
 .nav-btn.active{color:var(--sky)}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.info-item{background:var(--off);border-radius:10px;padding:10px 12px}
-.info-item .lbl{font-size:11px;color:var(--mid);font-weight:700;margin-bottom:4px}
-.info-item .val{font-size:14px;font-weight:900;color:var(--navy)}
-.absent-day{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #f0f2f5;font-size:13px}
+.absent-day{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #f0f2f5;font-size:13px}
 .absent-day .date{font-weight:800;color:#111}
-.badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px}
-.badge-absent{background:#fee2e2;color:#dc2626}
-.badge-late{background:#fef3c7;color:#d97706}
-.badge-excused{background:#dcfce7;color:#16a34a}
-.ann-item{padding:10px 0;border-bottom:1px solid #fde68a;font-size:13px;color:#78350f;font-weight:600}
-.note-item{padding:12px 0;border-bottom:1px solid #f0f2f5}
-.note-teacher{font-weight:800;font-size:12px;color:var(--navy)}
-.note-date{font-size:10px;color:#aaa;margin-right:6px}
-.note-text{font-size:13px;color:#555;margin-top:6px;line-height:1.6}
-.stat-row{display:flex;justify-content:space-around;text-align:center;padding:10px 0}
-.stat-num{font-size:28px;font-weight:900;color:var(--navy)}
-.stat-lbl{font-size:11px;color:var(--mid);font-weight:700}
-.loading{text-align:center;padding:20px;color:var(--mid);font-size:13px;font-weight:700}
+.absent-day .status{font-weight:800;font-size:11px}
+.status-absent{color:#dc2626}
+.status-late{color:#d97706}
+.ann-item{padding:8px 0;border-bottom:1px solid #fde68a;font-size:13px;color:#78350f;font-weight:600}
+.note-item{padding:10px 0;border-bottom:1px solid #f0f2f5}
+.note-teacher{font-weight:800;font-size:12px;color:#111}
+.note-date{font-size:10px;color:#aaa;margin-right:8px}
+.note-text{font-size:13px;color:#555;margin-top:4px;line-height:1.5}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;z-index:9999;color:#fff;background:#059669;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+@media(max-width:400px){.topbar h1{font-size:12px}}
 </style>
-<!-- v1787545632351 -->
 </head>
 <body>
 
 <div class="topbar">
-  <div>
-    <h1 id="topbar-name">=h=i=f (H'() HDJ 'D#E1</h1>
-    <p id="topbar-school"></p>
-  </div>
-  <button onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> .1H,</button>
+    <div>
+        <h1 id="topbar-name">👨‍👩‍👦 بوابة ولي الأمر</h1>
+        <p id="topbar-school"></p>
+    </div>
+    <button onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> خروج</button>
 </div>
 
-<!-- 'D1&J3J) -->
+<!-- الرئيسية -->
 <div class="page active" id="page-home">
-
-  <div class="card">
-    <h2><i class="bi bi-person-fill" style="color:var(--sky)"></i> (J'F'* 'D7'D(</h2>
-    <div class="info-grid" id="student-info">
-      <div class="loading">� ,'1J 'D*-EJD...</div>
+    <div class="card">
+        <h2><i class="bi bi-person-fill" style="color:var(--sky)"></i> بيانات الطالب</h2>
+        <div id="student-info"><div class="empty">⏳ جاري التحميل...</div></div>
     </div>
-  </div>
-
-  <div class="card" id="stats-card" style="display:none">
-    <h2><i class="bi bi-bar-chart-fill" style="color:var(--gold)"></i> 'D%-5'&J'*</h2>
-    <div class="stat-row">
-      <div><div class="stat-num" id="stat-absent"></div><div class="stat-lbl">:J'(</div></div>
-      <div><div class="stat-num" id="stat-late"></div><div class="stat-lbl">*#.1</div></div>
-      <div><div class="stat-num" id="stat-notes"></div><div class="stat-lbl">ED'-8'*</div></div>
+    <div id="home-announcements"></div>
+    <div class="card">
+        <h2><i class="bi bi-calendar-x" style="color:var(--red)"></i> سجل الغياب</h2>
+        <div id="absence-list"><div class="empty">⏳</div></div>
     </div>
-  </div>
-
-  <div id="home-announcements"></div>
-
-  <div class="card">
-    <h2><i class="bi bi-calendar-x" style="color:var(--red)"></i> ".1 3,D'* 'D:J'(</h2>
-    <div id="absence-list"><div class="loading">�</div></div>
-  </div>
-
 </div>
 
-<!-- ED'-8'* 'DE9DEJF -->
+<!-- ملاحظات المعلمين -->
 <div class="page" id="page-notes">
-  <div class="card">
-    <h2><i class="bi bi-pencil-square" style="color:var(--gold)"></i> ED'-8'* 'DE9DEJF</h2>
-    <div id="teacher-notes"><div class="loading">� ,'1J 'D*-EJD...</div></div>
-  </div>
+    <div class="card">
+        <h2><i class="bi bi-pencil-square" style="color:var(--gold)"></i> ملاحظات المعلمين</h2>
+        <div id="teacher-notes"><div class="empty">لا توجد ملاحظات</div></div>
+    </div>
 </div>
 
-<!-- 'D%9D'F'* -->
-<div class="page" id="page-ann">
-  <div class="card">
-    <h2><i class="bi bi-megaphone-fill" style="color:var(--gold)"></i> %9D'F'* 'DE/13)</h2>
-    <div id="ann-list"><div class="loading">� ,'1J 'D*-EJD...</div></div>
-  </div>
+<!-- المراسلات -->
+<div class="page" id="page-messages">
+    <div class="card">
+        <h2><i class="bi bi-envelope" style="color:var(--sky)"></i> المراسلات</h2>
+        <p style="font-size:12px;color:var(--mid);font-weight:700">تواصل مع المدير أو رئيس القسم أو الأخصائي</p>
+        <div id="parent-messages"><div class="empty">قريباً...</div></div>
+    </div>
 </div>
 
 <div class="bottom-nav">
-  <button class="nav-btn active" onclick="switchPage('page-home',this)"><i class="bi bi-house-fill"></i>'D1&J3J)</button>
-  <button class="nav-btn" onclick="switchPage('page-notes',this)"><i class="bi bi-pencil-square"></i>ED'-8'*</button>
-  <button class="nav-btn" onclick="switchPage('page-ann',this)"><i class="bi bi-megaphone"></i>%9D'F'*</button>
+    <button class="nav-btn active" onclick="switchPage('page-home',this)"><i class="bi bi-house-fill"></i>الرئيسية</button>
+    <button class="nav-btn" onclick="switchPage('page-notes',this)"><i class="bi bi-pencil-square"></i>ملاحظات</button>
+    <button class="nav-btn" onclick="switchPage('page-messages',this)"><i class="bi bi-envelope"></i>مراسلات</button>
 </div>
 
 <script type="module">
-import { auth } from './js/firebase-config.js';
-import { getFirestore, collection, getDocs, query, where, orderBy, limit }
-  from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from './js/firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// 'D*-BB EF 'D,D3)
-const saved = localStorage.getItem('hs_parent');
-if (!saved) { window.location.replace('parent-login.html'); }
+const saved = localStorage.getItem('hs_parent') || localStorage.getItem('hs_user');
+if(!saved) window.location.replace('index.html');
 let me = {};
 try {
     me = JSON.parse(saved);
-    if (!me.schoolId) throw new Error('no schoolId');
-} catch(e) {
-    localStorage.removeItem('hs_parent');
-    window.location.replace('parent-login.html');
-}
+    document.getElementById('topbar-name').textContent = '👨‍👩‍👦 ولي أمر — ' + (me.studentName||me.name||'');
+    document.getElementById('topbar-school').textContent = me.schoolName||'';
+} catch(e) { window.location.replace('index.html'); }
 
-document.getElementById('topbar-name').textContent = '=h=i=f ' + (me.studentName || 'HDJ 'D#E1');
-document.getElementById('topbar-school').textContent = me.schoolName || '';
-
-const db = getFirestore(auth.app);
-const schoolId = me.schoolId;
-const studentId = me.studentId || '';
-const studentName = me.studentName || '';
+const schoolId = me.schoolId || getActiveSchoolId();
 
 window.switchPage = function(pageId, btn) {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -140,120 +108,63 @@ window.switchPage = function(pageId, btn) {
 };
 
 window.doLogout = function() {
-    if (!confirm('GD *1J/ *3,JD 'D.1H,')) return;
     localStorage.removeItem('hs_parent');
-    window.location.replace('parent-login.html');
+    localStorage.removeItem('hs_user');
+    window.location.replace('index.html');
 };
 
-// (J'F'* 'D7'D(
-document.getElementById('student-info').innerHTML = `
-    <div class="info-item"><div class="lbl">'3E 'D7'D(</div><div class="val">${studentName || ''}</div></div>
-    <div class="info-item"><div class="lbl">'DA5D</div><div class="val">${me.classId || ''}</div></div>
-    <div class="info-item"><div class="lbl">'DE/13)</div><div class="val">${me.schoolName || ''}</div></div>
-    <div class="info-item"><div class="lbl">1BE 'D7'D(</div><div class="val">${studentId || ''}</div></div>
-`;
-
-// *-EJD 'D(J'F'*
+// تحميل بيانات الطالب
 (async function() {
     try {
-        // 3,D 'D:J'(
-        const attQ = query(
-            collection(db, 'attendance'),
-            where('schoolId','==',schoolId),
-            where('studentId','==',studentId),
-            orderBy('date','desc'),
-            limit(20)
-        );
-        const attSnap = await getDocs(attQ);
-        const absList = document.getElementById('absence-list');
+        const studentName = me.studentName || '';
+        const classId = me.classId || '';
 
-        if (attSnap.empty) {
-            absList.innerHTML = '<div class="empty" style="color:var(--green)"> D' JH,/ :J'( E3,QD  EE*'2!</div>';
-        } else {
-            const labels = {absent:':'&(',late:'E*#.1',excused:'E3*#0F'};
-            const cls = {absent:'badge-absent',late:'badge-late',excused:'badge-excused'};
-            let absent=0, late=0;
-            absList.innerHTML = attSnap.docs.map(d => {
-                const r = d.data();
-                if(r.status==='absent') absent++;
-                if(r.status==='late') late++;
-                return `<div class="absent-day">
-                    <span class="date">${r.date||''}</span>
-                    <span class="badge ${cls[r.status]||'badge-absent'}">${labels[r.status]||r.status}</span>
-                    <span style="font-size:11px;color:var(--mid)">${r.period||''}</span>
-                </div>`;
-            }).join('');
-            document.getElementById('stat-absent').textContent = absent;
-            document.getElementById('stat-late').textContent = late;
+        // بيانات الطالب
+        const infoDiv = document.getElementById('student-info');
+        infoDiv.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">' +
+            '<div><span style="color:var(--mid);font-weight:700">الاسم:</span> <b>'+studentName+'</b></div>' +
+            '<div><span style="color:var(--mid);font-weight:700">الفصل:</span> <b>'+classId+'</b></div>' +
+            '</div>';
+
+        // سجل الغياب
+        if(studentName) {
+            const attSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('studentName','==',studentName)));
+            const records = attSnap.docs.map(d=>d.data()).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+            const absList = document.getElementById('absence-list');
+
+            if(!records.length) {
+                absList.innerHTML = '<div class="empty" style="color:var(--green)">✅ لا يوجد غياب مسجّل — ممتاز!</div>';
+            } else {
+                const labels = {absent:'غائب',late:'متأخر',excused:'مستأذن'};
+                absList.innerHTML = records.map(r =>
+                    '<div class="absent-day"><span class="date">'+r.date+'</span><span class="status status-'+(r.status||'absent')+'">'+(labels[r.status]||r.status)+'</span><span style="font-size:11px;color:var(--mid)">'+(r.period||'')+'</span></div>'
+                ).join('');
+            }
+
+            // ملاحظات المعلمين
+            const notesSnap = await getDocs(query(collection(db,'student_notes'), where('schoolId','==',schoolId), where('studentName','==',studentName)));
+            const notesDiv = document.getElementById('teacher-notes');
+            if(notesSnap.size > 0) {
+                const notes = notesSnap.docs.map(d=>d.data()).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+                notesDiv.innerHTML = notes.map(n =>
+                    '<div class="note-item"><span class="note-teacher">'+n.teacherName+'</span><span class="note-date">'+n.date+'</span><div class="note-text">'+n.note+'</div></div>'
+                ).join('');
+            }
         }
 
-        // ED'-8'* 'DE9DEJF
-        const notesQ = query(
-            collection(db,'student_notes'),
-            where('schoolId','==',schoolId),
-            where('studentId','==',studentId),
-            orderBy('createdAt','desc'),
-            limit(30)
-        );
-        const notesSnap = await getDocs(notesQ);
-        const notesDiv = document.getElementById('teacher-notes');
-        document.getElementById('stat-notes').textContent = notesSnap.size;
-
-        if (notesSnap.empty) {
-            notesDiv.innerHTML = '<div class="empty">D' *H,/ ED'-8'*</div>';
-        } else {
-            notesDiv.innerHTML = notesSnap.docs.map(d => {
-                const n = d.data();
-                const date = n.createdAt?.toDate?.()?.toLocaleDateString('ar-KW') || n.date || '';
-                return `<div class="note-item">
-                    <div>
-                        <span class="note-teacher">${n.teacherName||''}</span>
-                        <span class="note-date">${date}</span>
-                    </div>
-                    <div class="note-text">${n.note||''}</div>
-                </div>`;
-            }).join('');
-        }
-
-        // %8G'1 'D%-5'&J'*
-        document.getElementById('stats-card').style.display = 'block';
-
-        // 'D%9D'F'*
-        const annQ = query(
-            collection(db,'school_announcements'),
-            where('schoolId','==',schoolId),
-            where('active','==',true),
-            orderBy('createdAt','desc'),
-            limit(10)
-        );
-        const annSnap = await getDocs(annQ);
-
-        if (!annSnap.empty) {
+        // إعلانات المدرسة
+        const annSnap = await getDocs(query(collection(db,'school_announcements'), where('schoolId','==',schoolId), where('active','==',true)));
+        if(annSnap.size > 0) {
             document.getElementById('home-announcements').innerHTML =
-                `<div class="card" style="background:#fef3c7;border-color:#fbbf24">
-                    <h2 style="color:#92400e"><i class="bi bi-megaphone-fill"></i> %9D'F'* 'DE/13)</h2>
-                    ${annSnap.docs.slice(0,3).map(d=>`<div class="ann-item">${d.data().text||''}</div>`).join('')}
-                </div>`;
-
-            document.getElementById('ann-list').innerHTML = annSnap.docs.map(d => {
-                const a = d.data();
-                const date = a.createdAt?.toDate?.()?.toLocaleDateString('ar-KW',{month:'long',day:'numeric'}) || '';
-                return `<div class="ann-item" style="padding:12px 0">
-                    <div>${a.text||''}</div>
-                    ${date ? `<div style="font-size:11px;color:#b45309;margin-top:4px"><i class="bi bi-calendar3"></i> ${date}</div>` : ''}
-                </div>`;
-            }).join('');
-        } else {
-            document.getElementById('ann-list').innerHTML = '<div class="empty">D' *H,/ %9D'F'*</div>';
+                '<div class="card" style="background:#fef3c7;border-color:#fbbf24"><h2 style="color:#92400e">📢 إعلانات المدرسة</h2>' +
+                annSnap.docs.map(d=>'<div class="ann-item">'+d.data().text+'</div>').join('') + '</div>';
         }
 
-    } catch(e) {
-        console.error('Parent load:', e);
-        document.getElementById('absence-list').innerHTML = `<div class="empty" style="color:var(--red)">L .7# AJ 'D*-EJD: ${e.message}</div>`;
-    }
+    } catch(e) { console.error('Parent load:', e); }
 })();
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
+
 </body>
 </html>
