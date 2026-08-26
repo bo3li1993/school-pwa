@@ -6,7 +6,7 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // ط·آ§ط·آ³ط·ع¾ط·آ®ط·آ¯ط·آ§ط¸â€¦ token claims ط¸â€¦ط·آ¨ط·آ§ط·آ´ط·آ±ط·آ© ط·آ¨ط·آ¯ط¸â€‍ ط¸â€ڑط·آ±ط·آ§ط·طŒط·آ© Firestore
+    // ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ³ط·آ·ط¢آ·ط·آ¹ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ®ط·آ·ط¢آ·ط·آ¢ط¢آ¯ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¢آ¦ token claims ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¢آ¦ط·آ·ط¢آ·ط·آ¢ط¢آ¨ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ´ط·آ·ط¢آ·ط·آ¢ط¢آ±ط·آ·ط¢آ·ط·آ¢ط¢آ© ط·آ·ط¢آ·ط·آ¢ط¢آ¨ط·آ·ط¢آ·ط·آ¢ط¢آ¯ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع† ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¹â€کط·آ·ط¢آ·ط·آ¢ط¢آ±ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ·ط¥â€™ط·آ·ط¢آ·ط·آ¢ط¢آ© Firestore
     function userSchool() {
       return request.auth.token.schoolId;
     }
@@ -17,6 +17,10 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuth() && userRole() in ["admin", "assistant_manager", "wing_supervisor", "department_head"];
+    }
+
+    function isFullAdmin() {
+      return isAuth() && userRole() in ["admin", "assistant_manager"];
     }
 
     function isSuperAdmin() {
@@ -215,7 +219,7 @@ service cloud.firestore {
 
     // Backups
     match /backups/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow create, update, delete: if false;
     }
 
@@ -334,7 +338,7 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // user_secrets - passHash منفصل ومغلق تماماً
+    // user_secrets - passHash ط¸â€¦ط¸â€ ط¸ظ¾ط·آµط¸â€‍ ط¸ث†ط¸â€¦ط·ط›ط¸â€‍ط¸â€ڑ ط·ع¾ط¸â€¦ط·آ§ط¸â€¦ط·آ§ط¸â€¹
     match /user_secrets/{docId} {
       allow read, write: if false;
     }

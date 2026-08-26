@@ -1,4 +1,4 @@
-﻿// build: 20260826012154
+// build: 20260826012154
 "use strict";
 
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
@@ -353,7 +353,7 @@ exports.sendParentOTP = onCall({ cors: CORS, region: REGION }, async (req) => {
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   });
   // OTP ط·آ¸ط¸آ¾ط·آ¸ط¸آ¹ logs ط·آ¸أ¢â‚¬â€چط·آ¸أ¢â‚¬â€چط·آ·ط¹آ¾ط·آ·ط¢آ·ط·آ¸ط«â€ ط·آ¸ط¸آ¹ط·آ·ط¢آ± ط·آ¸ط¸آ¾ط·آ¸أ¢â‚¬ع‘ط·آ·ط¢آ· ط£آ¢أ¢â€ڑآ¬أ¢â‚¬â€Œ ط·آ¸ط¸آ¹ط·آ¸ط¹ث†ط·آ·ط¢آ­ط·آ·ط¢آ°ط·آ¸ط¸آ¾ ط·آ¸ط¸آ¾ط·آ¸ط¸آ¹ ط·آ·ط¢آ§ط·آ¸أ¢â‚¬â€چط·آ·ط¢آ¥ط·آ¸أ¢â‚¬آ ط·آ·ط¹آ¾ط·آ·ط¢آ§ط·آ·ط¢آ¬
-  console.log("OTP for " + parentPhone + ": " + otp);
+  console.log("OTP sent successfully");
   await resetRL(otpRLKey);
   return { success: true, message: "ط·آ·ط¹آ¾ط·آ¸أ¢â‚¬آ¦ ط·آ·ط¢آ¥ط·آ·ط¢آ±ط·آ·ط¢آ³ط·آ·ط¢آ§ط·آ¸أ¢â‚¬â€چ ط·آ·ط¢آ±ط·آ¸أ¢â‚¬آ¦ط·آ·ط¢آ² ط·آ·ط¢آ§ط·آ¸أ¢â‚¬â€چط·آ·ط¹آ¾ط·آ·ط¢آ­ط·آ¸أ¢â‚¬ع‘ط·آ¸أ¢â‚¬ع‘" };
 });
@@ -529,3 +529,4 @@ exports.scheduledDailyBackup = onSchedule(
   }
 );
 // updated: 20260826012547
+// fix: remove OTP from logs 20260826072312
