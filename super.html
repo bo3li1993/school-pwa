@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -227,7 +227,7 @@ tr:hover td{background:#fafafa}
 <!-- ===== LOGIN ===== -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">=á</div>
+    <div class="login-logo">=Ù„</div>
     <div class="login-title">DH-) 'D*-CE 'D9DJ'</div>
     <div class="login-sub">'DEF8HE) 'D1BEJ)  Superadmin</div>
     <div class="login-err" id="login-err"></div>
@@ -242,7 +242,7 @@ tr:hover td{background:#fafafa}
 <div id="main-screen">
   <div class="topbar">
     <div class="topbar-brand">
-      <div class="topbar-dot"><ë</div>
+      <div class="topbar-dot"><Ã«</div>
       <div>
         <div class="topbar-name">'DEF8HE) 'D1BEJ)</div>
         <div class="topbar-sub">DH-) *-CE 'D3H(1 "/EF</div>
@@ -429,7 +429,7 @@ tr:hover td{background:#fafafa}
       </div>
     </div>
     <div id="renew-history-wrap" style="margin-top:16px;display:none">
-      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">=Ë 3,D 'D*,/J/'* 'D3'(B) (".1 5):</div>
+      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">=Ø« 3,D 'D*,/J/'* 'D3'(B) (".1 5):</div>
       <div id="renew-history"></div>
     </div>
     <div class="modal-actions">
@@ -469,7 +469,7 @@ tr:hover td{background:#fafafa}
     </div>
     <div class="modal-actions">
       <button class="modal-btn primary" onclick="document.getElementById('change-pass-wrap').style.display='block'" id="change-admin-pass-btn">= *:JJ1 CDE) 'DE1H1</button>
-      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()" id="save-admin-pass-btn">=¾ -A8 CDE) 'DE1H1</button>
+      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()" id="save-admin-pass-btn">=Â¾ -A8 CDE) 'DE1H1</button>
       <button class="modal-btn cancel" onclick="closeModal('admin-modal')">%:D'B</button>
     </div>
   </div>
@@ -575,7 +575,7 @@ function checkExpiryAlerts() {
   const alertEl = document.getElementById('expiry-alert');
   if(expiring.length > 0) {
     document.getElementById('expiry-alert-text').textContent =
-      `  *F(JG: ${expiring.length} E/'13 '4*1'CG' JF*GJ .D'D 14 JHE: ${expiring.map(s=>s.name||s.id).join(' ')}`;
+      `Â  *F(JG: ${expiring.length} E/'13 '4*1'CG' JF*GJ .D'D 14 JHE: ${expiring.map(s=>s.name||s.id).join(' ')}`;
     alertEl.style.display = 'flex';
   } else {
     alertEl.style.display = 'none';
@@ -627,13 +627,13 @@ window.renderSchools = function() {
 
     let statusBadge, endColor;
     if(isExpired) {
-      statusBadge = '<span class="badge expired">ð EF*GJ 'D'4*1'C</span>';
+      statusBadge = '<span class="badge expired">Ù‹ EF*GJ 'D'4*1'C</span>';
       endColor = 'color:var(--red)';
     } else if(s.status==='suspended') {
-      statusBadge = '<span class="badge suspended">ø EHBHA</span>';
+      statusBadge = '<span class="badge suspended">Ù‘ EHBHA</span>';
       endColor = 'color:var(--mid)';
     } else if(isExpiring) {
-      statusBadge = `<span class="badge" style="background:#fef3c7;color:var(--warn)">  JF*GJ (9/ ${daysLeft} JHE</span>`;
+      statusBadge = `<span class="badge" style="background:#fef3c7;color:var(--warn)">Â  JF*GJ (9/ ${daysLeft} JHE</span>`;
       endColor = 'color:var(--warn)';
     } else {
       statusBadge = '<span class="badge active"> F47</span>';
@@ -663,9 +663,9 @@ window.renderSchools = function() {
           <button class="action-btn renew" onclick="openRenewModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')">= *,/J/</button>
           <button class="action-btn upgrade" onclick="openUpgradeModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')"> *1BJ)</button>
           <button class="action-btn ${isActive?'stop':'go'}" onclick="toggleSchool('${s.id}','${isActive?'suspended':'active'}')">
-            ${isActive?'ø %JB'A':'¶ *A9JD'}
+            ${isActive?'Ù‘ %JB'A':'Â¶ *A9JD'}
           </button>
-          <button class="action-btn del" onclick="deleteSchool('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">=Ñ -0A</button>
+          <button class="action-btn del" onclick="deleteSchool('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">=Ø± -0A</button>
         </div>
       </td>
     </tr>`;
@@ -685,7 +685,7 @@ window.createSchool = async function() {
   const notes      = document.getElementById('f-notes').value.trim();
 
   if(!schoolId||!schoolName||!adminId||!adminName||!adminPass) {
-    alert('  J1,I ED! 'D-BHD 'DE7DH(): E91QA 'DE/13) '3EG' E91QA 'DE/J1 '3EG HCDE) 'DE1H1'); return;
+    alert('Â  J1,I ED! 'D-BHD 'DE7DH(): E91QA 'DE/13) '3EG' E91QA 'DE/J1 '3EG HCDE) 'DE1H1'); return;
   }
 
   const btn = document.querySelector('.submit-btn');
@@ -714,7 +714,7 @@ window.createSchool = async function() {
     });
 
     const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-    alert(` *E %F4'! 'DE/13) "${schoolName}" (F,'-!\n\n1'(7 'D/.HD:\n${link}\n\n(J'F'* 'DE/J1:\n'3E 'DE3*./E: ${adminId}\nCDE) 'DE1H1: ${adminPass}\n\n  '-A8 CDE) 'DE1H1 'D"F D#FG' DF *8G1 E,//'K.`);
+    alert(` *E %F4'! 'DE/13) "${schoolName}" (F,'-!\n\n1'(7 'D/.HD:\n${link}\n\n(J'F'* 'DE/J1:\n'3E 'DE3*./E: ${adminId}\nCDE) 'DE1H1: ${adminPass}\n\nÂ  '-A8 CDE) 'DE1H1 'D"F D#FG' DF *8G1 E,//'K.`);
     ['f-school-id','f-school-name','f-admin-id','f-admin-name','f-admin-pass','f-admin-phone','f-notes']
       .forEach(id => document.getElementById(id).value='');
     const nd=new Date(); nd.setFullYear(nd.getFullYear()+1);
@@ -770,7 +770,7 @@ window.submitRenewal = async function() {
   const notes   = document.getElementById('renew-notes').value.trim();
   const errEl   = document.getElementById('renew-error');
 
-  if(!endDate) { errEl.textContent='  -// *'1J. 'F*G'! 'D'4*1'C'; errEl.style.display='block'; return; }
+  if(!endDate) { errEl.textContent='Â  -// *'1J. 'F*G'! 'D'4*1'C'; errEl.style.display='block'; return; }
   errEl.style.display='none';
 
   try {
@@ -825,7 +825,7 @@ window.showAdminCreds = async function(schoolId, schoolName) {
   try {
     const snap = await getDocs(query(collection(db,'users'),
       where('schoolId','==',schoolId), where('role','==','admin')));
-    if(snap.empty) { alert(`  D' JH,/ E/J1 DG0G 'DE/13)`); return; }
+    if(snap.empty) { alert(`Â  D' JH,/ E/J1 DG0G 'DE/13)`); return; }
 
     const admins=[];
     snap.forEach(d => admins.push({ docId:d.id, ...d.data() }));
@@ -835,7 +835,7 @@ window.showAdminCreds = async function(schoolId, schoolName) {
       <div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:8px">
         <div>=d 'D'3E: <b>${a.name||':J1 E-//'}</b></div>
         <div>= '3E 'DE3*./E: <b>${a.userId||':J1 E-//'}</b></div>
-        <div>=ñ 'DG'*A: <b>${a.phone||':J1 E-//'}</b></div>
+        <div>=ÙŒ 'DG'*A: <b>${a.phone||':J1 E-//'}</b></div>
       </div>
     `).join('');
     openModal('admin-modal');
@@ -874,7 +874,7 @@ window.toggleSchool = async function(schoolId, newStatus) {
 
 // ===== -0A E/13) =====
 window.deleteSchool = async function(schoolId, schoolName) {
-  if(!confirm(`  *-0J1: -0A "${schoolName}" DF JECF 'D*1',9 9FG!\n\n3J*E -0A (J'F'* 'DE/13) AB7 ('DE3*./EHF H'D7D'( DF JO-0AH').`)) return;
+  if(!confirm(`Â  *-0J1: -0A "${schoolName}" DF JECF 'D*1',9 9FG!\n\n3J*E -0A (J'F'* 'DE/13) AB7 ('DE3*./EHF H'D7D'( DF JO-0AH').`)) return;
   const code = prompt(`DD*#CJ/ 'C*( E91QA 'DE/13) "${schoolId}" ('D6(7:`);
   if(code !== schoolId) { alert(''DE91QA :J1 5-J-. *E %D:'! 'D-0A.'); return; }
   try { await deleteDoc(doc(db,'schools',schoolId)); alert(` *E -0A "${schoolName}"`); }
