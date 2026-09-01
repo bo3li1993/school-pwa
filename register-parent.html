@@ -99,7 +99,7 @@ input:focus,select:focus{border-color:var(--sky)}
 
       <label>1E2 'D*-BB (6 #1B'E)</label>
       <input type="text" id="inp-otp" class="otp-input" placeholder="------" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
-      <div class="timer" id="timer-text">ñ 5'D- D@ 10 /B'&B</div>
+      <div class="timer" id="timer-text">ï¿½ 5'D- D@ 10 /B'&B</div>
 
       <div class="err" id="err2"></div>
       <button class="btn" id="btn-verify-otp" onclick="verifyStep()">
@@ -109,7 +109,7 @@ input:focus,select:focus{border-color:var(--sky)}
         %9'/) %13'D 'D1E2
       </button>
       <button class="btn-link" onclick="goBack(1)" style="color:var(--mid)">
-        ’ 1,H9
+        ï¿½ 1,H9
       </button>
     </div>
 
@@ -129,14 +129,14 @@ input:focus,select:focus{border-color:var(--sky)}
         <i class="bi bi-person-check-fill"></i> %F4'! 'D-3'(
       </button>
       <button class="btn-link" onclick="goBack(2)" style="color:var(--mid)">
-        ’ 1,H9
+        ï¿½ 1,H9
       </button>
     </div>
 
     <!-- 5A-) 'DF,'- -->
     <div class="page" id="page-success">
       <div class="success-screen">
-        <div class="success-icon"><‰</div>
+        <div class="success-icon"><ï¿½</div>
         <h2>*E %F4'! -3'(C (F,'-!</h2>
         <p>JECFC 'D"F 'D/.HD DE*'(9) (J'F'*C H(J'F'* '(FC/'(F*C</p>
       </div>
@@ -214,8 +214,8 @@ window.sendOTP = async function() {
     const studentCivilId = document.getElementById('inp-student-civil').value.trim();
     const phone = document.getElementById('inp-phone').value.trim();
 
-    if (!schoolId || !studentCivilId || !phone) return showErr('err1','  #CED ,EJ9 'D-BHD');
-    if (phone.length < 7) return showErr('err1','  1BE 'DG'*A :J1 5-J-');
+    if (!schoolId || !studentCivilId || !phone) return showErr('err1','ï¿½ #CED ,EJ9 'D-BHD');
+    if (phone.length < 7) return showErr('err1','ï¿½ 1BE 'DG'*A :J1 5-J-');
 
     const btn = document.getElementById('btn-send-otp');
     btn.disabled = true;
@@ -250,7 +250,7 @@ window.resendOTP = async function() {
 window.verifyStep = function() {
     hideErr('err2');
     const otp = document.getElementById('inp-otp').value.trim();
-    if (otp.length !== 6) return showErr('err2','  #/.D 1E2 'D*-BB 'DECHF EF 6 #1B'E');
+    if (otp.length !== 6) return showErr('err2','ï¿½ #/.D 1E2 'D*-BB 'DECHF EF 6 #1B'E');
     window._otp = otp;
     setStep(3);
 };
@@ -261,9 +261,9 @@ window.doRegister = async function() {
     const pass = document.getElementById('inp-pass').value;
     const pass2 = document.getElementById('inp-pass2').value;
 
-    if (!civilId) return showErr('err3','  #/.D 1BEC 'DE/FJ');
-    if (pass.length < 8) return showErr('err3','  CDE) 'DE1H1 J,( #F *CHF 8 #-1A 9DI 'D#BD');
-    if (pass !== pass2) return showErr('err3','  CDE*' 'DE1H1 :J1 E*7'(B*JF');
+    if (!civilId) return showErr('err3','ï¿½ #/.D 1BEC 'DE/FJ');
+    if (pass.length < 8) return showErr('err3','ï¿½ CDE) 'DE1H1 J,( #F *CHF 8 #-1A 9DI 'D#BD');
+    if (pass !== pass2) return showErr('err3','ï¿½ CDE*' 'DE1H1 :J1 E*7'(B*JF');
 
     const btn = document.getElementById('btn-register');
     btn.disabled = true;
@@ -272,8 +272,7 @@ window.doRegister = async function() {
     try {
         await verifyOTPFn({
             schoolId: window._regData.schoolId,
-            civilId,
-            phone: window._regData.phone,
+            studentCivilId: window._regData.studentCivilId || civilId,
             password: pass,
             otp: window._otp
         });

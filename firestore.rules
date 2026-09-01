@@ -6,6 +6,21 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // sessionValid: يتحقق من tokenVersion لضمان إلغاء الجلسات المعلقة
+    function sessionValid() {
+      return isAuth()
+        && userRole() != "parent"
+        && request.auth.token.tokenVersion ==
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tokenVersion;
+    }
+
+    function sessionValidParent() {
+      return isAuth()
+        && userRole() == "parent"
+        && request.auth.token.tokenVersion ==
+           get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.tokenVersion;
+    }
+
     // ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ³ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¹ط·آ·ط¢آ¢ط·آ¢ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ®ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ¯ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ¸ط·آ·ط¢آ£ط·آ¢ط¢آ¢ط·آ£ط¢آ¢ط£آ¢أ¢â€ڑآ¬ط¹â€کط·آ¢ط¢آ¬ط·آ·ط¢آ¢ط·آ¢ط¢آ¦ token claims ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ¸ط·آ·ط¢آ£ط·آ¢ط¢آ¢ط·آ£ط¢آ¢ط£آ¢أ¢â€ڑآ¬ط¹â€کط·آ¢ط¢آ¬ط·آ·ط¢آ¢ط·آ¢ط¢آ¦ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ¨ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ´ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ±ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ© ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ¨ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ¯ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ¸ط·آ·ط¢آ£ط·آ¢ط¢آ¢ط·آ£ط¢آ¢ط£آ¢أ¢â€ڑآ¬ط¹â€کط·آ¢ط¢آ¬ط·آ£ط¢آ¢ط£آ¢أ¢â‚¬ع‘ط¢آ¬ط·آ¹أ¢â‚¬آ  ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ¸ط·آ·ط¢آ£ط·آ¢ط¢آ¢ط·آ£ط¢آ¢ط£آ¢أ¢â€ڑآ¬ط¹â€کط·آ¢ط¢آ¬ط·آ·ط¢آ¹ط£آ¢أ¢â€ڑآ¬ط¹آ©ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ±ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¥ط£آ¢أ¢â€ڑآ¬أ¢â€‍آ¢ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¢ط·آ¢ط¢آ·ط·آ·ط¢آ·ط·آ¢ط¢آ¢ط·آ·ط¢آ¢ط·آ¢ط¢آ© Firestore
     function userSchool() {
       return request.auth.token.schoolId;
@@ -20,27 +35,28 @@ service cloud.firestore {
     }
 
     function isFullAdmin() {
-      return isAuth() && userRole() in ["admin", "assistant_manager"];
+      return sessionValid() && userRole() in ["admin", "assistant_manager"];
     }
 
     function isSuperAdmin() {
       return isAuth() && (request.auth.token.superadmin == true || request.auth.token.role == "superadmin");
     }
 
+    function validSuperAdmin() {
+      return sessionValid() && isSuperAdmin();
+    }
+
     function isTeacher() {
       return isAuth() && userRole() in ["teacher", "social_worker", "nurse", "guard", "wing_supervisor", "department_head"];
     }
 
-    function isParent() {
-      return isAuth() && request.auth.token.role == "parent";
-    }
 
     function sameSchool(schoolId) {
       return isAuth() && userSchool() == schoolId;
     }
 
     function isSchoolStaff(schoolId) {
-      return sameSchool(schoolId) && (isAdmin() || isTeacher());
+      return sessionValid() && sameSchool(schoolId) && (isAdmin() || isTeacher());
     }
 
     function roleNotChanged() {
@@ -53,15 +69,15 @@ service cloud.firestore {
 
     // Schools
     match /schools/{schoolId} {
-      allow read: if isSuperAdmin()
-        || (isAuth() && userSchool() == schoolId)
+      allow read: if validSuperAdmin()
+        || (sessionValid() && userSchool() == schoolId)
         || (!isAuth());
-      allow write: if isSuperAdmin();
+      allow write: if validSuperAdmin();
     }
 
     // Users
     match /users/{userId} {
-      allow read: if isAuth() && (
+      allow read: if sessionValid() && (
         request.auth.uid == userId ||
         isAdmin() && sameSchool(resource.data.schoolId) ||
         isSuperAdmin()
@@ -76,11 +92,8 @@ service cloud.firestore {
 
     // Students
        match /students/{docId} {
-      allow read: if isAuth() && (
-        isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds &&
-          resource.data.studentId in request.auth.token.childIds
-      );
+      allow read: if (sessionValid() && isSchoolStaff(resource.data.schoolId)) ||
+        (sessionValidParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -88,10 +101,8 @@ service cloud.firestore {
 
     // Attendance
     match /attendance/{docId} {
-      allow read: if isAuth() && (
-        isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds
-      );
+      allow read: if (sessionValid() && isSchoolStaff(resource.data.schoolId)) ||
+        (sessionValidParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -99,10 +110,8 @@ service cloud.firestore {
 
     // Behavior
     match /behavior/{docId} {
-      allow read: if isAuth() && (
-        isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds
-      );
+      allow read: if (sessionValid() && isSchoolStaff(resource.data.schoolId)) ||
+        (sessionValidParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -110,10 +119,8 @@ service cloud.firestore {
 
     // Warnings
     match /warnings/{docId} {
-      allow read: if isAuth() && (
-        isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds
-      );
+      allow read: if (sessionValid() && isSchoolStaff(resource.data.schoolId)) ||
+        (sessionValidParent() && sameSchool(resource.data.schoolId) && resource.data.studentId in request.auth.token.childIds);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -121,21 +128,21 @@ service cloud.firestore {
 
     // Gatepass
     match /gatepass/{docId} {
-      allow read: if isAuth() && isSchoolStaff(resource.data.schoolId);
+      allow read: if sessionValid() && isSchoolStaff(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update, delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Clinic
     match /clinic/{docId} {
-      allow read: if isAuth() && isSchoolStaff(resource.data.schoolId);
+      allow read: if sessionValid() && isSchoolStaff(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update, delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Classes
     match /classes/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -143,7 +150,7 @@ service cloud.firestore {
 
     // Departments
     match /departments/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -151,7 +158,7 @@ service cloud.firestore {
 
     // Announcements
     match /announcements/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -160,20 +167,20 @@ service cloud.firestore {
     // School announcements (for login page branding)
     match /school_announcements/{docId} {
       allow read: if true;
-      allow write: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow write: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
     }
 
     // School threads
     match /school_threads/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow create: if isAuth() && sameSchool(request.resource.data.schoolId) && request.resource.data.createdBy == request.auth.uid;
-      allow update: if isAuth() && sameSchool(resource.data.schoolId) && schoolIdNotChanged() && (resource.data.createdBy == request.auth.uid || isAdmin());
+      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
+      allow create: if sessionValid() && sameSchool(request.resource.data.schoolId) && request.resource.data.createdBy == request.auth.uid;
+      allow update: if sessionValid() && sameSchool(resource.data.schoolId) && schoolIdNotChanged() && (resource.data.createdBy == request.auth.uid || isAdmin());
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Honors board
     match /honors_board/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -181,7 +188,7 @@ service cloud.firestore {
 
     // Rewards
     match /rewards/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -189,7 +196,7 @@ service cloud.firestore {
 
     // Technical visits
     match /technical_visits/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSchoolStaff(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isSchoolStaff(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -197,15 +204,15 @@ service cloud.firestore {
 
     // Manager visits
     match /manager_visits/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
+      allow read: if isSchoolStaff(resource.data.schoolId);
+      allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Wing rounds
     match /wing_rounds/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSchoolStaff(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isSchoolStaff(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -213,7 +220,7 @@ service cloud.firestore {
 
     // Audit log
     match /audit_log/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow create, update, delete: if false;
     }
 
@@ -225,27 +232,27 @@ service cloud.firestore {
 
     // Notifications queue
     match /notifications_queue/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
     }
 
     // Archive
     match /archive_attendance/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
     }
     match /archive_behavior/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
     }
     match /archive_warnings/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow write: if false;
     }
 
     // Graduates
     match /graduates/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -253,21 +260,21 @@ service cloud.firestore {
 
     // Promotion logs
     match /promotion_logs/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update, delete: if false;
     }
 
     // Deleted students
     match /deleted_students/{docId} {
-      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow read: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update, delete: if false;
     }
 
     // Class distribution
     match /class_distribution/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
       allow create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -275,8 +282,8 @@ service cloud.firestore {
 
     // Subscription logs
     match /subscription_logs/{docId} {
-      allow read: if isSuperAdmin();
-      allow write: if isSuperAdmin();
+      allow read: if validSuperAdmin();
+      allow write: if validSuperAdmin();
     }
 
     // Login attempts - server only
@@ -290,29 +297,29 @@ service cloud.firestore {
 
     // Visitors
     match /visitors/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
+      allow read: if isSchoolStaff(resource.data.schoolId);
+      allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
     }
 
     match /visitors_logs/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
+      allow read: if isSchoolStaff(resource.data.schoolId);
+      allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update, delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Visits
     match /visits/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
+      allow read: if isSchoolStaff(resource.data.schoolId);
+      allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Student notes
     match /student_notes/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSchoolStaff(resource.data.schoolId);
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isSchoolStaff(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
@@ -320,21 +327,21 @@ service cloud.firestore {
 
     // Principal chats
     match /principal_chats/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
-      allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
+      allow read: if isSchoolStaff(resource.data.schoolId);
+      allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId);
       allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // System config
     match /system_config/{docId} {
-      allow read: if isSuperAdmin();
-      allow write: if isSuperAdmin();
+      allow read: if validSuperAdmin();
+      allow write: if validSuperAdmin();
     }
 
     // Parent accounts
     match /parent_accounts/{docId} {
-      allow read: if isAuth() && (isAdmin() && sameSchool(resource.data.schoolId) || request.auth.uid == docId);
+      allow read: if (sessionValid() && isAdmin() && sameSchool(resource.data.schoolId)) || (sessionValidParent() && request.auth.uid == docId);
       allow write: if false;
     }
 
