@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DH-) 'D*-CE  'DEF8HE) 'D1BEJ)</title>
+<title>لوحة التحكم - المنظومة الرقمية</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
@@ -13,464 +13,242 @@
 <style>
 :root {
   --navy:#0b2545; --sky:#1a78c2; --ice:#eaf4fd;
-  --gold:#d4920a; --goldl:#f5c842;
-  --white:#fff; --off:#f8f9fc; --line:#e5e7eb;
+  --gold:#d4920a; --white:#fff; --off:#f8f9fc; --line:#e5e7eb;
   --text:#111827; --mid:#6b7280;
-  --green:#059669; --red:#dc2626;
-  --warn:#d97706;
+  --green:#059669; --red:#dc2626; --warn:#d97706;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);min-height:100vh}
-
-/* ===== LOGIN ===== */
-#login-screen{
-  position:fixed;inset:0;background:var(--navy);
-  display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;
-}
-.login-box{
-  background:var(--white);border-radius:20px;padding:40px 36px;
-  width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;
-}
-.login-logo{
-  width:56px;height:56px;background:var(--navy);border-radius:14px;
-  display:grid;place-items:center;color:#fff;font-size:26px;font-weight:900;margin:0 auto 16px;
-}
+#login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px}
+.login-box{background:#fff;border-radius:20px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.login-logo{width:56px;height:56px;background:var(--navy);border-radius:14px;display:grid;place-items:center;color:#fff;font-size:26px;font-weight:900;margin:0 auto 16px}
 .login-title{font-size:18px;font-weight:900;color:var(--navy);margin-bottom:4px}
 .login-sub{font-size:12px;color:var(--mid);margin-bottom:28px}
-.login-field{
-  width:100%;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;
-  font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;text-align:right;
-  outline:none;margin-bottom:12px;transition:border-color .2s;background:var(--white);
-}
+.login-field{width:100%;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;text-align:right;outline:none;margin-bottom:12px;transition:border-color .2s}
 .login-field:focus{border-color:var(--sky)}
-.login-btn{
-  width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;
-  font-family:'Cairo',sans-serif;font-size:15px;font-weight:800;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;
-}
+.login-btn{width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .login-btn:hover{background:#134074}
-.login-err{
-  background:#fef2f2;color:var(--red);border:1px solid #fecaca;border-radius:8px;
-  padding:10px;font-size:13px;font-weight:700;margin-bottom:12px;display:none;
-}
-
-/* ===== TOPBAR ===== */
+.login-err{background:#fef2f2;color:var(--red);border:1px solid #fecaca;border-radius:8px;padding:10px;font-size:13px;font-weight:700;margin-bottom:12px;display:none}
 #main-screen{display:none}
-.topbar{
-  background:var(--white);border-bottom:1px solid var(--line);padding:0 24px;height:60px;
-  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;
-}
+.topbar{background:#fff;border-bottom:1px solid var(--line);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
 .topbar-brand{display:flex;align-items:center;gap:10px}
-.topbar-dot{width:34px;height:34px;background:var(--navy);border-radius:9px;display:grid;place-items:center;color:#fff;font-size:17px;font-weight:900;}
+.topbar-dot{width:34px;height:34px;background:var(--navy);border-radius:9px;display:grid;place-items:center;color:#fff;font-size:17px;font-weight:900}
 .topbar-name{font-weight:800;font-size:15px;color:var(--navy)}
 .topbar-sub{font-size:11px;color:var(--mid);font-weight:600}
-.logout-btn{
-  background:transparent;border:1.5px solid var(--line);color:var(--mid);
-  padding:7px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;
-}
+.logout-btn{background:transparent;border:1.5px solid var(--line);color:var(--mid);padding:7px 16px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
 .logout-btn:hover{border-color:var(--red);color:var(--red)}
-
 .page{max-width:1200px;margin:0 auto;padding:24px 20px}
-
-/* ===== STATS ===== */
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
-.stat-card{
-  background:var(--white);border:1px solid var(--line);border-radius:14px;padding:18px 20px;
-}
-.stat-label{font-size:11px;color:var(--mid);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.stat-label{font-size:11px;color:var(--mid);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px}
 .stat-value{font-size:1.8rem;font-weight:900;color:var(--navy);line-height:1}
-.stat-value.green{color:var(--green)}
-.stat-value.gold{color:var(--gold)}
-.stat-value.red{color:var(--red)}
-.stat-value.warn{color:var(--warn)}
-
-/* ===== CARDS ===== */
-.card{background:var(--white);border:1px solid var(--line);border-radius:16px;margin-bottom:20px;overflow:hidden;}
-.card-header{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
-.card-header-icon{width:36px;height:36px;background:var(--ice);border-radius:9px;display:grid;place-items:center;font-size:16px;color:var(--sky);}
+.stat-value.green{color:var(--green)} .stat-value.gold{color:var(--gold)} .stat-value.red{color:var(--red)} .stat-value.warn{color:var(--warn)}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;margin-bottom:20px;overflow:hidden}
+.card-header{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.card-header-icon{width:36px;height:36px;background:var(--ice);border-radius:9px;display:grid;place-items:center;font-size:16px;color:var(--sky)}
 .card-header h2{font-size:15px;font-weight:800;color:var(--navy)}
 .card-header p{font-size:12px;color:var(--mid);margin-top:1px}
 .card-body{padding:22px}
-
-/* ===== FORM ===== */
 .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .form-group{display:flex;flex-direction:column;gap:5px}
 .form-label{font-size:12px;font-weight:700;color:var(--text)}
-.form-input{
-  padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;
-  font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;text-align:right;
-  outline:none;transition:border-color .2s;background:var(--white);
-}
+.form-input{padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;text-align:right;outline:none;transition:border-color .2s}
 .form-input:focus{border-color:var(--sky)}
 .form-full{grid-column:1/-1}
-.submit-btn{
-  width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;
-  font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s;
-}
+.submit-btn{width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .submit-btn:hover{background:#134074}
-
-/* ===== TABLE ===== */
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{background:var(--off);padding:11px 14px;text-align:right;font-weight:800;font-size:12px;color:var(--mid);border-bottom:1px solid var(--line)}
 td{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:600;vertical-align:middle}
-tr:last-child td{border:none}
-tr:hover td{background:#fafafa}
-
-/* ===== BADGES ===== */
+tr:last-child td{border:none} tr:hover td{background:#fafafa}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800}
-.badge.active{background:#dcfce7;color:var(--green)}
-.badge.suspended{background:#fee2e2;color:var(--red)}
-.badge.expired{background:#fef3c7;color:var(--warn)}
-.badge.trial{background:#ede9fe;color:#6d28d9}
-
-/* ===== PLAN BADGES ===== */
+.badge.active{background:#dcfce7;color:var(--green)} .badge.suspended{background:#fee2e2;color:var(--red)} .badge.expired{background:#fef3c7;color:var(--warn)}
 .plan-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:800}
 .plan-basic{background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd}
 .plan-pro{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
 .plan-enterprise{background:#fdf4ff;color:#7e22ce;border:1px solid #e9d5ff}
-
-/* ===== ACTION BUTTONS ===== */
-.action-btn{
-  padding:5px 12px;border-radius:7px;font-family:'Cairo',sans-serif;
-  font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid;transition:all .2s;
-}
-.action-btn.stop{border-color:#fca5a5;color:var(--red);background:#fff}
-.action-btn.stop:hover{background:var(--red);color:#fff}
-.action-btn.go{border-color:#6ee7b7;color:var(--green);background:#fff}
-.action-btn.go:hover{background:var(--green);color:#fff}
-.action-btn.del{border-color:#fca5a5;color:var(--red);background:#fff}
-.action-btn.del:hover{background:var(--red);color:#fff}
-.action-btn.link{border-color:#93c5fd;color:var(--sky);background:#fff}
-.action-btn.link:hover{background:var(--sky);color:#fff}
-.action-btn.info{border-color:#fde68a;color:#92400e;background:#fff}
-.action-btn.info:hover{background:#f59e0b;color:#fff}
-.action-btn.renew{border-color:#6ee7b7;color:var(--green);background:#fff}
-.action-btn.renew:hover{background:var(--green);color:#fff}
-.action-btn.upgrade{border-color:#c4b5fd;color:#6d28d9;background:#fff}
-.action-btn.upgrade:hover{background:#6d28d9;color:#fff}
-
+.action-btn{padding:5px 12px;border-radius:7px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid;transition:all .2s}
+.action-btn.stop{border-color:#fca5a5;color:var(--red);background:#fff} .action-btn.stop:hover{background:var(--red);color:#fff}
+.action-btn.go{border-color:#6ee7b7;color:var(--green);background:#fff} .action-btn.go:hover{background:var(--green);color:#fff}
+.action-btn.del{border-color:#fca5a5;color:var(--red);background:#fff} .action-btn.del:hover{background:var(--red);color:#fff}
+.action-btn.link{border-color:#93c5fd;color:var(--sky);background:#fff} .action-btn.link:hover{background:var(--sky);color:#fff}
+.action-btn.info{border-color:#fde68a;color:#92400e;background:#fff} .action-btn.info:hover{background:#f59e0b;color:#fff}
+.action-btn.renew{border-color:#6ee7b7;color:var(--green);background:#fff} .action-btn.renew:hover{background:var(--green);color:#fff}
+.action-btn.upgrade{border-color:#c4b5fd;color:#6d28d9;background:#fff} .action-btn.upgrade:hover{background:#6d28d9;color:#fff}
 .actions-wrap{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-
-/* ===== MODAL ===== */
-.modal-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
-  z-index:9999;align-items:center;justify-content:center;padding:20px;
-}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
-.modal-box{
-  background:#fff;border-radius:16px;padding:28px;max-width:480px;
-  width:100%;direction:rtl;font-family:'Cairo',sans-serif;max-height:90vh;overflow-y:auto;
-}
+.modal-box{background:#fff;border-radius:16px;padding:28px;max-width:480px;width:100%;direction:rtl;font-family:'Cairo',sans-serif;max-height:90vh;overflow-y:auto}
 .modal-title{font-size:16px;font-weight:900;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .modal-actions{display:flex;gap:8px;margin-top:20px}
-.modal-btn{
-  flex:1;padding:11px;border-radius:8px;font-weight:700;cursor:pointer;
-  font-family:'Cairo',sans-serif;font-size:13px;border:none;transition:all .2s;
-}
-.modal-btn.primary{background:var(--sky);color:#fff}
-.modal-btn.primary:hover{background:#1462a0}
-.modal-btn.danger{background:var(--red);color:#fff}
-.modal-btn.danger:hover{background:#b91c1c}
-.modal-btn.cancel{background:#fff;color:var(--mid);border:1.5px solid var(--line)}
-.modal-btn.cancel:hover{border-color:var(--sky);color:var(--sky)}
+.modal-btn{flex:1;padding:11px;border-radius:8px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;border:none;transition:all .2s}
+.modal-btn.primary{background:var(--sky);color:#fff} .modal-btn.primary:hover{background:#1462a0}
+.modal-btn.cancel{background:#fff;color:var(--mid);border:1.5px solid var(--line)} .modal-btn.cancel:hover{border-color:var(--sky);color:var(--sky)}
 .modal-err{color:var(--red);font-size:12px;font-weight:700;display:none;margin-bottom:10px;padding:8px;background:#fef2f2;border-radius:6px}
-
-/* ===== RENEWAL HISTORY ===== */
-.history-item{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 14px;background:var(--off);border-radius:8px;margin-bottom:6px;
-  font-size:13px;
-}
-.history-item .date{font-weight:700;color:var(--navy)}
-.history-item .plan{color:var(--sky);font-weight:700}
-.history-item .amount{color:var(--green);font-weight:800}
-
-/* ===== EXPIRY ALERT ===== */
-.expiry-alert{
-  background:#fef3c7;border:1px solid #fde68a;border-radius:10px;
-  padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:10px;
-  font-size:13px;font-weight:700;color:#92400e;
-}
-
-/* ===== FILTER BAR ===== */
-.filter-bar{
-  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;
-}
-.filter-btn{
-  padding:6px 16px;border-radius:20px;border:1.5px solid var(--line);
-  background:#fff;color:var(--mid);font-family:'Cairo',sans-serif;font-size:12px;
-  font-weight:700;cursor:pointer;transition:all .2s;
-}
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--off);border-radius:8px;margin-bottom:6px;font-size:13px}
+.expiry-alert{background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:#92400e}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filter-btn{padding:6px 16px;border-radius:20px;border:1.5px solid var(--line);background:#fff;color:var(--mid);font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
 .filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-.search-input{
-  padding:8px 14px;border:1.5px solid var(--line);border-radius:20px;
-  font-family:'Cairo',sans-serif;font-size:13px;outline:none;flex:1;min-width:200px;
-}
+.search-input{padding:8px 14px;border:1.5px solid var(--line);border-radius:20px;font-family:'Cairo',sans-serif;font-size:13px;outline:none;flex:1;min-width:200px}
 .search-input:focus{border-color:var(--sky)}
-
-@media(max-width:900px){
-  .stats{grid-template-columns:repeat(3,1fr)}
-  .form-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:600px){
-  .stats{grid-template-columns:1fr 1fr}
-  .form-grid{grid-template-columns:1fr}
-}
+@media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}.form-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}}
 </style>
-<!-- v1787545632363 -->
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">=ل</div>
-    <div class="login-title">DH-) 'D*-CE 'D9DJ'</div>
-    <div class="login-sub">'DEF8HE) 'D1BEJ)  Superadmin</div>
+    <div class="login-logo">⚡</div>
+    <div class="login-title">لوحة التحكم العليا</div>
+    <div class="login-sub">المنظومة الرقمية — Superadmin</div>
     <div class="login-err" id="login-err"></div>
-    <input type="password" class="login-field" id="super-pass" placeholder="CDE) 'DE1H1">
+    <input type="password" class="login-field" id="super-pass" placeholder="كلمة المرور">
     <button class="login-btn" onclick="checkSuperPass()">
-      <i class="bi bi-shield-lock-fill"></i> /.HD "EF
+      <i class="bi bi-shield-lock-fill"></i> دخول آمن
     </button>
   </div>
 </div>
 
-<!-- ===== MAIN ===== -->
 <div id="main-screen">
   <div class="topbar">
     <div class="topbar-brand">
-      <div class="topbar-dot"><ë</div>
+      <div class="topbar-dot">⚡</div>
       <div>
-        <div class="topbar-name">'DEF8HE) 'D1BEJ)</div>
-        <div class="topbar-sub">DH-) *-CE 'D3H(1 "/EF</div>
+        <div class="topbar-name">المنظومة الرقمية</div>
+        <div class="topbar-sub">لوحة تحكم السوبر أدمن</div>
       </div>
     </div>
-    <div style="display:flex;gap:10px;align-items:center">
-      <button class="logout-btn" onclick="doLogout()">
-        <i class="bi bi-box-arrow-left"></i> .1H,
-      </button>
-    </div>
+    <button class="logout-btn" onclick="doLogout()">
+      <i class="bi bi-box-arrow-left"></i> خروج
+    </button>
   </div>
 
   <div class="page">
-
-    <!-- *F(JG 'F*G'! 'D'4*1'C -->
     <div class="expiry-alert" id="expiry-alert" style="display:none">
       <i class="bi bi-exclamation-triangle-fill"></i>
       <span id="expiry-alert-text"></span>
     </div>
 
-    <!-- %-5'&J'* -->
     <div class="stats">
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-buildings"></i> %,E'DJ 'DE/'13</div>
-        <div class="stat-value" id="s-total">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-check-circle"></i> F47)</div>
-        <div class="stat-value green" id="s-active">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-clock-history"></i> *F*GJ B1J('K</div>
-        <div class="stat-value warn" id="s-expiring">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-pause-circle"></i> EHBHA)</div>
-        <div class="stat-value red" id="s-suspended">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label"><i class="bi bi-currency-dollar"></i> 'D%J1'/'* (KWD)</div>
-        <div class="stat-value gold" id="s-revenue">0</div>
-      </div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-buildings"></i> إجمالي المدارس</div><div class="stat-value" id="s-total">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-check-circle"></i> نشطة</div><div class="stat-value green" id="s-active">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-clock-history"></i> تنتهي قريباً</div><div class="stat-value warn" id="s-expiring">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-pause-circle"></i> موقوفة</div><div class="stat-value red" id="s-suspended">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-currency-dollar"></i> الإيرادات (KWD)</div><div class="stat-value gold" id="s-revenue">0</div></div>
     </div>
 
-    <!-- %6'A) E/13) ,/J/) -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon"><i class="bi bi-plus-circle-fill"></i></div>
-        <div>
-          <h2>%6'A) E/13) ,/J/)</h2>
-          <p>#F4& E/13) HE/J1G' AJ .7H) H'-/)</p>
-        </div>
+        <div><h2>إضافة مدرسة جديدة</h2><p>أنشئ مدرسة ومديرها في خطوة واحدة</p></div>
       </div>
       <div class="card-body">
         <div class="form-grid">
+          <div class="form-group"><label class="form-label">معرّف المدرسة (ID) *</label><input type="text" class="form-input" id="f-school-id" placeholder="مثال: school_hawally"></div>
+          <div class="form-group"><label class="form-label">اسم المدرسة *</label><input type="text" class="form-input" id="f-school-name" placeholder="متوسطة الكويت النموذجية"></div>
+          <div class="form-group"><label class="form-label">المنطقة</label><input type="text" class="form-input" id="s-region" placeholder="حولي / مبارك الكبير ..."></div>
           <div class="form-group">
-            <label class="form-label">E91QA 'DE/13) (ID) *</label>
-            <input type="text" class="form-input" id="f-school-id" placeholder="E+'D: school_hawally">
-          </div>
-          <div class="form-group">
-            <label class="form-label">'3E 'DE/13) *</label>
-            <input type="text" class="form-input" id="f-school-name" placeholder="E*H37) 'DCHJ* 'DFEH0,J)">
-          </div>
-          <div class="form-group">
-            <label class="form-label">'DEF7B)</label>
-            <input type="text" class="form-input" id="s-region" placeholder="-HDJ / E('1C 'DC(J1 ...">
-          </div>
-          <div class="form-group">
-            <label class="form-label">'D.7)</label>
+            <label class="form-label">الخطة</label>
             <select class="form-input" id="f-plan">
-              <option value="basic">>I #3'3J)  150 KWD</option>
-              <option value="pro" selected>>H '-*1'AJ)  250 KWD</option>
-              <option value="enterprise">>G E$33J)  400 KWD</option>
+              <option value="basic">🥉 أساسية — 150 KWD</option>
+              <option value="pro" selected>🥇 احترافية — 250 KWD</option>
+              <option value="enterprise">🏆 مؤسسية — 400 KWD</option>
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label">*'1J. 'F*G'! 'D'4*1'C</label>
-            <input type="date" class="form-input" id="f-sub-end">
-          </div>
-          <div class="form-group">
-            <label class="form-label">DHF 'DF8'E 'D1&J3J</label>
-            <input type="color" class="form-input" id="f-primary-color" value="#0b2545" style="padding:3px;cursor:pointer;height:44px">
-          </div>
-          <div class="form-group">
-            <label class="form-label">DHF 'D*EJJ2</label>
-            <input type="color" class="form-input" id="f-accent-color" value="#d4920a" style="padding:3px;cursor:pointer;height:44px">
-          </div>
-          <div class="form-group">
-            <label class="form-label">49'1 'DE/13) (URL '.*J'1J)</label>
-            <input type="text" class="form-input" id="f-logo-url" placeholder="https://...">
-          </div>
-          <div class="form-group form-full">
-            <label class="form-label">ED'-8'* ('.*J'1J)</label>
-            <input type="text" class="form-input" id="f-notes" placeholder="#J E9DHE) %6'AJ)...">
-          </div>
+          <div class="form-group"><label class="form-label">تاريخ انتهاء الاشتراك</label><input type="date" class="form-input" id="f-sub-end"></div>
+          <div class="form-group"><label class="form-label">لون النظام الرئيسي</label><input type="color" class="form-input" id="f-primary-color" value="#0b2545" style="padding:3px;cursor:pointer;height:44px"></div>
+          <div class="form-group"><label class="form-label">لون التمييز</label><input type="color" class="form-input" id="f-accent-color" value="#d4920a" style="padding:3px;cursor:pointer;height:44px"></div>
+          <div class="form-group"><label class="form-label">شعار المدرسة (URL اختياري)</label><input type="text" class="form-input" id="f-logo-url" placeholder="https://..."></div>
+          <div class="form-group form-full"><label class="form-label">ملاحظات (اختياري)</label><input type="text" class="form-input" id="f-notes" placeholder="أي معلومة إضافية..."></div>
         </div>
         <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
-        <p style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:12px">(J'F'* 'DE/J1 'D#HD</p>
+        <p style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:12px">بيانات المدير الأول</p>
         <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">'3E 'DE3*./E (E/J1) *</label>
-            <input type="text" class="form-input" id="f-admin-id" placeholder="admin01">
-          </div>
-          <div class="form-group">
-            <label class="form-label">'D'3E 'DC'ED *</label>
-            <input type="text" class="form-input" id="f-admin-name" placeholder="#-E/ E-E/ 'D9DJ">
-          </div>
-          <div class="form-group">
-            <label class="form-label">CDE) 'DE1H1 *</label>
-            <input type="text" class="form-input" id="f-admin-pass" placeholder="8 #-1A 9DI 'D#BD">
-          </div>
-          <div class="form-group">
-            <label class="form-label">1BE 'DG'*A</label>
-            <input type="text" class="form-input" id="f-admin-phone" placeholder="965XXXXXXXX+">
-          </div>
+          <div class="form-group"><label class="form-label">اسم المستخدم (مدير) *</label><input type="text" class="form-input" id="f-admin-id" placeholder="admin01"></div>
+          <div class="form-group"><label class="form-label">الاسم الكامل *</label><input type="text" class="form-input" id="f-admin-name" placeholder="أحمد محمد العلي"></div>
+          <div class="form-group"><label class="form-label">كلمة المرور *</label><input type="text" class="form-input" id="f-admin-pass" placeholder="8 أحرف على الأقل"></div>
+          <div class="form-group"><label class="form-label">رقم الهاتف</label><input type="text" class="form-input" id="f-admin-phone" placeholder="+965XXXXXXXX"></div>
         </div>
         <button class="submit-btn" onclick="createSchool()">
-          <i class="bi bi-rocket-takeoff-fill"></i> %F4'! 'DE/13) H'DE/J1
+          <i class="bi bi-rocket-takeoff-fill"></i> إنشاء المدرسة والمدير
         </button>
       </div>
     </div>
 
-    <!-- B'&E) 'DE/'13 -->
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon"><i class="bi bi-buildings-fill"></i></div>
-        <div>
-          <h2>'DE/'13 'DE3,D)</h2>
-          <p>%/'1) C'ED) D,EJ9 'DE/'13</p>
-        </div>
+        <div><h2>المدارس المسجلة</h2><p>إدارة كاملة لجميع المدارس</p></div>
       </div>
       <div class="card-body">
         <div class="filter-bar">
-          <button class="filter-btn active" onclick="setFilter('all',this)">'DCD</button>
-          <button class="filter-btn" onclick="setFilter('active',this)">F47)</button>
-          <button class="filter-btn" onclick="setFilter('expiring',this)">*F*GJ B1J('K</button>
-          <button class="filter-btn" onclick="setFilter('suspended',this)">EHBHA)</button>
-          <button class="filter-btn" onclick="setFilter('expired',this)">EF*GJ)</button>
-          <input type="text" class="search-input" id="school-search" placeholder="= (-+ ('3E #H ID 'DE/13)..." oninput="renderSchools()">
+          <button class="filter-btn active" onclick="setFilter('all',this)">الكل</button>
+          <button class="filter-btn" onclick="setFilter('active',this)">نشطة</button>
+          <button class="filter-btn" onclick="setFilter('expiring',this)">تنتهي قريباً</button>
+          <button class="filter-btn" onclick="setFilter('suspended',this)">موقوفة</button>
+          <button class="filter-btn" onclick="setFilter('expired',this)">منتهية</button>
+          <input type="text" class="search-input" id="school-search" placeholder="🔍 بحث باسم أو ID المدرسة..." oninput="renderSchools()">
         </div>
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>'DE/13)</th>
-                <th>'D.7)</th>
-                <th>'D-'D)</th>
-                <th>'F*G'! 'D'4*1'C</th>
-                <th>'D%,1'!'*</th>
-              </tr>
-            </thead>
-            <tbody id="schools-tbody">
-              <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">,'1J 'D*-EJD...</td></tr>
-            </tbody>
+            <thead><tr><th>المدرسة</th><th>الخطة</th><th>الحالة</th><th>انتهاء الاشتراك</th><th>الإجراءات</th></tr></thead>
+            <tbody id="schools-tbody"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">جاري التحميل...</td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-  </div><!-- /page -->
-</div><!-- /main-screen -->
-
-<!-- ===== MODAL: *,/J/ 'D'4*1'C ===== -->
 <div class="modal-overlay" id="renew-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-arrow-clockwise" style="color:var(--green)"></i> *,/J/ '4*1'C  <span id="renew-school-name"></span></div>
+    <div class="modal-title"><i class="bi bi-arrow-clockwise" style="color:var(--green)"></i> تجديد اشتراك — <span id="renew-school-name"></span></div>
     <div class="modal-err" id="renew-error"></div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr">
-      <div class="form-group">
-        <label class="form-label">'D.7)</label>
-        <select class="form-input" id="renew-plan">
-          <option value="basic">>I #3'3J)  150 KWD</option>
-          <option value="pro">>H '-*1'AJ)  250 KWD</option>
-          <option value="enterprise">>G E$33J)  400 KWD</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">*'1J. 'D'F*G'! 'D,/J/</label>
-        <input type="date" class="form-input" id="renew-end-date">
-      </div>
-      <div class="form-group form-full">
-        <label class="form-label">ED'-8'* 'DE(D: 'DE/AH9 ('.*J'1J)</label>
-        <input type="text" class="form-input" id="renew-notes" placeholder="E+'D: *E 'D/A9 FB/'K (*'1J. ...">
-      </div>
+      <div class="form-group"><label class="form-label">الخطة</label><select class="form-input" id="renew-plan"><option value="basic">🥉 أساسية</option><option value="pro">🥇 احترافية</option><option value="enterprise">🏆 مؤسسية</option></select></div>
+      <div class="form-group"><label class="form-label">تاريخ الانتهاء الجديد</label><input type="date" class="form-input" id="renew-end-date"></div>
+      <div class="form-group form-full"><label class="form-label">ملاحظات (اختياري)</label><input type="text" class="form-input" id="renew-notes" placeholder="مثال: تم الدفع نقداً ..."></div>
     </div>
     <div id="renew-history-wrap" style="margin-top:16px;display:none">
-      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">=ث 3,D 'D*,/J/'* 'D3'(B) (".1 5):</div>
+      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">آخر التجديدات (5):</div>
       <div id="renew-history"></div>
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitRenewal()"><i class="bi bi-arrow-clockwise"></i> *,/J/ 'D'4*1'C</button>
-      <button class="modal-btn cancel" onclick="closeModal('renew-modal')">%D:'!</button>
+      <button class="modal-btn primary" onclick="submitRenewal()"><i class="bi bi-arrow-clockwise"></i> تجديد الاشتراك</button>
+      <button class="modal-btn cancel" onclick="closeModal('renew-modal')">إلغاء</button>
     </div>
   </div>
 </div>
 
-<!-- ===== MODAL: *1BJ) 'D.7) ===== -->
 <div class="modal-overlay" id="upgrade-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-arrow-up-circle-fill" style="color:#6d28d9"></i> *1BJ) .7)  <span id="upgrade-school-name"></span></div>
+    <div class="modal-title"><i class="bi bi-arrow-up-circle-fill" style="color:#6d28d9"></i> ترقية خطة — <span id="upgrade-school-name"></span></div>
     <div class="form-group" style="margin-bottom:14px">
-      <label class="form-label">'.*1 'D.7) 'D,/J/)</label>
-      <select class="form-input" id="upgrade-plan">
-        <option value="basic">>I #3'3J)  150 KWD</option>
-        <option value="pro">>H '-*1'AJ)  250 KWD</option>
-        <option value="enterprise">>G E$33J)  400 KWD</option>
-      </select>
+      <label class="form-label">اختر الخطة الجديدة</label>
+      <select class="form-input" id="upgrade-plan"><option value="basic">🥉 أساسية</option><option value="pro">🥇 احترافية</option><option value="enterprise">🏆 مؤسسية</option></select>
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitUpgrade()"><i class="bi bi-check-circle-fill"></i> *7(JB 'D*1BJ)</button>
-      <button class="modal-btn cancel" onclick="closeModal('upgrade-modal')">%D:'!</button>
+      <button class="modal-btn primary" onclick="submitUpgrade()">تطبيق الترقية</button>
+      <button class="modal-btn cancel" onclick="closeModal('upgrade-modal')">إلغاء</button>
     </div>
   </div>
 </div>
 
-<!-- ===== MODAL: (J'F'* E/J1 'DE/13) ===== -->
 <div class="modal-overlay" id="admin-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-person-badge-fill" style="color:var(--sky)"></i> (J'F'* E/J1  <span id="admin-modal-school"></span></div>
+    <div class="modal-title"><i class="bi bi-person-badge-fill" style="color:var(--sky)"></i> بيانات مدير — <span id="admin-modal-school"></span></div>
     <div id="admin-modal-content" style="font-size:14px;line-height:2"></div>
     <div class="form-group" style="margin-top:14px;display:none" id="change-pass-wrap">
-      <label class="form-label">CDE) 'DE1H1 'D,/J/) DDE/J1</label>
-      <input type="text" class="form-input" id="admin-new-pass" placeholder="'C*( CDE) 'DE1H1 'D,/J/) GF'">
+      <label class="form-label">كلمة المرور الجديدة للمدير</label>
+      <input type="text" class="form-input" id="admin-new-pass" placeholder="اكتب كلمة المرور الجديدة هنا">
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="document.getElementById('change-pass-wrap').style.display='block'" id="change-admin-pass-btn">= *:JJ1 CDE) 'DE1H1</button>
-      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()" id="save-admin-pass-btn">=¾ -A8 CDE) 'DE1H1</button>
-      <button class="modal-btn cancel" onclick="closeModal('admin-modal')">%:D'B</button>
+      <button class="modal-btn primary" onclick="document.getElementById('change-pass-wrap').style.display='block'">🔑 تغيير كلمة المرور</button>
+      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()">💾 حفظ</button>
+      <button class="modal-btn cancel" onclick="closeModal('admin-modal')">إغلاق</button>
     </div>
   </div>
 </div>
@@ -479,35 +257,27 @@ tr:hover td{background:#fafafa}
 import { db, auth } from './js/firebase-config.js';
 import { signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, deleteDoc,
-         serverTimestamp, getDocs, query, where, orderBy, getDoc }
+         serverTimestamp, getDocs, query, where, getDoc }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// ===== 'D+H'(* =====
-const PLANS = { basic: 150, pro: 250, enterprise: 400 };
-const PLAN_NAMES = { basic:'>I #3'3J)', pro:'>H '-*1'AJ)', enterprise:'>G E$33J)' };
-const PLAN_ICONS = { basic:'>I', pro:'>H', enterprise:'>G' };
+const PLANS = { basic:150, pro:250, enterprise:400 };
+const PLAN_NAMES = { basic:'أساسية', pro:'احترافية', enterprise:'مؤسسية' };
+const PLAN_ICONS = { basic:'🥉', pro:'🥇', enterprise:'🏆' };
 
-let allSchools = [];
-let currentFilter = 'all';
-let currentRenewId = null;
-let currentUpgradeId = null;
-let currentAdminDocId = null;
+let allSchools=[], currentFilter='all', currentRenewId=null, currentUpgradeId=null, currentAdminDocId=null;
 
-// ===== Modal Helpers =====
-window.openModal = function(id) { document.getElementById(id).classList.add('show'); };
-window.closeModal = function(id) { document.getElementById(id).classList.remove('show'); };
+window.openModal = id => document.getElementById(id).classList.add('show');
+window.closeModal = id => document.getElementById(id).classList.remove('show');
 
-// ===== Login =====
 window.checkSuperPass = async function() {
   const pass = document.getElementById('super-pass').value.trim();
   const err  = document.getElementById('login-err');
   const btn  = document.querySelector('.login-btn');
-  if(!pass) { err.textContent = '#/.D CDE) 'DE1H1'; err.style.display='block'; return; }
-  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> ,'1J 'D*-BB...'; btn.disabled = true; err.style.display='none';
+  if(!pass) { err.textContent='أدخل كلمة المرور'; err.style.display='block'; return; }
+  btn.innerHTML='<i class="bi bi-hourglass-split"></i> جاري التحقق...'; btn.disabled=true; err.style.display='none';
   try {
     const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-    const fns = getFunctions(auth.app, 'me-central1');
-    const res = await httpsCallable(fns, 'loginUser')({ schoolId:'system', userId:'superadmin', password:pass });
+    const res = await httpsCallable(getFunctions(auth.app,'me-central1'),'loginUser')({ schoolId:'system', userId:'superadmin', password:pass });
     if(res.data?.token) {
       await signInWithCustomToken(auth, res.data.token);
       document.getElementById('login-screen').style.display='none';
@@ -515,445 +285,275 @@ window.checkSuperPass = async function() {
       initDashboard();
     }
   } catch(e) {
-    err.textContent = '.7#: ' + (e.message.includes('unauthenticated') ? 'CDE) 'DE1H1 :J1 5-J-)' : e.message);
+    err.textContent='خطأ: '+(e.message.includes('unauthenticated')?'كلمة المرور غير صحيحة':e.message);
     err.style.display='block';
-  } finally { btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> /.HD "EF'; btn.disabled=false; document.getElementById('super-pass').value=''; }
-};
-document.getElementById('super-pass').addEventListener('keypress', e => { if(e.key==='Enter') window.checkSuperPass(); });
-window.doLogout = function() {
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('main-screen').style.display='none';
+  } finally {
+    btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> دخول آمن'; btn.disabled=false;
+    document.getElementById('super-pass').value='';
+  }
 };
 
-// ===== *GJ&) 'D/'4(H1/ =====
-const d = new Date(); d.setFullYear(d.getFullYear()+1);
-document.getElementById('f-sub-end').value = d.toISOString().slice(0,10);
+document.getElementById('super-pass').addEventListener('keypress', e => { if(e.key==='Enter') window.checkSuperPass(); });
+window.doLogout = () => { document.getElementById('login-screen').style.display='flex'; document.getElementById('main-screen').style.display='none'; };
+
+const d=new Date(); d.setFullYear(d.getFullYear()+1);
+document.getElementById('f-sub-end').value=d.toISOString().slice(0,10);
 
 function initDashboard() {
   onSnapshot(collection(db,'schools'), snap => {
-    allSchools = [];
-    snap.forEach(docSnap => allSchools.push({ id: docSnap.id, ...docSnap.data() }));
-    updateStats();
-    renderSchools();
-    checkExpiryAlerts();
+    allSchools=[];
+    snap.forEach(docSnap => allSchools.push({ id:docSnap.id, ...docSnap.data() }));
+    updateStats(); renderSchools(); checkExpiryAlerts();
   });
 }
 
-// ===== 'D%-5'&J'* =====
 function updateStats() {
-  const today = new Date().toISOString().slice(0,10);
-  const soon  = new Date(); soon.setDate(soon.getDate()+30);
-  const soonStr = soon.toISOString().slice(0,10);
-
-  let active=0, expiring=0, suspended=0, revenue=0;
+  const today=new Date().toISOString().slice(0,10);
+  const soon=new Date(); soon.setDate(soon.getDate()+30); const soonStr=soon.toISOString().slice(0,10);
+  let active=0,expiring=0,suspended=0,revenue=0;
   allSchools.forEach(s => {
-    const isActive = s.status === 'active';
-    const isExpired = s.subscriptionEnd && s.subscriptionEnd < today;
-    const isExpiring = s.subscriptionEnd && s.subscriptionEnd >= today && s.subscriptionEnd <= soonStr;
-    if(isActive && !isExpired) { active++; revenue += PLANS[s.plan||'pro']||250; }
-    if(isExpiring) expiring++;
-    if(!isActive || isExpired) suspended++;
+    const expired=s.subscriptionEnd&&s.subscriptionEnd<today;
+    const expiring2=s.subscriptionEnd&&s.subscriptionEnd>=today&&s.subscriptionEnd<=soonStr;
+    if(s.status==='active'&&!expired){active++;revenue+=PLANS[s.plan||'pro']||250;}
+    if(expiring2)expiring++;
+    if(s.status!=='active'||expired)suspended++;
   });
-
-  document.getElementById('s-total').textContent    = allSchools.length;
-  document.getElementById('s-active').textContent   = active;
-  document.getElementById('s-expiring').textContent = expiring;
-  document.getElementById('s-suspended').textContent= suspended;
-  document.getElementById('s-revenue').textContent  = revenue;
+  document.getElementById('s-total').textContent=allSchools.length;
+  document.getElementById('s-active').textContent=active;
+  document.getElementById('s-expiring').textContent=expiring;
+  document.getElementById('s-suspended').textContent=suspended;
+  document.getElementById('s-revenue').textContent=revenue;
 }
 
-// ===== *F(JG 'D'F*G'! =====
 function checkExpiryAlerts() {
-  const today = new Date().toISOString().slice(0,10);
-  const soon  = new Date(); soon.setDate(soon.getDate()+14);
-  const soonStr = soon.toISOString().slice(0,10);
-
-  const expiring = allSchools.filter(s =>
-    s.status==='active' && s.subscriptionEnd && s.subscriptionEnd >= today && s.subscriptionEnd <= soonStr
-  );
-
-  const alertEl = document.getElementById('expiry-alert');
-  if(expiring.length > 0) {
-    document.getElementById('expiry-alert-text').textContent =
-      `  *F(JG: ${expiring.length} E/'13 '4*1'CG' JF*GJ .D'D 14 JHE: ${expiring.map(s=>s.name||s.id).join(' ')}`;
-    alertEl.style.display = 'flex';
-  } else {
-    alertEl.style.display = 'none';
-  }
+  const today=new Date().toISOString().slice(0,10);
+  const soon=new Date(); soon.setDate(soon.getDate()+14); const soonStr=soon.toISOString().slice(0,10);
+  const exp=allSchools.filter(s=>s.status==='active'&&s.subscriptionEnd&&s.subscriptionEnd>=today&&s.subscriptionEnd<=soonStr);
+  const el=document.getElementById('expiry-alert');
+  if(exp.length>0){
+    document.getElementById('expiry-alert-text').textContent=`تنبيه: ${exp.length} مدارس اشتراكها ينتهي خلال 14 يوم: ${exp.map(s=>s.name||s.id).join(' — ')}`;
+    el.style.display='flex';
+  } else el.style.display='none';
 }
 
-// ===== AD*1 'DE/'13 =====
-window.setFilter = function(f, btn) {
-  currentFilter = f;
+window.setFilter = function(f,btn) {
+  currentFilter=f;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderSchools();
+  btn.classList.add('active'); renderSchools();
 };
 
-// ===== 916 'DE/'13 =====
 window.renderSchools = function() {
-  const today   = new Date().toISOString().slice(0,10);
-  const soon    = new Date(); soon.setDate(soon.getDate()+30);
-  const soonStr = soon.toISOString().slice(0,10);
-  const search  = document.getElementById('school-search')?.value.toLowerCase() || '';
-
-  let filtered = allSchools.filter(s => {
-    const matchSearch = !search || (s.name||'').toLowerCase().includes(search) || s.id.toLowerCase().includes(search);
-    if(!matchSearch) return false;
-
-    const isExpired  = s.subscriptionEnd && s.subscriptionEnd < today;
-    const isExpiring = s.subscriptionEnd && s.subscriptionEnd >= today && s.subscriptionEnd <= soonStr;
-    const isActive   = s.status==='active' && !isExpired;
-
-    if(currentFilter==='active')   return isActive;
-    if(currentFilter==='expiring') return isExpiring;
+  const today=new Date().toISOString().slice(0,10);
+  const soon=new Date(); soon.setDate(soon.getDate()+30); const soonStr=soon.toISOString().slice(0,10);
+  const search=document.getElementById('school-search')?.value.toLowerCase()||'';
+  let filtered=allSchools.filter(s => {
+    const match=!search||(s.name||'').toLowerCase().includes(search)||s.id.toLowerCase().includes(search);
+    if(!match)return false;
+    const expired=s.subscriptionEnd&&s.subscriptionEnd<today;
+    const expiring=s.subscriptionEnd&&s.subscriptionEnd>=today&&s.subscriptionEnd<=soonStr;
+    const active=s.status==='active'&&!expired;
+    if(currentFilter==='active')return active;
+    if(currentFilter==='expiring')return expiring;
     if(currentFilter==='suspended')return s.status==='suspended';
-    if(currentFilter==='expired')  return isExpired;
+    if(currentFilter==='expired')return expired;
     return true;
   });
-
-  if(filtered.length === 0) {
-    document.getElementById('schools-tbody').innerHTML =
-      '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">D' *H,/ E/'13 *7'(B 'DAD*1</td></tr>';
+  if(!filtered.length){
+    document.getElementById('schools-tbody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">لا توجد مدارس تطابق الفلتر</td></tr>';
     return;
   }
-
-  document.getElementById('schools-tbody').innerHTML = filtered.map(s => {
-    const isExpired  = s.subscriptionEnd && s.subscriptionEnd < today;
-    const isExpiring = s.subscriptionEnd && s.subscriptionEnd >= today && s.subscriptionEnd <= soonStr;
-    const isActive   = s.status==='active' && !isExpired;
-    const daysLeft   = s.subscriptionEnd
-      ? Math.ceil((new Date(s.subscriptionEnd) - new Date()) / 864e5) : null;
-
-    let statusBadge, endColor;
-    if(isExpired) {
-      statusBadge = '<span class="badge expired">ً EF*GJ 'D'4*1'C</span>';
-      endColor = 'color:var(--red)';
-    } else if(s.status==='suspended') {
-      statusBadge = '<span class="badge suspended">ّ EHBHA</span>';
-      endColor = 'color:var(--mid)';
-    } else if(isExpiring) {
-      statusBadge = `<span class="badge" style="background:#fef3c7;color:var(--warn)">  JF*GJ (9/ ${daysLeft} JHE</span>`;
-      endColor = 'color:var(--warn)';
-    } else {
-      statusBadge = '<span class="badge active"> F47</span>';
-      endColor = 'color:var(--green)';
-    }
-
-    const planKey = s.plan||'pro';
-    const planBadge = `<span class="plan-badge plan-${planKey}">${PLAN_ICONS[planKey]} ${PLAN_NAMES[planKey]||planKey}</span>`;
-
+  document.getElementById('schools-tbody').innerHTML=filtered.map(s=>{
+    const expired=s.subscriptionEnd&&s.subscriptionEnd<today;
+    const expiring=s.subscriptionEnd&&s.subscriptionEnd>=today&&s.subscriptionEnd<=soonStr;
+    const active=s.status==='active'&&!expired;
+    const daysLeft=s.subscriptionEnd?Math.ceil((new Date(s.subscriptionEnd)-new Date())/864e5):null;
+    let badge,endColor;
+    if(expired){badge='<span class="badge expired">منتهي</span>';endColor='color:var(--red)';}
+    else if(s.status==='suspended'){badge='<span class="badge suspended">موقوف</span>';endColor='color:var(--mid)';}
+    else if(expiring){badge=`<span class="badge" style="background:#fef3c7;color:var(--warn)">ينتهي بعد ${daysLeft} يوم</span>`;endColor='color:var(--warn)';}
+    else{badge='<span class="badge active">نشط</span>';endColor='color:var(--green)';}
+    const pk=s.plan||'pro'; const safe=(s.name||s.id).replace(/'/g,'');
     return `<tr>
-      <td>
-        <b style="color:var(--navy)">${s.name||s.id}</b><br>
-        <span style="font-size:11px;color:var(--mid)">${s.id}</span>
-        ${s.notes ? `<br><span style="font-size:10px;color:var(--mid);font-style:italic">${s.notes}</span>` : ''}
-      </td>
-      <td>${planBadge}</td>
-      <td>${statusBadge}</td>
-      <td style="${endColor};font-weight:700;font-size:12px">
-        ${s.subscriptionEnd||':J1 E-//'}
-        ${daysLeft!==null ? `<br><span style="font-size:10px">(${daysLeft>0?daysLeft+' JHE E*(BJ':'EF*GJ'})</span>` : ''}
-      </td>
-      <td>
-        <div class="actions-wrap">
-          <button class="action-btn link" onclick="copySchoolLink('${s.id}')">= 'D1'(7</button>
-          <button class="action-btn info" onclick="openEditSchoolModal('${s.id}')"> *9/JD</button>
-          <button class="action-btn info" onclick="showAdminCreds('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">=d 'DE/J1</button>
-          <button class="action-btn renew" onclick="openRenewModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')">= *,/J/</button>
-          <button class="action-btn upgrade" onclick="openUpgradeModal('${s.id}','${(s.name||s.id).replace(/'/g,'')}','${planKey}')"> *1BJ)</button>
-          <button class="action-btn ${isActive?'stop':'go'}" onclick="toggleSchool('${s.id}','${isActive?'suspended':'active'}')">
-            ${isActive?'ّ %JB'A':'¶ *A9JD'}
-          </button>
-          <button class="action-btn del" onclick="deleteSchool('${s.id}','${(s.name||s.id).replace(/'/g,'')}')">=ر -0A</button>
-        </div>
-      </td>
+      <td><b style="color:var(--navy)">${s.name||s.id}</b><br><span style="font-size:11px;color:var(--mid)">${s.id}</span>${s.notes?`<br><span style="font-size:10px;color:var(--mid)">${s.notes}</span>`:''}</td>
+      <td><span class="plan-badge plan-${pk}">${PLAN_ICONS[pk]} ${PLAN_NAMES[pk]||pk}</span></td>
+      <td>${badge}</td>
+      <td style="${endColor};font-weight:700;font-size:12px">${s.subscriptionEnd||'غير محدد'}${daysLeft!==null?`<br><span style="font-size:10px">(${daysLeft>0?daysLeft+' يوم متبقي':'منتهي'})</span>`:''}</td>
+      <td><div class="actions-wrap">
+        <button class="action-btn link" onclick="copySchoolLink('${s.id}')">🔗 الرابط</button>
+        <button class="action-btn info" onclick="openEditSchoolModal('${s.id}')">✏️ تعديل</button>
+        <button class="action-btn info" onclick="showAdminCreds('${s.id}','${safe}')">👤 المدير</button>
+        <button class="action-btn renew" onclick="openRenewModal('${s.id}','${safe}','${pk}')">🔄 تجديد</button>
+        <button class="action-btn upgrade" onclick="openUpgradeModal('${s.id}','${safe}','${pk}')">⬆️ ترقية</button>
+        <button class="action-btn ${active?'stop':'go'}" onclick="toggleSchool('${s.id}','${active?'suspended':'active'}')">${active?'⏸️ إيقاف':'▶️ تفعيل'}</button>
+        <button class="action-btn del" onclick="deleteSchool('${s.id}','${safe}')">🗑️ حذف</button>
+      </div></td>
     </tr>`;
   }).join('');
 };
 
-// ===== %F4'! E/13) ,/J/) =====
 window.createSchool = async function() {
-  const schoolId   = document.getElementById('f-school-id').value.trim().toLowerCase().replace(/\s+/g,'_');
-  const schoolName = document.getElementById('f-school-name').value.trim();
-  const plan       = document.getElementById('f-plan').value;
-  const subEnd     = document.getElementById('f-sub-end').value;
-  const adminId    = document.getElementById('f-admin-id').value.trim();
-  const adminName  = document.getElementById('f-admin-name').value.trim();
-  const adminPass  = document.getElementById('f-admin-pass').value.trim();
-  const adminPhone = document.getElementById('f-admin-phone').value.trim();
-  const notes      = document.getElementById('f-notes').value.trim();
-
-  if(!schoolId||!schoolName||!adminId||!adminName||!adminPass) {
-    alert('  J1,I ED! 'D-BHD 'DE7DH(): E91QA 'DE/13) '3EG' E91QA 'DE/J1 '3EG HCDE) 'DE1H1'); return;
-  }
-
-  const btn = document.querySelector('.submit-btn');
-  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> ,'1J 'D%F4'!...';
-
+  const schoolId=document.getElementById('f-school-id').value.trim().toLowerCase().replace(/\s+/g,'_');
+  const schoolName=document.getElementById('f-school-name').value.trim();
+  const plan=document.getElementById('f-plan').value;
+  const subEnd=document.getElementById('f-sub-end').value;
+  const adminId=document.getElementById('f-admin-id').value.trim();
+  const adminName=document.getElementById('f-admin-name').value.trim();
+  const adminPass=document.getElementById('f-admin-pass').value.trim();
+  const adminPhone=document.getElementById('f-admin-phone').value.trim();
+  const notes=document.getElementById('f-notes').value.trim();
+  if(!schoolId||!schoolName||!adminId||!adminName||!adminPass){alert('يرجى ملء الحقول المطلوبة');return;}
+  const btn=document.querySelector('.submit-btn');
+  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> جاري الإنشاء...';
   try {
-    await setDoc(doc(db,'schools',schoolId), {
-      name: schoolName, plan, status:'active',
-      subscriptionEnd: subEnd, notes,
-      region: document.getElementById('s-region')?.value?.trim() || '',
-      primaryColor: document.getElementById('f-primary-color')?.value || '#0b2545',
-      accentColor:  document.getElementById('f-accent-color')?.value  || '#d4920a',
-      logoUrl:      document.getElementById('f-logo-url')?.value?.trim() || '',
-      createdAt: serverTimestamp()
-    });
-
-    await addDoc(collection(db,'users'), {
-      schoolId, userId:adminId, name:adminName,
-      role:'admin', phone:adminPhone, createdAt: serverTimestamp()
-    });
-
-    await addDoc(collection(db,'subscription_logs'), {
-      schoolId, schoolName, plan, subEnd,
-      amount: PLANS[plan]||250, type:'new',
-      notes: ''4*1'C ,/J/', createdAt: serverTimestamp()
-    });
-
-    const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-    alert(` *E %F4'! 'DE/13) "${schoolName}" (F,'-!\n\n1'(7 'D/.HD:\n${link}\n\n(J'F'* 'DE/J1:\n'3E 'DE3*./E: ${adminId}\nCDE) 'DE1H1: ${adminPass}\n\n  '-A8 CDE) 'DE1H1 'D"F D#FG' DF *8G1 E,//'K.`);
-    ['f-school-id','f-school-name','f-admin-id','f-admin-name','f-admin-pass','f-admin-phone','f-notes']
-      .forEach(id => document.getElementById(id).value='');
-    const nd=new Date(); nd.setFullYear(nd.getFullYear()+1);
-    document.getElementById('f-sub-end').value=nd.toISOString().slice(0,10);
-  } catch(err) { alert('L .7#: '+err.message); }
-  finally { btn.disabled=false; btn.innerHTML='<i class="bi bi-rocket-takeoff-fill"></i> %F4'! 'DE/13) H'DE/J1'; }
+    await setDoc(doc(db,'schools',schoolId),{name:schoolName,plan,status:'active',subscriptionEnd:subEnd,notes,region:document.getElementById('s-region')?.value?.trim()||'',primaryColor:document.getElementById('f-primary-color')?.value||'#0b2545',accentColor:document.getElementById('f-accent-color')?.value||'#d4920a',logoUrl:document.getElementById('f-logo-url')?.value?.trim()||'',createdAt:serverTimestamp()});
+    await addDoc(collection(db,'users'),{schoolId,userId:adminId,name:adminName,role:'admin',phone:adminPhone,createdAt:serverTimestamp()});
+    await addDoc(collection(db,'subscription_logs'),{schoolId,schoolName,plan,subEnd,amount:PLANS[plan]||250,type:'new',notes:'اشتراك جديد',createdAt:serverTimestamp()});
+    const link=`https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
+    alert(`تم إنشاء المدرسة "${schoolName}" بنجاح!\n\nرابط الدخول:\n${link}\n\nبيانات المدير:\nاسم المستخدم: ${adminId}\nكلمة المرور: ${adminPass}`);
+    ['f-school-id','f-school-name','f-admin-id','f-admin-name','f-admin-pass','f-admin-phone','f-notes'].forEach(id=>document.getElementById(id).value='');
+    const nd=new Date(); nd.setFullYear(nd.getFullYear()+1); document.getElementById('f-sub-end').value=nd.toISOString().slice(0,10);
+  } catch(err){alert('خطأ: '+err.message);}
+  finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-rocket-takeoff-fill"></i> إنشاء المدرسة والمدير';}
 };
 
-// ===== *,/J/ 'D'4*1'C =====
-window.openRenewModal = async function(schoolId, schoolName, currentPlan) {
-  currentRenewId = schoolId;
-  document.getElementById('renew-school-name').textContent = schoolName;
-  document.getElementById('renew-plan').value = currentPlan;
-  document.getElementById('renew-notes').value = '';
+window.openRenewModal = async function(schoolId,schoolName,currentPlan) {
+  currentRenewId=schoolId;
+  document.getElementById('renew-school-name').textContent=schoolName;
+  document.getElementById('renew-plan').value=currentPlan;
+  document.getElementById('renew-notes').value='';
   document.getElementById('renew-error').style.display='none';
-
-  const nd=new Date(); nd.setFullYear(nd.getFullYear()+1);
-  document.getElementById('renew-end-date').value = nd.toISOString().slice(0,10);
-
+  const nd=new Date(); nd.setFullYear(nd.getFullYear()+1); document.getElementById('renew-end-date').value=nd.toISOString().slice(0,10);
   try {
-    const snap = await getDocs(query(
-      collection(db,'subscription_logs'),
-      where('schoolId','==',schoolId)
-    ));
-    const histWrap = document.getElementById('renew-history-wrap');
-    const histEl   = document.getElementById('renew-history');
-    if(!snap.empty) {
-      const logs = [...snap.docs].sort((a,b)=>
-        (b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0)
-      ).slice(0,5);
-      histEl.innerHTML = logs.map(d=>{
-        const v=d.data();
-        return `<div class="history-item">
-          <span class="date">${v.subEnd||':J1 E-//'}</span>
-          <span class="plan">${PLAN_ICONS[v.plan]||''} ${PLAN_NAMES[v.plan]||v.plan}</span>
-          <span class="amount">${v.amount||0} KWD</span>
-          <span style="font-size:11px;color:var(--mid)">${v.type==='new'?',/J/':'*,/J/'}</span>
-        </div>`;
-      }).join('');
-      histWrap.style.display='block';
-    } else {
-      histWrap.style.display='none';
-    }
-  } catch(e) {}
-
+    const snap=await getDocs(query(collection(db,'subscription_logs'),where('schoolId','==',schoolId)));
+    const hw=document.getElementById('renew-history-wrap'),he=document.getElementById('renew-history');
+    if(!snap.empty){
+      const logs=[...snap.docs].sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0)).slice(0,5);
+      he.innerHTML=logs.map(d=>{const v=d.data();return`<div class="history-item"><span style="font-weight:700;color:var(--navy)">${v.subEnd||'غير محدد'}</span><span style="color:var(--sky);font-weight:700">${PLAN_ICONS[v.plan]||''} ${PLAN_NAMES[v.plan]||v.plan}</span><span style="color:var(--green);font-weight:800">${v.amount||0} KWD</span></div>`;}).join('');
+      hw.style.display='block';
+    }else hw.style.display='none';
+  }catch(e){}
   openModal('renew-modal');
 };
 
 window.submitRenewal = async function() {
-  if(!currentRenewId) return;
-  const plan    = document.getElementById('renew-plan').value;
-  const endDate = document.getElementById('renew-end-date').value;
-  const notes   = document.getElementById('renew-notes').value.trim();
-  const errEl   = document.getElementById('renew-error');
-
-  if(!endDate) { errEl.textContent='  -// *'1J. 'F*G'! 'D'4*1'C'; errEl.style.display='block'; return; }
+  if(!currentRenewId)return;
+  const plan=document.getElementById('renew-plan').value,endDate=document.getElementById('renew-end-date').value,notes=document.getElementById('renew-notes').value.trim(),errEl=document.getElementById('renew-error');
+  if(!endDate){errEl.textContent='حدد تاريخ انتهاء الاشتراك';errEl.style.display='block';return;}
   errEl.style.display='none';
-
   try {
-    const school = allSchools.find(s=>s.id===currentRenewId);
-    await updateDoc(doc(db,'schools',currentRenewId), {
-      plan, status:'active', subscriptionEnd: endDate,
-      lastRenewed: serverTimestamp()
-    });
-
-    await addDoc(collection(db,'subscription_logs'), {
-      schoolId: currentRenewId, schoolName: school?.name||currentRenewId,
-      plan, subEnd: endDate, amount: PLANS[plan]||250,
-      type:'renewal', notes, createdAt: serverTimestamp()
-    });
-
-    closeModal('renew-modal');
-    alert(` *E *,/J/ '4*1'C "${school?.name||currentRenewId}" -*I ${endDate}`);
-  } catch(e) { errEl.textContent='.7#: '+e.message; errEl.style.display='block'; }
+    const school=allSchools.find(s=>s.id===currentRenewId);
+    await updateDoc(doc(db,'schools',currentRenewId),{plan,status:'active',subscriptionEnd:endDate,lastRenewed:serverTimestamp()});
+    await addDoc(collection(db,'subscription_logs'),{schoolId:currentRenewId,schoolName:school?.name||currentRenewId,plan,subEnd:endDate,amount:PLANS[plan]||250,type:'renewal',notes,createdAt:serverTimestamp()});
+    closeModal('renew-modal'); alert(`تم تجديد اشتراك "${school?.name||currentRenewId}" حتى ${endDate}`);
+  }catch(e){errEl.textContent='خطأ: '+e.message;errEl.style.display='block';}
 };
 
-// ===== *1BJ) 'D.7) =====
-window.openUpgradeModal = function(schoolId, schoolName, currentPlan) {
-  currentUpgradeId = schoolId;
-  document.getElementById('upgrade-school-name').textContent = schoolName;
-  document.getElementById('upgrade-plan').value = currentPlan;
+window.openUpgradeModal = function(schoolId,schoolName,currentPlan) {
+  currentUpgradeId=schoolId;
+  document.getElementById('upgrade-school-name').textContent=schoolName;
+  document.getElementById('upgrade-plan').value=currentPlan;
   openModal('upgrade-modal');
 };
 
 window.submitUpgrade = async function() {
-  if(!currentUpgradeId) return;
-  const plan = document.getElementById('upgrade-plan').value;
+  if(!currentUpgradeId)return;
+  const plan=document.getElementById('upgrade-plan').value;
   try {
-    const school = allSchools.find(s=>s.id===currentUpgradeId);
-    await updateDoc(doc(db,'schools',currentUpgradeId), { plan });
-    await addDoc(collection(db,'subscription_logs'), {
-      schoolId: currentUpgradeId, schoolName: school?.name||currentUpgradeId,
-      plan, amount: PLANS[plan]||250, type:'upgrade',
-      notes:`*1BJ) %DI ${PLAN_NAMES[plan]}`, createdAt: serverTimestamp()
-    });
-    closeModal('upgrade-modal');
-    alert(` *E *1BJ) .7) "${school?.name||currentUpgradeId}" %DI ${PLAN_NAMES[plan]}`);
-  } catch(e) { alert('.7#: '+e.message); }
+    const school=allSchools.find(s=>s.id===currentUpgradeId);
+    await updateDoc(doc(db,'schools',currentUpgradeId),{plan});
+    await addDoc(collection(db,'subscription_logs'),{schoolId:currentUpgradeId,schoolName:school?.name||currentUpgradeId,plan,amount:PLANS[plan]||250,type:'upgrade',notes:`ترقية إلى ${PLAN_NAMES[plan]}`,createdAt:serverTimestamp()});
+    closeModal('upgrade-modal'); alert(`تم ترقية خطة "${school?.name||currentUpgradeId}" إلى ${PLAN_NAMES[plan]}`);
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
-// ===== (J'F'* E/J1 'DE/13) =====
-window.showAdminCreds = async function(schoolId, schoolName) {
-  document.getElementById('admin-modal-school').textContent = schoolName;
+window.showAdminCreds = async function(schoolId,schoolName) {
+  document.getElementById('admin-modal-school').textContent=schoolName;
   document.getElementById('change-pass-wrap').style.display='none';
   document.getElementById('admin-new-pass').value='';
-  currentAdminDocId = null;
-
+  currentAdminDocId=null;
   try {
-    const snap = await getDocs(query(collection(db,'users'),
-      where('schoolId','==',schoolId), where('role','==','admin')));
-    if(snap.empty) { alert(`  D' JH,/ E/J1 DG0G 'DE/13)`); return; }
-
-    const admins=[];
-    snap.forEach(d => admins.push({ docId:d.id, ...d.data() }));
-    currentAdminDocId = admins[0].docId;
-
-    document.getElementById('admin-modal-content').innerHTML = admins.map(a=>`
-      <div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:8px">
-        <div>=d 'D'3E: <b>${a.name||':J1 E-//'}</b></div>
-        <div>= '3E 'DE3*./E: <b>${a.userId||':J1 E-//'}</b></div>
-        <div>=ٌ 'DG'*A: <b>${a.phone||':J1 E-//'}</b></div>
-      </div>
-    `).join('');
+    const snap=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('role','==','admin')));
+    if(snap.empty){alert('لا يوجد مدير لهذه المدرسة');return;}
+    const admins=[]; snap.forEach(d=>admins.push({docId:d.id,...d.data()}));
+    currentAdminDocId=admins[0].docId;
+    document.getElementById('admin-modal-content').innerHTML=admins.map(a=>`<div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:8px"><div>👤 الاسم: <b>${a.name||'غير محدد'}</b></div><div>🔑 اسم المستخدم: <b>${a.userId||'غير محدد'}</b></div><div>📱 الهاتف: <b>${a.phone||'غير محدد'}</b></div></div>`).join('');
     openModal('admin-modal');
-  } catch(e) { alert('.7#: '+e.message); }
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
 window.saveAdminPass = async function() {
-  if(!currentAdminDocId) return;
-  const newPass = document.getElementById('admin-new-pass').value.trim();
-  if(!newPass) { alert('#/.D CDE) 'DE1H1 'D,/J/)'); return; }
+  if(!currentAdminDocId)return;
+  const newPass=document.getElementById('admin-new-pass').value.trim();
+  if(!newPass){alert('أدخل كلمة المرور الجديدة');return;}
   try {
-    const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-    const resetFn = httpsCallable(getFunctions(auth.app,'me-central1'), 'resetUserPassword');
-    await resetFn({ targetUserDocId: currentAdminDocId, newPassword: newPass });
-    alert(' *E *:JJ1 CDE) 'DE1H1 (F,'-');
-    closeModal('admin-modal');
-  } catch(e) { alert('.7#: '+e.message); }
+    const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+    await httpsCallable(getFunctions(auth.app,'me-central1'),'resetUserPassword')({targetUserDocId:currentAdminDocId,newPassword:newPass});
+    alert('تم تغيير كلمة المرور بنجاح'); closeModal('admin-modal');
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
-// ===== F3. 1'(7 'DE/13) =====
 window.copySchoolLink = function(schoolId) {
-  const link = `https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-  navigator.clipboard?.writeText(link).then(()=>alert(` *E F3. 1'(7 'DE/13):\n${link}`))
-    .catch(()=>prompt(''F3. 'D1'(7:',link));
+  const link=`https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
+  navigator.clipboard?.writeText(link).then(()=>alert(`تم نسخ رابط المدرسة:\n${link}`)).catch(()=>prompt('انسخ الرابط:',link));
 };
 
-// ===== *A9JD/%JB'A 'DE/13) =====
-window.toggleSchool = async function(schoolId, newStatus) {
-  const school = allSchools.find(s=>s.id===schoolId);
-  const msg = newStatus==='suspended'
-    ? `GD *1J/ %JB'A "${school?.name||schoolId}"`
-    : `GD *1J/ *A9JD "${school?.name||schoolId}"`;
-  if(!confirm(msg)) return;
-  await updateDoc(doc(db,'schools',schoolId), { status: newStatus });
+window.toggleSchool = async function(schoolId,newStatus) {
+  const school=allSchools.find(s=>s.id===schoolId);
+  const msg=newStatus==='suspended'?`هل تريد إيقاف "${school?.name||schoolId}"؟`:`هل تريد تفعيل "${school?.name||schoolId}"؟`;
+  if(!confirm(msg))return;
+  await updateDoc(doc(db,'schools',schoolId),{status:newStatus});
 };
 
-// ===== -0A E/13) =====
-window.deleteSchool = async function(schoolId, schoolName) {
-  if(!confirm(`  *-0J1: -0A "${schoolName}" DF JECF 'D*1',9 9FG!\n\n3J*E -0A (J'F'* 'DE/13) AB7 ('DE3*./EHF H'D7D'( DF JO-0AH').`)) return;
-  const code = prompt(`DD*#CJ/ 'C*( E91QA 'DE/13) "${schoolId}" ('D6(7:`);
-  if(code !== schoolId) { alert(''DE91QA :J1 5-J-. *E %D:'! 'D-0A.'); return; }
-  try { await deleteDoc(doc(db,'schools',schoolId)); alert(` *E -0A "${schoolName}"`); }
-  catch(e) { alert('.7#: '+e.message); }
+window.deleteSchool = async function(schoolId,schoolName) {
+  if(!confirm(`تحذير: حذف "${schoolName}" لن يمكن التراجع عنه!`))return;
+  const code=prompt(`للتأكيد اكتب معرّف المدرسة "${schoolId}" بالضبط:`);
+  if(code!==schoolId){alert('المعرّف غير صحيح. تم إلغاء الحذف.');return;}
+  try{await deleteDoc(doc(db,'schools',schoolId));alert(`تم حذف "${schoolName}"`);}
+  catch(e){alert('خطأ: '+e.message);}
 };
 
-// ===== *9/JD (J'F'* 'DE/13) =====
 window.openEditSchoolModal = async function(schoolId) {
   try {
-    const snap = await getDoc(doc(db,'schools',schoolId));
-    if(!snap.exists()) { alert(''DE/13) :J1 EH,H/)'); return; }
-    const s = snap.data();
-
+    const snap=await getDoc(doc(db,'schools',schoolId));
+    if(!snap.exists()){alert('المدرسة غير موجودة');return;}
+    const s=snap.data();
     document.getElementById('edit-school-modal')?.remove();
-
-    const modal = document.createElement('div');
-    modal.id = 'edit-school-modal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
-    modal.innerHTML = `
-    <div style="background:#fff;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-            <h3 style="font-size:16px;font-weight:900;color:#0b2545;margin:0"> *9/JD: ${s.name || schoolId}</h3>
-            <button onclick="document.getElementById('edit-school-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer"></button>
-        </div>
-
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">'3E 'DE/13)</label>
-        <input id="edit-school-name" type="text" value="${s.name||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-            <div>
-                <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">'DDHF 'D1&J3J</label>
-                <input id="edit-primary-color" type="color" value="${s.primaryColor||'#0b2545'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer">
-            </div>
-            <div>
-                <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">DHF 'D*EJJ2</label>
-                <input id="edit-accent-color" type="color" value="${s.accentColor||'#d4920a'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer">
-            </div>
-        </div>
-
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">49'1 'DE/13) (URL)</label>
-        <input id="edit-logo-url" type="text" value="${s.logoUrl||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
-
-        <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ED'-8'*</label>
-        <input id="edit-notes" type="text" value="${s.notes||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:16px">
-
-        <button onclick="window.saveEditSchool('${schoolId}')" style="width:100%;padding:12px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer">
-            <i class="bi bi-check-circle-fill"></i> -A8 'D*9/JD'*
-        </button>
+    const modal=document.createElement('div');
+    modal.id='edit-school-modal';
+    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    modal.innerHTML=`<div style="background:#fff;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="font-size:16px;font-weight:900;color:#0b2545;margin:0">تعديل: ${s.name||schoolId}</h3>
+        <button onclick="document.getElementById('edit-school-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">✕</button>
+      </div>
+      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">اسم المدرسة</label>
+      <input id="edit-school-name" type="text" value="${s.name||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div><label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">اللون الرئيسي</label><input id="edit-primary-color" type="color" value="${s.primaryColor||'#0b2545'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer"></div>
+        <div><label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">لون التمييز</label><input id="edit-accent-color" type="color" value="${s.accentColor||'#d4920a'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer"></div>
+      </div>
+      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">شعار المدرسة (URL)</label>
+      <input id="edit-logo-url" type="text" value="${s.logoUrl||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
+      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ملاحظات</label>
+      <input id="edit-notes" type="text" value="${s.notes||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:16px">
+      <button onclick="window.saveEditSchool('${schoolId}')" style="width:100%;padding:12px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer">حفظ التعديلات</button>
     </div>`;
-    modal.addEventListener('click', e => { if(e.target===modal) modal.remove(); });
+    modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
     document.body.appendChild(modal);
-  } catch(e) { alert('.7#: ' + e.message); }
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
 window.saveEditSchool = async function(schoolId) {
   try {
-    await updateDoc(doc(db,'schools',schoolId), {
-      name:         document.getElementById('edit-school-name')?.value?.trim() || '',
-      primaryColor: document.getElementById('edit-primary-color')?.value || '#0b2545',
-      accentColor:  document.getElementById('edit-accent-color')?.value  || '#d4920a',
-      logoUrl:      document.getElementById('edit-logo-url')?.value?.trim() || '',
-      notes:        document.getElementById('edit-notes')?.value?.trim() || ''
-    });
-    alert(' *E -A8 'D*9/JD'* (F,'-');
-    document.getElementById('edit-school-modal')?.remove();
-  } catch(e) { alert('.7#: ' + e.message); }
+    await updateDoc(doc(db,'schools',schoolId),{name:document.getElementById('edit-school-name')?.value?.trim()||'',primaryColor:document.getElementById('edit-primary-color')?.value||'#0b2545',accentColor:document.getElementById('edit-accent-color')?.value||'#d4920a',logoUrl:document.getElementById('edit-logo-url')?.value?.trim()||'',notes:document.getElementById('edit-notes')?.value?.trim()||''});
+    alert('تم حفظ التعديلات بنجاح'); document.getElementById('edit-school-modal')?.remove();
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
-// ===== %:D'B 'DEH/'D'* ('DFB1 .'1,G' =====
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('show'); });
-});
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));
 </script>
 <script>
-if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(function(reg) {
-        setInterval(function() { reg.update(); }, 5 * 60 * 1000);
-    }).catch(function() {});
-}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(reg=>{setInterval(()=>reg.update(),5*60*1000);}).catch(()=>{});}
 </script>
 </body>
 </html>
