@@ -1,3 +1,6 @@
+const fs = require("fs/promises");
+const path = require("path");
+const { getStorage } = require("firebase-admin/storage");
 // build: 20260826012154
 "use strict";
 
@@ -735,6 +738,9 @@ exports.updateUserStatus = onCall({ cors: CORS, region: REGION }, async (req) =>
   const userRef = db.collection("users").doc(docId);
   const userDoc = await userRef.get();
   if (!userDoc.exists) throw new HttpsError("not-found", "user not found");
+  if (caller.role !== "superadmin" && userDoc.data().schoolId !== caller.schoolId) {
+  throw new HttpsError("permission-denied", "You can only manage users in your school");
+}
   const currentVersion = userDoc.data().tokenVersion || 1;
   await userRef.update({
     status,
@@ -751,6 +757,8 @@ exports.scheduledDailyBackup = onSchedule(
       .where("status", "==", "active")
       .get();
 
+    const bucket = getStorage().bucket();
+
     for (const schoolDoc of schoolsSnap.docs) {
       const schoolId = schoolDoc.id;
       try {
@@ -760,17 +768,18 @@ exports.scheduledDailyBackup = onSchedule(
           const snap = await db.collection(col).where("schoolId", "==", schoolId).get();
           backup[col] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         }
-        await db.collection("backups").add({
-          schoolId, automatic: true,
-          data: JSON.stringify(backup),
-          createdAt: FieldValue.serverTimestamp()
+
+        const fileName = `backups/${schoolId}/${new Date().toISOString().split('T')[0]}.json`;
+        const file = bucket.file(fileName);
+        
+        await file.save(JSON.stringify(backup), {
+          contentType: "application/json",
+          gzip: true
         });
+
       } catch (e) {
         console.error("BACKUP_FAIL", schoolId, e.message);
       }
     }
   }
 );
-// updated: 20260826012547
-// fix: remove OTP from logs 20260826072312
-// security-patch: 1787718478
