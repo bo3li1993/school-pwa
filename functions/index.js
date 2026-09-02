@@ -1,6 +1,5 @@
 const fs = require("fs/promises");
 const path = require("path");
-const { getStorage } = require("firebase-admin/storage");
 // build: 20260826012154
 "use strict";
 
@@ -757,8 +756,7 @@ exports.scheduledDailyBackup = onSchedule(
       .where("status", "==", "active")
       .get();
 
-    const bucket = getStorage().bucket();
-
+const bucket = admin.storage().bucket();
     for (const schoolDoc of schoolsSnap.docs) {
       const schoolId = schoolDoc.id;
       try {
