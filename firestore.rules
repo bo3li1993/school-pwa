@@ -43,8 +43,7 @@ service cloud.firestore {
     }
 
     function validSuperAdmin() {
-      return sessionValid() && isSuperAdmin();
-    }
+return isSuperAdmin();    }
 
     function isTeacher() {
       return isAuth() && userRole() in ["teacher", "social_worker", "nurse", "guard", "wing_supervisor", "department_head"];
