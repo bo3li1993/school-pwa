@@ -299,14 +299,12 @@ window.doLogout = () => { document.getElementById('login-screen').style.display=
 const d=new Date(); d.setFullYear(d.getFullYear()+1);
 document.getElementById('f-sub-end').value=d.toISOString().slice(0,10);
 
-function initDashboard() {
-  onSnapshot(collection(db,'schools'), snap => {
-    allSchools=[];
-    snap.forEach(docSnap => allSchools.push({ id:docSnap.id, ...docSnap.data() }));
-    updateStats(); renderSchools(); checkExpiryAlerts();
-  });
+async function initDashboard() {
+  const snap = await getDocs(collection(db,'schools'));
+  allSchools=[];
+  snap.forEach(docSnap => allSchools.push({ id:docSnap.id, ...docSnap.data() }));
+  updateStats(); renderSchools(); checkExpiryAlerts();
 }
-
 function updateStats() {
   const today=new Date().toISOString().slice(0,10);
   const soon=new Date(); soon.setDate(soon.getDate()+30); const soonStr=soon.toISOString().slice(0,10);
