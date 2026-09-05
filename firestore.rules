@@ -76,12 +76,10 @@ return isSuperAdmin();    }
 
     // Users
     match /users/{userId} {
-      allow read: if sessionValid() && (
-        request.auth.uid == userId ||
+allow read: if isSuperAdmin() || (sessionValid() && (        request.auth.uid == userId ||
         isAdmin() && sameSchool(resource.data.schoolId) ||
         isSuperAdmin()
-      );
-      allow create: if false;
+));      allow create: if false;
       allow update: if isFullAdmin() && sameSchool(resource.data.schoolId) &&
         roleNotChanged() &&
         schoolIdNotChanged() &&
