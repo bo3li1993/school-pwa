@@ -168,7 +168,7 @@ window.executePromotion = async function() {
 
     try {
         var { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        var functions = getFunctions(auth.app);
+        var functions = getFunctions(auth.app, 'me-central1');
         var promoteFn = httpsCallable(functions, 'promoteStudents');
 
         var schoolId = getActiveSchoolId();
