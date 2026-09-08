@@ -256,3 +256,29 @@ window.sendClinicWhatsApp = async function(studentName, classId, complaint, resu
         window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
     } catch(e) { window.showToast('❌ '+e.message,'error'); }
 };
+window.archiveOldClinicRecords = async function() {
+    if (!confirm('أرشفة كل سجلات العيادة الأقدم من 30 يوماً؟')) return;
+    var schoolId = getActiveSchoolId();
+    var cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 30);
+    var cutoffISO = cutoff.toISOString().slice(0,10);
+
+    try {
+        var { deleteDoc, doc: docFn, addDoc: addD } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var snap = await getDocs(query(collection(db, 'clinic'), where('schoolId', '==', schoolId)));
+        var toArchive = snap.docs.filter(d => {
+            var date = d.data().date || d.data().dateStr || '';
+            return date && date < cutoffISO;
+        });
+
+        if (!toArchive.length) { window.showToast('لا توجد سجلات قديمة للأرشفة', 'info'); return; }
+
+        for (var d of toArchive) {
+            await addD(collection(db, 'clinic_archive'), { ...d.data(), archivedAt: new Date().toISOString() });
+            await deleteDoc(docFn(db, 'clinic', d.id));
+        }
+
+        window.showToast('✅ تم أرشفة ' + toArchive.length + ' سجل عيادة');
+        loadClinicLogsLive();
+    } catch(e) { window.showToast('❌ ' + e.message, 'error'); }
+};

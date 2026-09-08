@@ -173,11 +173,13 @@ window.handleRegisterGatepassLive = async function(e) {
     loadGatepassLogsLive();
 };
 
-async function loadGatepassLogsLive() {
+async function loadGatepassLogsLive(filterDate) {
     var tbody = document.getElementById('gatepass-logs-tbody');
     if (!tbody) return;
 
     var schoolId = getActiveSchoolId();
+    var today2 = new Date().toISOString().slice(0,10);
+    var dateFilter2 = filterDate || document.getElementById('gate-date-filter')?.value || today2;
     var snap = await getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId)));
     
     var html = '';
@@ -224,4 +226,31 @@ window.sendGatepassWhatsApp = async function(studentName, classId, reason, time)
         );
         window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
     } catch(e) { window.showToast('❌ '+e.message,'error'); }
+};
+window.archiveOldGatepasses = async function() {
+    if (!confirm('أرشفة كل سجلات الاستئذان الأقدم من 7 أيام؟')) return;
+    var schoolId = getActiveSchoolId();
+    var cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 7);
+    var cutoffISO = cutoff.toISOString().slice(0,10);
+
+    try {
+        var { deleteDoc, doc: docFn } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var snap = await getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId)));
+        var toArchive = snap.docs.filter(d => {
+            var date = d.data().date || '';
+            return date && date < cutoffISO;
+        });
+
+        if (!toArchive.length) { window.showToast('لا توجد سجلات قديمة للأرشفة', 'info'); return; }
+
+        for (var d of toArchive) {
+            var { addDoc: addD } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+            await addD(collection(db, 'gatepass_archive'), { ...d.data(), archivedAt: new Date().toISOString() });
+            await deleteDoc(docFn(db, 'gatepass', d.id));
+        }
+
+        window.showToast('✅ تم أرشفة ' + toArchive.length + ' سجل');
+        loadGatepassLogsLive();
+    } catch(e) { window.showToast('❌ ' + e.message, 'error'); }
 };
