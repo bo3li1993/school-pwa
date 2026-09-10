@@ -952,6 +952,48 @@ exports.analyzeAttendance = onCall({
 });
 
 
+// ===== analyzeAttendance — تحليل الغياب بـ Gemini =====
+exports.analyzeAttendance = onCall({
+  cors: CORS,
+  region: REGION,
+  secrets: ["GEMINI_API_KEY"]
+}, async (req) => {
+  await requireAuth(req, ["admin", "assistant_manager", "superadmin", "wing_supervisor"]);
+
+  const { prompt } = req.data;
+  if (!prompt || typeof prompt !== "string" || prompt.length > 8000) {
+    throw new HttpsError("invalid-argument", "prompt غير صالح.");
+  }
+
+  const apiKey = (process.env.GEMINI_API_KEY || "").trim();
+  if (!apiKey) throw new HttpsError("internal", "مفتاح API غير مضبوط.");
+
+  try {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 1000, temperature: 0.7 }
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error("Gemini error: " + response.status + " — " + err.slice(0, 200));
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "لم يتم الحصول على نتيجة";
+    return { text };
+
+  } catch (error) {
+    throw new HttpsError("internal", error.message || "فشل التحليل.");
+  }
+});
+
+
 exports.scheduledDailyBackup = onSchedule(
   { schedule: "0 1 * * *", region: REGION, timeZone: "Asia/Kuwait" },
   async () => {
