@@ -49,10 +49,8 @@ service cloud.firestore {
 
     // Schools
     match /schools/{schoolId} {
-      allow read: if isSuperAdmin()
-        || (isAuth() && userSchool() == schoolId)
-        || (!isAuth());
-      allow write: if isSuperAdmin();
+allow read: if true;    
+  allow write: if isSuperAdmin();
     }
 
     // Users
