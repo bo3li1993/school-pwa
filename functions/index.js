@@ -850,6 +850,57 @@ exports.promoteStudents = onCall({ cors: CORS, region: REGION }, async (req) => 
 });
 
 
+// ===== analyzeAttendance — تحليل الغياب بالذكاء الاصطناعي =====
+// أضف هذا الكود في نهاية functions/index.js قبل scheduledDailyBackup
+// ثم أضف في Firebase Secrets: ANTHROPIC_API_KEY
+
+exports.analyzeAttendance = onCall({
+  cors: CORS,
+  region: REGION,
+  secrets: ["ANTHROPIC_API_KEY"]
+}, async (req) => {
+  const caller = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
+
+  const { prompt } = req.data;
+  if (!prompt || typeof prompt !== "string" || prompt.length > 5000) {
+    throw new HttpsError("invalid-argument", "prompt غير صالح.");
+  }
+
+  const apiKey = (process.env.ANTHROPIC_API_KEY || "").trim();
+  if (!apiKey) {
+    throw new HttpsError("internal", "مفتاح API غير مضبوط.");
+  }
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("API error: " + response.status);
+    }
+
+    const data = await response.json();
+    const text = data.content?.[0]?.text || "لم يتم الحصول على نتيجة";
+
+    return { text };
+
+  } catch (error) {
+    throw new HttpsError("internal", error.message || "فشل التحليل.");
+  }
+});
+
+
 exports.scheduledDailyBackup = onSchedule(
   { schedule: "0 1 * * *", region: REGION, timeZone: "Asia/Kuwait" },
   async () => {
