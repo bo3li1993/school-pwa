@@ -334,44 +334,44 @@ allow read: if true;
     
     // Performance Committee
     match /pc_visits/{docId} {
-      allow read, create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
-      allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
+      allow read, create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
       allow update: if false;
     }
     match /pc_tasks/{docId} {
-      allow read, create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
-      allow update, delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
+      allow read, create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update, delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
     match /pc_meetings/{docId} {
-      allow read, create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
-      allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
+      allow read, create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
       allow update: if false;
     }
     match /pc_student_followup/{docId} {
-      allow read, create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
-      allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
+      allow read, create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
       allow update: if false;
     }
 
     
     // Performance Committee
     match /pc_visits/{docId} {
-      allow read, create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
-      allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
+      allow read, create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
       allow update: if false;
     }
     match /pc_tasks/{docId} {
-      allow read, create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
-      allow update, delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
+      allow read, create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow update, delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
     match /pc_meetings/{docId} {
-      allow read, create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
-      allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
+      allow read, create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
       allow update: if false;
     }
     match /pc_student_followup/{docId} {
-      allow read, create: if isFullAdmin() && sameSchool(request.resource.data.schoolId);
-      allow delete: if isFullAdmin() && sameSchool(resource.data.schoolId);
+      allow read, create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
       allow update: if false;
     }
 
