@@ -72,7 +72,8 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div class="menu-item" data-tab="tab-teachers" onclick="window.switchTab('tab-teachers')"><i class="bi bi-person-badge"></i> دليل المعلمين</div>
     <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> الزيارات الفنية</div>
     <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-eye"></i> زيارات المدير</div>
-    <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds')"><i class="bi bi-binoculars"></i> جولة الجناح</div>
+    <div class="menu-item" data-tab="tab-performance-committee" onclick="window.switchTab('tab-performance-committee')"><i class="bi bi-clipboard2-data-fill"></i> لجنة الأداء</div>
+    <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds','tab-performance-committee')"><i class="bi bi-binoculars"></i> جولة الجناح</div>
   </div>
   <div class="menu-divider"></div>
 
@@ -126,6 +127,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div id="tab-visits" class="tab-content"></div>
     <div id="tab-manager-visits" class="tab-content"></div>
     <div id="tab-rounds" class="tab-content"></div>
+    <div id="tab-performance-committee" class="tab-content"></div>
     <div id="tab-mailbox" class="tab-content"></div>
     <div id="tab-announcements" class="tab-content"></div>
     <div id="tab-honors" class="tab-content"></div>
@@ -240,7 +242,7 @@ var moduleMap={
     'tab-teachers':{file:'./js/modules/teachers.js',init:'initTeachersModule'},
     'tab-visits':{file:'./js/modules/visits.js',init:'initVisitsModule'},
     'tab-manager-visits':{file:'./js/modules/manager_visits.js',init:'initManagerVisitsModule'},
-    'tab-rounds':{file:'./js/modules/rounds.js',init:'initRoundsModule'},
+    'tab-rounds':{file:'./js/modules/rounds.js',init:'initRoundsModule'},'tab-performance-committee':{file:'./js/modules/performance_committee.js',init:'initPerformanceCommitteeModule'},
     'tab-mailbox':{file:'./js/modules/mailbox.js',init:'initMailboxModule'},'tab-announcements':{file:'./js/modules/announcements.js',init:'initAnnouncementsModule'},
     'tab-honors':{file:'./js/modules/honors.js',init:'initHonorsModule'},
     'tab-rewards':{file:'./js/modules/rewards.js',init:'initRewardsModule'},
