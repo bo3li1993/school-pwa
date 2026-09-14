@@ -36,7 +36,7 @@ service cloud.firestore {
     }
 
     function isSchoolStaff(schoolId) {
-      return sameSchool(schoolId) && (isAdmin() || isTeacher());
+      return sameSchool(schoolId) && (isAdmin() || isTeacher() || userRole() == 'wing_supervisor');
     }
 
     function roleNotChanged() {
