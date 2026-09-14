@@ -1,20 +1,237 @@
 import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, serverTimestamp }
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, serverTimestamp }
     from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// ══════════════════════════════════════════════
-// لوحة لجنة متابعة الأداء المدرسي
-// ══════════════════════════════════════════════
-
-var pcData = {
-    visits: [],
-    tasks: [],
-    meetings: [],
-    students: [],
-    users: []
+// ══ البنود الحرفية من النماذج الرسمية ══
+var VISIT_CRITERIA = {
+    "عربي": [
+        "نظافة – الفصل / مختبر لغوي / العروض الضوئية",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "إعداد خطط تقويم للطلاب الضعاف",
+        "إعداد خطط اثرائية للطلاب الفائقين",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية",
+        "الجملة الإملائية العلاجية",
+        "التقويم (إعداد الفقرة وتحقيقها)"
+    ],
+    "انجليزي": [
+        "نظافة – الفصل / مختبر لغوي / العروض الضوئية",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "إعداد خطط تقويم للطلاب الضعاف",
+        "إعداد خطط اثرائية للطلاب الفائقين",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية",
+        "إستخدام اللغة الإنجليزية فى الحوار داخل الفصل"
+    ],
+    "رياضيات": [
+        "نظافة – الفصل / قاعة العروض الضوئية",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "إعداد خطط تقويم للطلاب الضعاف",
+        "إعداد خطط اثرائية للطلاب الفائقين",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية"
+    ],
+    "علوم": [
+        "نظافة – الفصل / مختبر العلوم",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "إعداد خطط تقويم للطلاب الضعاف",
+        "إعداد خطط اثرائية للطلاب الفائقين",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية",
+        "الإجابة على التقويم مع الطلاب خلال الحصة"
+    ],
+    "اجتماعيات": [
+        "نظافة – الفصل / قاعة العروض الضوئية",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "إعداد خطط تقويم للطلاب الضعاف",
+        "إعداد خطط اثرائية للطلاب الفائقين",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية"
+    ],
+    "تربية_اسلامية": [
+        "نظافة – الفصل / المسجد / العروض الضوئية",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف في المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "إعداد خطط تقويم للطلاب الضعاف",
+        "إعداد خطط إثرائية للطلاب الفائقين",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية",
+        "الدقة في قراءة الآيات والأحاديث"
+    ],
+    "حاسوب": [
+        "نظافة - الفصل - مختبر الحاسوب",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "تنفيذ التطبيق العلمي بسلاسة أمام الطلاب",
+        "متابعة الطلاب أثناء التطبيق العملي",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية"
+    ],
+    "كهرباء": [
+        "نظافة الورشة - ترتيب الأدوات والخامات",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "تنفيذ التطبيق العلمي بسلاسة أمام الطلاب",
+        "متابعة الطلاب أثناء التطبيق العملي",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية"
+    ],
+    "ديكور": [
+        "نظافة الورشة - ترتيب الأدوات والخامات",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "تنفيذ التطبيق العلمي بسلاسة أمام الطلاب",
+        "متابعة الطلاب أثناء التطبيق العملي",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "متابعة الأعمال التحريرية"
+    ],
+    "فنية": [
+        "نظافة – المرسم - ترتيب الأدوات والخامات",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة - الخط",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "تجهيز المرسم بالوسائل والخامات",
+        "التمكين من التعامل مع الخامات",
+        "متابعة أعمال الطلاب وإنتاجهم",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية"
+    ],
+    "تربية_بدنية": [
+        "نظافة – الملاعب الخارجية / الصالة الرياضية",
+        "التزام الطلاب بالزي الرياضي",
+        "إعداد الدرس حسب البرنامج الزمني والتحضير الذهني",
+        "تسلسل الأداء حسب خطة التحضير",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "تمرينات الإحماء وتناسبها مع المهارة",
+        "العلاقة مع الطلاب وأسلوب التعامل",
+        "تناسب الإعداد الخاص مع المهارة المقررة",
+        "التدرج فى شرح المهارة",
+        "نشاط المجموعات فى تطبيق المهارة",
+        "تنفيذ اللعبة الصغيرة وأثرها على الطلاب",
+        "تأدية تمرين الختام والتهدئة",
+        "استخدام النداءات الصحيحة والسلامة",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "تنظيم استخدام زمن الحصة الدراسية",
+        "المظهر العام للمعلم وشخصيته",
+        "الأدوات الرياضية المستخدمة وكفايتها"
+    ],
+    "موسيقى": [
+        "نظافة – قاعة الموسيقى / قاعة العروض الضوئية",
+        "ترتيب الطلاب – تنظيم القاعة (طاولات – مقاعد)",
+        "تنسيق السبورة",
+        "إعداد الدرس / التحضير الذهني",
+        "عرض المفاهيم والمعلومات بطريقة تراعي جميع المستويات",
+        "استجابة الطلاب خلال المناقشة والشرح",
+        "العلاقة مع الطلاب خلال المناقشة والشرح",
+        "التصرف فى المواقف المختلفة الطارئة",
+        "السلامة اللغوية / الطلاقة الشفهية / القراءة الجهرية",
+        "التمكين من المادة العلمية",
+        "الأهتمام بمواهب المتعلمين وتنميتها",
+        "التمكين من استخدام الآلات الموسيقية",
+        "المظهر العام للمعلم وشخصيته",
+        "التقنيات التربوية والوسائل المستخدمة",
+        "تنظيم استخدام زمن الحصة الدراسية"
+    ]
 };
 
-var pcActiveTab = 'overview';
+var RATINGS = ['ممتاز', 'جيد جداً', 'جيد', 'مقبول', 'ضعيف'];
+var RATING_SCORES = { 'ممتاز': 5, 'جيد جداً': 4, 'جيد': 3, 'مقبول': 2, 'ضعيف': 1 };
+var RATING_COLORS = { 'ممتاز': '#16a34a', 'جيد جداً': '#2563eb', 'جيد': '#0891b2', 'مقبول': '#d97706', 'ضعيف': '#dc2626' };
+
+var pcData = { visits: [], tasks: [], meetings: [], students: [], users: [] };
+var currentVisitRatings = {};
 
 export async function initPerformanceCommitteeModule() {
     var container = document.getElementById('tab-performance-committee');
@@ -22,925 +239,465 @@ export async function initPerformanceCommitteeModule() {
 
     container.innerHTML = `
     <style>
-    .pc-header {
-        background: linear-gradient(135deg, #0b2545 0%, #1a78c2 100%);
-        border-radius: 14px;
-        padding: 20px 24px;
-        color: #fff;
-        margin-bottom: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    .pc-header h2 { font-size: 18px; font-weight: 900; margin: 0; }
-    .pc-header p  { font-size: 12px; color: rgba(255,255,255,.75); margin: 4px 0 0; }
-
-    .pc-tabs {
-        display: flex;
-        gap: 6px;
-        overflow-x: auto;
-        padding-bottom: 2px;
-        margin-bottom: 18px;
-        scrollbar-width: none;
-    }
-    .pc-tabs::-webkit-scrollbar { display: none; }
-
-    .pc-tab {
-        flex-shrink: 0;
-        padding: 9px 18px;
-        border: 2px solid var(--line);
-        border-radius: 10px;
-        font-family: 'Cairo',sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-        background: #fff;
-        color: var(--mid);
-        transition: all .2s;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .pc-tab.active {
-        border-color: var(--navy);
-        background: var(--navy);
-        color: #fff;
-    }
-
-    .pc-kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 12px;
-        margin-bottom: 18px;
-    }
-
-    .pc-kpi {
-        background: #fff;
-        border-radius: 12px;
-        padding: 16px;
-        border: 1px solid var(--line);
-        text-align: center;
-        box-shadow: 0 2px 6px rgba(0,0,0,.04);
-    }
-
-    .pc-kpi-icon {
-        font-size: 28px;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    .pc-kpi-num {
-        font-size: 26px;
-        font-weight: 900;
-        display: block;
-        color: var(--navy);
-        margin-bottom: 4px;
-    }
-
-    .pc-kpi-label {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--mid);
-    }
-
-    .pc-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid var(--line);
-        margin-bottom: 14px;
-        overflow: hidden;
-    }
-
-    .pc-card-header {
-        padding: 14px 18px;
-        background: var(--off);
-        border-bottom: 1px solid var(--line);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .pc-card-title {
-        font-weight: 900;
-        font-size: 14px;
-        color: var(--navy);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .pc-card-body { padding: 16px; }
-
-    .pc-add-btn {
-        background: var(--sky);
-        color: #fff;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-family: 'Cairo',sans-serif;
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: all .2s;
-    }
-    .pc-add-btn:hover { opacity: .9; }
-
-    .pc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .pc-table th {
-        padding: 10px 12px;
-        background: var(--navy);
-        color: #fff;
-        text-align: right;
-        font-weight: 700;
-    }
-    .pc-table td {
-        padding: 10px 12px;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    .pc-table tr:last-child td { border-bottom: none; }
-    .pc-table tr:hover td { background: #fafbfc; }
-
-    .pc-badge {
-        padding: 3px 10px;
-        border-radius: 6px;
-        font-size: 11px;
-        font-weight: 700;
-    }
-    .pc-badge.done     { background: #f0fdf4; color: #16a34a; }
-    .pc-badge.progress { background: #eff6ff; color: #1a78c2; }
-    .pc-badge.late     { background: #fef2f2; color: #dc2626; }
-
-    .pc-progress-bar {
-        height: 8px;
-        background: #e5e7eb;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-top: 4px;
-    }
-    .pc-progress-fill {
-        height: 100%;
-        background: var(--sky);
-        border-radius: 4px;
-        transition: width .5s;
-    }
-
-    .pc-form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 12px;
-        margin-bottom: 14px;
-    }
-
-    .pc-input, .pc-select, .pc-textarea {
-        width: 100%;
-        padding: 10px 14px;
-        border: 1.5px solid var(--line);
-        border-radius: 8px;
-        font-family: 'Cairo',sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        outline: none;
-        background: var(--off);
-        transition: border-color .2s;
-        box-sizing: border-box;
-    }
-    .pc-input:focus, .pc-select:focus, .pc-textarea:focus {
-        border-color: var(--sky);
-        background: #fff;
-    }
-    .pc-textarea { min-height: 80px; resize: vertical; }
-
-    .pc-label {
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--mid);
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    .pc-submit-btn {
-        background: var(--navy);
-        color: #fff;
-        border: none;
-        padding: 11px 24px;
-        border-radius: 8px;
-        font-family: 'Cairo',sans-serif;
-        font-size: 14px;
-        font-weight: 900;
-        cursor: pointer;
-        transition: all .2s;
-    }
-    .pc-submit-btn:hover { opacity: .9; }
-
-    .pc-empty {
-        text-align: center;
-        padding: 30px;
-        color: var(--mid);
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .pc-section-hidden { display: none; }
+    .pc-wrap{font-family:'Cairo',sans-serif;direction:rtl;}
+    .pc-hdr{background:linear-gradient(135deg,#0b2545,#1a78c2);border-radius:14px;padding:18px 22px;color:#fff;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+    .pc-hdr h2{font-size:16px;font-weight:900;margin:0;}
+    .pc-hdr p{font-size:11px;color:rgba(255,255,255,.7);margin:3px 0 0;}
+    .pc-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none;}
+    .pc-tabs::-webkit-scrollbar{display:none;}
+    .pc-tab{flex-shrink:0;padding:8px 14px;border:2px solid var(--line);border-radius:10px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:#fff;color:var(--mid);transition:all .2s;}
+    .pc-tab.active{border-color:var(--navy);background:var(--navy);color:#fff;}
+    .pc-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px;}
+    .pc-kpi{background:#fff;border-radius:12px;padding:14px;border:1px solid var(--line);text-align:center;}
+    .pc-kpi-num{font-size:22px;font-weight:900;display:block;color:var(--navy);margin-bottom:3px;}
+    .pc-kpi-label{font-size:11px;font-weight:700;color:var(--mid);}
+    .pc-card{background:#fff;border-radius:12px;border:1px solid var(--line);margin-bottom:14px;overflow:hidden;}
+    .pc-card-header{padding:12px 16px;background:var(--off);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+    .pc-card-title{font-weight:900;font-size:13px;color:var(--navy);display:flex;align-items:center;gap:8px;}
+    .pc-card-body{padding:14px;}
+    .pc-btn{background:var(--sky);color:#fff;border:none;padding:8px 14px;border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;}
+    .pc-btn.sm{padding:5px 9px;font-size:11px;}
+    .pc-btn.red{background:#dc2626;}
+    .pc-btn.green{background:#16a34a;}
+    .pc-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+    .pc-tbl th{padding:8px 10px;background:var(--navy);color:#fff;text-align:right;font-weight:700;}
+    .pc-tbl td{padding:8px 10px;border-bottom:1px solid #f0f0f0;}
+    .pc-tbl tr:last-child td{border-bottom:none;}
+    .pc-badge{padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;}
+    .pc-badge.done{background:#f0fdf4;color:#16a34a;}
+    .pc-badge.prg{background:#eff6ff;color:#1a78c2;}
+    .pc-badge.late{background:#fef2f2;color:#dc2626;}
+    .pc-fld{margin-bottom:11px;}
+    .pc-lbl{font-size:12px;font-weight:800;color:var(--mid);display:block;margin-bottom:4px;}
+    .pc-inp,.pc-sel{width:100%;padding:10px 13px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;outline:none;background:var(--off);box-sizing:border-box;}
+    .pc-inp:focus,.pc-sel:focus{border-color:var(--sky);background:#fff;}
+    .pc-ta{width:100%;padding:10px 13px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;outline:none;background:var(--off);min-height:65px;resize:vertical;box-sizing:border-box;}
+    .pc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:11px;margin-bottom:12px;}
+    .pc-submit{width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:900;cursor:pointer;}
+    .pc-hidden{display:none;}
+    .pc-empty{text-align:center;padding:25px;color:var(--mid);font-size:13px;font-weight:700;}
+    .vt{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;}
+    .vt th{background:var(--navy);color:#fff;padding:7px 9px;text-align:right;font-size:11px;}
+    .vt td{padding:7px 9px;border-bottom:1px solid #eee;vertical-align:middle;}
+    .vt tr:last-child td{border-bottom:none;}
+    .rd{display:flex;gap:3px;justify-content:center;}
+    .rd input{display:none;}
+    .rd-dot{width:30px;height:30px;border-radius:50%;border:2px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#aaa;cursor:pointer;background:#f9f9f9;transition:all .15s;}
+    .rd input:checked+.rd-dot{border-color:var(--sky);background:var(--sky);color:#fff;}
+    .pc-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:16px;}
+    .pc-modal.show{display:flex;}
+    .pc-mbox{background:#fff;border-radius:16px;padding:22px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;direction:rtl;}
+    .pc-mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+    .pc-mtitle{font-size:15px;font-weight:900;color:var(--navy);margin:0;}
     </style>
 
-    <!-- هيدر اللوحة -->
-    <div class="pc-header">
+    <div class="pc-wrap">
+    <div class="pc-hdr">
         <div>
             <h2><i class="bi bi-clipboard2-data-fill"></i> لوحة متابعة الأداء المدرسي</h2>
-            <p>لجنة متابعة الأداء — ${new Date().toLocaleDateString('ar-KW', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}</p>
+            <p>لجنة متابعة الأداء — ${new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p>
         </div>
-        <button class="pc-add-btn" onclick="window.pcExportReport()">
-            <i class="bi bi-printer-fill"></i> تصدير التقرير
-        </button>
+        <button class="pc-btn" onclick="window.pcExportReport()"><i class="bi bi-printer-fill"></i> تصدير</button>
     </div>
 
-    <!-- تبويبات اللجنة -->
     <div class="pc-tabs">
-        <button class="pc-tab active" onclick="window.pcSwitchTab('overview', this)">
-            <i class="bi bi-speedometer2"></i> نظرة عامة
-        </button>
-        <button class="pc-tab" onclick="window.pcSwitchTab('visits', this)">
-            <i class="bi bi-eye-fill"></i> الزيارات الصفية
-        </button>
-        <button class="pc-tab" onclick="window.pcSwitchTab('tasks', this)">
-            <i class="bi bi-list-check"></i> التكليفات والقرارات
-        </button>
-        <button class="pc-tab" onclick="window.pcSwitchTab('meetings', this)">
-            <i class="bi bi-people-fill"></i> محاضر الاجتماعات
-        </button>
-        <button class="pc-tab" onclick="window.pcSwitchTab('students', this)">
-            <i class="bi bi-person-lines-fill"></i> متابعة الطلاب
-        </button>
+        <button class="pc-tab active" onclick="window.pcSwitchTab('overview',this)"><i class="bi bi-speedometer2"></i> نظرة عامة</button>
+        <button class="pc-tab" onclick="window.pcSwitchTab('visits',this)"><i class="bi bi-eye-fill"></i> الزيارات الصفية</button>
+        <button class="pc-tab" onclick="window.pcSwitchTab('tasks',this)"><i class="bi bi-list-check"></i> القرارات</button>
+        <button class="pc-tab" onclick="window.pcSwitchTab('meetings',this)"><i class="bi bi-people-fill"></i> الاجتماعات</button>
+        <button class="pc-tab" onclick="window.pcSwitchTab('students',this)"><i class="bi bi-person-lines-fill"></i> متابعة الطلاب</button>
     </div>
 
-    <!-- ===== نظرة عامة ===== -->
+    <!-- نظرة عامة -->
     <div id="pc-tab-overview">
-        <div class="pc-kpi-grid" id="pc-kpis">
-            <div class="pc-kpi"><span class="pc-kpi-icon">👁️</span><span class="pc-kpi-num" id="kpi-visits">-</span><span class="pc-kpi-label">زيارة صفية منجزة</span></div>
-            <div class="pc-kpi"><span class="pc-kpi-icon">✅</span><span class="pc-kpi-num" id="kpi-tasks-done">-</span><span class="pc-kpi-label">قرار منجز</span></div>
-            <div class="pc-kpi"><span class="pc-kpi-icon">⏳</span><span class="pc-kpi-num" id="kpi-tasks-pending">-</span><span class="pc-kpi-label">قرار قيد التنفيذ</span></div>
-            <div class="pc-kpi"><span class="pc-kpi-icon">📋</span><span class="pc-kpi-num" id="kpi-meetings">-</span><span class="pc-kpi-label">اجتماع منعقد</span></div>
+        <div class="pc-kpi-grid">
+            <div class="pc-kpi"><span style="font-size:22px;display:block;margin-bottom:5px;">👁️</span><span class="pc-kpi-num" id="kpi-v">-</span><span class="pc-kpi-label">زيارة صفية</span></div>
+            <div class="pc-kpi"><span style="font-size:22px;display:block;margin-bottom:5px;">✅</span><span class="pc-kpi-num" id="kpi-d">-</span><span class="pc-kpi-label">قرار منجز</span></div>
+            <div class="pc-kpi"><span style="font-size:22px;display:block;margin-bottom:5px;">⏳</span><span class="pc-kpi-num" id="kpi-p">-</span><span class="pc-kpi-label">قيد التنفيذ</span></div>
+            <div class="pc-kpi"><span style="font-size:22px;display:block;margin-bottom:5px;">📋</span><span class="pc-kpi-num" id="kpi-m">-</span><span class="pc-kpi-label">اجتماع</span></div>
         </div>
+        <div class="pc-card"><div class="pc-card-header"><span class="pc-card-title"><i class="bi bi-list-check"></i> آخر القرارات</span></div><div class="pc-card-body" style="overflow-x:auto;"><div id="pc-ov-tasks"><div class="pc-empty">⏳</div></div></div></div>
+        <div class="pc-card"><div class="pc-card-header"><span class="pc-card-title"><i class="bi bi-eye-fill"></i> آخر الزيارات</span></div><div class="pc-card-body" style="overflow-x:auto;"><div id="pc-ov-visits"><div class="pc-empty">⏳</div></div></div></div>
+    </div>
 
-        <!-- آخر القرارات -->
+    <!-- الزيارات -->
+    <div id="pc-tab-visits" class="pc-hidden">
         <div class="pc-card">
             <div class="pc-card-header">
-                <span class="pc-card-title"><i class="bi bi-list-check"></i> آخر القرارات والتكليفات</span>
+                <span class="pc-card-title"><i class="bi bi-clipboard2-check-fill"></i> سجل الزيارات الصفية</span>
+                <button class="pc-btn" onclick="window.pcOpenVisitModal()"><i class="bi bi-plus-circle-fill"></i> زيارة جديدة</button>
             </div>
-            <div class="pc-card-body" style="overflow-x:auto;">
-                <div id="pc-recent-tasks"><div class="pc-empty">⏳ جاري التحميل...</div></div>
-            </div>
-        </div>
-
-        <!-- آخر الزيارات -->
-        <div class="pc-card">
-            <div class="pc-card-header">
-                <span class="pc-card-title"><i class="bi bi-eye-fill"></i> آخر الزيارات الصفية</span>
-            </div>
-            <div class="pc-card-body" style="overflow-x:auto;">
-                <div id="pc-recent-visits"><div class="pc-empty">⏳ جاري التحميل...</div></div>
-            </div>
+            <div class="pc-card-body" style="overflow-x:auto;"><div id="pc-visits-list"><div class="pc-empty">⏳</div></div></div>
         </div>
     </div>
 
-    <!-- ===== الزيارات الصفية ===== -->
-    <div id="pc-tab-visits" class="pc-section-hidden">
+    <!-- القرارات -->
+    <div id="pc-tab-tasks" class="pc-hidden">
         <div class="pc-card">
-            <div class="pc-card-header">
-                <span class="pc-card-title"><i class="bi bi-plus-circle-fill"></i> تسجيل زيارة صفية جديدة</span>
-            </div>
+            <div class="pc-card-header"><span class="pc-card-title"><i class="bi bi-plus-circle-fill"></i> إضافة قرار / تكليف</span></div>
             <div class="pc-card-body">
-                <div class="pc-form-grid">
-                    <div>
-                        <label class="pc-label">اسم المعلم *</label>
-                        <select id="pc-visit-teacher" class="pc-select">
-                            <option value="">-- اختر المعلم --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="pc-label">المادة *</label>
-                        <input type="text" id="pc-visit-subject" class="pc-input" placeholder="الرياضيات">
-                    </div>
-                    <div>
-                        <label class="pc-label">الصف *</label>
-                        <input type="text" id="pc-visit-class" class="pc-input" placeholder="6/1">
-                    </div>
-                    <div>
-                        <label class="pc-label">التقييم العام</label>
-                        <select id="pc-visit-rating" class="pc-select">
-                            <option value="ممتاز">⭐⭐⭐⭐⭐ ممتاز</option>
-                            <option value="جيد جداً">⭐⭐⭐⭐ جيد جداً</option>
-                            <option value="جيد" selected>⭐⭐⭐ جيد</option>
-                            <option value="مقبول">⭐⭐ مقبول</option>
-                            <option value="يحتاج تحسين">⭐ يحتاج تحسين</option>
-                        </select>
-                    </div>
+                <div class="pc-grid">
+                    <div class="pc-fld"><label class="pc-lbl">عنوان القرار *</label><input type="text" id="pc-task-title" class="pc-inp" placeholder="عنوان القرار"></div>
+                    <div class="pc-fld"><label class="pc-lbl">المسؤول</label><select id="pc-task-owner" class="pc-sel"><option value="">-- اختر --</option></select></div>
+                    <div class="pc-fld"><label class="pc-lbl">تاريخ الاستحقاق *</label><input type="date" id="pc-task-due" class="pc-inp"></div>
+                    <div class="pc-fld"><label class="pc-lbl">الأولوية</label><select id="pc-task-priority" class="pc-sel"><option value="عالية">🔴 عالية</option><option value="متوسطة" selected>🟡 متوسطة</option><option value="منخفضة">🟢 منخفضة</option></select></div>
                 </div>
-                <div class="pc-form-grid">
-                    <div>
-                        <label class="pc-label">نقاط القوة</label>
-                        <textarea id="pc-visit-strengths" class="pc-textarea" placeholder="نقاط القوة الملاحظة..."></textarea>
-                    </div>
-                    <div>
-                        <label class="pc-label">التوصيات والتغذية الراجعة</label>
-                        <textarea id="pc-visit-recommendations" class="pc-textarea" placeholder="التوصيات..."></textarea>
-                    </div>
-                </div>
-                <button class="pc-submit-btn" onclick="window.pcSaveVisit()">
-                    <i class="bi bi-check-circle-fill"></i> حفظ الزيارة
-                </button>
+                <div class="pc-fld"><label class="pc-lbl">التفاصيل</label><textarea id="pc-task-notes" class="pc-ta" placeholder="تفاصيل..."></textarea></div>
+                <button class="pc-submit" onclick="window.pcSaveTask()"><i class="bi bi-check-circle-fill"></i> حفظ القرار</button>
             </div>
         </div>
-
         <div class="pc-card">
             <div class="pc-card-header">
-                <span class="pc-card-title"><i class="bi bi-table"></i> سجل الزيارات الصفية</span>
+                <span class="pc-card-title"><i class="bi bi-table"></i> سجل القرارات</span>
+                <select id="pc-task-filter" onchange="window.pcFilterTasks()" class="pc-sel" style="padding:6px 10px;font-size:12px;width:auto;">
+                    <option value="">الكل</option><option value="قيد التنفيذ">قيد التنفيذ</option><option value="منجز">منجز</option><option value="متأخر">متأخر</option>
+                </select>
             </div>
-            <div class="pc-card-body" style="overflow-x:auto;">
-                <div id="pc-visits-list"><div class="pc-empty">⏳ جاري التحميل...</div></div>
-            </div>
+            <div class="pc-card-body" style="overflow-x:auto;"><div id="pc-tasks-list"><div class="pc-empty">⏳</div></div></div>
         </div>
     </div>
 
-    <!-- ===== التكليفات والقرارات ===== -->
-    <div id="pc-tab-tasks" class="pc-section-hidden">
+    <!-- الاجتماعات -->
+    <div id="pc-tab-meetings" class="pc-hidden">
         <div class="pc-card">
-            <div class="pc-card-header">
-                <span class="pc-card-title"><i class="bi bi-plus-circle-fill"></i> إضافة قرار أو تكليف جديد</span>
-            </div>
+            <div class="pc-card-header"><span class="pc-card-title"><i class="bi bi-plus-circle-fill"></i> تسجيل اجتماع</span></div>
             <div class="pc-card-body">
-                <div class="pc-form-grid">
-                    <div>
-                        <label class="pc-label">عنوان القرار / التكليف *</label>
-                        <input type="text" id="pc-task-title" class="pc-input" placeholder="مثال: متابعة أداء المعلمين الجدد">
-                    </div>
-                    <div>
-                        <label class="pc-label">المسؤول عن التنفيذ *</label>
-                        <select id="pc-task-owner" class="pc-select">
-                            <option value="">-- اختر المسؤول --</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="pc-label">تاريخ الاستحقاق *</label>
-                        <input type="date" id="pc-task-due" class="pc-input">
-                    </div>
-                    <div>
-                        <label class="pc-label">الأولوية</label>
-                        <select id="pc-task-priority" class="pc-select">
-                            <option value="عالية">🔴 عالية</option>
-                            <option value="متوسطة" selected>🟡 متوسطة</option>
-                            <option value="منخفضة">🟢 منخفضة</option>
-                        </select>
-                    </div>
+                <div class="pc-grid">
+                    <div class="pc-fld"><label class="pc-lbl">رقم الاجتماع</label><input type="number" id="pc-m-num" class="pc-inp" placeholder="1"></div>
+                    <div class="pc-fld"><label class="pc-lbl">التاريخ *</label><input type="date" id="pc-m-date" class="pc-inp" value="${getTodayISO()}"></div>
+                    <div class="pc-fld"><label class="pc-lbl">النوع</label><select id="pc-m-type" class="pc-sel"><option value="دوري">دوري</option><option value="طارئ">طارئ</option><option value="تقييمي">تقييمي</option></select></div>
                 </div>
-                <div style="margin-bottom:14px;">
-                    <label class="pc-label">التفاصيل والملاحظات</label>
-                    <textarea id="pc-task-notes" class="pc-textarea" placeholder="تفاصيل إضافية..."></textarea>
-                </div>
-                <button class="pc-submit-btn" onclick="window.pcSaveTask()">
-                    <i class="bi bi-check-circle-fill"></i> حفظ القرار
-                </button>
+                <div class="pc-fld"><label class="pc-lbl">جدول الأعمال *</label><textarea id="pc-m-agenda" class="pc-ta" placeholder="جدول الأعمال..."></textarea></div>
+                <div class="pc-fld"><label class="pc-lbl">القرارات الصادرة</label><textarea id="pc-m-decisions" class="pc-ta" placeholder="القرارات..."></textarea></div>
+                <button class="pc-submit" onclick="window.pcSaveMeeting()"><i class="bi bi-check-circle-fill"></i> حفظ المحضر</button>
             </div>
         </div>
-
-        <div class="pc-card">
-            <div class="pc-card-header">
-                <span class="pc-card-title"><i class="bi bi-table"></i> سجل القرارات والتكليفات</span>
-                <div style="display:flex; gap:6px;">
-                    <select id="pc-task-filter" onchange="window.pcFilterTasks()" class="pc-select" style="padding:6px 10px; font-size:12px; width:auto;">
-                        <option value="">الكل</option>
-                        <option value="قيد التنفيذ">قيد التنفيذ</option>
-                        <option value="منجز">منجز</option>
-                        <option value="متأخر">متأخر</option>
-                    </select>
-                </div>
-            </div>
-            <div class="pc-card-body" style="overflow-x:auto;">
-                <div id="pc-tasks-list"><div class="pc-empty">⏳ جاري التحميل...</div></div>
-            </div>
-        </div>
+        <div class="pc-card"><div class="pc-card-header"><span class="pc-card-title"><i class="bi bi-journal-text"></i> سجل المحاضر</span></div><div class="pc-card-body" style="overflow-x:auto;"><div id="pc-meetings-list"><div class="pc-empty">⏳</div></div></div></div>
     </div>
 
-    <!-- ===== محاضر الاجتماعات ===== -->
-    <div id="pc-tab-meetings" class="pc-section-hidden">
-        <div class="pc-card">
-            <div class="pc-card-header">
-                <span class="pc-card-title"><i class="bi bi-plus-circle-fill"></i> تسجيل اجتماع جديد</span>
-            </div>
-            <div class="pc-card-body">
-                <div class="pc-form-grid">
-                    <div>
-                        <label class="pc-label">رقم الاجتماع</label>
-                        <input type="number" id="pc-meeting-num" class="pc-input" placeholder="1">
-                    </div>
-                    <div>
-                        <label class="pc-label">تاريخ الاجتماع *</label>
-                        <input type="date" id="pc-meeting-date" class="pc-input" value="${getTodayISO()}">
-                    </div>
-                    <div>
-                        <label class="pc-label">نوع الاجتماع</label>
-                        <select id="pc-meeting-type" class="pc-select">
-                            <option value="دوري">دوري</option>
-                            <option value="طارئ">طارئ</option>
-                            <option value="تقييمي">تقييمي</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="margin-bottom:12px;">
-                    <label class="pc-label">جدول الأعمال *</label>
-                    <textarea id="pc-meeting-agenda" class="pc-textarea" placeholder="جدول الأعمال..."></textarea>
-                </div>
-                <div style="margin-bottom:14px;">
-                    <label class="pc-label">القرارات الصادرة</label>
-                    <textarea id="pc-meeting-decisions" class="pc-textarea" placeholder="القرارات الصادرة عن الاجتماع..."></textarea>
-                </div>
-                <button class="pc-submit-btn" onclick="window.pcSaveMeeting()">
-                    <i class="bi bi-check-circle-fill"></i> حفظ المحضر
-                </button>
-            </div>
-        </div>
-
-        <div class="pc-card">
-            <div class="pc-card-header">
-                <span class="pc-card-title"><i class="bi bi-journal-text"></i> سجل محاضر الاجتماعات</span>
-            </div>
-            <div class="pc-card-body" style="overflow-x:auto;">
-                <div id="pc-meetings-list"><div class="pc-empty">⏳ جاري التحميل...</div></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== متابعة الطلاب ===== -->
-    <div id="pc-tab-students" class="pc-section-hidden">
+    <!-- متابعة الطلاب -->
+    <div id="pc-tab-students" class="pc-hidden">
         <div class="pc-card">
             <div class="pc-card-header">
                 <span class="pc-card-title"><i class="bi bi-people-fill"></i> قائمة الطلاب بحاجة متابعة</span>
-                <button class="pc-add-btn" onclick="window.pcShowAddStudentModal()">
-                    <i class="bi bi-plus-circle-fill"></i> إضافة طالب للمتابعة
-                </button>
+                <button class="pc-btn" onclick="document.getElementById('pc-stu-modal').classList.add('show')"><i class="bi bi-plus-circle-fill"></i> إضافة</button>
             </div>
-            <div class="pc-card-body" style="overflow-x:auto;">
-                <div id="pc-students-list"><div class="pc-empty">⏳ جاري التحميل...</div></div>
+            <div class="pc-card-body" style="overflow-x:auto;"><div id="pc-students-list"><div class="pc-empty">⏳</div></div></div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Modal نموذج الزيارة الرسمي -->
+    <div id="pc-visit-modal" class="pc-modal">
+        <div class="pc-mbox">
+            <div class="pc-mhdr">
+                <h3 class="pc-mtitle"><i class="bi bi-clipboard2-check-fill"></i> نموذج زيارة صفية رسمي</h3>
+                <button onclick="document.getElementById('pc-visit-modal').classList.remove('show')" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
             </div>
+            <div style="background:var(--off);border-radius:10px;padding:14px;margin-bottom:14px;">
+                <div class="pc-grid">
+                    <div class="pc-fld"><label class="pc-lbl">اسم المعلم *</label><select id="pv-teacher" class="pc-sel"><option value="">-- اختر --</option></select></div>
+                    <div class="pc-fld"><label class="pc-lbl">المادة *</label>
+                        <select id="pv-subject" class="pc-sel" onchange="window.pcLoadCriteria(this.value)">
+                            <option value="">-- اختر المادة --</option>
+                            <option value="عربي">اللغة العربية</option>
+                            <option value="انجليزي">اللغة الإنجليزية</option>
+                            <option value="رياضيات">الرياضيات</option>
+                            <option value="علوم">العلوم</option>
+                            <option value="اجتماعيات">الاجتماعيات</option>
+                            <option value="تربية_اسلامية">التربية الإسلامية</option>
+                            <option value="حاسوب">الحاسوب</option>
+                            <option value="تربية_بدنية">التربية البدنية</option>
+                            <option value="فنية">التربية الفنية</option>
+                            <option value="موسيقى">التربية الموسيقية</option>
+                            <option value="ديكور">الديكور</option>
+                            <option value="كهرباء">الكهرباء والإلكترونيات</option>
+                        </select>
+                    </div>
+                    <div class="pc-fld"><label class="pc-lbl">موضوع الدرس *</label><input type="text" id="pv-topic" class="pc-inp" placeholder="موضوع الدرس"></div>
+                    <div class="pc-fld"><label class="pc-lbl">الصف</label><input type="text" id="pv-class" class="pc-inp" placeholder="6/1"></div>
+                    <div class="pc-fld"><label class="pc-lbl">الحصة</label><select id="pv-period" class="pc-sel">${[1,2,3,4,5,6,7].map(p=>`<option value="${p}">الحصة ${p}</option>`).join('')}</select></div>
+                    <div class="pc-fld"><label class="pc-lbl">التاريخ</label><input type="date" id="pv-date" class="pc-inp" value="${getTodayISO()}"></div>
+                </div>
+            </div>
+            <div id="pv-criteria-wrap" style="display:none;">
+                <h4 style="font-weight:900;color:var(--navy);margin-bottom:10px;font-size:13px;"><i class="bi bi-table"></i> عناصر التقييم والمتابعة</h4>
+                <div style="overflow-x:auto;">
+                    <table class="vt">
+                        <thead><tr><th style="width:35px;">#</th><th>عناصر التقييم والمتابعة</th><th style="text-align:center;width:55px;">ممتاز</th><th style="text-align:center;width:55px;">جيد جداً</th><th style="text-align:center;width:55px;">جيد</th><th style="text-align:center;width:55px;">مقبول</th><th style="text-align:center;width:55px;">ضعيف</th></tr></thead>
+                        <tbody id="pv-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="pc-grid" style="margin-top:12px;">
+                    <div class="pc-fld"><label class="pc-lbl">نقاط القوة</label><textarea id="pv-str" class="pc-ta" placeholder="نقاط القوة..."></textarea></div>
+                    <div class="pc-fld"><label class="pc-lbl">التوصيات والتغذية الراجعة</label><textarea id="pv-rec" class="pc-ta" placeholder="التوصيات..."></textarea></div>
+                </div>
+                <div style="background:var(--ice);border-radius:10px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-weight:900;font-size:13px;color:var(--navy);">التقييم الكلي:</span>
+                    <span id="pv-total" style="font-size:20px;font-weight:900;color:var(--sky);">-</span>
+                </div>
+                <button class="pc-submit" onclick="window.pcSaveVisit()"><i class="bi bi-check-circle-fill"></i> حفظ نموذج الزيارة</button>
+            </div>
+            <div id="pv-no-subject" style="text-align:center;padding:25px;color:var(--mid);font-weight:700;"><i class="bi bi-arrow-up-circle" style="font-size:28px;display:block;margin-bottom:8px;"></i>اختر المادة لعرض معايير التقييم</div>
         </div>
     </div>
 
     <!-- Modal إضافة طالب -->
-    <div id="pc-student-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:16px; padding:26px; max-width:480px; width:92%; direction:rtl; max-height:90vh; overflow-y:auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h3 style="font-weight:900; color:var(--navy); margin:0;">إضافة طالب للمتابعة</h3>
-                <button onclick="document.getElementById('pc-student-modal').style.display='none'" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button>
+    <div id="pc-stu-modal" class="pc-modal">
+        <div class="pc-mbox" style="max-width:460px;">
+            <div class="pc-mhdr"><h3 class="pc-mtitle">إضافة طالب للمتابعة</h3><button onclick="document.getElementById('pc-stu-modal').classList.remove('show')" style="background:none;border:none;font-size:22px;cursor:pointer;">✕</button></div>
+            <div class="pc-grid">
+                <div class="pc-fld"><label class="pc-lbl">اسم الطالب *</label><input type="text" id="pc-stu-name" class="pc-inp" placeholder="الاسم"></div>
+                <div class="pc-fld"><label class="pc-lbl">الصف</label><input type="text" id="pc-stu-class" class="pc-inp" placeholder="6/1"></div>
+                <div class="pc-fld"><label class="pc-lbl">نوع الخطة</label><select id="pc-stu-plan" class="pc-sel"><option value="علاجية">علاجية</option><option value="إثرائية">إثرائية</option><option value="متابعة سلوكية">متابعة سلوكية</option></select></div>
+                <div class="pc-fld"><label class="pc-lbl">المعلم المسؤول</label><select id="pc-stu-teacher" class="pc-sel"><option value="">-- اختر --</option></select></div>
             </div>
-            <div class="pc-form-grid">
-                <div>
-                    <label class="pc-label">اسم الطالب *</label>
-                    <input type="text" id="pc-student-name" class="pc-input" placeholder="اسم الطالب">
-                </div>
-                <div>
-                    <label class="pc-label">الصف</label>
-                    <input type="text" id="pc-student-class" class="pc-input" placeholder="6/1">
-                </div>
-                <div>
-                    <label class="pc-label">نوع الخطة</label>
-                    <select id="pc-student-plan" class="pc-select">
-                        <option value="علاجية">علاجية</option>
-                        <option value="إثرائية">إثرائية</option>
-                        <option value="متابعة سلوكية">متابعة سلوكية</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="pc-label">المعلم المسؤول</label>
-                    <select id="pc-student-teacher" class="pc-select">
-                        <option value="">-- اختر المعلم --</option>
-                    </select>
-                </div>
-            </div>
-            <div style="margin-bottom:14px;">
-                <label class="pc-label">الملاحظات</label>
-                <textarea id="pc-student-notes" class="pc-textarea" placeholder="ملاحظات..."></textarea>
-            </div>
-            <button class="pc-submit-btn" style="width:100%;" onclick="window.pcSaveStudentFollowup()">
-                <i class="bi bi-check-circle-fill"></i> حفظ
-            </button>
+            <div class="pc-fld"><label class="pc-lbl">ملاحظات</label><textarea id="pc-stu-notes" class="pc-ta" placeholder="ملاحظات..."></textarea></div>
+            <button class="pc-submit" onclick="window.pcSaveStudent()"><i class="bi bi-check-circle-fill"></i> حفظ</button>
         </div>
     </div>`;
 
-    // تحميل البيانات
     await pcLoadAll();
 }
 
-// ══════════════════════════════════════════════
-// تحميل كل البيانات
-// ══════════════════════════════════════════════
 async function pcLoadAll() {
     var schoolId = getActiveSchoolId();
     try {
-        // تحميل المستخدمين للقوائم
-        var usersSnap = await getDocs(query(collection(db, 'users'), where('schoolId', '==', schoolId)));
-        pcData.users = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-            .filter(u => ['teacher', 'department_head', 'admin', 'assistant_manager', 'wing_supervisor'].includes(u.role));
+        var usSnap = await getDocs(query(collection(db,'users'), where('schoolId','==',schoolId)));
+        pcData.users = usSnap.docs.map(d=>({id:d.id,...d.data()})).filter(u=>['teacher','department_head','admin','assistant_manager','wing_supervisor'].includes(u.role));
+        var opts = pcData.users.map(u=>`<option value="${u.name}">${u.name}</option>`).join('');
+        ['pv-teacher','pc-task-owner','pc-stu-teacher'].forEach(id=>{var el=document.getElementById(id);if(el)el.innerHTML+=opts;});
 
-        // تعبئة قوائم المعلمين
-        var teacherOptions = pcData.users.map(u => `<option value="${u.name}">${u.name} (${u.role === 'teacher' ? 'معلم' : 'إدارة'})</option>`).join('');
-        ['pc-visit-teacher', 'pc-task-owner', 'pc-student-teacher'].forEach(id => {
-            var el = document.getElementById(id);
-            if (el) el.innerHTML += teacherOptions;
-        });
-
-        // تحميل الزيارات
-        var visitsSnap = await getDocs(query(collection(db, 'pc_visits'), where('schoolId', '==', schoolId)));
-        pcData.visits = visitsSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-            .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
-        // تحميل التكليفات
-        var tasksSnap = await getDocs(query(collection(db, 'pc_tasks'), where('schoolId', '==', schoolId)));
-        pcData.tasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-            .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
-        // تحديث حالة المتأخرة
+        var [vs,ts,ms,ss] = await Promise.all([
+            getDocs(query(collection(db,'pc_visits'),where('schoolId','==',schoolId))),
+            getDocs(query(collection(db,'pc_tasks'),where('schoolId','==',schoolId))),
+            getDocs(query(collection(db,'pc_meetings'),where('schoolId','==',schoolId))),
+            getDocs(query(collection(db,'pc_student_followup'),where('schoolId','==',schoolId))),
+        ]);
+        pcData.visits = vs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+        pcData.tasks  = ts.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+        pcData.meetings = ms.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+        pcData.students = ss.docs.map(d=>({id:d.id,...d.data()}));
         var today = getTodayISO();
-        pcData.tasks = pcData.tasks.map(t => {
-            if (t.status !== 'منجز' && t.dueDate && t.dueDate < today) return { ...t, status: 'متأخر' };
-            return t;
-        });
-
-        // تحميل الاجتماعات
-        var meetingsSnap = await getDocs(query(collection(db, 'pc_meetings'), where('schoolId', '==', schoolId)));
-        pcData.meetings = meetingsSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-            .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-        // تحميل متابعة الطلاب
-        var studentsSnap = await getDocs(query(collection(db, 'pc_student_followup'), where('schoolId', '==', schoolId)));
-        pcData.students = studentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-        // رسم الواجهة
-        pcRenderOverview();
-        pcRenderVisits();
-        pcRenderTasks();
-        pcRenderMeetings();
-        pcRenderStudents();
-
-    } catch(e) {
-        window.showToast?.('❌ ' + e.message, 'error');
-    }
+        pcData.tasks = pcData.tasks.map(t=>t.status!=='منجز'&&t.dueDate&&t.dueDate<today?{...t,status:'متأخر'}:t);
+        pcRenderAll();
+    } catch(e) { window.showToast?.('❌ '+e.message,'error'); }
 }
 
-// ══════════════════════════════════════════════
-// تبديل التبويبات
-// ══════════════════════════════════════════════
+function pcRenderAll() { pcRenderOverview(); pcRenderVisits(); pcRenderTasks(); pcRenderMeetings(); pcRenderStudents(); }
+
 window.pcSwitchTab = function(tab, btn) {
-    pcActiveTab = tab;
-    document.querySelectorAll('.pc-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.pc-tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['overview', 'visits', 'tasks', 'meetings', 'students'].forEach(t => {
-        var el = document.getElementById('pc-tab-' + t);
-        if (el) el.classList.toggle('pc-section-hidden', t !== tab);
+    ['overview','visits','tasks','meetings','students'].forEach(t=>{
+        var el=document.getElementById('pc-tab-'+t);
+        if(el)el.classList.toggle('pc-hidden',t!==tab);
     });
 };
 
-// ══════════════════════════════════════════════
-// النظرة العامة
-// ══════════════════════════════════════════════
 function pcRenderOverview() {
-    var done = pcData.tasks.filter(t => t.status === 'منجز').length;
-    var pending = pcData.tasks.filter(t => t.status !== 'منجز').length;
-
-    document.getElementById('kpi-visits').textContent = pcData.visits.length;
-    document.getElementById('kpi-tasks-done').textContent = done;
-    document.getElementById('kpi-tasks-pending').textContent = pending;
-    document.getElementById('kpi-meetings').textContent = pcData.meetings.length;
-
-    // آخر 5 قرارات
-    var recentTasksEl = document.getElementById('pc-recent-tasks');
-    var recentTasks = pcData.tasks.slice(0, 5);
-    if (!recentTasks.length) {
-        recentTasksEl.innerHTML = '<div class="pc-empty">لا توجد قرارات</div>';
-    } else {
-        recentTasksEl.innerHTML = `<table class="pc-table">
-            <thead><tr><th>القرار</th><th>المسؤول</th><th>الاستحقاق</th><th>الحالة</th></tr></thead>
-            <tbody>${recentTasks.map(t => `
-            <tr>
-                <td style="font-weight:700;">${t.title || '-'}</td>
-                <td>${t.owner || '-'}</td>
-                <td>${t.dueDate || '-'}</td>
-                <td><span class="pc-badge ${t.status === 'منجز' ? 'done' : t.status === 'متأخر' ? 'late' : 'progress'}">${t.status || 'قيد التنفيذ'}</span></td>
-            </tr>`).join('')}</tbody>
-        </table>`;
-    }
-
-    // آخر 5 زيارات
-    var recentVisitsEl = document.getElementById('pc-recent-visits');
-    var recentVisits = pcData.visits.slice(0, 5);
-    if (!recentVisits.length) {
-        recentVisitsEl.innerHTML = '<div class="pc-empty">لا توجد زيارات</div>';
-    } else {
-        recentVisitsEl.innerHTML = `<table class="pc-table">
-            <thead><tr><th>المعلم</th><th>المادة</th><th>الصف</th><th>التقييم</th></tr></thead>
-            <tbody>${recentVisits.map(v => `
-            <tr>
-                <td style="font-weight:700;">${v.teacher || '-'}</td>
-                <td>${v.subject || '-'}</td>
-                <td>${v.classId || '-'}</td>
-                <td><span class="pc-badge ${v.rating === 'ممتاز' ? 'done' : 'progress'}">${v.rating || '-'}</span></td>
-            </tr>`).join('')}</tbody>
-        </table>`;
-    }
+    var done = pcData.tasks.filter(t=>t.status==='منجز').length;
+    document.getElementById('kpi-v').textContent = pcData.visits.length;
+    document.getElementById('kpi-d').textContent = done;
+    document.getElementById('kpi-p').textContent = pcData.tasks.length-done;
+    document.getElementById('kpi-m').textContent = pcData.meetings.length;
+    var t5=pcData.tasks.slice(0,5);
+    document.getElementById('pc-ov-tasks').innerHTML=t5.length?`<table class="pc-tbl"><thead><tr><th>القرار</th><th>المسؤول</th><th>الاستحقاق</th><th>الحالة</th></tr></thead><tbody>${t5.map(t=>`<tr><td style="font-weight:700;">${t.title||'-'}</td><td>${t.owner||'-'}</td><td>${t.dueDate||'-'}</td><td><span class="pc-badge ${t.status==='منجز'?'done':t.status==='متأخر'?'late':'prg'}">${t.status||'قيد التنفيذ'}</span></td></tr>`).join('')}</tbody></table>`:'<div class="pc-empty">لا توجد قرارات</div>';
+    var v5=pcData.visits.slice(0,5);
+    document.getElementById('pc-ov-visits').innerHTML=v5.length?`<table class="pc-tbl"><thead><tr><th>المعلم</th><th>المادة</th><th>الصف</th><th>التاريخ</th><th>النسبة</th></tr></thead><tbody>${v5.map(v=>`<tr><td style="font-weight:700;">${v.teacher||'-'}</td><td>${v.subjectLabel||v.subject||'-'}</td><td>${v.classId||'-'}</td><td>${v.date||'-'}</td><td><span class="pc-badge done">${v.percentage||0}%</span></td></tr>`).join('')}</tbody></table>`:'<div class="pc-empty">لا توجد زيارات</div>';
 }
 
-// ══════════════════════════════════════════════
-// الزيارات الصفية
-// ══════════════════════════════════════════════
-function pcRenderVisits() {
-    var el = document.getElementById('pc-visits-list');
-    if (!el) return;
-    if (!pcData.visits.length) { el.innerHTML = '<div class="pc-empty">لا توجد زيارات مسجلة</div>'; return; }
+window.pcOpenVisitModal = function() {
+    currentVisitRatings={};
+    document.getElementById('pv-subject').value='';
+    document.getElementById('pv-criteria-wrap').style.display='none';
+    document.getElementById('pv-no-subject').style.display='block';
+    document.getElementById('pc-visit-modal').classList.add('show');
+};
 
-    el.innerHTML = `<table class="pc-table">
-        <thead><tr><th>#</th><th>المعلم</th><th>المادة</th><th>الصف</th><th>التقييم</th><th>نقاط القوة</th><th>التوصيات</th><th>إجراء</th></tr></thead>
-        <tbody>${pcData.visits.map((v, i) => `
-        <tr>
-            <td style="color:#aaa;">${i+1}</td>
-            <td style="font-weight:700;">${v.teacher || '-'}</td>
-            <td>${v.subject || '-'}</td>
-            <td>${v.classId || '-'}</td>
-            <td><span class="pc-badge ${v.rating === 'ممتاز' ? 'done' : 'progress'}">${v.rating || '-'}</span></td>
-            <td style="font-size:12px; color:#666; max-width:150px;">${v.strengths ? v.strengths.slice(0,50) + '...' : '-'}</td>
-            <td style="font-size:12px; color:#666; max-width:150px;">${v.recommendations ? v.recommendations.slice(0,50) + '...' : '-'}</td>
-            <td><button onclick="window.pcDeleteVisit('${v.id}')" style="background:#fef2f2;color:#dc2626;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;">حذف</button></td>
-        </tr>`).join('')}</tbody>
-    </table>`;
+window.pcLoadCriteria = function(subject) {
+    if (!subject||!VISIT_CRITERIA[subject]) {
+        document.getElementById('pv-criteria-wrap').style.display='none';
+        document.getElementById('pv-no-subject').style.display='block';
+        return;
+    }
+    currentVisitRatings={};
+    var criteria=VISIT_CRITERIA[subject];
+    document.getElementById('pv-tbody').innerHTML=criteria.map((item,idx)=>`<tr>
+        <td style="color:#aaa;font-weight:700;font-size:11px;">${idx+1}</td>
+        <td style="font-weight:700;font-size:12px;">${item}</td>
+        ${RATINGS.map(r=>`<td style="text-align:center;"><label class="rd"><input type="radio" name="r_${idx}" value="${r}" onchange="window.pcSetRating(${idx},'${r}')"><div class="rd-dot">${r.slice(0,1)}</div></label></td>`).join('')}
+    </tr>`).join('');
+    document.getElementById('pv-criteria-wrap').style.display='block';
+    document.getElementById('pv-no-subject').style.display='none';
+    pcUpdateScore();
+};
+
+window.pcSetRating = function(idx,r) { currentVisitRatings[idx]=r; pcUpdateScore(); };
+
+function pcUpdateScore() {
+    var subj=document.getElementById('pv-subject').value;
+    if (!subj||!VISIT_CRITERIA[subj]) return;
+    var max=VISIT_CRITERIA[subj].length*5;
+    var total=Object.values(currentVisitRatings).reduce((s,r)=>s+(RATING_SCORES[r]||0),0);
+    var pct=Math.round((total/max)*100);
+    var el=document.getElementById('pv-total');
+    el.textContent=total+' / '+max+' ('+pct+'%)';
+    el.style.color=pct>=80?'#16a34a':pct>=60?'#d97706':'#dc2626';
 }
 
 window.pcSaveVisit = async function() {
-    var teacher = document.getElementById('pc-visit-teacher').value;
-    var subject = document.getElementById('pc-visit-subject').value.trim();
-    var classId = document.getElementById('pc-visit-class').value.trim();
-    var rating = document.getElementById('pc-visit-rating').value;
-    var strengths = document.getElementById('pc-visit-strengths').value.trim();
-    var recommendations = document.getElementById('pc-visit-recommendations').value.trim();
-    var me = JSON.parse(localStorage.getItem('hs_user') || '{}');
-
-    if (!teacher || !subject || !classId) { window.showToast?.('أكمل الحقول المطلوبة', 'warning'); return; }
-
+    var teacher=document.getElementById('pv-teacher').value;
+    var subject=document.getElementById('pv-subject').value;
+    var subjEl=document.getElementById('pv-subject');
+    var subjectLabel=subjEl.options[subjEl.selectedIndex]?.text||subject;
+    var topic=document.getElementById('pv-topic').value.trim();
+    var classId=document.getElementById('pv-class').value.trim();
+    var period=document.getElementById('pv-period').value;
+    var date=document.getElementById('pv-date').value;
+    var strengths=document.getElementById('pv-str').value.trim();
+    var recommendations=document.getElementById('pv-rec').value.trim();
+    var me=JSON.parse(localStorage.getItem('hs_user')||'{}');
+    if (!teacher||!subject||!topic) { window.showToast?.('أكمل الحقول المطلوبة','warning'); return; }
+    var criteria=VISIT_CRITERIA[subject]||[];
+    var maxScore=criteria.length*5;
+    var totalScore=Object.values(currentVisitRatings).reduce((s,r)=>s+(RATING_SCORES[r]||0),0);
+    var ratingsArr=criteria.map((item,idx)=>({item,rating:currentVisitRatings[idx]||'-',score:RATING_SCORES[currentVisitRatings[idx]]||0}));
     try {
-        await addDoc(collection(db, 'pc_visits'), {
-            schoolId: getActiveSchoolId(),
-            teacher, subject, classId, rating, strengths, recommendations,
-            visitedBy: me.name || me.userId,
-            date: getTodayISO(),
-            createdAt: serverTimestamp()
-        });
-        window.showToast?.('✅ تم حفظ الزيارة');
-        ['pc-visit-teacher', 'pc-visit-subject', 'pc-visit-class', 'pc-visit-strengths', 'pc-visit-recommendations'].forEach(id => {
-            var el = document.getElementById(id);
-            if (el) el.value = '';
-        });
+        await addDoc(collection(db,'pc_visits'),{schoolId:getActiveSchoolId(),teacher,subject,subjectLabel,topic,classId,period:parseInt(period),date,strengths,recommendations,ratings:ratingsArr,totalScore,maxScore,percentage:Math.round((totalScore/maxScore)*100),visitedBy:me.name||me.userId,createdAt:serverTimestamp()});
+        window.showToast?.('✅ تم حفظ نموذج الزيارة');
+        document.getElementById('pc-visit-modal').classList.remove('show');
+        currentVisitRatings={};
         await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
+    } catch(e) { window.showToast?.('❌ '+e.message,'error'); }
 };
 
-window.pcDeleteVisit = async function(id) {
-    if (!confirm('حذف الزيارة نهائياً؟')) return;
-    try {
-        await deleteDoc(doc(db, 'pc_visits', id));
-        window.showToast?.('✅ تم الحذف');
-        await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-// ══════════════════════════════════════════════
-// التكليفات والقرارات
-// ══════════════════════════════════════════════
-function pcRenderTasks(filter) {
-    var el = document.getElementById('pc-tasks-list');
+function pcRenderVisits() {
+    var el=document.getElementById('pc-visits-list');
     if (!el) return;
-    var tasks = filter ? pcData.tasks.filter(t => t.status === filter) : pcData.tasks;
-    if (!tasks.length) { el.innerHTML = '<div class="pc-empty">لا توجد قرارات</div>'; return; }
-
-    el.innerHTML = `<table class="pc-table">
-        <thead><tr><th>#</th><th>القرار/التكليف</th><th>المسؤول</th><th>الأولوية</th><th>الاستحقاق</th><th>الحالة</th><th>إجراء</th></tr></thead>
-        <tbody>${tasks.map((t, i) => `
-        <tr>
-            <td style="color:#aaa;">${i+1}</td>
-            <td style="font-weight:700;">${t.title || '-'}</td>
-            <td>${t.owner || '-'}</td>
-            <td><span style="font-size:12px;">${t.priority || '-'}</span></td>
-            <td style="font-size:12px; ${t.status === 'متأخر' ? 'color:#dc2626; font-weight:700;' : ''}">${t.dueDate || '-'}</td>
-            <td><span class="pc-badge ${t.status === 'منجز' ? 'done' : t.status === 'متأخر' ? 'late' : 'progress'}">${t.status || 'قيد التنفيذ'}</span></td>
-            <td style="display:flex; gap:4px;">
-                ${t.status !== 'منجز' ? `<button onclick="window.pcMarkTaskDone('${t.id}')" style="background:#f0fdf4;color:#16a34a;border:none;padding:5px 8px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;">✅</button>` : ''}
-                <button onclick="window.pcDeleteTask('${t.id}')" style="background:#fef2f2;color:#dc2626;border:none;padding:5px 8px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;">🗑</button>
-            </td>
-        </tr>`).join('')}</tbody>
-    </table>`;
+    if (!pcData.visits.length) { el.innerHTML='<div class="pc-empty">لا توجد زيارات. اضغط "زيارة جديدة".</div>'; return; }
+    el.innerHTML=`<table class="pc-tbl"><thead><tr><th>المعلم</th><th>المادة</th><th>الموضوع</th><th>الصف</th><th>التاريخ</th><th>التقييم</th><th>النسبة</th><th>إجراء</th></tr></thead><tbody>${pcData.visits.map(v=>{
+        var c=v.percentage>=80?'#16a34a':v.percentage>=60?'#d97706':'#dc2626';
+        return `<tr><td style="font-weight:700;">${v.teacher||'-'}</td><td>${v.subjectLabel||v.subject||'-'}</td><td style="font-size:11px;color:#666;">${v.topic||'-'}</td><td>${v.classId||'-'}</td><td>${v.date||'-'}</td><td style="font-weight:700;color:${c};">${v.totalScore||0}/${v.maxScore||0}</td><td><span class="pc-badge" style="background:${c}22;color:${c};">${v.percentage||0}%</span></td><td style="display:flex;gap:4px;"><button onclick="window.pcPrintVisit('${v.id}')" class="pc-btn sm">طباعة</button><button onclick="window.pcDelVisit('${v.id}')" class="pc-btn sm red">🗑</button></td></tr>`;
+    }).join('')}</tbody></table>`;
 }
 
-window.pcFilterTasks = function() {
-    var filter = document.getElementById('pc-task-filter').value;
-    pcRenderTasks(filter);
-};
-
-window.pcSaveTask = async function() {
-    var title = document.getElementById('pc-task-title').value.trim();
-    var owner = document.getElementById('pc-task-owner').value;
-    var dueDate = document.getElementById('pc-task-due').value;
-    var priority = document.getElementById('pc-task-priority').value;
-    var notes = document.getElementById('pc-task-notes').value.trim();
-    var me = JSON.parse(localStorage.getItem('hs_user') || '{}');
-
-    if (!title || !dueDate) { window.showToast?.('أكمل الحقول المطلوبة', 'warning'); return; }
-
-    try {
-        await addDoc(collection(db, 'pc_tasks'), {
-            schoolId: getActiveSchoolId(),
-            title, owner, dueDate, priority, notes,
-            status: 'قيد التنفيذ',
-            createdBy: me.name || me.userId,
-            createdAt: serverTimestamp()
-        });
-        window.showToast?.('✅ تم حفظ القرار');
-        ['pc-task-title', 'pc-task-due', 'pc-task-notes'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
-        await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-window.pcMarkTaskDone = async function(id) {
-    try {
-        await updateDoc(doc(db, 'pc_tasks', id), { status: 'منجز', completedAt: serverTimestamp() });
-        window.showToast?.('✅ تم تحديد القرار كمنجز');
-        await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-window.pcDeleteTask = async function(id) {
-    if (!confirm('حذف القرار نهائياً؟')) return;
-    try {
-        await deleteDoc(doc(db, 'pc_tasks', id));
-        window.showToast?.('✅ تم الحذف');
-        await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-// ══════════════════════════════════════════════
-// محاضر الاجتماعات
-// ══════════════════════════════════════════════
-function pcRenderMeetings() {
-    var el = document.getElementById('pc-meetings-list');
-    if (!el) return;
-    if (!pcData.meetings.length) { el.innerHTML = '<div class="pc-empty">لا توجد محاضر اجتماعات</div>'; return; }
-
-    el.innerHTML = `<table class="pc-table">
-        <thead><tr><th>#</th><th>رقم الاجتماع</th><th>التاريخ</th><th>النوع</th><th>جدول الأعمال</th><th>القرارات</th><th>إجراء</th></tr></thead>
-        <tbody>${pcData.meetings.map((m, i) => `
-        <tr>
-            <td style="color:#aaa;">${i+1}</td>
-            <td style="font-weight:700; text-align:center;">${m.meetingNum || '-'}</td>
-            <td>${m.date || '-'}</td>
-            <td><span class="pc-badge progress">${m.type || 'دوري'}</span></td>
-            <td style="font-size:12px; max-width:150px;">${m.agenda ? m.agenda.slice(0,60) + '...' : '-'}</td>
-            <td style="font-size:12px; max-width:150px;">${m.decisions ? m.decisions.slice(0,60) + '...' : '-'}</td>
-            <td><button onclick="window.pcDeleteMeeting('${m.id}')" style="background:#fef2f2;color:#dc2626;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;">حذف</button></td>
-        </tr>`).join('')}</tbody>
-    </table>`;
-}
-
-window.pcSaveMeeting = async function() {
-    var meetingNum = document.getElementById('pc-meeting-num').value;
-    var date = document.getElementById('pc-meeting-date').value;
-    var type = document.getElementById('pc-meeting-type').value;
-    var agenda = document.getElementById('pc-meeting-agenda').value.trim();
-    var decisions = document.getElementById('pc-meeting-decisions').value.trim();
-    var me = JSON.parse(localStorage.getItem('hs_user') || '{}');
-
-    if (!date || !agenda) { window.showToast?.('أكمل الحقول المطلوبة', 'warning'); return; }
-
-    try {
-        await addDoc(collection(db, 'pc_meetings'), {
-            schoolId: getActiveSchoolId(),
-            meetingNum: parseInt(meetingNum) || 1,
-            date, type, agenda, decisions,
-            recordedBy: me.name || me.userId,
-            createdAt: serverTimestamp()
-        });
-        window.showToast?.('✅ تم حفظ المحضر');
-        ['pc-meeting-num', 'pc-meeting-agenda', 'pc-meeting-decisions'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
-        await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-window.pcDeleteMeeting = async function(id) {
-    if (!confirm('حذف المحضر نهائياً؟')) return;
-    try {
-        await deleteDoc(doc(db, 'pc_meetings', id));
-        window.showToast?.('✅ تم الحذف');
-        await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-// ══════════════════════════════════════════════
-// متابعة الطلاب
-// ══════════════════════════════════════════════
-function pcRenderStudents() {
-    var el = document.getElementById('pc-students-list');
-    if (!el) return;
-    if (!pcData.students.length) { el.innerHTML = '<div class="pc-empty">لا يوجد طلاب في المتابعة</div>'; return; }
-
-    el.innerHTML = `<table class="pc-table">
-        <thead><tr><th>#</th><th>اسم الطالب</th><th>الصف</th><th>نوع الخطة</th><th>المعلم المسؤول</th><th>الملاحظات</th><th>إجراء</th></tr></thead>
-        <tbody>${pcData.students.map((s, i) => `
-        <tr>
-            <td style="color:#aaa;">${i+1}</td>
-            <td style="font-weight:700;">${s.name || '-'}</td>
-            <td>${s.classId || '-'}</td>
-            <td><span class="pc-badge ${s.planType === 'إثرائية' ? 'done' : 'progress'}">${s.planType || '-'}</span></td>
-            <td>${s.teacher || '-'}</td>
-            <td style="font-size:12px; color:#666;">${s.notes ? s.notes.slice(0,50) : '-'}</td>
-            <td><button onclick="window.pcDeleteStudent('${s.id}')" style="background:#fef2f2;color:#dc2626;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;">حذف</button></td>
-        </tr>`).join('')}</tbody>
-    </table>`;
-}
-
-window.pcShowAddStudentModal = function() {
-    document.getElementById('pc-student-modal').style.display = 'flex';
-};
-
-window.pcSaveStudentFollowup = async function() {
-    var name = document.getElementById('pc-student-name').value.trim();
-    var classId = document.getElementById('pc-student-class').value.trim();
-    var planType = document.getElementById('pc-student-plan').value;
-    var teacher = document.getElementById('pc-student-teacher').value;
-    var notes = document.getElementById('pc-student-notes').value.trim();
-
-    if (!name) { window.showToast?.('أدخل اسم الطالب', 'warning'); return; }
-
-    try {
-        await addDoc(collection(db, 'pc_student_followup'), {
-            schoolId: getActiveSchoolId(),
-            name, classId, planType, teacher, notes,
-            createdAt: serverTimestamp()
-        });
-        window.showToast?.('✅ تم إضافة الطالب للمتابعة');
-        document.getElementById('pc-student-modal').style.display = 'none';
-        await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-window.pcDeleteStudent = async function(id) {
-    if (!confirm('إزالة الطالب من المتابعة؟')) return;
-    try {
-        await deleteDoc(doc(db, 'pc_student_followup', id));
-        window.showToast?.('✅ تم الحذف');
-        await pcLoadAll();
-    } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
-};
-
-// ══════════════════════════════════════════════
-// تصدير التقرير
-// ══════════════════════════════════════════════
-window.pcExportReport = function() {
-    var today = new Date().toLocaleDateString('ar-KW');
-    var content = `
-    <html dir="rtl"><head><meta charset="UTF-8">
-    <style>body{font-family:Arial,sans-serif;padding:20px;direction:rtl;}
-    h1{color:#0b2545;border-bottom:3px solid #0b2545;padding-bottom:10px;}
-    h2{color:#1a78c2;margin-top:20px;}
-    table{width:100%;border-collapse:collapse;margin-top:10px;}
-    th{background:#0b2545;color:#fff;padding:8px;}
-    td{border:1px solid #ddd;padding:8px;}
-    .badge{padding:3px 8px;border-radius:4px;font-size:12px;}
+window.pcPrintVisit = function(id) {
+    var v=pcData.visits.find(x=>x.id===id);
+    if (!v) return;
+    var rows=(v.ratings||[]).map((r,i)=>`<tr><td style="padding:6px 10px;color:#666;text-align:center;">${i+1}</td><td style="padding:6px 10px;font-weight:600;">${r.item}</td>${RATINGS.map(rt=>`<td style="padding:6px 10px;text-align:center;">${r.rating===rt?'✓':''}</td>`).join('')}<td style="padding:6px 10px;text-align:center;font-weight:700;">${r.score||0}</td></tr>`).join('');
+    var w=window.open('','_blank');
+    w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة صفية</title>
+    <style>body{font-family:Arial,sans-serif;padding:20px;direction:rtl;font-size:13px;}
+    .header{text-align:center;margin-bottom:16px;border-bottom:2px solid #0b2545;padding-bottom:10px;}
+    .header h2{color:#0b2545;font-size:15px;margin:0 0 4px;}
+    .info-table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+    .info-table td{border:1px solid #ddd;padding:7px 10px;font-size:12px;}
+    .info-table td:first-child{font-weight:700;background:#f8fafc;width:30%;}
+    table{width:100%;border-collapse:collapse;}
+    th{background:#0b2545;color:#fff;padding:7px;text-align:right;font-size:11px;}
+    td{border:1px solid #ddd;padding:6px;}
+    .total-row{background:#e0f2fe;font-weight:700;}
+    .sign{margin-top:20px;display:flex;justify-content:space-between;font-size:12px;color:#666;}
     </style></head><body>
+    <div class="header">
+        <h2>وزارة التربية — الإدارة العامة لمنطقة العاصمة التعليمية</h2>
+        <div>مدرسة سالم الحسينان المتوسطة — بنين</div>
+        <div style="font-weight:700;margin-top:4px;">نموذج زيارة صفية — ${v.subjectLabel||v.subject}</div>
+    </div>
+    <table class="info-table">
+        <tr><td>اسم المعلم</td><td>${v.teacher}</td><td>العام الدراسي</td><td>2025 / 2026</td></tr>
+        <tr><td>موضوع الدرس</td><td>${v.topic||'-'}</td><td>الفصل الدراسي</td><td></td></tr>
+        <tr><td>الصف</td><td>${v.classId||'-'}</td><td>الحصة</td><td>${v.period||'-'}</td></tr>
+        <tr><td>اليوم</td><td></td><td>الموافق</td><td>${v.date||'-'}</td></tr>
+    </table>
+    <table>
+        <thead><tr><th style="width:35px;">#</th><th>عناصر التقييم والمتابعة</th><th style="text-align:center;width:55px;">ممتاز</th><th style="text-align:center;width:60px;">جيد جداً</th><th style="text-align:center;width:55px;">جيد</th><th style="text-align:center;width:55px;">مقبول</th><th style="text-align:center;width:55px;">ضعيف</th><th style="text-align:center;width:50px;">الدرجة</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr class="total-row"><td colspan="7" style="padding:7px;text-align:center;">التقييم الكلي</td><td style="padding:7px;text-align:center;font-size:14px;">${v.totalScore}/${v.maxScore} (${v.percentage}%)</td></tr></tfoot>
+    </table>
+    ${v.strengths?`<div style="margin-top:12px;padding:10px;background:#f8fafc;border-radius:6px;"><b>نقاط القوة:</b> ${v.strengths}</div>`:''}
+    ${v.recommendations?`<div style="margin-top:8px;padding:10px;background:#f8fafc;border-radius:6px;"><b>التوصيات:</b> ${v.recommendations}</div>`:''}
+    <div class="sign"><span>الزائر: ${v.visitedBy||'-'}</span><span>توقيع المعلم: _______________</span><span>توقيع الزائر: _______________</span></div>
+    </body></html>`);
+    w.document.close();
+    setTimeout(()=>w.print(),600);
+};
+
+window.pcDelVisit = async function(id) {
+    if(!confirm('حذف الزيارة؟')) return;
+    try { await deleteDoc(doc(db,'pc_visits',id)); window.showToast?.('✅ تم'); await pcLoadAll(); }
+    catch(e) { window.showToast?.('❌ '+e.message,'error'); }
+};
+
+function pcRenderTasks(filter) {
+    var el=document.getElementById('pc-tasks-list');
+    if(!el) return;
+    var tasks=filter?pcData.tasks.filter(t=>t.status===filter):pcData.tasks;
+    if(!tasks.length){el.innerHTML='<div class="pc-empty">لا توجد قرارات</div>';return;}
+    el.innerHTML=`<table class="pc-tbl"><thead><tr><th>القرار</th><th>المسؤول</th><th>الأولوية</th><th>الاستحقاق</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>${tasks.map(t=>`<tr><td style="font-weight:700;">${t.title||'-'}</td><td>${t.owner||'-'}</td><td>${t.priority||'-'}</td><td style="${t.status==='متأخر'?'color:#dc2626;font-weight:700;':''}">${t.dueDate||'-'}</td><td><span class="pc-badge ${t.status==='منجز'?'done':t.status==='متأخر'?'late':'prg'}">${t.status||'قيد التنفيذ'}</span></td><td style="display:flex;gap:4px;">${t.status!=='منجز'?`<button onclick="window.pcMarkDone('${t.id}')" class="pc-btn sm green">✅</button>`:''}<button onclick="window.pcDelTask('${t.id}')" class="pc-btn sm red">🗑</button></td></tr>`).join('')}</tbody></table>`;
+}
+window.pcFilterTasks=function(){pcRenderTasks(document.getElementById('pc-task-filter').value);};
+window.pcSaveTask=async function(){
+    var title=document.getElementById('pc-task-title').value.trim();
+    var owner=document.getElementById('pc-task-owner').value;
+    var dueDate=document.getElementById('pc-task-due').value;
+    var priority=document.getElementById('pc-task-priority').value;
+    var notes=document.getElementById('pc-task-notes').value.trim();
+    var me=JSON.parse(localStorage.getItem('hs_user')||'{}');
+    if(!title||!dueDate){window.showToast?.('أكمل الحقول','warning');return;}
+    try{await addDoc(collection(db,'pc_tasks'),{schoolId:getActiveSchoolId(),title,owner,dueDate,priority,notes,status:'قيد التنفيذ',createdBy:me.name||me.userId,createdAt:serverTimestamp()});window.showToast?.('✅ تم');['pc-task-title','pc-task-due','pc-task-notes'].forEach(id=>{var el=document.getElementById(id);if(el)el.value='';});await pcLoadAll();}
+    catch(e){window.showToast?.('❌ '+e.message,'error');}
+};
+window.pcMarkDone=async function(id){try{await updateDoc(doc(db,'pc_tasks',id),{status:'منجز',completedAt:serverTimestamp()});window.showToast?.('✅ تم');await pcLoadAll();}catch(e){window.showToast?.('❌ '+e.message,'error');}};
+window.pcDelTask=async function(id){if(!confirm('حذف القرار؟'))return;try{await deleteDoc(doc(db,'pc_tasks',id));window.showToast?.('✅ تم');await pcLoadAll();}catch(e){window.showToast?.('❌ '+e.message,'error');}};
+
+function pcRenderMeetings(){
+    var el=document.getElementById('pc-meetings-list');
+    if(!el)return;
+    if(!pcData.meetings.length){el.innerHTML='<div class="pc-empty">لا توجد محاضر</div>';return;}
+    el.innerHTML=`<table class="pc-tbl"><thead><tr><th>#</th><th>التاريخ</th><th>النوع</th><th>جدول الأعمال</th><th>إجراء</th></tr></thead><tbody>${pcData.meetings.map((m,i)=>`<tr><td style="font-weight:700;">${m.meetingNum||i+1}</td><td>${m.date||'-'}</td><td><span class="pc-badge prg">${m.type||'دوري'}</span></td><td style="font-size:11px;color:#666;">${(m.agenda||'').slice(0,60)}...</td><td><button onclick="window.pcDelMeeting('${m.id}')" class="pc-btn sm red">🗑</button></td></tr>`).join('')}</tbody></table>`;
+}
+window.pcSaveMeeting=async function(){
+    var num=document.getElementById('pc-m-num').value;
+    var date=document.getElementById('pc-m-date').value;
+    var type=document.getElementById('pc-m-type').value;
+    var agenda=document.getElementById('pc-m-agenda').value.trim();
+    var decisions=document.getElementById('pc-m-decisions').value.trim();
+    var me=JSON.parse(localStorage.getItem('hs_user')||'{}');
+    if(!date||!agenda){window.showToast?.('أكمل الحقول','warning');return;}
+    try{await addDoc(collection(db,'pc_meetings'),{schoolId:getActiveSchoolId(),meetingNum:parseInt(num)||1,date,type,agenda,decisions,recordedBy:me.name||me.userId,createdAt:serverTimestamp()});window.showToast?.('✅ تم');['pc-m-num','pc-m-agenda','pc-m-decisions'].forEach(id=>{var el=document.getElementById(id);if(el)el.value='';});await pcLoadAll();}
+    catch(e){window.showToast?.('❌ '+e.message,'error');}
+};
+window.pcDelMeeting=async function(id){if(!confirm('حذف المحضر؟'))return;try{await deleteDoc(doc(db,'pc_meetings',id));window.showToast?.('✅ تم');await pcLoadAll();}catch(e){window.showToast?.('❌ '+e.message,'error');}};
+
+function pcRenderStudents(){
+    var el=document.getElementById('pc-students-list');
+    if(!el)return;
+    if(!pcData.students.length){el.innerHTML='<div class="pc-empty">لا يوجد طلاب في المتابعة</div>';return;}
+    el.innerHTML=`<table class="pc-tbl"><thead><tr><th>#</th><th>الطالب</th><th>الصف</th><th>نوع الخطة</th><th>المعلم</th><th>إجراء</th></tr></thead><tbody>${pcData.students.map((s,i)=>`<tr><td style="color:#aaa;">${i+1}</td><td style="font-weight:700;">${s.name||'-'}</td><td>${s.classId||'-'}</td><td><span class="pc-badge ${s.planType==='إثرائية'?'done':'prg'}">${s.planType||'-'}</span></td><td>${s.teacher||'-'}</td><td><button onclick="window.pcDelStudent('${s.id}')" class="pc-btn sm red">🗑</button></td></tr>`).join('')}</tbody></table>`;
+}
+window.pcSaveStudent=async function(){
+    var name=document.getElementById('pc-stu-name').value.trim();
+    if(!name){window.showToast?.('أدخل الاسم','warning');return;}
+    var classId=document.getElementById('pc-stu-class').value.trim();
+    var planType=document.getElementById('pc-stu-plan').value;
+    var teacher=document.getElementById('pc-stu-teacher').value;
+    var notes=document.getElementById('pc-stu-notes').value.trim();
+    try{await addDoc(collection(db,'pc_student_followup'),{schoolId:getActiveSchoolId(),name,classId,planType,teacher,notes,createdAt:serverTimestamp()});window.showToast?.('✅ تم');document.getElementById('pc-stu-modal').classList.remove('show');await pcLoadAll();}
+    catch(e){window.showToast?.('❌ '+e.message,'error');}
+};
+window.pcDelStudent=async function(id){if(!confirm('إزالة الطالب؟'))return;try{await deleteDoc(doc(db,'pc_student_followup',id));window.showToast?.('✅ تم');await pcLoadAll();}catch(e){window.showToast?.('❌ '+e.message,'error');}};
+
+window.pcExportReport=function(){
+    var today=new Date().toLocaleDateString('ar-KW');
+    var done=pcData.tasks.filter(t=>t.status==='منجز').length;
+    var w=window.open('','_blank');
+    w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>تقرير لجنة الأداء</title><style>body{font-family:Arial;padding:20px;direction:rtl;}h1{color:#0b2545;border-bottom:2px solid #0b2545;padding-bottom:8px;}h2{color:#1a78c2;}table{width:100%;border-collapse:collapse;}th{background:#0b2545;color:#fff;padding:7px;}td{border:1px solid #ddd;padding:7px;}</style></head><body>
     <h1>تقرير لجنة متابعة الأداء المدرسي — ${today}</h1>
-
-    <h2>الإحصاءات العامة</h2>
-    <table><tr><th>البند</th><th>العدد</th></tr>
-    <tr><td>الزيارات الصفية</td><td>${pcData.visits.length}</td></tr>
-    <tr><td>القرارات المنجزة</td><td>${pcData.tasks.filter(t=>t.status==='منجز').length}</td></tr>
-    <tr><td>القرارات قيد التنفيذ</td><td>${pcData.tasks.filter(t=>t.status!=='منجز').length}</td></tr>
-    <tr><td>الاجتماعات</td><td>${pcData.meetings.length}</td></tr>
-    <tr><td>الطلاب تحت المتابعة</td><td>${pcData.students.length}</td></tr>
-    </table>
-
-    <h2>القرارات والتكليفات</h2>
-    <table><tr><th>القرار</th><th>المسؤول</th><th>الاستحقاق</th><th>الحالة</th></tr>
-    ${pcData.tasks.map(t=>`<tr><td>${t.title}</td><td>${t.owner||'-'}</td><td>${t.dueDate||'-'}</td><td>${t.status||'-'}</td></tr>`).join('')}
-    </table>
-
-    <h2>الزيارات الصفية</h2>
-    <table><tr><th>المعلم</th><th>المادة</th><th>الصف</th><th>التقييم</th></tr>
-    ${pcData.visits.map(v=>`<tr><td>${v.teacher}</td><td>${v.subject||'-'}</td><td>${v.classId||'-'}</td><td>${v.rating||'-'}</td></tr>`).join('')}
-    </table>
-    </body></html>`;
-
-    var blob = new Blob([content], { type: 'text/html;charset=utf-8' });
-    var url = URL.createObjectURL(blob);
-    var w = window.open(url, '_blank');
-    if (w) setTimeout(() => { w.print(); URL.revokeObjectURL(url); }, 800);
+    <h2>الإحصاءات</h2><table><tr><th>البند</th><th>العدد</th></tr><tr><td>الزيارات الصفية</td><td>${pcData.visits.length}</td></tr><tr><td>القرارات المنجزة</td><td>${done}</td></tr><tr><td>قيد التنفيذ</td><td>${pcData.tasks.length-done}</td></tr><tr><td>الاجتماعات</td><td>${pcData.meetings.length}</td></tr><tr><td>الطلاب تحت المتابعة</td><td>${pcData.students.length}</td></tr></table>
+    <h2>الزيارات الصفية</h2><table><tr><th>المعلم</th><th>المادة</th><th>الصف</th><th>التاريخ</th><th>التقييم</th><th>النسبة</th></tr>${pcData.visits.map(v=>`<tr><td>${v.teacher}</td><td>${v.subjectLabel||v.subject||'-'}</td><td>${v.classId||'-'}</td><td>${v.date||'-'}</td><td>${v.totalScore}/${v.maxScore}</td><td>${v.percentage}%</td></tr>`).join('')}</table>
+    <h2>القرارات</h2><table><tr><th>القرار</th><th>المسؤول</th><th>الاستحقاق</th><th>الحالة</th></tr>${pcData.tasks.map(t=>`<tr><td>${t.title}</td><td>${t.owner||'-'}</td><td>${t.dueDate||'-'}</td><td>${t.status||'-'}</td></tr>`).join('')}</table>
+    </body></html>`);
+    w.document.close();setTimeout(()=>w.print(),500);
 };
