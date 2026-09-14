@@ -230,6 +230,22 @@ var RATINGS = ['ممتاز', 'جيد جداً', 'جيد', 'مقبول', 'ضعي�
 var RATING_SCORES = { 'ممتاز': 5, 'جيد جداً': 4, 'جيد': 3, 'مقبول': 2, 'ضعيف': 1 };
 var RATING_COLORS = { 'ممتاز': '#16a34a', 'جيد جداً': '#2563eb', 'جيد': '#0891b2', 'مقبول': '#d97706', 'ضعيف': '#dc2626' };
 
+
+// ══ بنود زيارة الفصل الافتراضية ══
+var DEFAULT_CLASSROOM_CRITERIA = [
+    "نظافة الفصل وترتيبه",
+    "انضباط الطلاب وهدوئهم",
+    "تفاعل الطلاب مع الدرس",
+    "وجود المعلم ومباشرته للحصة",
+    "توفر الوسائل التعليمية",
+    "تنسيق السبورة وظهورها",
+    "التزام الطلاب بالزي المدرسي",
+    "سلوك الطلاب وأخلاقياتهم",
+    "استغلال زمن الحصة",
+    "مستوى التفاعل والمشاركة"
+];
+var classroomCriteriaCache = null;
+
 var pcData = { visits: [], tasks: [], meetings: [], students: [], users: [] };
 var currentVisitRatings = {};
 
@@ -302,7 +318,8 @@ export async function initPerformanceCommitteeModule() {
 
     <div class="pc-tabs">
         <button class="pc-tab active" onclick="window.pcSwitchTab('overview',this)"><i class="bi bi-speedometer2"></i> نظرة عامة</button>
-        <button class="pc-tab" onclick="window.pcSwitchTab('visits',this)"><i class="bi bi-eye-fill"></i> الزيارات الصفية</button>
+        <button class="pc-tab" onclick="window.pcSwitchTab('visits',this)"><i class="bi bi-person-check-fill"></i> تقييم أداء المعلمين</button>
+        <button class="pc-tab" onclick="window.pcSwitchTab('classroom',this)"><i class="bi bi-door-open-fill"></i> زيارة الفصل</button>
         <button class="pc-tab" onclick="window.pcSwitchTab('tasks',this)"><i class="bi bi-list-check"></i> القرارات</button>
         <button class="pc-tab" onclick="window.pcSwitchTab('meetings',this)"><i class="bi bi-people-fill"></i> الاجتماعات</button>
         <button class="pc-tab" onclick="window.pcSwitchTab('students',this)"><i class="bi bi-person-lines-fill"></i> متابعة الطلاب</button>
@@ -318,6 +335,20 @@ export async function initPerformanceCommitteeModule() {
         </div>
         <div class="pc-card"><div class="pc-card-header"><span class="pc-card-title"><i class="bi bi-list-check"></i> آخر القرارات</span></div><div class="pc-card-body" style="overflow-x:auto;"><div id="pc-ov-tasks"><div class="pc-empty">⏳</div></div></div></div>
         <div class="pc-card"><div class="pc-card-header"><span class="pc-card-title"><i class="bi bi-eye-fill"></i> آخر الزيارات</span></div><div class="pc-card-body" style="overflow-x:auto;"><div id="pc-ov-visits"><div class="pc-empty">⏳</div></div></div></div>
+    </div>
+
+    <!-- زيارة الفصل -->
+    <div id="pc-tab-classroom" class="pc-hidden">
+        <div class="pc-card">
+            <div class="pc-card-header">
+                <span class="pc-card-title"><i class="bi bi-door-open-fill"></i> سجل زيارات الفصول</span>
+                <div style="display:flex;gap:8px;">
+                    <button class="pc-btn" style="background:#059669;" onclick="window.pcOpenCriteriaSettings()"><i class="bi bi-gear-fill"></i> ضبط البنود</button>
+                    <button class="pc-btn" onclick="window.pcOpenClassroomModal()"><i class="bi bi-plus-circle-fill"></i> زيارة جديدة</button>
+                </div>
+            </div>
+            <div class="pc-card-body" style="overflow-x:auto;"><div id="pc-classroom-list"><div class="pc-empty">⏳</div></div></div>
+        </div>
     </div>
 
     <!-- الزيارات -->
@@ -480,7 +511,7 @@ async function pcLoadAll() {
         pcData.students = ss.docs.map(d=>({id:d.id,...d.data()}));
         var today = getTodayISO();
         pcData.tasks = pcData.tasks.map(t=>t.status!=='منجز'&&t.dueDate&&t.dueDate<today?{...t,status:'متأخر'}:t);
-        pcRenderAll();
+        pcRenderAll(); pcLoadClassroomVisits();
     } catch(e) { window.showToast?.('❌ '+e.message,'error'); }
 }
 
@@ -489,7 +520,7 @@ function pcRenderAll() { pcRenderOverview(); pcRenderVisits(); pcRenderTasks(); 
 window.pcSwitchTab = function(tab, btn) {
     document.querySelectorAll('.pc-tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    ['overview','visits','tasks','meetings','students'].forEach(t=>{
+    ['overview','visits','classroom','tasks','meetings','students'].forEach(t=>{
         var el=document.getElementById('pc-tab-'+t);
         if(el)el.classList.toggle('pc-hidden',t!==tab);
     });
@@ -700,4 +731,159 @@ window.pcExportReport=function(){
     <h2>القرارات</h2><table><tr><th>القرار</th><th>المسؤول</th><th>الاستحقاق</th><th>الحالة</th></tr>${pcData.tasks.map(t=>`<tr><td>${t.title}</td><td>${t.owner||'-'}</td><td>${t.dueDate||'-'}</td><td>${t.status||'-'}</td></tr>`).join('')}</table>
     </body></html>`);
     w.document.close();setTimeout(()=>w.print(),500);
+};
+
+
+// ══ Modal زيارة الفصل + ضبط البنود ══
+var classroomRatings = {};
+
+window.pcOpenClassroomModal = async function() {
+    classroomRatings = {};
+    var criteria = await pcGetClassroomCriteria();
+    document.getElementById("pcr-date").value = getTodayISO();
+    
+    // تعبئة المعلمين
+    var teacherSel = document.getElementById("pcr-teacher");
+    teacherSel.innerHTML = "<option value=''>-- اختر --</option>" + 
+        pcData.users.map(u => "<option value='" + u.name + "'>" + u.name + "</option>").join("");
+    
+    // بناء جدول البنود
+    document.getElementById("pcr-tbody").innerHTML = criteria.map((item, idx) =>
+        "<tr><td style='color:#aaa;font-size:11px;font-weight:700;'>" + (idx+1) + "</td>" +
+        "<td style='font-weight:700;font-size:12px;'>" + item + "</td>" +
+        ["ممتاز","جيد جداً","جيد","مقبول","ضعيف"].map(r =>
+            "<td style='text-align:center;'><label class='rd'><input type='radio' name='cr_" + idx + "' value='" + r + "' onchange='window.pcrSetRating(" + idx + ",\"" + r + "\")''><div class='rd-dot'>" + r.slice(0,1) + "</div></label></td>"
+        ).join("") + "</tr>"
+    ).join("");
+    
+    document.getElementById("pc-classroom-modal").classList.add("show");
+    pcrUpdateScore(criteria.length);
+};
+
+window.pcrSetRating = function(idx, r) {
+    classroomRatings[idx] = r;
+    pcGetClassroomCriteria().then(c => pcrUpdateScore(c.length));
+};
+
+function pcrUpdateScore(max) {
+    var scores = {"ممتاز":5,"جيد جداً":4,"جيد":3,"مقبول":2,"ضعيف":1};
+    var total = Object.values(classroomRatings).reduce((s,r) => s+(scores[r]||0), 0);
+    var maxScore = max * 5;
+    var pct = maxScore > 0 ? Math.round((total/maxScore)*100) : 0;
+    var el = document.getElementById("pcr-total");
+    if (el) { el.textContent = total + " / " + maxScore + " (" + pct + "%)"; el.style.color = pct>=80?"#16a34a":pct>=60?"#d97706":"#dc2626"; }
+}
+
+async function pcGetClassroomCriteria() {
+    if (classroomCriteriaCache) return classroomCriteriaCache;
+    try {
+        var schoolId = getActiveSchoolId();
+        var snap = await getDocs(query(collection(db,"pc_classroom_criteria"), where("schoolId","==",schoolId)));
+        if (!snap.empty) {
+            classroomCriteriaCache = snap.docs[0].data().items || DEFAULT_CLASSROOM_CRITERIA;
+        } else {
+            classroomCriteriaCache = DEFAULT_CLASSROOM_CRITERIA;
+        }
+    } catch(e) { classroomCriteriaCache = DEFAULT_CLASSROOM_CRITERIA; }
+    return classroomCriteriaCache;
+}
+
+window.pcSaveClassroomVisit = async function() {
+    var classId = document.getElementById("pcr-class").value.trim();
+    var teacher = document.getElementById("pcr-teacher").value;
+    var subject = document.getElementById("pcr-subject").value.trim();
+    var period = document.getElementById("pcr-period").value;
+    var date = document.getElementById("pcr-date").value;
+    var notes = document.getElementById("pcr-notes").value.trim();
+    var me = JSON.parse(localStorage.getItem("hs_user")||"{}");
+    if (!classId) { window.showToast?.("أدخل الصف","warning"); return; }
+    var criteria = await pcGetClassroomCriteria();
+    var scores = {"ممتاز":5,"جيد جداً":4,"جيد":3,"مقبول":2,"ضعيف":1};
+    var maxScore = criteria.length * 5;
+    var totalScore = Object.values(classroomRatings).reduce((s,r) => s+(scores[r]||0), 0);
+    var ratingsArr = criteria.map((item,idx) => ({item, rating:classroomRatings[idx]||"-", score:scores[classroomRatings[idx]]||0}));
+    try {
+        await addDoc(collection(db,"pc_classroom_visits"), {
+            schoolId:getActiveSchoolId(), classId, teacher, subject,
+            period:parseInt(period), date, notes, ratings:ratingsArr,
+            totalScore, maxScore, percentage:Math.round((totalScore/maxScore)*100),
+            visitedBy:me.name||me.userId, createdAt:serverTimestamp()
+        });
+        window.showToast?.("✅ تم حفظ الزيارة");
+        document.getElementById("pc-classroom-modal").classList.remove("show");
+        classroomRatings = {};
+        await pcLoadClassroomVisits();
+    } catch(e) { window.showToast?.("❌ "+e.message,"error"); }
+};
+
+async function pcLoadClassroomVisits() {
+    var el = document.getElementById("pc-classroom-list");
+    if (!el) return;
+    var schoolId = getActiveSchoolId();
+    try {
+        var snap = await getDocs(query(collection(db,"pc_classroom_visits"), where("schoolId","==",schoolId)));
+        var visits = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+        if (!visits.length) { el.innerHTML = "<div class='pc-empty'>لا توجد زيارات فصول</div>"; return; }
+        el.innerHTML = "<table class='pc-tbl'><thead><tr><th>الصف</th><th>المعلم</th><th>المادة</th><th>التاريخ</th><th>التقييم</th><th>النسبة</th><th>إجراء</th></tr></thead><tbody>" +
+            visits.map(v => {
+                var c = v.percentage>=80?"#16a34a":v.percentage>=60?"#d97706":"#dc2626";
+                return "<tr><td style='font-weight:700;'>" + (v.classId||"-") + "</td><td>" + (v.teacher||"-") + "</td><td>" + (v.subject||"-") + "</td><td>" + (v.date||"-") + "</td><td style='font-weight:700;color:" + c + ";'>" + (v.totalScore||0) + "/" + (v.maxScore||0) + "</td><td><span class='pc-badge' style='background:" + c + "22;color:" + c + ";'>" + (v.percentage||0) + "%</span></td><td><button onclick='window.pcDelClassroomVisit(\"" + v.id + "\")' class='pc-btn sm red'>🗑</button></td></tr>";
+            }).join("") + "</tbody></table>";
+    } catch(e) { el.innerHTML = "<div class='pc-empty' style='color:red;'>❌ " + e.message + "</div>"; }
+}
+
+window.pcDelClassroomVisit = async function(id) {
+    if (!confirm("حذف الزيارة؟")) return;
+    try { await deleteDoc(doc(db,"pc_classroom_visits",id)); window.showToast?.("✅ تم"); await pcLoadClassroomVisits(); }
+    catch(e) { window.showToast?.("❌ "+e.message,"error"); }
+};
+
+// ══ ضبط البنود ══
+window.pcOpenCriteriaSettings = async function() {
+    var criteria = await pcGetClassroomCriteria();
+    renderCriteriaList(criteria);
+    document.getElementById("pc-criteria-modal").classList.add("show");
+};
+
+function renderCriteriaList(criteria) {
+    document.getElementById("pcr-criteria-list").innerHTML = criteria.map((item, idx) =>
+        "<div style='display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px;background:var(--off);border-radius:8px;'>" +
+        "<span style='font-size:11px;color:#aaa;font-weight:700;min-width:20px;'>" + (idx+1) + "</span>" +
+        "<span style='flex:1;font-size:13px;font-weight:700;'>" + item + "</span>" +
+        "<button onclick='window.pcRemoveCriterion(" + idx + ")' style='background:#fef2f2;color:#dc2626;border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:11px;'>حذف</button>" +
+        "</div>"
+    ).join("");
+}
+
+window.pcRemoveCriterion = async function(idx) {
+    var criteria = await pcGetClassroomCriteria();
+    criteria.splice(idx, 1);
+    classroomCriteriaCache = criteria;
+    renderCriteriaList(criteria);
+};
+
+window.pcAddCriterion = async function() {
+    var input = document.getElementById("pcr-new-item");
+    var text = input.value.trim();
+    if (!text) return;
+    var criteria = await pcGetClassroomCriteria();
+    criteria.push(text);
+    classroomCriteriaCache = criteria;
+    renderCriteriaList(criteria);
+    input.value = "";
+};
+
+window.pcSaveCriteria = async function() {
+    var schoolId = getActiveSchoolId();
+    var criteria = classroomCriteriaCache || DEFAULT_CLASSROOM_CRITERIA;
+    try {
+        var snap = await getDocs(query(collection(db,"pc_classroom_criteria"), where("schoolId","==",schoolId)));
+        if (!snap.empty) {
+            await updateDoc(doc(db,"pc_classroom_criteria",snap.docs[0].id), {items:criteria});
+        } else {
+            await addDoc(collection(db,"pc_classroom_criteria"), {schoolId, items:criteria});
+        }
+        window.showToast?.("✅ تم حفظ البنود");
+        document.getElementById("pc-criteria-modal").classList.remove("show");
+    } catch(e) { window.showToast?.("❌ "+e.message,"error"); }
 };
