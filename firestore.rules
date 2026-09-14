@@ -375,6 +375,14 @@ allow read: if true;
       allow update: if false;
     }
 
+    // Coverage
+    match /coverage/{docId} {
+      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
+      allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
+      allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow update: if false;
+    }
+
     // Default deny
     match /{document=**} { allow read, write: if false; }
   }
