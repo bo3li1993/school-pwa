@@ -377,7 +377,7 @@ allow read: if true;
 
     // Coverage
     match /coverage/{docId} {
-      allow read: if sessionValid() && sameSchool(resource.data.schoolId);
+      allow read: if isAuth() && sameSchool(resource.data.schoolId);
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
       allow update: if false;
