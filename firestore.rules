@@ -88,7 +88,7 @@ allow read: if true;
     // Students
     match /students/{docId} {
 allow read: if isSuperAdmin() || (sessionValid() && isSchoolStaff(resource.data.schoolId)) ||
-    (sessionValidParent() && parentOwnsStudent(resource.data.studentId));      );
+    (sessionValidParent() && parentOwnsStudent(resource.data.studentId));
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
