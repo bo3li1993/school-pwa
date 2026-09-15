@@ -48,7 +48,7 @@ jobs:
             --project hosainan-school \
             "cd firestore-tests && npm ci && npm test"
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
   # ══════════════════════════════════════════════
   # 2. Security Scan (منع كلمات خطرة في الكود)
@@ -107,7 +107,7 @@ jobs:
       - name: Validate rules syntax
         run: firebase firestore:rules --check firestore.rules --project hosainan-school
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
   # ══════════════════════════════════════════════
   # 4. Deploy (فقط على main بعد نجاح كل الاختبارات)
