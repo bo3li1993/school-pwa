@@ -619,6 +619,26 @@ window.pcPrintVisit = function(id) {
     var rows=(v.ratings||[]).map((r,i)=>`<tr><td style="padding:6px 10px;color:#666;text-align:center;">${i+1}</td><td style="padding:6px 10px;font-weight:600;">${r.item}</td>${RATINGS.map(rt=>`<td style="padding:6px 10px;text-align:center;">${r.rating===rt?'✓':''}</td>`).join('')}<td style="padding:6px 10px;text-align:center;font-weight:700;">${r.score||0}</td></tr>`).join('');
     var w=window.open('','_blank');
     w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة صفية</title>
+    <style>
+@media print {
+    body { margin: 0; padding: 10px; font-size: 11px; }
+    table { font-size: 10px; page-break-inside: avoid; }
+    th, td { padding: 4px 6px !important; }
+    .info-table td { padding: 4px 8px !important; }
+    h1 { font-size: 13px; margin-bottom: 8px; }
+    .sign { margin-top: 10px; }
+}
+</style>
+    <style>
+@media print {
+    body { margin: 0; padding: 10px; font-size: 11px; }
+    table { font-size: 10px; page-break-inside: avoid; }
+    th, td { padding: 4px 6px !important; }
+    .info-table td { padding: 4px 8px !important; }
+    h1 { font-size: 13px; margin-bottom: 8px; }
+    .sign { margin-top: 10px; }
+}
+</style>
     <style>body{font-family:Arial,sans-serif;padding:20px;direction:rtl;font-size:13px;}
     .header{text-align:center;margin-bottom:16px;border-bottom:2px solid #0b2545;padding-bottom:10px;}
     .header h2{color:#0b2545;font-size:15px;margin:0 0 4px;}
@@ -631,11 +651,16 @@ window.pcPrintVisit = function(id) {
     .total-row{background:#e0f2fe;font-weight:700;}
     .sign{margin-top:20px;display:flex;justify-content:space-between;font-size:12px;color:#666;}
     </style></head><body>
-    <div class="header">
+    <div class="header" style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="flex:1;">
         <h2>وزارة التربية — الإدارة العامة لمنطقة العاصمة التعليمية</h2>
         <div>مدرسة سالم الحسينان المتوسطة — بنين</div>
         <div style="font-weight:700;margin-top:4px;">نموذج زيارة صفية — ${v.subjectLabel||v.subject}</div>
-    </div>
+    </div></div>
+        <img src="https://bo3li1993.github.io/school-pwa/logo.png" style="width:60px;height:60px;object-fit:contain;" onerror="this.style.display='none'">
+        </div></div>
+        <img src="https://bo3li1993.github.io/school-pwa/logo.png" style="width:60px;height:60px;object-fit:contain;" onerror="this.style.display='none'">
+        </div>
     <table class="info-table">
         <tr><td>اسم المعلم</td><td>${v.teacher}</td><td>العام الدراسي</td><td>2025 / 2026</td></tr>
         <tr><td>موضوع الدرس</td><td>${v.topic||'-'}</td><td>الفصل الدراسي</td><td></td></tr>
