@@ -46,7 +46,24 @@ service cloud.firestore {
     function schoolIdNotChanged() {
       return request.resource.data.schoolId == resource.data.schoolId;
     }
+    function sessionValid() {
+      return isAuth()
+        && userRole() != "parent"
+        && request.auth.token.tokenVersion ==
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tokenVersion;
+    }
 
+    function sessionValidParent() {
+      return isAuth()
+        && userRole() == "parent"
+        && request.auth.token.tokenVersion ==
+           get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.tokenVersion;
+    }
+
+    function parentOwnsStudent(studentId) {
+      return isParent()
+        && studentId in request.auth.token.childIds;
+    }
     // Schools
     match /schools/{schoolId} {
 allow read: if true;    
@@ -70,10 +87,8 @@ allow read: if true;
 
     // Students
     match /students/{docId} {
-      allow read: if isAuth() && (
-        isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId)
-      );
+allow read: if isSuperAdmin() || (sessionValid() && isSchoolStaff(resource.data.schoolId)) ||
+    (sessionValidParent() && parentOwnsStudent(resource.data.studentId));      );
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -81,32 +96,21 @@ allow read: if true;
 
     // Attendance
     match /attendance/{docId} {
-      allow read: if isAuth() && (
-        isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId)
-      );
-      allow create: if isSchoolStaff(request.resource.data.schoolId);
-      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
+allow read: if isSuperAdmin() || (sessionValid() && isSchoolStaff(resource.data.schoolId)) ||
+    (sessionValidParent() && parentOwnsStudent(resource.data.studentId));      allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Behavior
     match /behavior/{docId} {
-      allow read: if isAuth() && (
-        isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId)
-      );
-      allow create: if isSchoolStaff(request.resource.data.schoolId);
+allow read: if isSuperAdmin() || (sessionValid() && isSchoolStaff(resource.data.schoolId));      allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Warnings
     match /warnings/{docId} {
-      allow read: if isAuth() && (
-        isSchoolStaff(resource.data.schoolId) ||
-        isParent() && sameSchool(resource.data.schoolId)
-      );
+      allow read: if isSuperAdmin() || (sessionValid() && isSchoolStaff(resource.data.schoolId));
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -128,7 +132,7 @@ allow read: if true;
 
     // Classes
     match /classes/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -136,7 +140,7 @@ allow read: if true;
 
     // Departments
     match /departments/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -144,7 +148,7 @@ allow read: if true;
 
     // Announcements
     match /announcements/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -158,7 +162,7 @@ allow read: if true;
 
     // School threads
     match /school_threads/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId) && request.resource.data.createdBy == request.auth.uid;
       allow update: if isAuth() && sameSchool(resource.data.schoolId) && schoolIdNotChanged() && (resource.data.createdBy == request.auth.uid || isAdmin());
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -166,7 +170,7 @@ allow read: if true;
 
     // Honors board
     match /honors_board/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -174,7 +178,7 @@ allow read: if true;
 
     // Rewards
     match /rewards/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -182,7 +186,7 @@ allow read: if true;
 
     // Technical visits
     match /technical_visits/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && isSchoolStaff(resource.data.schoolId));
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isSchoolStaff(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -190,7 +194,7 @@ allow read: if true;
 
     // Manager visits
     match /manager_visits/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -198,7 +202,7 @@ allow read: if true;
 
     // Wing rounds
     match /wing_rounds/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isSchoolStaff(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -260,7 +264,7 @@ allow read: if true;
 
     // Class distribution
     match /class_distribution/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -283,21 +287,21 @@ allow read: if true;
 
     // Visitors
     match /visitors/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId);
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     match /visitors_logs/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
       allow update, delete: if isAdmin() && sameSchool(resource.data.schoolId);
     }
 
     // Visits
     match /visits/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId);
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -305,7 +309,7 @@ allow read: if true;
 
     // Student notes
     match /student_notes/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isSchoolStaff(request.resource.data.schoolId);
       allow update: if isSchoolStaff(resource.data.schoolId) && schoolIdNotChanged();
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -313,7 +317,7 @@ allow read: if true;
 
     // Principal chats
     match /principal_chats/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
       allow update: if isAdmin() && sameSchool(resource.data.schoolId);
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
@@ -377,7 +381,7 @@ allow read: if true;
 
     // Coverage
     match /coverage/{docId} {
-      allow read: if isAuth() && sameSchool(resource.data.schoolId);
+      allow read: if isSuperAdmin() || (sessionValid() && sameSchool(resource.data.schoolId));
       allow create: if isAdmin() && sameSchool(request.resource.data.schoolId);
       allow delete: if isAdmin() && sameSchool(resource.data.schoolId);
       allow update: if false;
