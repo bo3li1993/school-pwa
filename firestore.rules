@@ -6,7 +6,7 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // استخدام token claims مباشرة بدل قراءة Firestore
+    // ط§ط³طھط®ط¯ط§ظ… token claims ظ…ط¨ط§ط´ط±ط© ط¨ط¯ظ„ ظ‚ط±ط§ط،ط© Firestore
     function userSchool() {
       return request.auth.token.schoolId;
     }
@@ -16,7 +16,7 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuth() && userRole() in ["admin", "assistant_manager", "wing_supervisor", "department_head"];
+      return sessionValid() && userRole() in ["admin", "assistant_manager", "wing_supervisor", "department_head"];
     }
 
     function isSuperAdmin() {
@@ -24,7 +24,7 @@ service cloud.firestore {
     }
 
     function isTeacher() {
-      return isAuth() && userRole() in ["teacher", "social_worker", "nurse", "guard", "wing_supervisor", "department_head"];
+      return sessionValid() && userRole() in ["teacher", "social_worker", "nurse", "guard", "wing_supervisor", "department_head"];
     }
 
     function isParent() {
@@ -391,3 +391,4 @@ allow read: if isSuperAdmin() || (sessionValid() && isSchoolStaff(resource.data.
     match /{document=**} { allow read, write: if false; }
   }
 }
+
