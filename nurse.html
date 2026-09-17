@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>بوابة الممرض - المنظومة الرقمية</title>
+<title>Ø¨ÙˆØ§Ø¨Ø© Ø§Ù„Ù…Ù…Ø±Ø¶ - Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0b2545">
@@ -89,7 +89,7 @@ body { background:var(--off); }
   .record-card { flex-direction:column; }
 }
 
-/* ══ Dark Mode ══ */
+/* â•â• Dark Mode â•â• */
 body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
 body.dark-mode .header-nav { background:#0f1928 !important; }
 body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
@@ -107,168 +107,168 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 
 <div class="splash" id="splash">
   <div class="splash-mark">
-    <div class="splash-badge">🏥</div>
-    <h1>المنظومة الرقمية</h1>
-    <p id="splash-school">بوابة الممرض</p>
+    <div class="splash-badge">ðŸ¥</div>
+    <h1>Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©</h1>
+    <p id="splash-school">Ø¨ÙˆØ§Ø¨Ø© Ø§Ù„Ù…Ù…Ø±Ø¶</p>
   </div>
 </div>
 
 <div class="header-nav">
   <div>
-    <h1 id="lbl-nurse-title"><i class="bi bi-heart-pulse-fill"></i> بوابة الممرض</h1>
-    <p id="lbl-nurse-school">المنظومة الرقمية</p>
+    <h1 id="lbl-nurse-title"><i class="bi bi-heart-pulse-fill"></i> Ø¨ÙˆØ§Ø¨Ø© Ø§Ù„Ù…Ù…Ø±Ø¶</h1>
+    <p id="lbl-nurse-school">Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©</p>
   </div>
   <div class="header-actions">
     <button onclick="document.body.classList.toggle('dark-mode');localStorage.setItem('hs_dark_mode',document.body.classList.contains('dark-mode')?'1':'0')"
     style="background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:15px"
-    title="الوضع الليلي">🌙</button>
+    title="Ø§Ù„ÙˆØ¶Ø¹ Ø§Ù„Ù„ÙŠÙ„ÙŠ">ðŸŒ™</button>
     <button class="btn-header" onclick="doLogout()" style="background:var(--red);color:#fff;">
-      <i class="bi bi-box-arrow-left"></i> خروج
+      <i class="bi bi-box-arrow-left"></i> Ø®Ø±ÙˆØ¬
     </button>
   </div>
 </div>
 
 <div class="workspace">
 
-  <!-- إحصائيات اليوم -->
+  <!-- Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª Ø§Ù„ÙŠÙˆÙ… -->
   <div class="stats-row">
     <div class="stat-box">
-      <div class="num" id="stat-today" style="color:var(--teal)">—</div>
-      <div class="lbl">مراجعات اليوم</div>
+      <div class="num" id="stat-today" style="color:var(--teal)">â€”</div>
+      <div class="lbl">Ù…Ø±Ø§Ø¬Ø¹Ø§Øª Ø§Ù„ÙŠÙˆÙ…</div>
     </div>
     <div class="stat-box">
-      <div class="num" id="stat-inside" style="color:var(--gold)">—</div>
-      <div class="lbl">داخل العيادة</div>
+      <div class="num" id="stat-inside" style="color:var(--gold)">â€”</div>
+      <div class="lbl">Ø¯Ø§Ø®Ù„ Ø§Ù„Ø¹ÙŠØ§Ø¯Ø©</div>
     </div>
     <div class="stat-box">
-      <div class="num" id="stat-returned" style="color:var(--green)">—</div>
-      <div class="lbl">رجعوا للفصل</div>
+      <div class="num" id="stat-returned" style="color:var(--green)">â€”</div>
+      <div class="lbl">Ø±Ø¬Ø¹ÙˆØ§ Ù„Ù„ÙØµÙ„</div>
     </div>
     <div class="stat-box">
-      <div class="num" id="stat-sent-home" style="color:var(--red)">—</div>
-      <div class="lbl">أُرسلوا للبيت</div>
+      <div class="num" id="stat-sent-home" style="color:var(--red)">â€”</div>
+      <div class="lbl">Ø£ÙØ±Ø³Ù„ÙˆØ§ Ù„Ù„Ø¨ÙŠØª</div>
     </div>
   </div>
 
-  <!-- تبويب: تسجيل -->
+  <!-- ØªØ¨ÙˆÙŠØ¨: ØªØ³Ø¬ÙŠÙ„ -->
   <div class="tab-view active" id="view-register">
     <div class="card">
-      <h2><i class="bi bi-plus-circle-fill" style="color:var(--teal)"></i> تسجيل مراجعة جديدة</h2>
+      <h2><i class="bi bi-plus-circle-fill" style="color:var(--teal)"></i> ØªØ³Ø¬ÙŠÙ„ Ù…Ø±Ø§Ø¬Ø¹Ø© Ø¬Ø¯ÙŠØ¯Ø©</h2>
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">الفصل</label>
+          <label class="form-label">Ø§Ù„ÙØµÙ„</label>
           <select class="form-input" id="nurse-class" onchange="loadStudents(this.value)">
-            <option value="">-- اختر الفصل --</option>
+            <option value="">-- Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ --</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">الطالب</label>
+          <label class="form-label">Ø§Ù„Ø·Ø§Ù„Ø¨</label>
           <select class="form-input" id="nurse-student" disabled>
-            <option value="">-- اختر الفصل أولاً --</option>
+            <option value="">-- Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ø£ÙˆÙ„Ø§Ù‹ --</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">الشكوى / التشخيص</label>
+          <label class="form-label">Ø§Ù„Ø´ÙƒÙˆÙ‰ / Ø§Ù„ØªØ´Ø®ÙŠØµ</label>
           <select class="form-input" id="nurse-complaint">
-            <option value="ارتفاع درجة الحرارة">🌡️ ارتفاع درجة الحرارة</option>
-            <option value="صداع وألم بالرأس">🤕 صداع وألم بالرأس</option>
-            <option value="ألم بالمعدة ومغص">🤢 ألم بالمعدة</option>
-            <option value="إصابة جرح أو كدمة">🏃 جرح / إصابة</option>
-            <option value="إعياء عام وإرهاق">💤 إعياء عام</option>
-            <option value="ألم بالأسنان">🦷 ألم بالأسنان</option>
-            <option value="ضغط دم / دوخة">😵 دوخة / ضغط</option>
-            <option value="حساسية أو طفح جلدي">🤧 حساسية</option>
-            <option value="أخرى">📋 أخرى</option>
+            <option value="Ø§Ø±ØªÙØ§Ø¹ Ø¯Ø±Ø¬Ø© Ø§Ù„Ø­Ø±Ø§Ø±Ø©">ðŸŒ¡ï¸ Ø§Ø±ØªÙØ§Ø¹ Ø¯Ø±Ø¬Ø© Ø§Ù„Ø­Ø±Ø§Ø±Ø©</option>
+            <option value="ØµØ¯Ø§Ø¹ ÙˆØ£Ù„Ù… Ø¨Ø§Ù„Ø±Ø£Ø³">ðŸ¤• ØµØ¯Ø§Ø¹ ÙˆØ£Ù„Ù… Ø¨Ø§Ù„Ø±Ø£Ø³</option>
+            <option value="Ø£Ù„Ù… Ø¨Ø§Ù„Ù…Ø¹Ø¯Ø© ÙˆÙ…ØºØµ">ðŸ¤¢ Ø£Ù„Ù… Ø¨Ø§Ù„Ù…Ø¹Ø¯Ø©</option>
+            <option value="Ø¥ØµØ§Ø¨Ø© Ø¬Ø±Ø­ Ø£Ùˆ ÙƒØ¯Ù…Ø©">ðŸƒ Ø¬Ø±Ø­ / Ø¥ØµØ§Ø¨Ø©</option>
+            <option value="Ø¥Ø¹ÙŠØ§Ø¡ Ø¹Ø§Ù… ÙˆØ¥Ø±Ù‡Ø§Ù‚">ðŸ’¤ Ø¥Ø¹ÙŠØ§Ø¡ Ø¹Ø§Ù…</option>
+            <option value="Ø£Ù„Ù… Ø¨Ø§Ù„Ø£Ø³Ù†Ø§Ù†">ðŸ¦· Ø£Ù„Ù… Ø¨Ø§Ù„Ø£Ø³Ù†Ø§Ù†</option>
+            <option value="Ø¶ØºØ· Ø¯Ù… / Ø¯ÙˆØ®Ø©">ðŸ˜µ Ø¯ÙˆØ®Ø© / Ø¶ØºØ·</option>
+            <option value="Ø­Ø³Ø§Ø³ÙŠØ© Ø£Ùˆ Ø·ÙØ­ Ø¬Ù„Ø¯ÙŠ">ðŸ¤§ Ø­Ø³Ø§Ø³ÙŠØ©</option>
+            <option value="Ø£Ø®Ø±Ù‰">ðŸ“‹ Ø£Ø®Ø±Ù‰</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">الإجراء / العلاج</label>
-          <input type="text" class="form-input" id="nurse-treatment" placeholder="مثال: بندول + راحة حصة">
+          <label class="form-label">Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡ / Ø§Ù„Ø¹Ù„Ø§Ø¬</label>
+          <input type="text" class="form-input" id="nurse-treatment" placeholder="Ù…Ø«Ø§Ù„: Ø¨Ù†Ø¯ÙˆÙ„ + Ø±Ø§Ø­Ø© Ø­ØµØ©">
         </div>
         <div class="form-group">
-          <label class="form-label">النتيجة</label>
+          <label class="form-label">Ø§Ù„Ù†ØªÙŠØ¬Ø©</label>
           <select class="form-input" id="nurse-result">
-            <option value="داخل العيادة">⏳ داخل العيادة</option>
-            <option value="رجع للفصل">✅ رجع للفصل</option>
-            <option value="أُرسل للبيت">🏠 أُرسل للبيت</option>
-            <option value="تم استدعاء ولي الأمر">📞 استدعاء ولي الأمر</option>
+            <option value="Ø¯Ø§Ø®Ù„ Ø§Ù„Ø¹ÙŠØ§Ø¯Ø©">â³ Ø¯Ø§Ø®Ù„ Ø§Ù„Ø¹ÙŠØ§Ø¯Ø©</option>
+            <option value="Ø±Ø¬Ø¹ Ù„Ù„ÙØµÙ„">âœ… Ø±Ø¬Ø¹ Ù„Ù„ÙØµÙ„</option>
+            <option value="Ø£ÙØ±Ø³Ù„ Ù„Ù„Ø¨ÙŠØª">ðŸ  Ø£ÙØ±Ø³Ù„ Ù„Ù„Ø¨ÙŠØª</option>
+            <option value="ØªÙ… Ø§Ø³ØªØ¯Ø¹Ø§Ø¡ ÙˆÙ„ÙŠ Ø§Ù„Ø£Ù…Ø±">ðŸ“ž Ø§Ø³ØªØ¯Ø¹Ø§Ø¡ ÙˆÙ„ÙŠ Ø§Ù„Ø£Ù…Ø±</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">ملاحظات إضافية</label>
-          <input type="text" class="form-input" id="nurse-notes" placeholder="ملاحظات اختيارية...">
+          <label class="form-label">Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø¥Ø¶Ø§ÙÙŠØ©</label>
+          <input type="text" class="form-input" id="nurse-notes" placeholder="Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ø®ØªÙŠØ§Ø±ÙŠØ©...">
         </div>
       </div>
       <button class="btn-submit" onclick="saveVisit()">
-        <i class="bi bi-cloud-upload-fill"></i> حفظ المراجعة الطبية
+        <i class="bi bi-cloud-upload-fill"></i> Ø­ÙØ¸ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø© Ø§Ù„Ø·Ø¨ÙŠØ©
       </button>
     </div>
   </div>
 
-  <!-- تبويب: اليوم -->
+  <!-- ØªØ¨ÙˆÙŠØ¨: Ø§Ù„ÙŠÙˆÙ… -->
   <div class="tab-view" id="view-today">
     <div class="card">
-      <h2><i class="bi bi-calendar-day-fill" style="color:var(--teal)"></i> مراجعات اليوم الحية</h2>
+      <h2><i class="bi bi-calendar-day-fill" style="color:var(--teal)"></i> Ù…Ø±Ø§Ø¬Ø¹Ø§Øª Ø§Ù„ÙŠÙˆÙ… Ø§Ù„Ø­ÙŠØ©</h2>
       <div id="today-list">
-        <div style="text-align:center;padding:30px;color:var(--mid);font-weight:700">⏳ جاري التحميل...</div>
+        <div style="text-align:center;padding:30px;color:var(--mid);font-weight:700">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div>
       </div>
     </div>
   </div>
 
-  <!-- تبويب: الأرشيف -->
+  <!-- ØªØ¨ÙˆÙŠØ¨: Ø§Ù„Ø£Ø±Ø´ÙŠÙ -->
   <div class="tab-view" id="view-archive">
     <div class="card">
-      <h2><i class="bi bi-archive-fill" style="color:var(--teal)"></i> أرشيف العيادة</h2>
+      <h2><i class="bi bi-archive-fill" style="color:var(--teal)"></i> Ø£Ø±Ø´ÙŠÙ Ø§Ù„Ø¹ÙŠØ§Ø¯Ø©</h2>
       <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
         <input type="date" id="archive-date-from" class="form-input" style="max-width:160px">
         <input type="date" id="archive-date-to" class="form-input" style="max-width:160px">
         <button onclick="loadArchive()" class="btn-submit" style="width:auto;padding:10px 18px;">
-          <i class="bi bi-search"></i> بحث
+          <i class="bi bi-search"></i> Ø¨Ø­Ø«
         </button>
       </div>
       <div style="overflow-x:auto">
         <table style="width:100%;border-collapse:collapse;font-size:13px;">
           <thead>
             <tr style="background:var(--off)">
-              <th style="padding:9px;text-align:right;font-weight:900;color:var(--navy);">التاريخ</th>
-              <th style="padding:9px;text-align:right;">الطالب</th>
-              <th style="padding:9px;text-align:right;">الفصل</th>
-              <th style="padding:9px;text-align:right;">الشكوى</th>
-              <th style="padding:9px;text-align:right;">النتيجة</th>
+              <th style="padding:9px;text-align:right;font-weight:900;color:var(--navy);">Ø§Ù„ØªØ§Ø±ÙŠØ®</th>
+              <th style="padding:9px;text-align:right;">Ø§Ù„Ø·Ø§Ù„Ø¨</th>
+              <th style="padding:9px;text-align:right;">Ø§Ù„ÙØµÙ„</th>
+              <th style="padding:9px;text-align:right;">Ø§Ù„Ø´ÙƒÙˆÙ‰</th>
+              <th style="padding:9px;text-align:right;">Ø§Ù„Ù†ØªÙŠØ¬Ø©</th>
             </tr>
           </thead>
           <tbody id="archive-tbody">
-            <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--mid);">اختر نطاق التاريخ وابحث</td></tr>
+            <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--mid);">Ø§Ø®ØªØ± Ù†Ø·Ø§Ù‚ Ø§Ù„ØªØ§Ø±ÙŠØ® ÙˆØ§Ø¨Ø­Ø«</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- تبويب: إعداداتي -->
+  <!-- ØªØ¨ÙˆÙŠØ¨: Ø¥Ø¹Ø¯Ø§Ø¯Ø§ØªÙŠ -->
   <div class="tab-view" id="view-settings">
     <div class="card">
-      <h2><i class="bi bi-person-gear" style="color:var(--teal)"></i> بياناتي الشخصية</h2>
+      <h2><i class="bi bi-person-gear" style="color:var(--teal)"></i> Ø¨ÙŠØ§Ù†Ø§ØªÙŠ Ø§Ù„Ø´Ø®ØµÙŠØ©</h2>
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">الاسم الكامل</label>
+          <label class="form-label">Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„</label>
           <input type="text" class="form-input" id="nurse-name">
         </div>
         <div class="form-group">
-          <label class="form-label">رقم الهاتف</label>
+          <label class="form-label">Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ</label>
           <input type="tel" class="form-input" id="nurse-phone">
         </div>
         <div class="form-group">
-          <label class="form-label">البريد الإلكتروني</label>
+          <label class="form-label">Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ</label>
           <input type="email" class="form-input" id="nurse-email">
         </div>
         <div class="form-group">
-          <label class="form-label">كلمة مرور جديدة (اختياري)</label>
-          <input type="password" class="form-input" id="nurse-pass" placeholder="اتركها فارغة إذا ما تبي تغييرها">
+          <label class="form-label">ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± Ø¬Ø¯ÙŠØ¯Ø© (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)</label>
+          <input type="password" class="form-input" id="nurse-pass" placeholder="Ø§ØªØ±ÙƒÙ‡Ø§ ÙØ§Ø±ØºØ© Ø¥Ø°Ø§ Ù…Ø§ ØªØ¨ÙŠ ØªØºÙŠÙŠØ±Ù‡Ø§">
         </div>
       </div>
       <button class="btn-submit" onclick="saveProfile()">
-        <i class="bi bi-check-circle-fill"></i> حفظ التعديلات
+        <i class="bi bi-check-circle-fill"></i> Ø­ÙØ¸ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„Ø§Øª
       </button>
     </div>
   </div>
@@ -278,16 +278,16 @@ body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !
 <!-- Bottom Nav -->
 <div class="bottom-nav">
   <button class="bn-item active" data-view="view-register" onclick="switchView('view-register')">
-    <i class="bi bi-plus-circle-fill"></i>تسجيل
+    <i class="bi bi-plus-circle-fill"></i>ØªØ³Ø¬ÙŠÙ„
   </button>
   <button class="bn-item" data-view="view-today" onclick="switchView('view-today')">
-    <i class="bi bi-calendar-day"></i>اليوم
+    <i class="bi bi-calendar-day"></i>Ø§Ù„ÙŠÙˆÙ…
   </button>
   <button class="bn-item" data-view="view-archive" onclick="switchView('view-archive')">
-    <i class="bi bi-archive"></i>الأرشيف
+    <i class="bi bi-archive"></i>Ø§Ù„Ø£Ø±Ø´ÙŠÙ
   </button>
   <button class="bn-item" data-view="view-settings" onclick="switchView('view-settings')">
-    <i class="bi bi-sliders"></i>إعداداتي
+    <i class="bi bi-sliders"></i>Ø¥Ø¹Ø¯Ø§Ø¯Ø§ØªÙŠ
   </button>
 </div>
 
@@ -299,7 +299,7 @@ import { collection, addDoc, getDocs, doc, updateDoc, onSnapshot,
 let currentUser = null;
 let todayUnsub = null;
 
-// ══ Toast ══
+// â•â• Toast â•â•
 window.showToast = function(msg, type='success') {
   document.querySelectorAll('.toast-msg').forEach(t=>t.remove());
   const colors = {success:'#059669',error:'#dc2626',info:'#1a78c2',warning:'#d97706'};
@@ -311,7 +311,7 @@ window.showToast = function(msg, type='success') {
   setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);},2500);
 };
 
-// ══ Switch View ══
+// â•â• Switch View â•â•
 window.switchView = function(viewId) {
   document.querySelectorAll('.tab-view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
@@ -321,7 +321,7 @@ window.switchView = function(viewId) {
   if(viewId==='view-archive') setDefaultDates();
 };
 
-// ══ Init ══
+// â•â• Init â•â•
 document.addEventListener('DOMContentLoaded', async () => {
   const saved = localStorage.getItem('hs_user');
   if(!saved) { window.location.replace('index.html'); return; }
@@ -331,30 +331,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.replace('index.html'); return;
   }
 
-  document.getElementById('lbl-nurse-title').innerHTML = `<i class="bi bi-heart-pulse-fill"></i> أ. ${currentUser.name||'الممرض'}`;
-  document.getElementById('lbl-nurse-school').textContent = currentUser.schoolName||'المنظومة الرقمية';
+  document.getElementById('lbl-nurse-title').innerHTML = `<i class="bi bi-heart-pulse-fill"></i> Ø£. ${currentUser.name||'Ø§Ù„Ù…Ù…Ø±Ø¶'}`;
+  document.getElementById('lbl-nurse-school').textContent = currentUser.schoolName||'Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©';
   document.getElementById('splash-school').textContent = currentUser.schoolName||'';
 
-  // تحميل الفصول
+  // ØªØ­Ù…ÙŠÙ„ Ø§Ù„ÙØµÙˆÙ„
   const classes = await getSchoolClasses(db, getActiveSchoolId());
   const sel = document.getElementById('nurse-class');
-  sel.innerHTML = '<option value="">-- اختر الفصل --</option>' +
+  sel.innerHTML = '<option value="">-- Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ --</option>' +
     classes.map(c=>`<option value="${c}">${c}</option>`).join('');
 
-  // إحصائيات اليوم (live)
+  // Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª Ø§Ù„ÙŠÙˆÙ… (live)
   loadStats();
 
-  // تحميل بيانات الملف الشخصي
+  // ØªØ­Ù…ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ù„Ù Ø§Ù„Ø´Ø®ØµÙŠ
   loadProfile();
 
   document.getElementById('splash').classList.add('hide');
 });
 
-// ══ تحميل الطلاب ══
+// â•â• ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø·Ù„Ø§Ø¨ â•â•
 window.loadStudents = async function(classId) {
   const sel = document.getElementById('nurse-student');
-  if(!classId) { sel.innerHTML='<option value="">-- اختر الفصل أولاً --</option>'; sel.disabled=true; return; }
-  sel.innerHTML='<option value="">⏳ جاري التحميل...</option>';
+  if(!classId) { sel.innerHTML='<option value="">-- Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ø£ÙˆÙ„Ø§Ù‹ --</option>'; sel.disabled=true; return; }
+  sel.innerHTML='<option value="">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</option>';
   sel.disabled=true;
   try {
     const snap = await getDocs(query(collection(db,'students'),
@@ -362,12 +362,12 @@ window.loadStudents = async function(classId) {
     const names=[];
     snap.forEach(d=>{ if(d.data().name) names.push(d.data().name.trim()); });
     names.sort((a,b)=>a.localeCompare(b,'ar'));
-    sel.innerHTML='<option value="">-- اختر الطالب --</option>'+names.map(n=>`<option value="${n}">${n}</option>`).join('');
+    sel.innerHTML='<option value="">-- Ø§Ø®ØªØ± Ø§Ù„Ø·Ø§Ù„Ø¨ --</option>'+names.map(n=>`<option value="${n}">${n}</option>`).join('');
     sel.disabled=false;
-  } catch(e) { sel.innerHTML='<option value="">❌ خطأ</option>'; }
+  } catch(e) { sel.innerHTML='<option value="">âŒ Ø®Ø·Ø£</option>'; }
 };
 
-// ══ حفظ المراجعة ══
+// â•â• Ø­ÙØ¸ Ø§Ù„Ù…Ø±Ø§Ø¬Ø¹Ø© â•â•
 window.saveVisit = async function() {
   const classId   = document.getElementById('nurse-class').value;
   const student   = document.getElementById('nurse-student').value;
@@ -376,7 +376,7 @@ window.saveVisit = async function() {
   const result    = document.getElementById('nurse-result').value;
   const notes     = document.getElementById('nurse-notes').value.trim();
 
-  if(!classId||!student) { showToast('اختر الفصل والطالب','error'); return; }
+  if(!classId||!student) { showToast('Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ ÙˆØ§Ù„Ø·Ø§Ù„Ø¨','error'); return; }
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString('ar-KW',{hour:'2-digit',minute:'2-digit'});
@@ -387,26 +387,26 @@ window.saveVisit = async function() {
       classId,
       studentName: student,
       complaint,
-      treatment:   treatment||'—',
+      treatment:   treatment||'â€”',
       result,
       notes,
       date:        getTodayISO(),
       timeStr,
       nurseName:   currentUser.name||'',
-      status:      result==='داخل العيادة'?'active':'done',
+      status:      result==='Ø¯Ø§Ø®Ù„ Ø§Ù„Ø¹ÙŠØ§Ø¯Ø©'?'active':'done',
       createdAt:   serverTimestamp()
     });
 
-    showToast(`✅ تم تسجيل مراجعة ${student}`);
+    showToast(`âœ… ØªÙ… ØªØ³Ø¬ÙŠÙ„ Ù…Ø±Ø§Ø¬Ø¹Ø© ${student}`);
     document.getElementById('nurse-class').value='';
-    document.getElementById('nurse-student').innerHTML='<option value="">-- اختر الفصل أولاً --</option>';
+    document.getElementById('nurse-student').innerHTML='<option value="">-- Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ø£ÙˆÙ„Ø§Ù‹ --</option>';
     document.getElementById('nurse-student').disabled=true;
     document.getElementById('nurse-treatment').value='';
     document.getElementById('nurse-notes').value='';
-  } catch(e) { showToast('❌ '+e.message,'error'); }
+  } catch(e) { showToast('âŒ '+e.message,'error'); }
 };
 
-// ══ إحصائيات اليوم ══
+// â•â• Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª Ø§Ù„ÙŠÙˆÙ… â•â•
 function loadStats() {
   const schoolId = getActiveSchoolId();
   const today = getTodayISO();
@@ -415,9 +415,9 @@ function loadStats() {
     let inside=0, returned=0, sentHome=0;
     snap.forEach(d=>{
       const r=d.data().result||'';
-      if(r==='داخل العيادة') inside++;
-      else if(r==='رجع للفصل') returned++;
-      else if(r==='أُرسل للبيت') sentHome++;
+      if(r==='Ø¯Ø§Ø®Ù„ Ø§Ù„Ø¹ÙŠØ§Ø¯Ø©') inside++;
+      else if(r==='Ø±Ø¬Ø¹ Ù„Ù„ÙØµÙ„') returned++;
+      else if(r==='Ø£ÙØ±Ø³Ù„ Ù„Ù„Ø¨ÙŠØª') sentHome++;
     });
     document.getElementById('stat-today').textContent=snap.size;
     document.getElementById('stat-inside').textContent=inside;
@@ -426,7 +426,7 @@ function loadStats() {
   });
 }
 
-// ══ مراجعات اليوم ══
+// â•â• Ù…Ø±Ø§Ø¬Ø¹Ø§Øª Ø§Ù„ÙŠÙˆÙ… â•â•
 function loadTodayLive() {
   if(todayUnsub) todayUnsub();
   const schoolId=getActiveSchoolId();
@@ -435,7 +435,7 @@ function loadTodayLive() {
   todayUnsub=onSnapshot(q, snap=>{
     const list=document.getElementById('today-list');
     if(snap.empty){
-      list.innerHTML='<div style="text-align:center;padding:30px;color:var(--mid);font-weight:700">لا توجد مراجعات اليوم بعد</div>';
+      list.innerHTML='<div style="text-align:center;padding:30px;color:var(--mid);font-weight:700">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø±Ø§Ø¬Ø¹Ø§Øª Ø§Ù„ÙŠÙˆÙ… Ø¨Ø¹Ø¯</div>';
       return;
     }
     const docs=[...snap.docs].sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0));
@@ -445,33 +445,33 @@ function loadTodayLive() {
       return `
       <div class="record-card" style="${isDone?'opacity:.6':''}">
         <div class="record-info">
-          <h3>👤 ${v.studentName} — ${v.classId}</h3>
+          <h3>ðŸ‘¤ ${v.studentName} â€” ${v.classId}</h3>
           <span class="complaint-badge">${v.complaint}</span>
-          <p style="margin-top:6px">💊 ${v.treatment} | <b>${v.result}</b></p>
-          ${v.notes?`<p style="color:var(--mid);font-size:11px;margin-top:3px">📝 ${v.notes}</p>`:''}
+          <p style="margin-top:6px">ðŸ’Š ${v.treatment} | <b>${v.result}</b></p>
+          ${v.notes?`<p style="color:var(--mid);font-size:11px;margin-top:3px">ðŸ“ ${v.notes}</p>`:''}
         </div>
         <div style="text-align:left;flex-shrink:0;">
           <div class="record-time">${v.timeStr||''}</div>
           ${v.status==='active'?`
           <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
-            <button class="btn-exit-student" onclick="updateResult('${d.id}','رجع للفصل')" style="background:var(--green)">✅ رجع الفصل</button>
-            <button class="btn-exit-student" onclick="updateResult('${d.id}','أُرسل للبيت')">🏠 أُرسل للبيت</button>
-          </div>`:'<div style="color:var(--green);font-weight:700;font-size:12px;margin-top:8px">✔ مكتمل</div>'}
+            <button class="btn-exit-student" onclick="updateResult('${d.id}','Ø±Ø¬Ø¹ Ù„Ù„ÙØµÙ„')" style="background:var(--green)">âœ… Ø±Ø¬Ø¹ Ø§Ù„ÙØµÙ„</button>
+            <button class="btn-exit-student" onclick="updateResult('${d.id}','Ø£ÙØ±Ø³Ù„ Ù„Ù„Ø¨ÙŠØª')">ðŸ  Ø£ÙØ±Ø³Ù„ Ù„Ù„Ø¨ÙŠØª</button>
+          </div>`:'<div style="color:var(--green);font-weight:700;font-size:12px;margin-top:8px">âœ” Ù…ÙƒØªÙ…Ù„</div>'}
         </div>
       </div>`;
     }).join('');
   });
 }
 
-// ══ تحديث نتيجة ══
+// â•â• ØªØ­Ø¯ÙŠØ« Ù†ØªÙŠØ¬Ø© â•â•
 window.updateResult = async function(docId, newResult) {
   try {
     await updateDoc(doc(db,'clinic',docId), { result:newResult, status:'done' });
-    showToast(`✅ تم تحديث الحالة: ${newResult}`);
-  } catch(e){ showToast('❌ '+e.message,'error'); }
+    showToast(`âœ… ØªÙ… ØªØ­Ø¯ÙŠØ« Ø§Ù„Ø­Ø§Ù„Ø©: ${newResult}`);
+  } catch(e){ showToast('âŒ '+e.message,'error'); }
 };
 
-// ══ الأرشيف ══
+// â•â• Ø§Ù„Ø£Ø±Ø´ÙŠÙ â•â•
 function setDefaultDates() {
   const today=getTodayISO();
   const weekAgo=new Date(); weekAgo.setDate(weekAgo.getDate()-7);
@@ -482,29 +482,29 @@ function setDefaultDates() {
 window.loadArchive = async function() {
   const from=document.getElementById('archive-date-from').value;
   const to=document.getElementById('archive-date-to').value;
-  if(!from||!to){ showToast('اختر نطاق التاريخ','info'); return; }
+  if(!from||!to){ showToast('Ø§Ø®ØªØ± Ù†Ø·Ø§Ù‚ Ø§Ù„ØªØ§Ø±ÙŠØ®','info'); return; }
   const tbody=document.getElementById('archive-tbody');
-  tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px">⏳ جاري البحث...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø¨Ø­Ø«...</td></tr>';
   try {
     const snap=await getDocs(query(collection(db,'clinic'),
       where('schoolId','==',getActiveSchoolId()),
       where('date','>=',from), where('date','<=',to)));
-    if(snap.empty){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--mid)">لا توجد سجلات</td></tr>'; return; }
+    if(snap.empty){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--mid)">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø³Ø¬Ù„Ø§Øª</td></tr>'; return; }
     const docs=[...snap.docs].sort((a,b)=>b.data().date.localeCompare(a.data().date));
     tbody.innerHTML=docs.map(d=>{
       const v=d.data();
       return `<tr>
-        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.date||'—'} ${v.timeStr?'('+v.timeStr+')':''}</td>
-        <td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700">${v.studentName||'—'}</td>
-        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.classId||'—'}</td>
-        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.complaint||'—'}</td>
-        <td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700;color:var(--green)">${v.result||'—'}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.date||'â€”'} ${v.timeStr?'('+v.timeStr+')':''}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700">${v.studentName||'â€”'}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.classId||'â€”'}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line)">${v.complaint||'â€”'}</td>
+        <td style="padding:8px;border-bottom:1px solid var(--line);font-weight:700;color:var(--green)">${v.result||'â€”'}</td>
       </tr>`;
     }).join('');
-  } catch(e){ tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:red;padding:20px">❌ ${e.message}</td></tr>`; }
+  } catch(e){ tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:red;padding:20px">âŒ ${e.message}</td></tr>`; }
 };
 
-// ══ ملف شخصي ══
+// â•â• Ù…Ù„Ù Ø´Ø®ØµÙŠ â•â•
 async function loadProfile() {
   try {
     const snap=await getDocs(query(collection(db,'users'),
@@ -522,29 +522,29 @@ window.saveProfile = async function() {
   const phone=document.getElementById('nurse-phone').value.trim();
   const email=document.getElementById('nurse-email').value.trim();
   const pass=document.getElementById('nurse-pass').value.trim();
-  if(!name){ showToast('الاسم مطلوب','error'); return; }
+  if(!name){ showToast('Ø§Ù„Ø§Ø³Ù… Ù…Ø·Ù„ÙˆØ¨','error'); return; }
   try {
     const snap=await getDocs(query(collection(db,'users'),
       where('schoolId','==',getActiveSchoolId()), where('userId','==',currentUser.userId)));
-    if(snap.empty){ showToast('⚠️ تعذر إيجاد حسابك','error'); return; }
+    if(snap.empty){ showToast('âš ï¸ ØªØ¹Ø°Ø± Ø¥ÙŠØ¬Ø§Ø¯ Ø­Ø³Ø§Ø¨Ùƒ','error'); return; }
     await updateDoc(snap.docs[0].ref,{name,phone,email});
     if(pass){
       try {
         const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
         const fns=getFunctions(undefined, 'me-central1');
         await httpsCallable(fns,'resetUserPassword')({userDocId:snap.docs[0].id,newPassword:pass});
-      } catch(pe){ showToast('⚠️ تم الحفظ لكن تعذر تغيير كلمة المرور','warning'); }
+      } catch(pe){ showToast('âš ï¸ ØªÙ… Ø§Ù„Ø­ÙØ¸ Ù„ÙƒÙ† ØªØ¹Ø°Ø± ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±','warning'); }
     }
     currentUser.name=name;
     localStorage.setItem('hs_user',JSON.stringify(currentUser));
-    document.getElementById('lbl-nurse-title').innerHTML=`<i class="bi bi-heart-pulse-fill"></i> أ. ${name}`;
+    document.getElementById('lbl-nurse-title').innerHTML=`<i class="bi bi-heart-pulse-fill"></i> Ø£. ${name}`;
     document.getElementById('nurse-pass').value='';
-    showToast('✅ تم حفظ بياناتك بنجاح');
-  } catch(e){ showToast('❌ '+e.message,'error'); }
+    showToast('âœ… ØªÙ… Ø­ÙØ¸ Ø¨ÙŠØ§Ù†Ø§ØªÙƒ Ø¨Ù†Ø¬Ø§Ø­');
+  } catch(e){ showToast('âŒ '+e.message,'error'); }
 };
 
 
-// ══ واتساب ولي الأمر من العيادة ══
+// â•â• ÙˆØ§ØªØ³Ø§Ø¨ ÙˆÙ„ÙŠ Ø§Ù„Ø£Ù…Ø± Ù…Ù† Ø§Ù„Ø¹ÙŠØ§Ø¯Ø© â•â•
 window.sendClinicWhatsApp = async function(studentName, classId, complaint, result) {
     try {
         const { collection, query, where, getDocs } =
@@ -556,21 +556,21 @@ window.sendClinicWhatsApp = async function(studentName, classId, complaint, resu
             where('name','==',studentName),
             where('classId','==',classId)));
 
-        if(snap.empty){ showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
+        if(snap.empty){ showToast('âš ï¸ Ù„Ù… ÙŠÙØ¹Ø«Ø± Ø¹Ù„Ù‰ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø·Ø§Ù„Ø¨','warning'); return; }
         const phone = (snap.docs[0].data().parentPhone||'').replace(/\D/g,'');
-        if(!phone){ showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
+        if(!phone){ showToast('âš ï¸ Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø±Ù‚Ù… Ù‡Ø§ØªÙ Ù„ÙˆÙ„ÙŠ Ø§Ù„Ø£Ù…Ø±','warning'); return; }
 
         const today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-        const schoolName = JSON.parse(localStorage.getItem('hs_user')||'{}').schoolName || 'المدرسة';
+        const schoolName = JSON.parse(localStorage.getItem('hs_user')||'{}').schoolName || 'Ø§Ù„Ù…Ø¯Ø±Ø³Ø©';
         const msg = encodeURIComponent(
-            `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
-            `نُعلمكم بأن ابنكم راجع عيادة ${schoolName} اليوم ${today}.\n` +
-            `الشكوى: ${complaint||'—'}\n` +
-            `النتيجة: ${result||'—'}\n` +
-            `للاستفسار تواصلوا مع إدارة المدرسة.`
+            `Ø§Ù„Ø³Ù„Ø§Ù… Ø¹Ù„ÙŠÙƒÙ… ÙˆÙ„ÙŠ Ø£Ù…Ø± Ø§Ù„Ø·Ø§Ù„Ø¨ ${studentName}ØŒ\n` +
+            `Ù†ÙØ¹Ù„Ù…ÙƒÙ… Ø¨Ø£Ù† Ø§Ø¨Ù†ÙƒÙ… Ø±Ø§Ø¬Ø¹ Ø¹ÙŠØ§Ø¯Ø© ${schoolName} Ø§Ù„ÙŠÙˆÙ… ${today}.\n` +
+            `Ø§Ù„Ø´ÙƒÙˆÙ‰: ${complaint||'â€”'}\n` +
+            `Ø§Ù„Ù†ØªÙŠØ¬Ø©: ${result||'â€”'}\n` +
+            `Ù„Ù„Ø§Ø³ØªÙØ³Ø§Ø± ØªÙˆØ§ØµÙ„ÙˆØ§ Ù…Ø¹ Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø¯Ø±Ø³Ø©.`
         );
         window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
-    } catch(e){ showToast('❌ '+e.message,'error'); }
+    } catch(e){ showToast('âŒ '+e.message,'error'); }
 };
 
 window.doLogout=function(){
@@ -584,10 +584,10 @@ if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').cat
 
 
 <script>
-// ══ Service Worker — تسجيل بسيط بدون reload ══
+// â•â• Service Worker â€” ØªØ³Ø¬ÙŠÙ„ Ø¨Ø³ÙŠØ· Ø¨Ø¯ÙˆÙ† reload â•â•
 if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').then(function(reg) {
-        // تحقق من التحديثات كل 5 دقائق
+        // ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„ØªØ­Ø¯ÙŠØ«Ø§Øª ÙƒÙ„ 5 Ø¯Ù‚Ø§Ø¦Ù‚
         setInterval(function() { reg.update(); }, 5 * 60 * 1000);
     }).catch(function() {});
 }

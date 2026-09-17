@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>بوابة ولي الأمر — المنظومة الرقمية</title>
+<title>Ø¨ÙˆØ§Ø¨Ø© ÙˆÙ„ÙŠ Ø§Ù„Ø£Ù…Ø± â€” Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -43,46 +43,46 @@ body{font-family:'Cairo',sans-serif;background:var(--off);min-height:100vh;paddi
 
 <div class="topbar">
     <div>
-        <h1 id="topbar-name">👨‍👩‍👦 بوابة ولي الأمر</h1>
+        <h1 id="topbar-name">ðŸ‘¨â€ðŸ‘©â€ðŸ‘¦ Ø¨ÙˆØ§Ø¨Ø© ÙˆÙ„ÙŠ Ø§Ù„Ø£Ù…Ø±</h1>
         <p id="topbar-school"></p>
     </div>
-    <button onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> خروج</button>
+    <button onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> Ø®Ø±ÙˆØ¬</button>
 </div>
 
-<!-- الرئيسية -->
+<!-- Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ© -->
 <div class="page active" id="page-home">
     <div class="card">
-        <h2><i class="bi bi-person-fill" style="color:var(--sky)"></i> بيانات الطالب</h2>
-        <div id="student-info"><div class="empty">⏳ جاري التحميل...</div></div>
+        <h2><i class="bi bi-person-fill" style="color:var(--sky)"></i> Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø·Ø§Ù„Ø¨</h2>
+        <div id="student-info"><div class="empty">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div></div>
     </div>
     <div id="home-announcements"></div>
     <div class="card">
-        <h2><i class="bi bi-calendar-x" style="color:var(--red)"></i> سجل الغياب</h2>
-        <div id="absence-list"><div class="empty">⏳</div></div>
+        <h2><i class="bi bi-calendar-x" style="color:var(--red)"></i> Ø³Ø¬Ù„ Ø§Ù„ØºÙŠØ§Ø¨</h2>
+        <div id="absence-list"><div class="empty">â³</div></div>
     </div>
 </div>
 
-<!-- ملاحظات المعلمين -->
+<!-- Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ù…Ø¹Ù„Ù…ÙŠÙ† -->
 <div class="page" id="page-notes">
     <div class="card">
-        <h2><i class="bi bi-pencil-square" style="color:var(--gold)"></i> ملاحظات المعلمين</h2>
-        <div id="teacher-notes"><div class="empty">لا توجد ملاحظات</div></div>
+        <h2><i class="bi bi-pencil-square" style="color:var(--gold)"></i> Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ù…Ø¹Ù„Ù…ÙŠÙ†</h2>
+        <div id="teacher-notes"><div class="empty">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ù„Ø§Ø­Ø¸Ø§Øª</div></div>
     </div>
 </div>
 
-<!-- المراسلات -->
+<!-- Ø§Ù„Ù…Ø±Ø§Ø³Ù„Ø§Øª -->
 <div class="page" id="page-messages">
     <div class="card">
-        <h2><i class="bi bi-envelope" style="color:var(--sky)"></i> المراسلات</h2>
-        <p style="font-size:12px;color:var(--mid);font-weight:700">تواصل مع المدير أو رئيس القسم أو الأخصائي</p>
-        <div id="parent-messages"><div class="empty">قريباً...</div></div>
+        <h2><i class="bi bi-envelope" style="color:var(--sky)"></i> Ø§Ù„Ù…Ø±Ø§Ø³Ù„Ø§Øª</h2>
+        <p style="font-size:12px;color:var(--mid);font-weight:700">ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ù…Ø¯ÙŠØ± Ø£Ùˆ Ø±Ø¦ÙŠØ³ Ø§Ù„Ù‚Ø³Ù… Ø£Ùˆ Ø§Ù„Ø£Ø®ØµØ§Ø¦ÙŠ</p>
+        <div id="parent-messages"><div class="empty">Ù‚Ø±ÙŠØ¨Ø§Ù‹...</div></div>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-btn active" onclick="switchPage('page-home',this)"><i class="bi bi-house-fill"></i>الرئيسية</button>
-    <button class="nav-btn" onclick="switchPage('page-notes',this)"><i class="bi bi-pencil-square"></i>ملاحظات</button>
-    <button class="nav-btn" onclick="switchPage('page-messages',this)"><i class="bi bi-envelope"></i>مراسلات</button>
+    <button class="nav-btn active" onclick="switchPage('page-home',this)"><i class="bi bi-house-fill"></i>Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©</button>
+    <button class="nav-btn" onclick="switchPage('page-notes',this)"><i class="bi bi-pencil-square"></i>Ù…Ù„Ø§Ø­Ø¸Ø§Øª</button>
+    <button class="nav-btn" onclick="switchPage('page-messages',this)"><i class="bi bi-envelope"></i>Ù…Ø±Ø§Ø³Ù„Ø§Øª</button>
 </div>
 
 <script type="module">
@@ -94,7 +94,7 @@ if(!saved) window.location.replace('index.html');
 let me = {};
 try {
     me = JSON.parse(saved);
-    document.getElementById('topbar-name').textContent = '👨‍👩‍👦 ولي أمر — ' + (me.studentName||me.name||'');
+    document.getElementById('topbar-name').textContent = 'ðŸ‘¨â€ðŸ‘©â€ðŸ‘¦ ÙˆÙ„ÙŠ Ø£Ù…Ø± â€” ' + (me.studentName||me.name||'');
     document.getElementById('topbar-school').textContent = me.schoolName||'';
 } catch(e) { window.location.replace('index.html'); }
 
@@ -113,35 +113,35 @@ window.doLogout = function() {
     window.location.replace('index.html');
 };
 
-// تحميل بيانات الطالب
+// ØªØ­Ù…ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø·Ø§Ù„Ø¨
 (async function() {
     try {
         const studentName = me.studentName || '';
         const classId = me.classId || '';
 
-        // بيانات الطالب
+        // Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø·Ø§Ù„Ø¨
         const infoDiv = document.getElementById('student-info');
         infoDiv.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">' +
-            '<div><span style="color:var(--mid);font-weight:700">الاسم:</span> <b>'+studentName+'</b></div>' +
-            '<div><span style="color:var(--mid);font-weight:700">الفصل:</span> <b>'+classId+'</b></div>' +
+            '<div><span style="color:var(--mid);font-weight:700">Ø§Ù„Ø§Ø³Ù…:</span> <b>'+studentName+'</b></div>' +
+            '<div><span style="color:var(--mid);font-weight:700">Ø§Ù„ÙØµÙ„:</span> <b>'+classId+'</b></div>' +
             '</div>';
 
-        // سجل الغياب
+        // Ø³Ø¬Ù„ Ø§Ù„ØºÙŠØ§Ø¨
         if(studentName) {
             const attSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('studentName','==',studentName)));
             const records = attSnap.docs.map(d=>d.data()).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
             const absList = document.getElementById('absence-list');
 
             if(!records.length) {
-                absList.innerHTML = '<div class="empty" style="color:var(--green)">✅ لا يوجد غياب مسجّل — ممتاز!</div>';
+                absList.innerHTML = '<div class="empty" style="color:var(--green)">âœ… Ù„Ø§ ÙŠÙˆØ¬Ø¯ ØºÙŠØ§Ø¨ Ù…Ø³Ø¬Ù‘Ù„ â€” Ù…Ù…ØªØ§Ø²!</div>';
             } else {
-                const labels = {absent:'غائب',late:'متأخر',excused:'مستأذن'};
+                const labels = {absent:'ØºØ§Ø¦Ø¨',late:'Ù…ØªØ£Ø®Ø±',excused:'Ù…Ø³ØªØ£Ø°Ù†'};
                 absList.innerHTML = records.map(r =>
                     '<div class="absent-day"><span class="date">'+r.date+'</span><span class="status status-'+(r.status||'absent')+'">'+(labels[r.status]||r.status)+'</span><span style="font-size:11px;color:var(--mid)">'+(r.period||'')+'</span></div>'
                 ).join('');
             }
 
-            // ملاحظات المعلمين
+            // Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ù…Ø¹Ù„Ù…ÙŠÙ†
             const notesSnap = await getDocs(query(collection(db,'student_notes'), where('schoolId','==',schoolId), where('studentName','==',studentName)));
             const notesDiv = document.getElementById('teacher-notes');
             if(notesSnap.size > 0) {
@@ -152,11 +152,11 @@ window.doLogout = function() {
             }
         }
 
-        // إعلانات المدرسة
+        // Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø§Ù„Ù…Ø¯Ø±Ø³Ø©
         const annSnap = await getDocs(query(collection(db,'school_announcements'), where('schoolId','==',schoolId), where('active','==',true)));
         if(annSnap.size > 0) {
             document.getElementById('home-announcements').innerHTML =
-                '<div class="card" style="background:#fef3c7;border-color:#fbbf24"><h2 style="color:#92400e">📢 إعلانات المدرسة</h2>' +
+                '<div class="card" style="background:#fef3c7;border-color:#fbbf24"><h2 style="color:#92400e">ðŸ“¢ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</h2>' +
                 annSnap.docs.map(d=>'<div class="ann-item">'+d.data().text+'</div>').join('') + '</div>';
         }
 
