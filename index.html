@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ© | ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„</title>
+<title>المنظومة الرقمية | تسجيل الدخول</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/x-icon" href="./favicon.ico">
@@ -60,7 +60,7 @@ body::after {
     pointer-events: none;
 }
 
-/* Ø¨Ø·Ø§Ù‚Ø© Ø§Ù„Ø¯Ø®ÙˆÙ„ */
+/* بطاقة الدخول */
 .login-card {
     background: #fff;
     border-radius: 20px;
@@ -76,7 +76,7 @@ body::after {
     to   { opacity:1; transform:translateY(0); }
 }
 
-/* Ù‡ÙŠØ¯Ø± Ø§Ù„Ø¨Ø·Ø§Ù‚Ø© */
+/* هيدر البطاقة */
 .login-header {
     background: var(--primary);
     padding: 28px 28px 24px;
@@ -111,7 +111,7 @@ body::after {
     font-weight: 700;
 }
 
-/* Ø¬Ø³Ù… Ø§Ù„Ø¨Ø·Ø§Ù‚Ø© */
+/* جسم البطاقة */
 .login-body { padding: 28px; }
 
 .login-label {
@@ -196,7 +196,7 @@ body::after {
 }
 .error-msg.show { display: block; }
 
-/* Ø¨Ø·Ø§Ù‚Ø§Øª Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ */
+/* بطاقات المدارس */
 .school-card {
     display: flex;
     align-items: center;
@@ -235,7 +235,7 @@ body::after {
 
 .school-card-arrow { color: var(--mid); font-size: 18px; }
 
-/* Ø´Ø§Ø±Ø© Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ */
+/* شارة الاشتراك */
 .school-badge {
     font-size: 11px;
     font-weight: 700;
@@ -248,7 +248,7 @@ body::after {
 .badge-expiring { background: #fffbeb; color: #d97706; }
 .badge-expired  { background: #fef2f2; color: #dc2626; }
 
-/* ÙØ§ØµÙ„ Ø®Ø·ÙˆØ§Øª */
+/* فاصل خطوات */
 .step-indicator {
     display: flex;
     align-items: center;
@@ -322,66 +322,66 @@ body::after {
 </head>
 <body>
 
-<!-- Ø´Ø§Ø´Ø© Ø§Ù„Ø¥ØºÙ„Ø§Ù‚ -->
+<!-- شاشة الإغلاق -->
 <div id="lockdown-screen">
-    <div id="lock-icon" style="font-size:64px; margin-bottom:16px;">â›”</div>
+    <div id="lock-icon" style="font-size:64px; margin-bottom:16px;">⛔</div>
     <h2 id="lock-title" style="font-size:22px; font-weight:900; margin-bottom:10px;"></h2>
     <p id="lock-msg" style="font-size:14px; color:rgba(255,255,255,.75); max-width:320px; line-height:1.7;"></p>
 </div>
 
-<!-- Ø§Ù„Ø¨Ø·Ø§Ù‚Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ© -->
+<!-- البطاقة الرئيسية -->
 <div class="login-card" id="main-card">
 
-    <!-- Ù‡ÙŠØ¯Ø± -->
+    <!-- هيدر -->
     <div class="login-header" id="login-header">
         <div class="login-logo" id="school-logo">
             <i class="bi bi-building-fill-check"></i>
         </div>
-        <div class="login-title" id="school-name">Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©</div>
-        <div class="login-sub" id="school-sub">Ù†Ø¸Ø§Ù… Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ Ø§Ù„Ù…ØªÙƒØ§Ù…Ù„</div>
+        <div class="login-title" id="school-name">المنظومة الرقمية</div>
+        <div class="login-sub" id="school-sub">نظام إدارة المدارس المتكامل</div>
     </div>
 
-    <!-- Ù…Ø¤Ø´Ø± Ø§Ù„Ø®Ø·ÙˆØ§Øª -->
+    <!-- مؤشر الخطوات -->
     <div class="step-indicator" id="step-indicator">
         <div class="step-dot active" id="dot-1"></div>
         <div class="step-dot" id="dot-2"></div>
     </div>
 
-    <!-- ===== Ø§Ù„Ø®Ø·ÙˆØ© 1: Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© ===== -->
+    <!-- ===== الخطوة 1: اختيار المدرسة ===== -->
     <div id="step-school" class="login-body" style="padding-top:0;">
         <p style="font-size:13px; font-weight:700; color:var(--mid); margin-bottom:14px; text-align:center;">
-            <i class="bi bi-search"></i> Ø§Ø®ØªØ± Ù…Ø¯Ø±Ø³ØªÙƒ Ù„Ù„Ù…ØªØ§Ø¨Ø¹Ø©
+            <i class="bi bi-search"></i> اختر مدرستك للمتابعة
         </p>
 
         <input type="text" class="search-bar" id="school-search"
-            placeholder="ðŸ” Ø§Ø¨Ø­Ø« Ø¹Ù† Ù…Ø¯Ø±Ø³ØªÙƒ..."
+            placeholder="🔍 ابحث عن مدرستك..."
             oninput="window.filterSchools(this.value)">
 
         <div id="schools-list">
             <div class="loading-schools">
                 <i class="bi bi-hourglass-split" style="font-size:24px; display:block; margin-bottom:8px;"></i>
-                Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø¯Ø§Ø±Ø³...
+                جاري تحميل المدارس...
             </div>
         </div>
     </div>
 
-    <!-- ===== Ø§Ù„Ø®Ø·ÙˆØ© 2: Ø§Ù„Ø¯Ø®ÙˆÙ„ ===== -->
+    <!-- ===== الخطوة 2: الدخول ===== -->
     <div id="step-login" class="login-body" style="display:none; padding-top:0;">
         <div id="error-msg" class="error-msg"></div>
 
         <label class="login-label" for="inp-id">
-            <i class="bi bi-person-badge-fill"></i> Ù…Ø¹Ø±Ù‘Ù Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…
+            <i class="bi bi-person-badge-fill"></i> معرّف المستخدم
         </label>
         <input type="text" id="inp-id" class="login-input"
-            placeholder="Ø£Ø¯Ø®Ù„ Ø±Ù‚Ù…Ùƒ Ø£Ùˆ Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…"
+            placeholder="أدخل رقمك أو اسم المستخدم"
             autocomplete="username" autocapitalize="off" spellcheck="false">
 
         <label class="login-label" for="inp-pass">
-            <i class="bi bi-lock-fill"></i> ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±
+            <i class="bi bi-lock-fill"></i> كلمة المرور
         </label>
         <div style="position:relative; margin-bottom:14px;">
             <input type="password" id="inp-pass" class="login-input"
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="••••••••"
                 autocomplete="current-password"
                 style="margin-bottom:0; padding-left:46px;"
                 onkeydown="if(event.key==='Enter') window.doLogin()">
@@ -392,16 +392,16 @@ body::after {
         </div>
 
         <button class="login-btn" id="login-btn" onclick="window.doLogin()">
-            <i class="bi bi-shield-lock-fill"></i> Ø¯Ø®ÙˆÙ„
+            <i class="bi bi-shield-lock-fill"></i> دخول
         </button>
 
         <button class="back-btn" onclick="window.goBack()">
-            <i class="bi bi-arrow-right"></i> Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø©
+            <i class="bi bi-arrow-right"></i> العودة لاختيار المدرسة
         </button>
     </div>
 
     <div class="login-footer">
-        <a href="privacy.html">Ø³ÙŠØ§Ø³Ø© Ø§Ù„Ø®ØµÙˆØµÙŠØ©</a>
+        <a href="privacy.html">سياسة الخصوصية</a>
         
     </div>
 </div>
@@ -418,11 +418,11 @@ import { signInWithCustomToken }
 const functions   = getFunctions(auth.app, 'me-central1');
 const loginUserFn = httpsCallable(functions, 'loginUser');
 
-// ===== Ø­Ø§Ù„Ø© Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ =====
+// ===== حالة التطبيق =====
 var selectedSchool = null;
 var allSchools = [];
 
-// ===== ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ =====
+// ===== تحميل المدارس =====
 async function loadSchools() {
     var listEl = document.getElementById('schools-list');
     try {
@@ -433,14 +433,14 @@ async function loadSchools() {
 
         renderSchools(allSchools);
     } catch(e) {
-        listEl.innerHTML = `<div style="text-align:center; color:#dc2626; padding:20px; font-weight:700;">âŒ ØªØ¹Ø°Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø¯Ø§Ø±Ø³</div>`;
+        listEl.innerHTML = `<div style="text-align:center; color:#dc2626; padding:20px; font-weight:700;">❌ تعذر تحميل المدارس</div>`;
     }
 }
 
 function renderSchools(schools) {
     var listEl = document.getElementById('schools-list');
     if (!schools.length) {
-        listEl.innerHTML = '<div class="loading-schools">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø¯Ø§Ø±Ø³ Ù…Ø·Ø§Ø¨Ù‚Ø©</div>';
+        listEl.innerHTML = '<div class="loading-schools">لا توجد مدارس مطابقة</div>';
         return;
     }
 
@@ -450,13 +450,13 @@ function renderSchools(schools) {
         var daysLeft = expiry ? Math.ceil((new Date(expiry) - new Date()) / 86400000) : 999;
         var badge = '';
         if (s.status === 'suspended') {
-            badge = '<span class="school-badge badge-expired">Ù…ÙˆÙ‚ÙˆÙØ©</span>';
+            badge = '<span class="school-badge badge-expired">موقوفة</span>';
         } else if (daysLeft <= 30 && daysLeft > 0) {
-            badge = `<span class="school-badge badge-expiring">ØªÙ†ØªÙ‡ÙŠ Ø®Ù„Ø§Ù„ ${daysLeft} ÙŠÙˆÙ…</span>`;
+            badge = `<span class="school-badge badge-expiring">تنتهي خلال ${daysLeft} يوم</span>`;
         } else if (daysLeft <= 0) {
-            badge = '<span class="school-badge badge-expired">Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</span>';
+            badge = '<span class="school-badge badge-expired">انتهى الاشتراك</span>';
         } else {
-            badge = '<span class="school-badge badge-active">Ù†Ø´Ø·Ø©</span>';
+            badge = '<span class="school-badge badge-active">نشطة</span>';
         }
 
         return `
@@ -469,7 +469,7 @@ function renderSchools(schools) {
             </div>
             <div class="school-card-info">
                 <div class="school-card-name">${s.name || s.id}</div>
-                <div class="school-card-region">${s.region || 'ÙˆØ²Ø§Ø±Ø© Ø§Ù„ØªØ±Ø¨ÙŠØ© â€” Ø§Ù„ÙƒÙˆÙŠØª'}</div>
+                <div class="school-card-region">${s.region || 'وزارة التربية — الكويت'}</div>
                 ${badge}
             </div>
             <i class="bi bi-chevron-left school-card-arrow"></i>
@@ -486,28 +486,28 @@ window.filterSchools = function(query) {
     renderSchools(filtered);
 };
 
-// ===== Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© =====
+// ===== اختيار المدرسة =====
 window.selectSchool = async function(schoolId) {
     var school = allSchools.find(s => s.id === schoolId);
     if (!school) return;
 
-    // ØªØ­Ù‚Ù‚ Ù…Ù† Ø­Ø§Ù„Ø© Ø§Ù„Ù…Ø¯Ø±Ø³Ø©
+    // تحقق من حالة المدرسة
     if (school.status === 'suspended') {
-        showLockdown('â›”', 'Ø§Ù„Ø­Ø³Ø§Ø¨ Ù…ÙˆÙ‚ÙˆÙ', 'ØªÙ… Ø¥ÙŠÙ‚Ø§Ù Ø­Ø³Ø§Ø¨ Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©. ÙŠØ±Ø¬Ù‰ Ø§Ù„ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„ÙÙ†ÙŠ Ù„ØªØ¬Ø¯ÙŠØ¯ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ.');
+        showLockdown('⛔', 'الحساب موقوف', 'تم إيقاف حساب هذه المدرسة. يرجى التواصل مع الدعم الفني لتجديد الاشتراك.');
         return;
     }
 
     var today = new Date().toISOString().slice(0,10);
     if (school.subscriptionEnd && school.subscriptionEnd < today) {
-        showLockdown('â°', 'Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ', 'Ø§Ù†ØªÙ‡Øª Ù…Ø¯Ø© Ø§Ø´ØªØ±Ø§Ùƒ Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©. ÙŠØ±Ø¬Ù‰ Ø§Ù„ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„ÙÙ†ÙŠ Ù„Ù„ØªØ¬Ø¯ÙŠØ¯.');
+        showLockdown('⏰', 'انتهى الاشتراك', 'انتهت مدة اشتراك هذه المدرسة. يرجى التواصل مع الدعم الفني للتجديد.');
         return;
     }
 
     selectedSchool = school;
 
-    // ØªØ­Ø¯ÙŠØ« Ø§Ù„Ù‡ÙŠØ¯Ø±
+    // تحديث الهيدر
     document.getElementById('school-name').textContent = school.name || school.id;
-    document.getElementById('school-sub').textContent = school.region || 'ÙˆØ²Ø§Ø±Ø© Ø§Ù„ØªØ±Ø¨ÙŠØ© â€” Ø§Ù„ÙƒÙˆÙŠØª';
+    document.getElementById('school-sub').textContent = school.region || 'وزارة التربية — الكويت';
     if (school.primaryColor) {
         document.documentElement.style.setProperty('--primary', school.primaryColor);
         document.getElementById('login-header').style.background = school.primaryColor;
@@ -515,20 +515,20 @@ window.selectSchool = async function(schoolId) {
     if (school.logoUrl) {
         document.getElementById('school-logo').innerHTML = `<img src="${school.logoUrl}" alt="${school.name}">`;
     }
-    document.title = `Ø¯Ø®ÙˆÙ„ | ${school.name}`;
+    document.title = `دخول | ${school.name}`;
 
-    // Ø§Ù„Ø§Ù†ØªÙ‚Ø§Ù„ Ù„Ù„Ø®Ø·ÙˆØ© 2
+    // الانتقال للخطوة 2
     document.getElementById('step-school').style.display = 'none';
     document.getElementById('step-login').style.display = 'block';
     document.getElementById('dot-1').classList.remove('active');
     document.getElementById('dot-2').classList.add('active');
     document.getElementById('inp-id').focus();
 
-    // Ø­ÙØ¸ Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø§Ù„Ù…Ø®ØªØ§Ø±Ø©
+    // حفظ المدرسة المختارة
     localStorage.setItem('hs_last_school', schoolId);
 };
 
-// ===== Ø§Ù„Ø¹ÙˆØ¯Ø© =====
+// ===== العودة =====
 window.goBack = function() {
     selectedSchool = null;
     document.getElementById('step-school').style.display = 'block';
@@ -539,16 +539,16 @@ window.goBack = function() {
     document.getElementById('inp-id').value = '';
     document.getElementById('inp-pass').value = '';
 
-    // Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„Ù‡ÙŠØ¯Ø± Ù„Ù„ÙˆØ¶Ø¹ Ø§Ù„Ø§ÙØªØ±Ø§Ø¶ÙŠ
-    document.getElementById('school-name').textContent = 'Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©';
-    document.getElementById('school-sub').textContent = 'Ù†Ø¸Ø§Ù… Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ Ø§Ù„Ù…ØªÙƒØ§Ù…Ù„';
+    // إعادة الهيدر للوضع الافتراضي
+    document.getElementById('school-name').textContent = 'المنظومة الرقمية';
+    document.getElementById('school-sub').textContent = 'نظام إدارة المدارس المتكامل';
     document.getElementById('login-header').style.background = '';
     document.documentElement.style.setProperty('--primary', '#0b2545');
     document.getElementById('school-logo').innerHTML = '<i class="bi bi-building-fill-check"></i>';
-    document.title = 'Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ© | ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„';
+    document.title = 'المنظومة الرقمية | تسجيل الدخول';
 };
 
-// ===== Ø¥Ø¸Ù‡Ø§Ø±/Ø¥Ø®ÙØ§Ø¡ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± =====
+// ===== إظهار/إخفاء كلمة المرور =====
 window.togglePass = function() {
     var input = document.getElementById('inp-pass');
     var eye = document.getElementById('pass-eye');
@@ -561,7 +561,7 @@ window.togglePass = function() {
     }
 };
 
-// ===== ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ =====
+// ===== تسجيل الدخول =====
 window.doLogin = async function() {
     var id   = document.getElementById('inp-id').value.trim();
     var pass = document.getElementById('inp-pass').value.trim();
@@ -571,17 +571,17 @@ window.doLogin = async function() {
     err.classList.remove('show');
 
     if (!selectedSchool) {
-        err.textContent = 'âš ï¸ ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø£ÙˆÙ„Ø§Ù‹';
+        err.textContent = '⚠️ يرجى اختيار المدرسة أولاً';
         err.classList.add('show'); return;
     }
 
     if (!id || !pass) {
-        err.textContent = 'âš ï¸ Ø£Ø¯Ø®Ù„ Ø±Ù‚Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… ÙˆÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±';
+        err.textContent = '⚠️ أدخل رقم المستخدم وكلمة المرور';
         err.classList.add('show'); return;
     }
 
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù‚Ù‚...';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
 
     try {
         var result   = await loginUserFn({ schoolId: selectedSchool.id, userId: id, password: pass });
@@ -591,7 +591,7 @@ window.doLogin = async function() {
             throw { code: 'school-mismatch' };
         }
 
-        // Ø­ÙØ¸ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…
+        // حفظ بيانات المستخدم
         localStorage.setItem('hs_user', JSON.stringify({
             uid: userData.userId,
             name: userData.name,
@@ -601,10 +601,10 @@ window.doLogin = async function() {
             department: userData.department || ''
         }));
 
-        // ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ù€ Firebase
+        // تسجيل الدخول بـ Firebase
         await signInWithCustomToken(auth, userData.token);
 
-        // Ø§Ù„ØªÙˆØ¬ÙŠÙ‡ Ø­Ø³Ø¨ Ø§Ù„Ø¯ÙˆØ±
+        // التوجيه حسب الدور
         var rolePages = {
             admin: 'admin.html', assistant_manager: 'admin.html',
             wing_supervisor: 'admin.html', department_head: 'department_head.html',
@@ -618,21 +618,21 @@ window.doLogin = async function() {
 
     } catch(e) {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-shield-lock-fill"></i> Ø¯Ø®ÙˆÙ„';
+        btn.innerHTML = '<i class="bi bi-shield-lock-fill"></i> دخول';
 
-        var msg = 'âŒ Ø­Ø¯Ø« Ø®Ø·Ø£ ØºÙŠØ± Ù…ØªÙˆÙ‚Ø¹';
-        if (e.code === 'school-mismatch') msg = 'âŒ Ù‡Ø°Ø§ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ù„Ø§ ÙŠÙ†ØªÙ…ÙŠ Ù„Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©';
-        else if (e.message?.includes('unauthenticated') || e.message?.includes('401')) msg = 'âŒ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø£Ùˆ Ø§Ù„Ù…Ø¹Ø±Ù‘Ù ØºÙŠØ± ØµØ­ÙŠØ­';
-        else if (e.message?.includes('resource-exhausted') || e.message?.includes('429')) msg = 'â³ ØªÙ… ØªØ¬Ø§ÙˆØ² Ø¹Ø¯Ø¯ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø§Øª â€” Ø§Ù†ØªØ¸Ø± 15 Ø¯Ù‚ÙŠÙ‚Ø©';
-        else if (e.message?.includes('locked')) msg = 'ðŸ”’ Ø§Ù„Ø­Ø³Ø§Ø¨ Ù…Ù‚ÙÙ„ Ù…Ø¤Ù‚ØªØ§Ù‹ â€” Ø§Ù†ØªØ¸Ø± 15 Ø¯Ù‚ÙŠÙ‚Ø©';
-        else if (e.message?.includes('network') || e.message?.includes('fetch')) msg = 'ðŸ“¡ ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„Ø§ØªØµØ§Ù„ Ø¨Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª';
+        var msg = '❌ حدث خطأ غير متوقع';
+        if (e.code === 'school-mismatch') msg = '❌ هذا المستخدم لا ينتمي لهذه المدرسة';
+        else if (e.message?.includes('unauthenticated') || e.message?.includes('401')) msg = '❌ كلمة المرور أو المعرّف غير صحيح';
+        else if (e.message?.includes('resource-exhausted') || e.message?.includes('429')) msg = '⏳ تم تجاوز عدد المحاولات — انتظر 15 دقيقة';
+        else if (e.message?.includes('locked')) msg = '🔒 الحساب مقفل مؤقتاً — انتظر 15 دقيقة';
+        else if (e.message?.includes('network') || e.message?.includes('fetch')) msg = '📡 تحقق من الاتصال بالإنترنت';
 
         err.textContent = msg;
         err.classList.add('show');
     }
 };
 
-// ===== Ø´Ø§Ø´Ø© Ø§Ù„Ø¥ØºÙ„Ø§Ù‚ =====
+// ===== شاشة الإغلاق =====
 function showLockdown(icon, title, msg) {
     document.getElementById('lock-icon').textContent = icon;
     document.getElementById('lock-title').textContent = title;
@@ -640,15 +640,15 @@ function showLockdown(icon, title, msg) {
     document.getElementById('lockdown-screen').classList.add('show');
 }
 
-// ===== ØªØ­Ù…ÙŠÙ„ Ø£ÙˆÙ„ÙŠ =====
-// Ø¥Ø°Ø§ Ø¹Ù†Ø¯Ù‡ Ù…Ø¯Ø±Ø³Ø© Ù…Ø­ÙÙˆØ¸Ø©ØŒ Ù†Ø¨Ø¯Ø£ ÙÙŠÙ‡Ø§ Ù…Ø¨Ø§Ø´Ø±Ø©
+// ===== تحميل أولي =====
+// إذا عنده مدرسة محفوظة، نبدأ فيها مباشرة
 var lastSchool = localStorage.getItem('hs_last_school');
 
 loadSchools().then(() => {
     if (lastSchool) {
         var school = allSchools.find(s => s.id === lastSchool);
         if (school && school.status !== 'suspended') {
-            // ØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø§Ù„Ù…Ø­ÙÙˆØ¸Ø© Ø¨ØµØ±ÙŠØ§Ù‹
+            // تحديد المدرسة المحفوظة بصرياً
             setTimeout(() => {
                 var cards = document.querySelectorAll('.school-card');
                 cards.forEach(card => {
@@ -662,7 +662,7 @@ loadSchools().then(() => {
     }
 });
 
-// Ø¯Ø¹Ù… Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ù€ ?school=xxx Ù…Ù† Ø§Ù„Ø±ÙˆØ§Ø¨Ø· Ø§Ù„Ù‚Ø¯ÙŠÙ…Ø©
+// دعم الدخول بـ ?school=xxx من الروابط القديمة
 var urlParams = new URLSearchParams(window.location.search);
 var schoolFromUrl = urlParams.get('school')?.trim().toLowerCase();
 if (schoolFromUrl) {

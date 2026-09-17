@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ… - Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©</title>
+<title>لوحة التحكم - المنظومة الرقمية</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b2545">
@@ -101,13 +101,13 @@ tr:last-child td{border:none} tr:hover td{background:#fafafa}
 
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">âš¡</div>
-    <div class="login-title">Ù„ÙˆØ­Ø© Ø§Ù„ØªØ­ÙƒÙ… Ø§Ù„Ø¹Ù„ÙŠØ§</div>
-    <div class="login-sub">Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ© â€” Superadmin</div>
+    <div class="login-logo">⚡</div>
+    <div class="login-title">لوحة التحكم العليا</div>
+    <div class="login-sub">المنظومة الرقمية — Superadmin</div>
     <div class="login-err" id="login-err"></div>
-    <input type="password" class="login-field" id="super-pass" placeholder="ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±">
+    <input type="password" class="login-field" id="super-pass" placeholder="كلمة المرور">
     <button class="login-btn" onclick="checkSuperPass()">
-      <i class="bi bi-shield-lock-fill"></i> Ø¯Ø®ÙˆÙ„ Ø¢Ù…Ù†
+      <i class="bi bi-shield-lock-fill"></i> دخول آمن
     </button>
   </div>
 </div>
@@ -115,14 +115,14 @@ tr:last-child td{border:none} tr:hover td{background:#fafafa}
 <div id="main-screen">
   <div class="topbar">
     <div class="topbar-brand">
-      <div class="topbar-dot">âš¡</div>
+      <div class="topbar-dot">⚡</div>
       <div>
-        <div class="topbar-name">Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©</div>
-        <div class="topbar-sub">Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„Ø³ÙˆØ¨Ø± Ø£Ø¯Ù…Ù†</div>
+        <div class="topbar-name">المنظومة الرقمية</div>
+        <div class="topbar-sub">لوحة تحكم السوبر أدمن</div>
       </div>
     </div>
     <button class="logout-btn" onclick="doLogout()">
-      <i class="bi bi-box-arrow-left"></i> Ø®Ø±ÙˆØ¬
+      <i class="bi bi-box-arrow-left"></i> خروج
     </button>
   </div>
 
@@ -133,47 +133,47 @@ tr:last-child td{border:none} tr:hover td{background:#fafafa}
     </div>
 
     <div class="stats">
-      <div class="stat-card"><div class="stat-label"><i class="bi bi-buildings"></i> Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù…Ø¯Ø§Ø±Ø³</div><div class="stat-value" id="s-total">0</div></div>
-      <div class="stat-card"><div class="stat-label"><i class="bi bi-check-circle"></i> Ù†Ø´Ø·Ø©</div><div class="stat-value green" id="s-active">0</div></div>
-      <div class="stat-card"><div class="stat-label"><i class="bi bi-clock-history"></i> ØªÙ†ØªÙ‡ÙŠ Ù‚Ø±ÙŠØ¨Ø§Ù‹</div><div class="stat-value warn" id="s-expiring">0</div></div>
-      <div class="stat-card"><div class="stat-label"><i class="bi bi-pause-circle"></i> Ù…ÙˆÙ‚ÙˆÙØ©</div><div class="stat-value red" id="s-suspended">0</div></div>
-      <div class="stat-card"><div class="stat-label"><i class="bi bi-currency-dollar"></i> Ø§Ù„Ø¥ÙŠØ±Ø§Ø¯Ø§Øª (KWD)</div><div class="stat-value gold" id="s-revenue">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-buildings"></i> إجمالي المدارس</div><div class="stat-value" id="s-total">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-check-circle"></i> نشطة</div><div class="stat-value green" id="s-active">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-clock-history"></i> تنتهي قريباً</div><div class="stat-value warn" id="s-expiring">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-pause-circle"></i> موقوفة</div><div class="stat-value red" id="s-suspended">0</div></div>
+      <div class="stat-card"><div class="stat-label"><i class="bi bi-currency-dollar"></i> الإيرادات (KWD)</div><div class="stat-value gold" id="s-revenue">0</div></div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon"><i class="bi bi-plus-circle-fill"></i></div>
-        <div><h2>Ø¥Ø¶Ø§ÙØ© Ù…Ø¯Ø±Ø³Ø© Ø¬Ø¯ÙŠØ¯Ø©</h2><p>Ø£Ù†Ø´Ø¦ Ù…Ø¯Ø±Ø³Ø© ÙˆÙ…Ø¯ÙŠØ±Ù‡Ø§ ÙÙŠ Ø®Ø·ÙˆØ© ÙˆØ§Ø­Ø¯Ø©</p></div>
+        <div><h2>إضافة مدرسة جديدة</h2><p>أنشئ مدرسة ومديرها في خطوة واحدة</p></div>
       </div>
       <div class="card-body">
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">Ù…Ø¹Ø±Ù‘Ù Ø§Ù„Ù…Ø¯Ø±Ø³Ø© (ID) *</label><input type="text" class="form-input" id="f-school-id" placeholder="Ù…Ø«Ø§Ù„: school_hawally"></div>
-          <div class="form-group"><label class="form-label">Ø§Ø³Ù… Ø§Ù„Ù…Ø¯Ø±Ø³Ø© *</label><input type="text" class="form-input" id="f-school-name" placeholder="Ù…ØªÙˆØ³Ø·Ø© Ø§Ù„ÙƒÙˆÙŠØª Ø§Ù„Ù†Ù…ÙˆØ°Ø¬ÙŠØ©"></div>
-          <div class="form-group"><label class="form-label">Ø§Ù„Ù…Ù†Ø·Ù‚Ø©</label><input type="text" class="form-input" id="s-region" placeholder="Ø­ÙˆÙ„ÙŠ / Ù…Ø¨Ø§Ø±Ùƒ Ø§Ù„ÙƒØ¨ÙŠØ± ..."></div>
+          <div class="form-group"><label class="form-label">معرّف المدرسة (ID) *</label><input type="text" class="form-input" id="f-school-id" placeholder="مثال: school_hawally"></div>
+          <div class="form-group"><label class="form-label">اسم المدرسة *</label><input type="text" class="form-input" id="f-school-name" placeholder="متوسطة الكويت النموذجية"></div>
+          <div class="form-group"><label class="form-label">المنطقة</label><input type="text" class="form-input" id="s-region" placeholder="حولي / مبارك الكبير ..."></div>
           <div class="form-group">
-            <label class="form-label">Ø§Ù„Ø®Ø·Ø©</label>
+            <label class="form-label">الخطة</label>
             <select class="form-input" id="f-plan">
-              <option value="basic">ðŸ¥‰ Ø£Ø³Ø§Ø³ÙŠØ© â€” 150 KWD</option>
-              <option value="pro" selected>ðŸ¥‡ Ø§Ø­ØªØ±Ø§ÙÙŠØ© â€” 250 KWD</option>
-              <option value="enterprise">ðŸ† Ù…Ø¤Ø³Ø³ÙŠØ© â€” 400 KWD</option>
+              <option value="basic">🥉 أساسية — 150 KWD</option>
+              <option value="pro" selected>🥇 احترافية — 250 KWD</option>
+              <option value="enterprise">🏆 مؤسسية — 400 KWD</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">ØªØ§Ø±ÙŠØ® Ø§Ù†ØªÙ‡Ø§Ø¡ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</label><input type="date" class="form-input" id="f-sub-end"></div>
-          <div class="form-group"><label class="form-label">Ù„ÙˆÙ† Ø§Ù„Ù†Ø¸Ø§Ù… Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ</label><input type="color" class="form-input" id="f-primary-color" value="#0b2545" style="padding:3px;cursor:pointer;height:44px"></div>
-          <div class="form-group"><label class="form-label">Ù„ÙˆÙ† Ø§Ù„ØªÙ…ÙŠÙŠØ²</label><input type="color" class="form-input" id="f-accent-color" value="#d4920a" style="padding:3px;cursor:pointer;height:44px"></div>
-          <div class="form-group"><label class="form-label">Ø´Ø¹Ø§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© (URL Ø§Ø®ØªÙŠØ§Ø±ÙŠ)</label><input type="text" class="form-input" id="f-logo-url" placeholder="https://..."></div>
-          <div class="form-group form-full"><label class="form-label">Ù…Ù„Ø§Ø­Ø¸Ø§Øª (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)</label><input type="text" class="form-input" id="f-notes" placeholder="Ø£ÙŠ Ù…Ø¹Ù„ÙˆÙ…Ø© Ø¥Ø¶Ø§ÙÙŠØ©..."></div>
+          <div class="form-group"><label class="form-label">تاريخ انتهاء الاشتراك</label><input type="date" class="form-input" id="f-sub-end"></div>
+          <div class="form-group"><label class="form-label">لون النظام الرئيسي</label><input type="color" class="form-input" id="f-primary-color" value="#0b2545" style="padding:3px;cursor:pointer;height:44px"></div>
+          <div class="form-group"><label class="form-label">لون التمييز</label><input type="color" class="form-input" id="f-accent-color" value="#d4920a" style="padding:3px;cursor:pointer;height:44px"></div>
+          <div class="form-group"><label class="form-label">شعار المدرسة (URL اختياري)</label><input type="text" class="form-input" id="f-logo-url" placeholder="https://..."></div>
+          <div class="form-group form-full"><label class="form-label">ملاحظات (اختياري)</label><input type="text" class="form-input" id="f-notes" placeholder="أي معلومة إضافية..."></div>
         </div>
         <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
-        <p style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:12px">Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø¯ÙŠØ± Ø§Ù„Ø£ÙˆÙ„</p>
+        <p style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:12px">بيانات المدير الأول</p>
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… (Ù…Ø¯ÙŠØ±) *</label><input type="text" class="form-input" id="f-admin-id" placeholder="admin01"></div>
-          <div class="form-group"><label class="form-label">Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„ *</label><input type="text" class="form-input" id="f-admin-name" placeholder="Ø£Ø­Ù…Ø¯ Ù…Ø­Ù…Ø¯ Ø§Ù„Ø¹Ù„ÙŠ"></div>
-          <div class="form-group"><label class="form-label">ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± *</label><input type="text" class="form-input" id="f-admin-pass" placeholder="8 Ø£Ø­Ø±Ù Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„"></div>
-          <div class="form-group"><label class="form-label">Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ</label><input type="text" class="form-input" id="f-admin-phone" placeholder="+965XXXXXXXX"></div>
+          <div class="form-group"><label class="form-label">اسم المستخدم (مدير) *</label><input type="text" class="form-input" id="f-admin-id" placeholder="admin01"></div>
+          <div class="form-group"><label class="form-label">الاسم الكامل *</label><input type="text" class="form-input" id="f-admin-name" placeholder="أحمد محمد العلي"></div>
+          <div class="form-group"><label class="form-label">كلمة المرور *</label><input type="text" class="form-input" id="f-admin-pass" placeholder="8 أحرف على الأقل"></div>
+          <div class="form-group"><label class="form-label">رقم الهاتف</label><input type="text" class="form-input" id="f-admin-phone" placeholder="+965XXXXXXXX"></div>
         </div>
         <button class="submit-btn" onclick="createSchool()">
-          <i class="bi bi-rocket-takeoff-fill"></i> Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø© ÙˆØ§Ù„Ù…Ø¯ÙŠØ±
+          <i class="bi bi-rocket-takeoff-fill"></i> إنشاء المدرسة والمدير
         </button>
       </div>
     </div>
@@ -181,21 +181,21 @@ tr:last-child td{border:none} tr:hover td{background:#fafafa}
     <div class="card">
       <div class="card-header">
         <div class="card-header-icon"><i class="bi bi-buildings-fill"></i></div>
-        <div><h2>Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ Ø§Ù„Ù…Ø³Ø¬Ù„Ø©</h2><p>Ø¥Ø¯Ø§Ø±Ø© ÙƒØ§Ù…Ù„Ø© Ù„Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…Ø¯Ø§Ø±Ø³</p></div>
+        <div><h2>المدارس المسجلة</h2><p>إدارة كاملة لجميع المدارس</p></div>
       </div>
       <div class="card-body">
         <div class="filter-bar">
-          <button class="filter-btn active" onclick="setFilter('all',this)">Ø§Ù„ÙƒÙ„</button>
-          <button class="filter-btn" onclick="setFilter('active',this)">Ù†Ø´Ø·Ø©</button>
-          <button class="filter-btn" onclick="setFilter('expiring',this)">ØªÙ†ØªÙ‡ÙŠ Ù‚Ø±ÙŠØ¨Ø§Ù‹</button>
-          <button class="filter-btn" onclick="setFilter('suspended',this)">Ù…ÙˆÙ‚ÙˆÙØ©</button>
-          <button class="filter-btn" onclick="setFilter('expired',this)">Ù…Ù†ØªÙ‡ÙŠØ©</button>
-          <input type="text" class="search-input" id="school-search" placeholder="ðŸ” Ø¨Ø­Ø« Ø¨Ø§Ø³Ù… Ø£Ùˆ ID Ø§Ù„Ù…Ø¯Ø±Ø³Ø©..." oninput="renderSchools()">
+          <button class="filter-btn active" onclick="setFilter('all',this)">الكل</button>
+          <button class="filter-btn" onclick="setFilter('active',this)">نشطة</button>
+          <button class="filter-btn" onclick="setFilter('expiring',this)">تنتهي قريباً</button>
+          <button class="filter-btn" onclick="setFilter('suspended',this)">موقوفة</button>
+          <button class="filter-btn" onclick="setFilter('expired',this)">منتهية</button>
+          <input type="text" class="search-input" id="school-search" placeholder="🔍 بحث باسم أو ID المدرسة..." oninput="renderSchools()">
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</th><th>Ø§Ù„Ø®Ø·Ø©</th><th>Ø§Ù„Ø­Ø§Ù„Ø©</th><th>Ø§Ù†ØªÙ‡Ø§Ø¡ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</th><th>Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª</th></tr></thead>
-            <tbody id="schools-tbody"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</td></tr></tbody>
+            <thead><tr><th>المدرسة</th><th>الخطة</th><th>الحالة</th><th>انتهاء الاشتراك</th><th>الإجراءات</th></tr></thead>
+            <tbody id="schools-tbody"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">جاري التحميل...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -205,50 +205,50 @@ tr:last-child td{border:none} tr:hover td{background:#fafafa}
 
 <div class="modal-overlay" id="renew-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-arrow-clockwise" style="color:var(--green)"></i> ØªØ¬Ø¯ÙŠØ¯ Ø§Ø´ØªØ±Ø§Ùƒ â€” <span id="renew-school-name"></span></div>
+    <div class="modal-title"><i class="bi bi-arrow-clockwise" style="color:var(--green)"></i> تجديد اشتراك — <span id="renew-school-name"></span></div>
     <div class="modal-err" id="renew-error"></div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr">
-      <div class="form-group"><label class="form-label">Ø§Ù„Ø®Ø·Ø©</label><select class="form-input" id="renew-plan"><option value="basic">ðŸ¥‰ Ø£Ø³Ø§Ø³ÙŠØ©</option><option value="pro">ðŸ¥‡ Ø§Ø­ØªØ±Ø§ÙÙŠØ©</option><option value="enterprise">ðŸ† Ù…Ø¤Ø³Ø³ÙŠØ©</option></select></div>
-      <div class="form-group"><label class="form-label">ØªØ§Ø±ÙŠØ® Ø§Ù„Ø§Ù†ØªÙ‡Ø§Ø¡ Ø§Ù„Ø¬Ø¯ÙŠØ¯</label><input type="date" class="form-input" id="renew-end-date"></div>
-      <div class="form-group form-full"><label class="form-label">Ù…Ù„Ø§Ø­Ø¸Ø§Øª (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)</label><input type="text" class="form-input" id="renew-notes" placeholder="Ù…Ø«Ø§Ù„: ØªÙ… Ø§Ù„Ø¯ÙØ¹ Ù†Ù‚Ø¯Ø§Ù‹ ..."></div>
+      <div class="form-group"><label class="form-label">الخطة</label><select class="form-input" id="renew-plan"><option value="basic">🥉 أساسية</option><option value="pro">🥇 احترافية</option><option value="enterprise">🏆 مؤسسية</option></select></div>
+      <div class="form-group"><label class="form-label">تاريخ الانتهاء الجديد</label><input type="date" class="form-input" id="renew-end-date"></div>
+      <div class="form-group form-full"><label class="form-label">ملاحظات (اختياري)</label><input type="text" class="form-input" id="renew-notes" placeholder="مثال: تم الدفع نقداً ..."></div>
     </div>
     <div id="renew-history-wrap" style="margin-top:16px;display:none">
-      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">Ø¢Ø®Ø± Ø§Ù„ØªØ¬Ø¯ÙŠØ¯Ø§Øª (5):</div>
+      <div style="font-size:12px;font-weight:800;color:var(--mid);margin-bottom:8px">آخر التجديدات (5):</div>
       <div id="renew-history"></div>
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitRenewal()"><i class="bi bi-arrow-clockwise"></i> ØªØ¬Ø¯ÙŠØ¯ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</button>
-      <button class="modal-btn cancel" onclick="closeModal('renew-modal')">Ø¥Ù„ØºØ§Ø¡</button>
+      <button class="modal-btn primary" onclick="submitRenewal()"><i class="bi bi-arrow-clockwise"></i> تجديد الاشتراك</button>
+      <button class="modal-btn cancel" onclick="closeModal('renew-modal')">إلغاء</button>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="upgrade-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-arrow-up-circle-fill" style="color:#6d28d9"></i> ØªØ±Ù‚ÙŠØ© Ø®Ø·Ø© â€” <span id="upgrade-school-name"></span></div>
+    <div class="modal-title"><i class="bi bi-arrow-up-circle-fill" style="color:#6d28d9"></i> ترقية خطة — <span id="upgrade-school-name"></span></div>
     <div class="form-group" style="margin-bottom:14px">
-      <label class="form-label">Ø§Ø®ØªØ± Ø§Ù„Ø®Ø·Ø© Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø©</label>
-      <select class="form-input" id="upgrade-plan"><option value="basic">ðŸ¥‰ Ø£Ø³Ø§Ø³ÙŠØ©</option><option value="pro">ðŸ¥‡ Ø§Ø­ØªØ±Ø§ÙÙŠØ©</option><option value="enterprise">ðŸ† Ù…Ø¤Ø³Ø³ÙŠØ©</option></select>
+      <label class="form-label">اختر الخطة الجديدة</label>
+      <select class="form-input" id="upgrade-plan"><option value="basic">🥉 أساسية</option><option value="pro">🥇 احترافية</option><option value="enterprise">🏆 مؤسسية</option></select>
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="submitUpgrade()">ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„ØªØ±Ù‚ÙŠØ©</button>
-      <button class="modal-btn cancel" onclick="closeModal('upgrade-modal')">Ø¥Ù„ØºØ§Ø¡</button>
+      <button class="modal-btn primary" onclick="submitUpgrade()">تطبيق الترقية</button>
+      <button class="modal-btn cancel" onclick="closeModal('upgrade-modal')">إلغاء</button>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="admin-modal">
   <div class="modal-box">
-    <div class="modal-title"><i class="bi bi-person-badge-fill" style="color:var(--sky)"></i> Ø¨ÙŠØ§Ù†Ø§Øª Ù…Ø¯ÙŠØ± â€” <span id="admin-modal-school"></span></div>
+    <div class="modal-title"><i class="bi bi-person-badge-fill" style="color:var(--sky)"></i> بيانات مدير — <span id="admin-modal-school"></span></div>
     <div id="admin-modal-content" style="font-size:14px;line-height:2"></div>
     <div class="form-group" style="margin-top:14px;display:none" id="change-pass-wrap">
-      <label class="form-label">ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø© Ù„Ù„Ù…Ø¯ÙŠØ±</label>
-      <input type="text" class="form-input" id="admin-new-pass" placeholder="Ø§ÙƒØªØ¨ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø© Ù‡Ù†Ø§">
+      <label class="form-label">كلمة المرور الجديدة للمدير</label>
+      <input type="text" class="form-input" id="admin-new-pass" placeholder="اكتب كلمة المرور الجديدة هنا">
     </div>
     <div class="modal-actions">
-      <button class="modal-btn primary" onclick="document.getElementById('change-pass-wrap').style.display='block'">ðŸ”‘ ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</button>
-      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()">ðŸ’¾ Ø­ÙØ¸</button>
-      <button class="modal-btn cancel" onclick="closeModal('admin-modal')">Ø¥ØºÙ„Ø§Ù‚</button>
+      <button class="modal-btn primary" onclick="document.getElementById('change-pass-wrap').style.display='block'">🔑 تغيير كلمة المرور</button>
+      <button class="modal-btn primary" style="background:var(--green)" onclick="saveAdminPass()">💾 حفظ</button>
+      <button class="modal-btn cancel" onclick="closeModal('admin-modal')">إغلاق</button>
     </div>
   </div>
 </div>
@@ -261,8 +261,8 @@ import { collection, doc, setDoc, addDoc, onSnapshot, updateDoc, deleteDoc,
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 const PLANS = { basic:150, pro:250, enterprise:400 };
-const PLAN_NAMES = { basic:'Ø£Ø³Ø§Ø³ÙŠØ©', pro:'Ø§Ø­ØªØ±Ø§ÙÙŠØ©', enterprise:'Ù…Ø¤Ø³Ø³ÙŠØ©' };
-const PLAN_ICONS = { basic:'ðŸ¥‰', pro:'ðŸ¥‡', enterprise:'ðŸ†' };
+const PLAN_NAMES = { basic:'أساسية', pro:'احترافية', enterprise:'مؤسسية' };
+const PLAN_ICONS = { basic:'🥉', pro:'🥇', enterprise:'🏆' };
 
 let allSchools=[], currentFilter='all', currentRenewId=null, currentUpgradeId=null, currentAdminDocId=null;
 
@@ -273,8 +273,8 @@ window.checkSuperPass = async function() {
   const pass = document.getElementById('super-pass').value.trim();
   const err  = document.getElementById('login-err');
   const btn  = document.querySelector('.login-btn');
-  if(!pass) { err.textContent='Ø£Ø¯Ø®Ù„ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±'; err.style.display='block'; return; }
-  btn.innerHTML='<i class="bi bi-hourglass-split"></i> Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù‚Ù‚...'; btn.disabled=true; err.style.display='none';
+  if(!pass) { err.textContent='أدخل كلمة المرور'; err.style.display='block'; return; }
+  btn.innerHTML='<i class="bi bi-hourglass-split"></i> جاري التحقق...'; btn.disabled=true; err.style.display='none';
   try {
     const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
     const res = await httpsCallable(getFunctions(auth.app,'me-central1'),'loginUser')({ schoolId:'system', userId:'superadmin', password:pass });
@@ -285,10 +285,10 @@ window.checkSuperPass = async function() {
       initDashboard();
     }
   } catch(e) {
-    err.textContent='Ø®Ø·Ø£: '+(e.message.includes('unauthenticated')?'ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± ØºÙŠØ± ØµØ­ÙŠØ­Ø©':e.message);
+    err.textContent='خطأ: '+(e.message.includes('unauthenticated')?'كلمة المرور غير صحيحة':e.message);
     err.style.display='block';
   } finally {
-    btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> Ø¯Ø®ÙˆÙ„ Ø¢Ù…Ù†'; btn.disabled=false;
+    btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> دخول آمن'; btn.disabled=false;
     document.getElementById('super-pass').value='';
   }
 };
@@ -329,7 +329,7 @@ function checkExpiryAlerts() {
   const exp=allSchools.filter(s=>s.status==='active'&&s.subscriptionEnd&&s.subscriptionEnd>=today&&s.subscriptionEnd<=soonStr);
   const el=document.getElementById('expiry-alert');
   if(exp.length>0){
-    document.getElementById('expiry-alert-text').textContent=`ØªÙ†Ø¨ÙŠÙ‡: ${exp.length} Ù…Ø¯Ø§Ø±Ø³ Ø§Ø´ØªØ±Ø§ÙƒÙ‡Ø§ ÙŠÙ†ØªÙ‡ÙŠ Ø®Ù„Ø§Ù„ 14 ÙŠÙˆÙ…: ${exp.map(s=>s.name||s.id).join(' â€” ')}`;
+    document.getElementById('expiry-alert-text').textContent=`تنبيه: ${exp.length} مدارس اشتراكها ينتهي خلال 14 يوم: ${exp.map(s=>s.name||s.id).join(' — ')}`;
     el.style.display='flex';
   } else el.style.display='none';
 }
@@ -357,7 +357,7 @@ window.renderSchools = function() {
     return true;
   });
   if(!filtered.length){
-    document.getElementById('schools-tbody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø¯Ø§Ø±Ø³ ØªØ·Ø§Ø¨Ù‚ Ø§Ù„ÙÙ„ØªØ±</td></tr>';
+    document.getElementById('schools-tbody').innerHTML='<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--mid)">لا توجد مدارس تطابق الفلتر</td></tr>';
     return;
   }
   document.getElementById('schools-tbody').innerHTML=filtered.map(s=>{
@@ -366,24 +366,24 @@ window.renderSchools = function() {
     const active=s.status==='active'&&!expired;
     const daysLeft=s.subscriptionEnd?Math.ceil((new Date(s.subscriptionEnd)-new Date())/864e5):null;
     let badge,endColor;
-    if(expired){badge='<span class="badge expired">Ù…Ù†ØªÙ‡ÙŠ</span>';endColor='color:var(--red)';}
-    else if(s.status==='suspended'){badge='<span class="badge suspended">Ù…ÙˆÙ‚ÙˆÙ</span>';endColor='color:var(--mid)';}
-    else if(expiring){badge=`<span class="badge" style="background:#fef3c7;color:var(--warn)">ÙŠÙ†ØªÙ‡ÙŠ Ø¨Ø¹Ø¯ ${daysLeft} ÙŠÙˆÙ…</span>`;endColor='color:var(--warn)';}
-    else{badge='<span class="badge active">Ù†Ø´Ø·</span>';endColor='color:var(--green)';}
+    if(expired){badge='<span class="badge expired">منتهي</span>';endColor='color:var(--red)';}
+    else if(s.status==='suspended'){badge='<span class="badge suspended">موقوف</span>';endColor='color:var(--mid)';}
+    else if(expiring){badge=`<span class="badge" style="background:#fef3c7;color:var(--warn)">ينتهي بعد ${daysLeft} يوم</span>`;endColor='color:var(--warn)';}
+    else{badge='<span class="badge active">نشط</span>';endColor='color:var(--green)';}
     const pk=s.plan||'pro'; const safe=(s.name||s.id).replace(/'/g,'');
     return `<tr>
       <td><b style="color:var(--navy)">${s.name||s.id}</b><br><span style="font-size:11px;color:var(--mid)">${s.id}</span>${s.notes?`<br><span style="font-size:10px;color:var(--mid)">${s.notes}</span>`:''}</td>
       <td><span class="plan-badge plan-${pk}">${PLAN_ICONS[pk]} ${PLAN_NAMES[pk]||pk}</span></td>
       <td>${badge}</td>
-      <td style="${endColor};font-weight:700;font-size:12px">${s.subscriptionEnd||'ØºÙŠØ± Ù…Ø­Ø¯Ø¯'}${daysLeft!==null?`<br><span style="font-size:10px">(${daysLeft>0?daysLeft+' ÙŠÙˆÙ… Ù…ØªØ¨Ù‚ÙŠ':'Ù…Ù†ØªÙ‡ÙŠ'})</span>`:''}</td>
+      <td style="${endColor};font-weight:700;font-size:12px">${s.subscriptionEnd||'غير محدد'}${daysLeft!==null?`<br><span style="font-size:10px">(${daysLeft>0?daysLeft+' يوم متبقي':'منتهي'})</span>`:''}</td>
       <td><div class="actions-wrap">
-        <button class="action-btn link" onclick="copySchoolLink('${s.id}')">ðŸ”— Ø§Ù„Ø±Ø§Ø¨Ø·</button>
-        <button class="action-btn info" onclick="openEditSchoolModal('${s.id}')">âœï¸ ØªØ¹Ø¯ÙŠÙ„</button>
-        <button class="action-btn info" onclick="showAdminCreds('${s.id}','${safe}')">ðŸ‘¤ Ø§Ù„Ù…Ø¯ÙŠØ±</button>
-        <button class="action-btn renew" onclick="openRenewModal('${s.id}','${safe}','${pk}')">ðŸ”„ ØªØ¬Ø¯ÙŠØ¯</button>
-        <button class="action-btn upgrade" onclick="openUpgradeModal('${s.id}','${safe}','${pk}')">â¬†ï¸ ØªØ±Ù‚ÙŠØ©</button>
-        <button class="action-btn ${active?'stop':'go'}" onclick="toggleSchool('${s.id}','${active?'suspended':'active'}')">${active?'â¸ï¸ Ø¥ÙŠÙ‚Ø§Ù':'â–¶ï¸ ØªÙØ¹ÙŠÙ„'}</button>
-        <button class="action-btn del" onclick="deleteSchool('${s.id}','${safe}')">ðŸ—‘ï¸ Ø­Ø°Ù</button>
+        <button class="action-btn link" onclick="copySchoolLink('${s.id}')">🔗 الرابط</button>
+        <button class="action-btn info" onclick="openEditSchoolModal('${s.id}')">✏️ تعديل</button>
+        <button class="action-btn info" onclick="showAdminCreds('${s.id}','${safe}')">👤 المدير</button>
+        <button class="action-btn renew" onclick="openRenewModal('${s.id}','${safe}','${pk}')">🔄 تجديد</button>
+        <button class="action-btn upgrade" onclick="openUpgradeModal('${s.id}','${safe}','${pk}')">⬆️ ترقية</button>
+        <button class="action-btn ${active?'stop':'go'}" onclick="toggleSchool('${s.id}','${active?'suspended':'active'}')">${active?'⏸️ إيقاف':'▶️ تفعيل'}</button>
+        <button class="action-btn del" onclick="deleteSchool('${s.id}','${safe}')">🗑️ حذف</button>
       </div></td>
     </tr>`;
   }).join('');
@@ -399,19 +399,19 @@ window.createSchool = async function() {
   const adminPass=document.getElementById('f-admin-pass').value.trim();
   const adminPhone=document.getElementById('f-admin-phone').value.trim();
   const notes=document.getElementById('f-notes').value.trim();
-  if(!schoolId||!schoolName||!adminId||!adminName||!adminPass){alert('ÙŠØ±Ø¬Ù‰ Ù…Ù„Ø¡ Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©');return;}
+  if(!schoolId||!schoolName||!adminId||!adminName||!adminPass){alert('يرجى ملء الحقول المطلوبة');return;}
   const btn=document.querySelector('.submit-btn');
-  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø¥Ù†Ø´Ø§Ø¡...';
+  btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> جاري الإنشاء...';
   try {
     await setDoc(doc(db,'schools',schoolId),{name:schoolName,plan,status:'active',subscriptionEnd:subEnd,notes,region:document.getElementById('s-region')?.value?.trim()||'',primaryColor:document.getElementById('f-primary-color')?.value||'#0b2545',accentColor:document.getElementById('f-accent-color')?.value||'#d4920a',logoUrl:document.getElementById('f-logo-url')?.value?.trim()||'',createdAt:serverTimestamp()});
     await addDoc(collection(db,'users'),{schoolId,userId:adminId,name:adminName,role:'admin',phone:adminPhone,createdAt:serverTimestamp()});
-    await addDoc(collection(db,'subscription_logs'),{schoolId,schoolName,plan,subEnd,amount:PLANS[plan]||250,type:'new',notes:'Ø§Ø´ØªØ±Ø§Ùƒ Ø¬Ø¯ÙŠØ¯',createdAt:serverTimestamp()});
+    await addDoc(collection(db,'subscription_logs'),{schoolId,schoolName,plan,subEnd,amount:PLANS[plan]||250,type:'new',notes:'اشتراك جديد',createdAt:serverTimestamp()});
     const link=`https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-    alert(`ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø© "${schoolName}" Ø¨Ù†Ø¬Ø§Ø­!\n\nØ±Ø§Ø¨Ø· Ø§Ù„Ø¯Ø®ÙˆÙ„:\n${link}\n\nØ¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø¯ÙŠØ±:\nØ§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…: ${adminId}\nÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±: ${adminPass}`);
+    alert(`تم إنشاء المدرسة "${schoolName}" بنجاح!\n\nرابط الدخول:\n${link}\n\nبيانات المدير:\nاسم المستخدم: ${adminId}\nكلمة المرور: ${adminPass}`);
     ['f-school-id','f-school-name','f-admin-id','f-admin-name','f-admin-pass','f-admin-phone','f-notes'].forEach(id=>document.getElementById(id).value='');
     const nd=new Date(); nd.setFullYear(nd.getFullYear()+1); document.getElementById('f-sub-end').value=nd.toISOString().slice(0,10);
-  } catch(err){alert('Ø®Ø·Ø£: '+err.message);}
-  finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-rocket-takeoff-fill"></i> Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø© ÙˆØ§Ù„Ù…Ø¯ÙŠØ±';}
+  } catch(err){alert('خطأ: '+err.message);}
+  finally{btn.disabled=false;btn.innerHTML='<i class="bi bi-rocket-takeoff-fill"></i> إنشاء المدرسة والمدير';}
 };
 
 window.openRenewModal = async function(schoolId,schoolName,currentPlan) {
@@ -426,7 +426,7 @@ window.openRenewModal = async function(schoolId,schoolName,currentPlan) {
     const hw=document.getElementById('renew-history-wrap'),he=document.getElementById('renew-history');
     if(!snap.empty){
       const logs=[...snap.docs].sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0)).slice(0,5);
-      he.innerHTML=logs.map(d=>{const v=d.data();return`<div class="history-item"><span style="font-weight:700;color:var(--navy)">${v.subEnd||'ØºÙŠØ± Ù…Ø­Ø¯Ø¯'}</span><span style="color:var(--sky);font-weight:700">${PLAN_ICONS[v.plan]||''} ${PLAN_NAMES[v.plan]||v.plan}</span><span style="color:var(--green);font-weight:800">${v.amount||0} KWD</span></div>`;}).join('');
+      he.innerHTML=logs.map(d=>{const v=d.data();return`<div class="history-item"><span style="font-weight:700;color:var(--navy)">${v.subEnd||'غير محدد'}</span><span style="color:var(--sky);font-weight:700">${PLAN_ICONS[v.plan]||''} ${PLAN_NAMES[v.plan]||v.plan}</span><span style="color:var(--green);font-weight:800">${v.amount||0} KWD</span></div>`;}).join('');
       hw.style.display='block';
     }else hw.style.display='none';
   }catch(e){}
@@ -436,14 +436,14 @@ window.openRenewModal = async function(schoolId,schoolName,currentPlan) {
 window.submitRenewal = async function() {
   if(!currentRenewId)return;
   const plan=document.getElementById('renew-plan').value,endDate=document.getElementById('renew-end-date').value,notes=document.getElementById('renew-notes').value.trim(),errEl=document.getElementById('renew-error');
-  if(!endDate){errEl.textContent='Ø­Ø¯Ø¯ ØªØ§Ø±ÙŠØ® Ø§Ù†ØªÙ‡Ø§Ø¡ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ';errEl.style.display='block';return;}
+  if(!endDate){errEl.textContent='حدد تاريخ انتهاء الاشتراك';errEl.style.display='block';return;}
   errEl.style.display='none';
   try {
     const school=allSchools.find(s=>s.id===currentRenewId);
     await updateDoc(doc(db,'schools',currentRenewId),{plan,status:'active',subscriptionEnd:endDate,lastRenewed:serverTimestamp()});
     await addDoc(collection(db,'subscription_logs'),{schoolId:currentRenewId,schoolName:school?.name||currentRenewId,plan,subEnd:endDate,amount:PLANS[plan]||250,type:'renewal',notes,createdAt:serverTimestamp()});
-    closeModal('renew-modal'); alert(`ØªÙ… ØªØ¬Ø¯ÙŠØ¯ Ø§Ø´ØªØ±Ø§Ùƒ "${school?.name||currentRenewId}" Ø­ØªÙ‰ ${endDate}`);
-  }catch(e){errEl.textContent='Ø®Ø·Ø£: '+e.message;errEl.style.display='block';}
+    closeModal('renew-modal'); alert(`تم تجديد اشتراك "${school?.name||currentRenewId}" حتى ${endDate}`);
+  }catch(e){errEl.textContent='خطأ: '+e.message;errEl.style.display='block';}
 };
 
 window.openUpgradeModal = function(schoolId,schoolName,currentPlan) {
@@ -459,9 +459,9 @@ window.submitUpgrade = async function() {
   try {
     const school=allSchools.find(s=>s.id===currentUpgradeId);
     await updateDoc(doc(db,'schools',currentUpgradeId),{plan});
-    await addDoc(collection(db,'subscription_logs'),{schoolId:currentUpgradeId,schoolName:school?.name||currentUpgradeId,plan,amount:PLANS[plan]||250,type:'upgrade',notes:`ØªØ±Ù‚ÙŠØ© Ø¥Ù„Ù‰ ${PLAN_NAMES[plan]}`,createdAt:serverTimestamp()});
-    closeModal('upgrade-modal'); alert(`ØªÙ… ØªØ±Ù‚ÙŠØ© Ø®Ø·Ø© "${school?.name||currentUpgradeId}" Ø¥Ù„Ù‰ ${PLAN_NAMES[plan]}`);
-  }catch(e){alert('Ø®Ø·Ø£: '+e.message);}
+    await addDoc(collection(db,'subscription_logs'),{schoolId:currentUpgradeId,schoolName:school?.name||currentUpgradeId,plan,amount:PLANS[plan]||250,type:'upgrade',notes:`ترقية إلى ${PLAN_NAMES[plan]}`,createdAt:serverTimestamp()});
+    closeModal('upgrade-modal'); alert(`تم ترقية خطة "${school?.name||currentUpgradeId}" إلى ${PLAN_NAMES[plan]}`);
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
 window.showAdminCreds = async function(schoolId,schoolName) {
@@ -471,49 +471,49 @@ window.showAdminCreds = async function(schoolId,schoolName) {
   currentAdminDocId=null;
   try {
     const snap=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('role','==','admin')));
-    if(snap.empty){alert('Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ù…Ø¯ÙŠØ± Ù„Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©');return;}
+    if(snap.empty){alert('لا يوجد مدير لهذه المدرسة');return;}
     const admins=[]; snap.forEach(d=>admins.push({docId:d.id,...d.data()}));
     currentAdminDocId=admins[0].docId;
-    document.getElementById('admin-modal-content').innerHTML=admins.map(a=>`<div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:8px"><div>ðŸ‘¤ Ø§Ù„Ø§Ø³Ù…: <b>${a.name||'ØºÙŠØ± Ù…Ø­Ø¯Ø¯'}</b></div><div>ðŸ”‘ Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…: <b>${a.userId||'ØºÙŠØ± Ù…Ø­Ø¯Ø¯'}</b></div><div>ðŸ“± Ø§Ù„Ù‡Ø§ØªÙ: <b>${a.phone||'ØºÙŠØ± Ù…Ø­Ø¯Ø¯'}</b></div></div>`).join('');
+    document.getElementById('admin-modal-content').innerHTML=admins.map(a=>`<div style="background:var(--off);border-radius:8px;padding:12px;margin-bottom:8px"><div>👤 الاسم: <b>${a.name||'غير محدد'}</b></div><div>🔑 اسم المستخدم: <b>${a.userId||'غير محدد'}</b></div><div>📱 الهاتف: <b>${a.phone||'غير محدد'}</b></div></div>`).join('');
     openModal('admin-modal');
-  }catch(e){alert('Ø®Ø·Ø£: '+e.message);}
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
 window.saveAdminPass = async function() {
   if(!currentAdminDocId)return;
   const newPass=document.getElementById('admin-new-pass').value.trim();
-  if(!newPass){alert('Ø£Ø¯Ø®Ù„ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø©');return;}
+  if(!newPass){alert('أدخل كلمة المرور الجديدة');return;}
   try {
     const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
     await httpsCallable(getFunctions(auth.app,'me-central1'),'resetUserPassword')({targetUserDocId:currentAdminDocId,newPassword:newPass});
-    alert('ØªÙ… ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø¨Ù†Ø¬Ø§Ø­'); closeModal('admin-modal');
-  }catch(e){alert('Ø®Ø·Ø£: '+e.message);}
+    alert('تم تغيير كلمة المرور بنجاح'); closeModal('admin-modal');
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
 window.copySchoolLink = function(schoolId) {
   const link=`https://bo3li1993.github.io/school-pwa/?school=${schoolId}`;
-  navigator.clipboard?.writeText(link).then(()=>alert(`ØªÙ… Ù†Ø³Ø® Ø±Ø§Ø¨Ø· Ø§Ù„Ù…Ø¯Ø±Ø³Ø©:\n${link}`)).catch(()=>prompt('Ø§Ù†Ø³Ø® Ø§Ù„Ø±Ø§Ø¨Ø·:',link));
+  navigator.clipboard?.writeText(link).then(()=>alert(`تم نسخ رابط المدرسة:\n${link}`)).catch(()=>prompt('انسخ الرابط:',link));
 };
 
 window.toggleSchool = async function(schoolId,newStatus) {
   const school=allSchools.find(s=>s.id===schoolId);
-  const msg=newStatus==='suspended'?`Ù‡Ù„ ØªØ±ÙŠØ¯ Ø¥ÙŠÙ‚Ø§Ù "${school?.name||schoolId}"ØŸ`:`Ù‡Ù„ ØªØ±ÙŠØ¯ ØªÙØ¹ÙŠÙ„ "${school?.name||schoolId}"ØŸ`;
+  const msg=newStatus==='suspended'?`هل تريد إيقاف "${school?.name||schoolId}"؟`:`هل تريد تفعيل "${school?.name||schoolId}"؟`;
   if(!confirm(msg))return;
   await updateDoc(doc(db,'schools',schoolId),{status:newStatus});
 };
 
 window.deleteSchool = async function(schoolId,schoolName) {
-  if(!confirm(`ØªØ­Ø°ÙŠØ±: Ø­Ø°Ù "${schoolName}" Ù„Ù† ÙŠÙ…ÙƒÙ† Ø§Ù„ØªØ±Ø§Ø¬Ø¹ Ø¹Ù†Ù‡!`))return;
-  const code=prompt(`Ù„Ù„ØªØ£ÙƒÙŠØ¯ Ø§ÙƒØªØ¨ Ù…Ø¹Ø±Ù‘Ù Ø§Ù„Ù…Ø¯Ø±Ø³Ø© "${schoolId}" Ø¨Ø§Ù„Ø¶Ø¨Ø·:`);
-  if(code!==schoolId){alert('Ø§Ù„Ù…Ø¹Ø±Ù‘Ù ØºÙŠØ± ØµØ­ÙŠØ­. ØªÙ… Ø¥Ù„ØºØ§Ø¡ Ø§Ù„Ø­Ø°Ù.');return;}
-  try{await deleteDoc(doc(db,'schools',schoolId));alert(`ØªÙ… Ø­Ø°Ù "${schoolName}"`);}
-  catch(e){alert('Ø®Ø·Ø£: '+e.message);}
+  if(!confirm(`تحذير: حذف "${schoolName}" لن يمكن التراجع عنه!`))return;
+  const code=prompt(`للتأكيد اكتب معرّف المدرسة "${schoolId}" بالضبط:`);
+  if(code!==schoolId){alert('المعرّف غير صحيح. تم إلغاء الحذف.');return;}
+  try{await deleteDoc(doc(db,'schools',schoolId));alert(`تم حذف "${schoolName}"`);}
+  catch(e){alert('خطأ: '+e.message);}
 };
 
 window.openEditSchoolModal = async function(schoolId) {
   try {
     const snap=await getDoc(doc(db,'schools',schoolId));
-    if(!snap.exists()){alert('Ø§Ù„Ù…Ø¯Ø±Ø³Ø© ØºÙŠØ± Ù…ÙˆØ¬ÙˆØ¯Ø©');return;}
+    if(!snap.exists()){alert('المدرسة غير موجودة');return;}
     const s=snap.data();
     document.getElementById('edit-school-modal')?.remove();
     const modal=document.createElement('div');
@@ -521,31 +521,31 @@ window.openEditSchoolModal = async function(schoolId) {
     modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
     modal.innerHTML=`<div style="background:#fff;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <h3 style="font-size:16px;font-weight:900;color:#0b2545;margin:0">ØªØ¹Ø¯ÙŠÙ„: ${s.name||schoolId}</h3>
-        <button onclick="document.getElementById('edit-school-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">âœ•</button>
+        <h3 style="font-size:16px;font-weight:900;color:#0b2545;margin:0">تعديل: ${s.name||schoolId}</h3>
+        <button onclick="document.getElementById('edit-school-modal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer">✕</button>
       </div>
-      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">Ø§Ø³Ù… Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</label>
+      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">اسم المدرسة</label>
       <input id="edit-school-name" type="text" value="${s.name||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <div><label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">Ø§Ù„Ù„ÙˆÙ† Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ</label><input id="edit-primary-color" type="color" value="${s.primaryColor||'#0b2545'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer"></div>
-        <div><label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">Ù„ÙˆÙ† Ø§Ù„ØªÙ…ÙŠÙŠØ²</label><input id="edit-accent-color" type="color" value="${s.accentColor||'#d4920a'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer"></div>
+        <div><label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">اللون الرئيسي</label><input id="edit-primary-color" type="color" value="${s.primaryColor||'#0b2545'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer"></div>
+        <div><label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">لون التمييز</label><input id="edit-accent-color" type="color" value="${s.accentColor||'#d4920a'}" style="width:100%;height:42px;border:1.5px solid #e5e7eb;border-radius:8px;padding:3px;cursor:pointer"></div>
       </div>
-      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">Ø´Ø¹Ø§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© (URL)</label>
+      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">شعار المدرسة (URL)</label>
       <input id="edit-logo-url" type="text" value="${s.logoUrl||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
-      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">Ù…Ù„Ø§Ø­Ø¸Ø§Øª</label>
+      <label style="font-size:12px;font-weight:800;color:#6b7280;display:block;margin-bottom:4px">ملاحظات</label>
       <input id="edit-notes" type="text" value="${s.notes||''}" style="width:100%;padding:10px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:16px">
-      <button onclick="window.saveEditSchool('${schoolId}')" style="width:100%;padding:12px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer">Ø­ÙØ¸ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„Ø§Øª</button>
+      <button onclick="window.saveEditSchool('${schoolId}')" style="width:100%;padding:12px;background:#0b2545;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer">حفظ التعديلات</button>
     </div>`;
     modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
     document.body.appendChild(modal);
-  }catch(e){alert('Ø®Ø·Ø£: '+e.message);}
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
 window.saveEditSchool = async function(schoolId) {
   try {
     await updateDoc(doc(db,'schools',schoolId),{name:document.getElementById('edit-school-name')?.value?.trim()||'',primaryColor:document.getElementById('edit-primary-color')?.value||'#0b2545',accentColor:document.getElementById('edit-accent-color')?.value||'#d4920a',logoUrl:document.getElementById('edit-logo-url')?.value?.trim()||'',notes:document.getElementById('edit-notes')?.value?.trim()||''});
-    alert('ØªÙ… Ø­ÙØ¸ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„Ø§Øª Ø¨Ù†Ø¬Ø§Ø­'); document.getElementById('edit-school-modal')?.remove();
-  }catch(e){alert('Ø®Ø·Ø£: '+e.message);}
+    alert('تم حفظ التعديلات بنجاح'); document.getElementById('edit-school-modal')?.remove();
+  }catch(e){alert('خطأ: '+e.message);}
 };
 
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show');}));

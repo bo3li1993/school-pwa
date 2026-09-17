@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ù„ÙˆØ­Ø© Ø§Ù„Ù…Ø¯ÙŠØ± - Ù…ØªÙˆØ³Ø·Ø© Ø³Ø§Ù„Ù… Ø§Ù„Ø­Ø³ÙŠÙ†Ø§Ù†</title>
+<title>لوحة المدير - متوسطة سالم الحسينان</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:Arial,sans-serif;background:#f5f5f5;color:#333;line-height:1.6}
@@ -51,242 +51,242 @@ table td{padding:12px;border-bottom:1px solid #eee}
 
 <div class="header">
   <div>
-    <h1>Ø£Ù‡Ù„Ø§Ù‹ØŒ <span id="user-name">Ø§Ù„Ù…Ø¯ÙŠØ±</span></h1>
-    <p style="font-size:12px;opacity:.8">Ù…ØªÙˆØ³Ø·Ø© Ø³Ø§Ù„Ù… Ø§Ù„Ø­Ø³ÙŠÙ†Ø§Ù†</p>
+    <h1>أهلاً، <span id="user-name">المدير</span></h1>
+    <p style="font-size:12px;opacity:.8">متوسطة سالم الحسينان</p>
   </div>
   <div class="header-right">
     <span id="current-date"></span>
-    <button onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">ðŸ–¨ï¸</button>
-    <button onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">Ø®Ø±ÙˆØ¬</button>
+    <button onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">🖨️</button>
+    <button onclick="logout()" style="background:transparent;border:1px solid #fff;padding:6px 12px;font-size:13px">خروج</button>
   </div>
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="switchTab('today')">ðŸ“Š Ø§Ù„ÙŠÙˆÙ…</button>
-  <button class="tab" onclick="switchTab('classes')">ðŸ« Ø§Ù„ÙØµÙˆÙ„</button>
-  <button class="tab" onclick="switchTab('absent')">ðŸ”´ Ø§Ù„ØºØ§Ø¦Ø¨ÙˆÙ†</button>
-  <button class="tab" onclick="switchTab('repeat')">âš ï¸ Ù…ØªÙƒØ±Ø±</button>
-  <button class="tab" onclick="switchTab('student')">ðŸ‘¤ Ø·Ø§Ù„Ø¨</button>
-  <button class="tab" onclick="switchTab('date')">ðŸ“… ØªØ§Ø±ÙŠØ®</button>
-  <button class="tab" onclick="switchTab('visits')">ðŸ« Ø§Ù„Ø²ÙŠØ§Ø±Ø§Øª</button>
-  <button class="tab" onclick="switchTab('users')">ðŸ‘¥ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙˆÙ†</button>
+  <button class="tab active" onclick="switchTab('today')">📊 اليوم</button>
+  <button class="tab" onclick="switchTab('classes')">🏫 الفصول</button>
+  <button class="tab" onclick="switchTab('absent')">🔴 الغائبون</button>
+  <button class="tab" onclick="switchTab('repeat')">⚠️ متكرر</button>
+  <button class="tab" onclick="switchTab('student')">👤 طالب</button>
+  <button class="tab" onclick="switchTab('date')">📅 تاريخ</button>
+  <button class="tab" onclick="switchTab('visits')">🏫 الزيارات</button>
+  <button class="tab" onclick="switchTab('users')">👥 المستخدمون</button>
 </div>
 
 <div class="content">
-  <!-- Ø§Ù„ÙŠÙˆÙ… -->
+  <!-- اليوم -->
   <div id="tab-today">
     <div class="stats-grid" id="stats-cards"></div>
     <div class="card">
-      <h2 style="margin-bottom:1rem">Ø­Ø§Ù„Ø© ØªØ³Ø¬ÙŠÙ„ Ø§Ù„ÙØµÙˆÙ„</h2>
+      <h2 style="margin-bottom:1rem">حالة تسجيل الفصول</h2>
       <div id="class-status"></div>
     </div>
   </div>
 
-  <!-- Ø§Ù„ÙØµÙˆÙ„ -->
+  <!-- الفصول -->
   <div id="tab-classes" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„</h2>
+      <h2 style="margin-bottom:1rem">اختر الفصل</h2>
       <div id="classes-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px"></div>
     </div>
     <div id="class-detail" class="hidden"></div>
   </div>
 
-  <!-- Ø§Ù„ØºØ§Ø¦Ø¨ÙˆÙ† -->
+  <!-- الغائبون -->
   <div id="tab-absent" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">ðŸ”´ Ø§Ù„ØºØ§Ø¦Ø¨ÙˆÙ† Ø§Ù„ÙŠÙˆÙ…</h2>
+      <h2 style="margin-bottom:1rem">🔴 الغائبون اليوم</h2>
       <div id="absent-list"></div>
     </div>
   </div>
 
-  <!-- ØºÙŠØ§Ø¨ Ù…ØªÙƒØ±Ø± -->
+  <!-- غياب متكرر -->
   <div id="tab-repeat" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">âš ï¸ Ø·Ù„Ø§Ø¨ ØºØ§Ø¨ÙˆØ§ Ø£ÙƒØ«Ø± Ù…Ù† 5 Ø£ÙŠØ§Ù…</h2>
+      <h2 style="margin-bottom:1rem">⚠️ طلاب غابوا أكثر من 5 أيام</h2>
       <div id="repeat-list"></div>
     </div>
   </div>
 
-  <!-- Ø¨Ø­Ø« Ø·Ø§Ù„Ø¨ -->
+  <!-- بحث طالب -->
   <div id="tab-student" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">ðŸ‘¤ Ø¨Ø­Ø« Ø¹Ù† Ø·Ø§Ù„Ø¨</h2>
+      <h2 style="margin-bottom:1rem">👤 بحث عن طالب</h2>
       <div class="form-grid">
-        <select id="search-class" onchange="loadStudentNames()"><option value="">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„</option></select>
-        <select id="search-student"><option value="">Ø§Ø®ØªØ± Ø§Ù„Ø·Ø§Ù„Ø¨</option></select>
+        <select id="search-class" onchange="loadStudentNames()"><option value="">اختر الفصل</option></select>
+        <select id="search-student"><option value="">اختر الطالب</option></select>
       </div>
-      <button onclick="searchStudent()">Ø¨Ø­Ø«</button>
+      <button onclick="searchStudent()">بحث</button>
       <div id="student-result" style="margin-top:1.5rem"></div>
     </div>
   </div>
 
-  <!-- Ø¨Ø­Ø« Ø¨ØªØ§Ø±ÙŠØ® -->
+  <!-- بحث بتاريخ -->
   <div id="tab-date" class="hidden">
     <div class="card">
-      <h2 style="margin-bottom:1rem">ðŸ“… Ø¨Ø­Ø« Ø¨ØªØ§Ø±ÙŠØ®</h2>
+      <h2 style="margin-bottom:1rem">📅 بحث بتاريخ</h2>
       <div class="form-grid">
-        <select id="date-class"><option value="">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„</option></select>
+        <select id="date-class"><option value="">اختر الفصل</option></select>
         <input type="date" id="date-search">
       </div>
-      <button onclick="searchByDate()">Ø¨Ø­Ø«</button>
+      <button onclick="searchByDate()">بحث</button>
       <div id="date-result" style="margin-top:1.5rem"></div>
     </div>
   </div>
 
-  <!-- Ø§Ù„Ø²ÙŠØ§Ø±Ø§Øª -->
+  <!-- الزيارات -->
   <div id="tab-visits" class="hidden">
-    <!-- Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø£Ù‚Ø³Ø§Ù… -->
+    <!-- قائمة الأقسام -->
     <div id="dept-list" class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-        <h2>ðŸ« Ø§Ù„Ø£Ù‚Ø³Ø§Ù… Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠØ©</h2>
-        <button onclick="openNewVisit()" style="background:#28a745">+ Ø²ÙŠØ§Ø±Ø© Ø¬Ø¯ÙŠØ¯Ø©</button>
+        <h2>🏫 الأقسام الدراسية</h2>
+        <button onclick="openNewVisit()" style="background:#28a745">+ زيارة جديدة</button>
       </div>
       <div class="dept-grid">
-        <div class="dept-card" onclick="selectDept('Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©')">
-          <div class="icon">ðŸ“</div>
-          <h3>Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</h3>
-          <p id="arabic-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('اللغة العربية')">
+          <div class="icon">📝</div>
+          <h3>اللغة العربية</h3>
+          <p id="arabic-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª')">
-          <div class="icon">ðŸ”¢</div>
-          <h3>Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª</h3>
-          <p id="math-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('الرياضيات')">
+          <div class="icon">🔢</div>
+          <h3>الرياضيات</h3>
+          <p id="math-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„Ø¹Ù„ÙˆÙ…')">
-          <div class="icon">ðŸ”¬</div>
-          <h3>Ø§Ù„Ø¹Ù„ÙˆÙ…</h3>
-          <p id="science-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('العلوم')">
+          <div class="icon">🔬</div>
+          <h3>العلوم</h3>
+          <p id="science-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¥Ø³Ù„Ø§Ù…ÙŠØ©')">
-          <div class="icon">â˜ªï¸</div>
-          <h3>Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¥Ø³Ù„Ø§Ù…ÙŠØ©</h3>
-          <p id="islamic-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('التربية الإسلامية')">
+          <div class="icon">☪️</div>
+          <h3>التربية الإسلامية</h3>
+          <p id="islamic-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©')">
-          <div class="icon">ðŸ‡¬ðŸ‡§</div>
-          <h3>Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©</h3>
-          <p id="english-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('اللغة الإنجليزية')">
+          <div class="icon">🇬🇧</div>
+          <h3>اللغة الإنجليزية</h3>
+          <p id="english-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠØ§Øª')">
-          <div class="icon">ðŸŒ</div>
-          <h3>Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠØ§Øª</h3>
-          <p id="social-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('الاجتماعيات')">
+          <div class="icon">🌍</div>
+          <h3>الاجتماعيات</h3>
+          <p id="social-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©')">
-          <div class="icon">âš½</div>
-          <h3>Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©</h3>
-          <p id="pe-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('التربية البدنية')">
+          <div class="icon">⚽</div>
+          <h3>التربية البدنية</h3>
+          <p id="pe-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„Ø­Ø§Ø³ÙˆØ¨')">
-          <div class="icon">ðŸ’»</div>
-          <h3>Ø§Ù„Ø­Ø§Ø³ÙˆØ¨</h3>
-          <p id="computer-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('الحاسوب')">
+          <div class="icon">💻</div>
+          <h3>الحاسوب</h3>
+          <p id="computer-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„ÙƒÙ‡Ø±Ø¨Ø§Ø¡')">
-          <div class="icon">âš¡</div>
-          <h3>Ø§Ù„ÙƒÙ‡Ø±Ø¨Ø§Ø¡</h3>
-          <p id="electric-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('الكهرباء')">
+          <div class="icon">⚡</div>
+          <h3>الكهرباء</h3>
+          <p id="electric-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„Ø¯ÙŠÙƒÙˆØ±')">
-          <div class="icon">ðŸŽ¨</div>
-          <h3>Ø§Ù„Ø¯ÙŠÙƒÙˆØ±</h3>
-          <p id="decor-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('الديكور')">
+          <div class="icon">🎨</div>
+          <h3>الديكور</h3>
+          <p id="decor-count">0 زيارة</p>
         </div>
-        <div class="dept-card" onclick="selectDept('Ø§Ù„ÙÙ†ÙŠØ©')">
-          <div class="icon">ðŸ–Œï¸</div>
-          <h3>Ø§Ù„ÙÙ†ÙŠØ©</h3>
-          <p id="art-count">0 Ø²ÙŠØ§Ø±Ø©</p>
+        <div class="dept-card" onclick="selectDept('الفنية')">
+          <div class="icon">🖌️</div>
+          <h3>الفنية</h3>
+          <p id="art-count">0 زيارة</p>
         </div>
       </div>
     </div>
 
-    <!-- Ù‚Ø§Ø¦Ù…Ø© Ø²ÙŠØ§Ø±Ø§Øª Ø§Ù„Ù‚Ø³Ù… -->
+    <!-- قائمة زيارات القسم -->
     <div id="dept-visits" class="hidden">
-      <button class="back-btn" onclick="backToDepts()">â† Ø±Ø¬ÙˆØ¹ Ù„Ù„Ø£Ù‚Ø³Ø§Ù…</button>
+      <button class="back-btn" onclick="backToDepts()">← رجوع للأقسام</button>
       <div class="card">
-        <h2 style="margin-bottom:1rem">Ø²ÙŠØ§Ø±Ø§Øª Ù‚Ø³Ù… <span id="selected-dept-name"></span></h2>
+        <h2 style="margin-bottom:1rem">زيارات قسم <span id="selected-dept-name"></span></h2>
         <div id="visits-list"></div>
       </div>
     </div>
   </div>
 
-  <!-- Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙˆÙ† -->
+  <!-- المستخدمون -->
   <div id="tab-users" class="hidden">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-        <h2>ðŸ‘¥ Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</h2>
-        <button onclick="openAddUser()">+ Ø¥Ø¶Ø§ÙØ© Ù…Ø³ØªØ®Ø¯Ù…</button>
+        <h2>👥 إدارة المستخدمين</h2>
+        <button onclick="openAddUser()">+ إضافة مستخدم</button>
       </div>
       <div id="users-list"></div>
     </div>
   </div>
 </div>
 
-<!-- Ù†Ù…ÙˆØ°Ø¬ Ø²ÙŠØ§Ø±Ø© Ø¬Ø¯ÙŠØ¯Ø© -->
+<!-- نموذج زيارة جديدة -->
 <div id="visit-form-modal" class="modal">
   <div class="modal-content">
-    <h2 style="margin-bottom:1.5rem">ØªØ³Ø¬ÙŠÙ„ Ø²ÙŠØ§Ø±Ø© Ø¬Ø¯ÙŠØ¯Ø©</h2>
+    <h2 style="margin-bottom:1.5rem">تسجيل زيارة جديدة</h2>
     
     <select id="visit-dept" onchange="loadVisitCriteria()">
-      <option value="">Ø§Ø®ØªØ± Ø§Ù„Ù‚Ø³Ù…</option>
-      <option value="Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©">Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</option>
-      <option value="Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª">Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª</option>
-      <option value="Ø§Ù„Ø¹Ù„ÙˆÙ…">Ø§Ù„Ø¹Ù„ÙˆÙ…</option>
-      <option value="Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¥Ø³Ù„Ø§Ù…ÙŠØ©">Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¥Ø³Ù„Ø§Ù…ÙŠØ©</option>
-      <option value="Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©">Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©</option>
-      <option value="Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠØ§Øª">Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠØ§Øª</option>
-      <option value="Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©">Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©</option>
-      <option value="Ø§Ù„Ø­Ø§Ø³ÙˆØ¨">Ø§Ù„Ø­Ø§Ø³ÙˆØ¨</option>
-      <option value="Ø§Ù„ÙƒÙ‡Ø±Ø¨Ø§Ø¡">Ø§Ù„ÙƒÙ‡Ø±Ø¨Ø§Ø¡</option>
-      <option value="Ø§Ù„Ø¯ÙŠÙƒÙˆØ±">Ø§Ù„Ø¯ÙŠÙƒÙˆØ±</option>
-      <option value="Ø§Ù„ÙÙ†ÙŠØ©">Ø§Ù„ÙÙ†ÙŠØ©</option>
+      <option value="">اختر القسم</option>
+      <option value="اللغة العربية">اللغة العربية</option>
+      <option value="الرياضيات">الرياضيات</option>
+      <option value="العلوم">العلوم</option>
+      <option value="التربية الإسلامية">التربية الإسلامية</option>
+      <option value="اللغة الإنجليزية">اللغة الإنجليزية</option>
+      <option value="الاجتماعيات">الاجتماعيات</option>
+      <option value="التربية البدنية">التربية البدنية</option>
+      <option value="الحاسوب">الحاسوب</option>
+      <option value="الكهرباء">الكهرباء</option>
+      <option value="الديكور">الديكور</option>
+      <option value="الفنية">الفنية</option>
     </select>
     
     <div class="form-grid">
-      <input type="text" id="visit-teacher" placeholder="Ø§Ø³Ù… Ø§Ù„Ù…Ø¹Ù„Ù…">
-      <input type="text" id="visit-subject" placeholder="Ø§Ù„Ù…Ø§Ø¯Ø©">
-      <input type="text" id="visit-class" placeholder="Ø§Ù„ØµÙ (Ù…Ø«Ø§Ù„: 9/1)">
-      <input type="number" id="visit-period" placeholder="Ø§Ù„Ø­ØµØ©" min="1" max="7">
+      <input type="text" id="visit-teacher" placeholder="اسم المعلم">
+      <input type="text" id="visit-subject" placeholder="المادة">
+      <input type="text" id="visit-class" placeholder="الصف (مثال: 9/1)">
+      <input type="number" id="visit-period" placeholder="الحصة" min="1" max="7">
       <input type="date" id="visit-date">
     </div>
     
-    <h3 style="margin:1.5rem 0 1rem">Ù…Ø¹Ø§ÙŠÙŠØ± Ø§Ù„ØªÙ‚ÙŠÙŠÙ…</h3>
+    <h3 style="margin:1.5rem 0 1rem">معايير التقييم</h3>
     <div id="visit-criteria-list"></div>
     
-    <h3 style="margin:1.5rem 0 .5rem">Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ù…Ø¯ÙŠØ±</h3>
-    <textarea id="visit-notes" rows="4" placeholder="Ø§ÙƒØªØ¨ Ù…Ù„Ø§Ø­Ø¸Ø§ØªÙƒ Ù‡Ù†Ø§..."></textarea>
+    <h3 style="margin:1.5rem 0 .5rem">ملاحظات المدير</h3>
+    <textarea id="visit-notes" rows="4" placeholder="اكتب ملاحظاتك هنا..."></textarea>
     
     <div style="display:flex;gap:12px;margin-top:1.5rem">
-      <button onclick="saveVisit()" style="flex:1">ðŸ’¾ Ø­ÙØ¸ Ø§Ù„Ø²ÙŠØ§Ø±Ø©</button>
-      <button onclick="closeVisitForm()" class="secondary" style="flex:1">Ø¥Ù„ØºØ§Ø¡</button>
+      <button onclick="saveVisit()" style="flex:1">💾 حفظ الزيارة</button>
+      <button onclick="closeVisitForm()" class="secondary" style="flex:1">إلغاء</button>
     </div>
   </div>
 </div>
 
-<!-- Ø¹Ø±Ø¶ ØªÙØ§ØµÙŠÙ„ Ø²ÙŠØ§Ø±Ø© -->
+<!-- عرض تفاصيل زيارة -->
 <div id="visit-detail-modal" class="modal">
   <div class="modal-content">
     <div id="visit-detail-content"></div>
-    <button onclick="closeVisitDetail()" style="margin-top:1.5rem;width:100%">Ø¥ØºÙ„Ø§Ù‚</button>
+    <button onclick="closeVisitDetail()" style="margin-top:1.5rem;width:100%">إغلاق</button>
   </div>
 </div>
 
-<!-- Ù†Ù…ÙˆØ°Ø¬ Ø¥Ø¶Ø§ÙØ© Ù…Ø³ØªØ®Ø¯Ù… -->
+<!-- نموذج إضافة مستخدم -->
 <div id="add-user-modal" class="modal">
   <div class="modal-content">
-    <h2 style="margin-bottom:1.5rem">Ø¥Ø¶Ø§ÙØ© Ù…Ø³ØªØ®Ø¯Ù… Ø¬Ø¯ÙŠØ¯</h2>
-    <input type="text" id="new-user-name" placeholder="Ø§Ù„Ø§Ø³Ù… Ø§Ù„ÙƒØ§Ù…Ù„">
-    <input type="text" id="new-user-id" placeholder="Ø±Ù‚Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…">
-    <input type="password" id="new-user-pass" placeholder="ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±">
+    <h2 style="margin-bottom:1.5rem">إضافة مستخدم جديد</h2>
+    <input type="text" id="new-user-name" placeholder="الاسم الكامل">
+    <input type="text" id="new-user-id" placeholder="رقم المستخدم">
+    <input type="password" id="new-user-pass" placeholder="كلمة المرور">
     <select id="new-user-role">
-      <option value="">Ø§Ø®ØªØ± Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©</option>
-      <option value="admin">Ù…Ø¯ÙŠØ±</option>
-      <option value="teacher">Ù…Ø¹Ù„Ù…</option>
+      <option value="">اختر الصلاحية</option>
+      <option value="admin">مدير</option>
+      <option value="teacher">معلم</option>
     </select>
-    <input type="text" id="new-user-class" placeholder="Ø§Ù„ÙØµÙ„ (Ù„Ù„Ù…Ø¹Ù„Ù…ÙŠÙ† ÙÙ‚Ø·)">
+    <input type="text" id="new-user-class" placeholder="الفصل (للمعلمين فقط)">
     <div style="display:flex;gap:12px;margin-top:1rem">
-      <button onclick="addUser()" style="flex:1">Ø¥Ø¶Ø§ÙØ©</button>
-      <button onclick="closeAddUser()" class="secondary" style="flex:1">Ø¥Ù„ØºØ§Ø¡</button>
+      <button onclick="addUser()" style="flex:1">إضافة</button>
+      <button onclick="closeAddUser()" class="secondary" style="flex:1">إلغاء</button>
     </div>
   </div>
 </div>
@@ -325,7 +325,7 @@ onAuthStateChanged(auth,async user=>{
     return;
   }
   currentUser=userDoc.data();
-  document.getElementById('user-name').textContent=currentUser.name||'Ø§Ù„Ù…Ø¯ÙŠØ±';
+  document.getElementById('user-name').textContent=currentUser.name||'المدير';
   loadDashboard();
 });
 
@@ -367,42 +367,42 @@ async function loadStats(){
   const presentToday=totalStudents-absentToday;
   
   document.getElementById('stats-cards').innerHTML=`
-    <div class="stat-card"><h3>${totalStudents}</h3><p>Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø·Ù„Ø§Ø¨</p></div>
-    <div class="stat-card"><h3>${presentToday}</h3><p>Ø­Ø§Ø¶Ø±ÙˆÙ† Ø§Ù„ÙŠÙˆÙ…</p></div>
-    <div class="stat-card"><h3>${absentToday}</h3><p>ØºØ§Ø¦Ø¨ÙˆÙ† Ø§Ù„ÙŠÙˆÙ…</p></div>
-    <div class="stat-card"><h3>${classesRegistered.size}</h3><p>ÙØµÙˆÙ„ Ø³Ø¬Ù‘Ù„Øª</p></div>
+    <div class="stat-card"><h3>${totalStudents}</h3><p>إجمالي الطلاب</p></div>
+    <div class="stat-card"><h3>${presentToday}</h3><p>حاضرون اليوم</p></div>
+    <div class="stat-card"><h3>${absentToday}</h3><p>غائبون اليوم</p></div>
+    <div class="stat-card"><h3>${classesRegistered.size}</h3><p>فصول سجّلت</p></div>
   `;
 }
 
 const visitCriteria={
-  'Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„Ø£Ù†Ø´Ø·Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ©','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© Ø§Ù„ÙØµØ­Ù‰','ØªÙ†Ù…ÙŠØ© Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©','ØªÙ†Ù…ÙŠØ© Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„ÙƒØªØ§Ø¨Ø©','ØªÙ†Ù…ÙŠØ© Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„Ø§Ø³ØªÙ…Ø§Ø¹','ØªÙ†Ù…ÙŠØ© Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„ØªØ­Ø¯Ø«','Ø±Ø¨Ø· Ø§Ù„Ø¯Ø±Ø³ Ø¨Ø§Ù„Ø­ÙŠØ§Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø³Ø¨ÙˆØ±Ø©','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª'],
-  'Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„Ø£Ù†Ø´Ø·Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ©','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','Ø­Ù„ Ø§Ù„Ù…Ø³Ø§Ø¦Ù„','Ø§Ù„Ø±Ø¨Ø· Ø¨Ø§Ù„ÙˆØ§Ù‚Ø¹','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø£Ù…Ø«Ù„Ø©','Ø§Ù„ØªØ¯Ø±Ø¬ ÙÙŠ Ø§Ù„ØµØ¹ÙˆØ¨Ø©','ØªÙ†Ù…ÙŠØ© Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„ØªÙÙƒÙŠØ±','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø³Ø¨ÙˆØ±Ø©','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª'],
-  'Ø§Ù„Ø¹Ù„ÙˆÙ…':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„Ø£Ù†Ø´Ø·Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ©','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','Ø§Ù„ØªØ¬Ø§Ø±Ø¨ Ø§Ù„Ø¹Ù…Ù„ÙŠØ©','Ø§Ù„Ù…Ø®ØªØ¨Ø± ÙˆØ§Ù„Ø³Ù„Ø§Ù…Ø©','Ø§Ù„Ø±Ø¨Ø· Ø¨Ø§Ù„Ø¨ÙŠØ¦Ø©','Ø§Ù„ØªÙÙƒÙŠØ± Ø§Ù„Ø¹Ù„Ù…ÙŠ','Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø© ÙˆØ§Ù„Ø§Ø³ØªÙ†ØªØ§Ø¬','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø³Ø¨ÙˆØ±Ø©','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª'],
-  'Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¥Ø³Ù„Ø§Ù…ÙŠØ©':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„Ø£Ù†Ø´Ø·Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ©','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','ØªÙ„Ø§ÙˆØ© Ø§Ù„Ù‚Ø±Ø¢Ù†','Ø­ÙØ¸ Ø§Ù„Ø¢ÙŠØ§Øª','Ø§Ù„Ø£Ø­Ø§Ø¯ÙŠØ« Ø§Ù„Ù†Ø¨ÙˆÙŠØ©','Ø§Ù„Ù‚ÙŠÙ… Ø§Ù„Ø¥Ø³Ù„Ø§Ù…ÙŠØ©','Ø§Ù„Ø±Ø¨Ø· Ø¨Ø§Ù„Ø³Ù„ÙˆÙƒ','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø³Ø¨ÙˆØ±Ø©','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª'],
-  'Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„Ø£Ù†Ø´Ø·Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ©','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','Speaking skills','Listening skills','Reading skills','Writing skills','Vocabulary','Grammar','Pronunciation'],
-  'Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠØ§Øª':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„Ø£Ù†Ø´Ø·Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ©','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','Ø§Ù„Ø®Ø±Ø§Ø¦Ø·','Ø§Ù„Ø£Ø­Ø¯Ø§Ø« Ø§Ù„ØªØ§Ø±ÙŠØ®ÙŠØ©','Ø§Ù„Ø¬ØºØ±Ø§ÙÙŠØ§','Ø§Ù„ÙˆØ·Ù†ÙŠØ©','Ø§Ù„ØªÙÙƒÙŠØ± Ø§Ù„Ù†Ø§Ù‚Ø¯','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø³Ø¨ÙˆØ±Ø©'],
-  'Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„Ø¥Ø­Ù…Ø§Ø¡','Ø§Ù„ØªÙ…Ø§Ø±ÙŠÙ† Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©','Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„Ø­Ø±ÙƒÙŠØ©','Ø§Ù„Ø³Ù„Ø§Ù…Ø©','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªØ­ÙÙŠØ²','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„Ø§Ù†Ø¶Ø¨Ø§Ø·','Ø§Ù„Ù„ÙŠØ§Ù‚Ø© Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©','Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨ Ø§Ù„Ø¬Ù…Ø§Ø¹ÙŠØ©','Ø§Ù„Ø£Ù„Ø¹Ø§Ø¨ Ø§Ù„ÙØ±Ø¯ÙŠØ©','Ø§Ù„Ø±ÙˆØ­ Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ø£Ø¯ÙˆØ§Øª','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª','Ø§Ù„Ø²ÙŠ Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠ'],
-  'Ø§Ù„Ø­Ø§Ø³ÙˆØ¨':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ø¹Ù…Ù„ÙŠ','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','Ø§Ù„Ø¨Ø±Ù…Ø¬ÙŠØ§Øª','Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª','Ø§Ù„Ø³Ù„Ø§Ù…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©','Ø­Ù„ Ø§Ù„Ù…Ø´ÙƒÙ„Ø§Øª','Ø§Ù„ØªÙÙƒÙŠØ± Ø§Ù„Ù…Ù†Ø·Ù‚ÙŠ','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª'],
-  'Ø§Ù„ÙƒÙ‡Ø±Ø¨Ø§Ø¡':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ø¹Ù…Ù„ÙŠ','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','Ø§Ù„Ø³Ù„Ø§Ù…Ø© Ø§Ù„Ù…Ù‡Ù†ÙŠØ©','Ø§Ù„Ø£Ø¯ÙˆØ§Øª ÙˆØ§Ù„Ù…Ø¹Ø¯Ø§Øª','Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„ÙŠØ¯ÙˆÙŠØ©','Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ù…Ø®Ø·Ø·Ø§Øª','Ø­Ù„ Ø§Ù„Ù…Ø´ÙƒÙ„Ø§Øª','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª'],
-  'Ø§Ù„Ø¯ÙŠÙƒÙˆØ±':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ø¹Ù…Ù„ÙŠ','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„ÙˆØ§Ø¬Ø¨Ø§Øª','Ø§Ù„Ø¥Ø¨Ø¯Ø§Ø¹','Ø§Ù„Ø£Ù„ÙˆØ§Ù†','Ø§Ù„ØªØµÙ…ÙŠÙ…','Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„ÙŠØ¯ÙˆÙŠØ©','Ø§Ù„Ø³Ù„Ø§Ù…Ø©','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª'],
-  'Ø§Ù„ÙÙ†ÙŠØ©':['Ø§Ù„ØªØ®Ø·ÙŠØ· Ù„Ù„Ø¯Ø±Ø³','ÙˆØ¶ÙˆØ­ Ø§Ù„Ø£Ù‡Ø¯Ø§Ù','Ø§Ù„ØªÙ…Ù‡ÙŠØ¯ Ø§Ù„Ù…Ù†Ø§Ø³Ø¨','Ø¹Ø±Ø¶ Ø§Ù„Ù…Ø§Ø¯Ø©','Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ÙˆØ³Ø§Ø¦Ù„','Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ØµÙ','Ø§Ù„ØªÙØ§Ø¹Ù„ Ù…Ø¹ Ø§Ù„Ø·Ù„Ø§Ø¨','Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ø¹Ù…Ù„ÙŠ','Ø§Ù„ØªÙ‚ÙˆÙŠÙ…','Ø§Ù„Ø¥Ø¨Ø¯Ø§Ø¹','Ø§Ù„Ù…Ù‡Ø§Ø±Ø§Øª Ø§Ù„ÙÙ†ÙŠØ©','Ø§Ù„Ø®Ø§Ù…Ø§Øª','Ø§Ù„Ù†Ø¸Ø§ÙØ©','Ø§Ù„Ø°ÙˆÙ‚ Ø§Ù„ÙÙ†ÙŠ','Ø§Ù„Ø§Ù„ØªØ²Ø§Ù… Ø¨Ø§Ù„ÙˆÙ‚Øª']
+  'اللغة العربية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','استخدام اللغة العربية الفصحى','تنمية مهارات القراءة','تنمية مهارات الكتابة','تنمية مهارات الاستماع','تنمية مهارات التحدث','ربط الدرس بالحياة','استخدام السبورة','الالتزام بالوقت'],
+  'الرياضيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','حل المسائل','الربط بالواقع','استخدام الأمثلة','التدرج في الصعوبة','تنمية مهارات التفكير','استخدام السبورة','الالتزام بالوقت'],
+  'العلوم':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','التجارب العملية','المختبر والسلامة','الربط بالبيئة','التفكير العلمي','الملاحظة والاستنتاج','استخدام السبورة','الالتزام بالوقت'],
+  'التربية الإسلامية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','تلاوة القرآن','حفظ الآيات','الأحاديث النبوية','القيم الإسلامية','الربط بالسلوك','استخدام السبورة','الالتزام بالوقت'],
+  'اللغة الإنجليزية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','Speaking skills','Listening skills','Reading skills','Writing skills','Vocabulary','Grammar','Pronunciation'],
+  'الاجتماعيات':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','الأنشطة التعليمية','التقويم','الواجبات','الخرائط','الأحداث التاريخية','الجغرافيا','الوطنية','التفكير الناقد','استخدام السبورة'],
+  'التربية البدنية':['التخطيط للدرس','وضوح الأهداف','الإحماء','التمارين البدنية','المهارات الحركية','السلامة','إدارة الصف','التحفيز','التقويم','الانضباط','اللياقة البدنية','الألعاب الجماعية','الألعاب الفردية','الروح الرياضية','استخدام الأدوات','الالتزام بالوقت','الزي الرياضي'],
+  'الحاسوب':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','البرمجيات','الإنترنت','السلامة الرقمية','حل المشكلات','التفكير المنطقي','الالتزام بالوقت'],
+  'الكهرباء':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','السلامة المهنية','الأدوات والمعدات','المهارات اليدوية','قراءة المخططات','حل المشكلات','الالتزام بالوقت'],
+  'الديكور':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الواجبات','الإبداع','الألوان','التصميم','المهارات اليدوية','السلامة','الالتزام بالوقت'],
+  'الفنية':['التخطيط للدرس','وضوح الأهداف','التمهيد المناسب','عرض المادة','استخدام الوسائل','إدارة الصف','التفاعل مع الطلاب','التطبيق العملي','التقويم','الإبداع','المهارات الفنية','الخامات','النظافة','الذوق الفني','الالتزام بالوقت']
 };
 
 window.visitCriteria = visitCriteria;
 
 async function loadVisitCounts(){
   const visitsSnap=await getDocs(collection(db,'visits'));
-  const counts={'Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©':0,'Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª':0,'Ø§Ù„Ø¹Ù„ÙˆÙ…':0,'Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¥Ø³Ù„Ø§Ù…ÙŠØ©':0,'Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©':0,'Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠØ§Øª':0,'Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©':0,'Ø§Ù„Ø­Ø§Ø³ÙˆØ¨':0,'Ø§Ù„ÙƒÙ‡Ø±Ø¨Ø§Ø¡':0,'Ø§Ù„Ø¯ÙŠÙƒÙˆØ±':0,'Ø§Ù„ÙÙ†ÙŠØ©':0};
+  const counts={'اللغة العربية':0,'الرياضيات':0,'العلوم':0,'التربية الإسلامية':0,'اللغة الإنجليزية':0,'الاجتماعيات':0,'التربية البدنية':0,'الحاسوب':0,'الكهرباء':0,'الديكور':0,'الفنية':0};
   visitsSnap.forEach(doc=>{
     const dept=doc.data().dept;
     if(counts[dept]!==undefined)counts[dept]++;
   });
   
-  const idMap={'Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©':'arabic','Ø§Ù„Ø±ÙŠØ§Ø¶ÙŠØ§Øª':'math','Ø§Ù„Ø¹Ù„ÙˆÙ…':'science','Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¥Ø³Ù„Ø§Ù…ÙŠØ©':'islamic','Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©':'english','Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠØ§Øª':'social','Ø§Ù„ØªØ±Ø¨ÙŠØ© Ø§Ù„Ø¨Ø¯Ù†ÙŠØ©':'pe','Ø§Ù„Ø­Ø§Ø³ÙˆØ¨':'computer','Ø§Ù„ÙƒÙ‡Ø±Ø¨Ø§Ø¡':'electric','Ø§Ù„Ø¯ÙŠÙƒÙˆØ±':'decor','Ø§Ù„ÙÙ†ÙŠØ©':'art'};
+  const idMap={'اللغة العربية':'arabic','الرياضيات':'math','العلوم':'science','التربية الإسلامية':'islamic','اللغة الإنجليزية':'english','الاجتماعيات':'social','التربية البدنية':'pe','الحاسوب':'computer','الكهرباء':'electric','الديكور':'decor','الفنية':'art'};
   
   for(let dept in counts){
     const el=document.getElementById(idMap[dept]+'-count');
-    if(el)el.textContent=counts[dept]+' Ø²ÙŠØ§Ø±Ø©';
+    if(el)el.textContent=counts[dept]+' زيارة';
   }
 }
 
@@ -428,12 +428,12 @@ window.loadVisitCriteria=()=>{
     html+=`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:0.5px solid #ddd">
       <span style="font-size:13px">${c}</span>
       <select id="score${i}" style="width:140px;font-size:13px">
-        <option value="">Ø§Ø®ØªØ±</option>
-        <option value="5">Ù…Ù…ØªØ§Ø²</option>
-        <option value="4">Ø¬ÙŠØ¯ Ø¬Ø¯Ø§Ù‹</option>
-        <option value="3">Ø¬ÙŠØ¯</option>
-        <option value="2">Ù…Ù‚Ø¨ÙˆÙ„</option>
-        <option value="1">Ø¶Ø¹ÙŠÙ</option>
+        <option value="">اختر</option>
+        <option value="5">ممتاز</option>
+        <option value="4">جيد جداً</option>
+        <option value="3">جيد</option>
+        <option value="2">مقبول</option>
+        <option value="1">ضعيف</option>
       </select>
     </div>`;
   });
@@ -450,7 +450,7 @@ window.saveVisit=async()=>{
   const notes=document.getElementById('visit-notes').value;
   
   if(!dept||!teacher||!className||!period||!date){
-    alert('ÙŠØ±Ø¬Ù‰ Ù…Ù„Ø¡ ÙƒÙ„ Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©');
+    alert('يرجى ملء كل الحقول المطلوبة');
     return;
   }
   
@@ -475,11 +475,11 @@ window.saveVisit=async()=>{
       createdBy:currentUser.userId,
       teacherSigned:false
     });
-    alert('ØªÙ… Ø­ÙØ¸ Ø§Ù„Ø²ÙŠØ§Ø±Ø© Ø¨Ù†Ø¬Ø§Ø­');
+    alert('تم حفظ الزيارة بنجاح');
     closeVisitForm();
     loadVisitCounts();
   }catch(e){
-    alert('Ø®Ø·Ø£: '+e.message);
+    alert('خطأ: '+e.message);
   }
 };
 
@@ -499,14 +499,14 @@ window.backToDepts=()=>{
 
 async function loadDeptVisits(dept){
   const list=document.getElementById('visits-list');
-  list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p>';
+  list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">جاري التحميل...</p>';
   
   try{
     const q=query(collection(db,'visits'),where('dept','==',dept),orderBy('createdAt','desc'));
     const snap=await getDocs(q);
     
     if(snap.empty){
-      list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø²ÙŠØ§Ø±Ø§Øª Ù…Ø³Ø¬Ù„Ø© Ù„Ù‡Ø°Ø§ Ø§Ù„Ù‚Ø³Ù…</p>';
+      list.innerHTML='<p style="text-align:center;color:#666;padding:2rem">لا توجد زيارات مسجلة لهذا القسم</p>';
       return;
     }
     
@@ -520,20 +520,20 @@ async function loadDeptVisits(dept){
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px">
           <div>
             <div style="font-weight:500;margin-bottom:4px">${v.teacherName}</div>
-            <div style="font-size:13px;color:#666">${v.className} â€¢ Ø§Ù„Ø­ØµØ© ${v.period} â€¢ ${v.date}</div>
+            <div style="font-size:13px;color:#666">${v.className} • الحصة ${v.period} • ${v.date}</div>
           </div>
           <div class="${scoreClass}" style="font-size:20px">${avgScore}</div>
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="viewVisit('${doc.id}')" style="flex:1;font-size:13px">Ø¹Ø±Ø¶ Ø§Ù„ØªÙØ§ØµÙŠÙ„</button>
-          <button onclick="printVisit('${doc.id}')" style="flex:1;font-size:13px;background:#fff;color:#333;border:1px solid #ddd">ðŸ–¨ï¸ Ø·Ø¨Ø§Ø¹Ø©</button>
+          <button onclick="viewVisit('${doc.id}')" style="flex:1;font-size:13px">عرض التفاصيل</button>
+          <button onclick="printVisit('${doc.id}')" style="flex:1;font-size:13px;background:#fff;color:#333;border:1px solid #ddd">🖨️ طباعة</button>
         </div>
       </div>`;
     });
     
     list.innerHTML=html;
   }catch(e){
-    list.innerHTML='<p style="text-align:center;color:#dc3545;padding:2rem">Ø®Ø·Ø£ ÙÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø²ÙŠØ§Ø±Ø§Øª</p>';
+    list.innerHTML='<p style="text-align:center;color:#dc3545;padding:2rem">خطأ في تحميل الزيارات</p>';
   }
 }
 
@@ -543,7 +543,7 @@ window.viewVisit=async id=>{
   
   const v=docSnap.data();
   const criteria=visitCriteria[v.dept]||[];
-  const scoreLabels=['','Ø¶Ø¹ÙŠÙ','Ù…Ù‚Ø¨ÙˆÙ„','Ø¬ÙŠØ¯','Ø¬ÙŠØ¯ Ø¬Ø¯Ø§Ù‹','Ù…Ù…ØªØ§Ø²'];
+  const scoreLabels=['','ضعيف','مقبول','جيد','جيد جداً','ممتاز'];
   
   let critHTML='';
   criteria.forEach((c,i)=>{
@@ -554,14 +554,14 @@ window.viewVisit=async id=>{
   document.getElementById('visit-detail-content').innerHTML=`
     <div style="margin-bottom:1.5rem">
       <h3 style="margin:0 0 8px">${v.teacherName}</h3>
-      <p style="margin:0;color:#666;font-size:14px">${v.dept} â€¢ ${v.className} â€¢ Ø§Ù„Ø­ØµØ© ${v.period} â€¢ ${v.date}</p>
+      <p style="margin:0;color:#666;font-size:14px">${v.dept} • ${v.className} • الحصة ${v.period} • ${v.date}</p>
     </div>
     <table style="width:100%;font-size:13px;margin-bottom:1.5rem">
-      <thead><tr style="background:#f5f5f5"><th style="padding:8px;text-align:right">Ø§Ù„Ù…Ø¹ÙŠØ§Ø±</th><th style="padding:8px;text-align:center;width:120px">Ø§Ù„ØªÙ‚ÙŠÙŠÙ…</th></tr></thead>
+      <thead><tr style="background:#f5f5f5"><th style="padding:8px;text-align:right">المعيار</th><th style="padding:8px;text-align:center;width:120px">التقييم</th></tr></thead>
       <tbody>${critHTML}</tbody>
     </table>
-    ${v.notes?`<div style="background:#f8f9fa;padding:1rem;border-radius:8px;margin-bottom:1rem"><div style="font-weight:500;margin-bottom:8px">Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ù…Ø¯ÙŠØ±:</div><p style="margin:0;white-space:pre-wrap">${v.notes}</p></div>`:''}
-    ${v.teacherSigned?`<p style="color:#28a745;font-size:13px">âœ“ Ø§Ù„Ù…Ø¹Ù„Ù… ÙˆÙ‚Ù‘Ø¹ Ø¹Ù„Ù‰ Ø§Ù„Ø²ÙŠØ§Ø±Ø©</p>`:''}
+    ${v.notes?`<div style="background:#f8f9fa;padding:1rem;border-radius:8px;margin-bottom:1rem"><div style="font-weight:500;margin-bottom:8px">ملاحظات المدير:</div><p style="margin:0;white-space:pre-wrap">${v.notes}</p></div>`:''}
+    ${v.teacherSigned?`<p style="color:#28a745;font-size:13px">✓ المعلم وقّع على الزيارة</p>`:''}
   `;
   
   document.getElementById('visit-detail-modal').style.display='flex';
@@ -577,7 +577,7 @@ window.printVisit=async id=>{
   
   const v=docSnap.data();
   const criteria=visitCriteria[v.dept]||[];
-  const scoreLabels=['','Ø¶Ø¹ÙŠÙ','Ù…Ù‚Ø¨ÙˆÙ„','Ø¬ÙŠØ¯','Ø¬ÙŠØ¯ Ø¬Ø¯Ø§Ù‹','Ù…Ù…ØªØ§Ø²'];
+  const scoreLabels=['','ضعيف','مقبول','جيد','جيد جداً','ممتاز'];
   
   let critRows='';
   criteria.forEach((c,i)=>{
@@ -585,7 +585,7 @@ window.printVisit=async id=>{
     critRows+=`<tr><td style="padding:8px;border:1px solid #ddd">${c}</td><td style="padding:8px;border:1px solid #ddd;text-align:center">${scoreLabels[score]||'-'}</td></tr>`;
   });
   
-  const printContent=`<html dir="rtl"><head><meta charset="UTF-8"><title>Ù†Ù…ÙˆØ°Ø¬ Ø²ÙŠØ§Ø±Ø© - ${v.teacherName}</title><style>body{font-family:Arial,sans-serif;padding:2cm}h2{text-align:center;margin-bottom:1cm}table{width:100%;border-collapse:collapse;margin:1cm 0}th{background:#f5f5f5;padding:8px;border:1px solid #ddd}.info{margin:1cm 0}.info div{margin:8px 0}.signatures{margin-top:2cm;display:flex;justify-content:space-between}.sig-box{text-align:center}</style></head><body><h2>Ù†Ù…ÙˆØ°Ø¬ Ø²ÙŠØ§Ø±Ø© ØµÙÙŠØ© - ${v.dept}</h2><div class="info"><div><strong>Ø§Ø³Ù… Ø§Ù„Ù…Ø¹Ù„Ù…:</strong> ${v.teacherName}</div><div><strong>Ø§Ù„Ù…Ø§Ø¯Ø©:</strong> ${v.subject||'-'}</div><div><strong>Ø§Ù„ØµÙ:</strong> ${v.className}</div><div><strong>Ø§Ù„Ø­ØµØ©:</strong> ${v.period}</div><div><strong>Ø§Ù„ØªØ§Ø±ÙŠØ®:</strong> ${v.date}</div></div><table><thead><tr><th>Ø§Ù„Ù…Ø¹ÙŠØ§Ø±</th><th style="width:120px">Ø§Ù„ØªÙ‚ÙŠÙŠÙ…</th></tr></thead><tbody>${critRows}</tbody></table>${v.notes?`<div style="border:1px solid #ddd;padding:1cm;margin:1cm 0"><strong>Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ù…Ø¯ÙŠØ±:</strong><p>${v.notes}</p></div>`:''}<div class="signatures"><div class="sig-box"><div>Ø§Ù„ØªÙˆÙ‚ÙŠØ¹: _____________</div><div>Ø§Ù„Ù…Ø¹Ù„Ù…</div></div><div class="sig-box"><div>Ø§Ù„ØªÙˆÙ‚ÙŠØ¹: _____________</div><div>Ø±Ø¦ÙŠØ³ Ø§Ù„Ù‚Ø³Ù…</div></div><div class="sig-box"><div>Ø§Ù„ØªÙˆÙ‚ÙŠØ¹: _____________</div><div>Ø§Ù„Ù…Ø¯ÙŠØ±</div></div></div></body></html>`;
+  const printContent=`<html dir="rtl"><head><meta charset="UTF-8"><title>نموذج زيارة - ${v.teacherName}</title><style>body{font-family:Arial,sans-serif;padding:2cm}h2{text-align:center;margin-bottom:1cm}table{width:100%;border-collapse:collapse;margin:1cm 0}th{background:#f5f5f5;padding:8px;border:1px solid #ddd}.info{margin:1cm 0}.info div{margin:8px 0}.signatures{margin-top:2cm;display:flex;justify-content:space-between}.sig-box{text-align:center}</style></head><body><h2>نموذج زيارة صفية - ${v.dept}</h2><div class="info"><div><strong>اسم المعلم:</strong> ${v.teacherName}</div><div><strong>المادة:</strong> ${v.subject||'-'}</div><div><strong>الصف:</strong> ${v.className}</div><div><strong>الحصة:</strong> ${v.period}</div><div><strong>التاريخ:</strong> ${v.date}</div></div><table><thead><tr><th>المعيار</th><th style="width:120px">التقييم</th></tr></thead><tbody>${critRows}</tbody></table>${v.notes?`<div style="border:1px solid #ddd;padding:1cm;margin:1cm 0"><strong>ملاحظات المدير:</strong><p>${v.notes}</p></div>`:''}<div class="signatures"><div class="sig-box"><div>التوقيع: _____________</div><div>المعلم</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>رئيس القسم</div></div><div class="sig-box"><div>التوقيع: _____________</div><div>المدير</div></div></div></body></html>`;
   
   const printWin=window.open('','','width=800,height=600');
   printWin.document.write(printContent);
@@ -596,15 +596,15 @@ window.printVisit=async id=>{
 
 async function loadUsers(){
   const list=document.getElementById('users-list');
-  list.innerHTML='<p style="text-align:center;color:#666">Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p>';
+  list.innerHTML='<p style="text-align:center;color:#666">جاري التحميل...</p>';
   
   try{
     const snap=await getDocs(collection(db,'users'));
-    let html='<table><thead><tr><th>Ø§Ù„Ø§Ø³Ù…</th><th>Ø±Ù‚Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…</th><th>Ø§Ù„ØµÙ„Ø§Ø­ÙŠØ©</th><th>Ø§Ù„ÙØµÙ„</th><th>ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</th><th>Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª</th></tr></thead><tbody>';
+    let html='<table><thead><tr><th>الاسم</th><th>رقم المستخدم</th><th>الصلاحية</th><th>الفصل</th><th>كلمة المرور</th><th>إجراءات</th></tr></thead><tbody>';
     
     snap.forEach(doc=>{
       const u=doc.data();
-      const roleText=u.role==='admin'?'Ù…Ø¯ÙŠØ±':'Ù…Ø¹Ù„Ù…';
+      const roleText=u.role==='admin'?'مدير':'معلم';
       const roleBadge=u.role==='admin'?'success':'warning';
       html+=`<tr>
         <td>${u.name||'-'}</td>
@@ -612,14 +612,14 @@ async function loadUsers(){
         <td><span class="badge ${roleBadge}">${roleText}</span></td>
         <td>${u.classId||'-'}</td>
         <td>${u.plainPass?'<span style="font-family:monospace">'+u.plainPass+'</span>':'-'}</td>
-        <td><button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px">Ø­Ø°Ù</button></td>
+        <td><button onclick="deleteUser('${doc.id}')" style="background:#dc3545;padding:6px 12px;font-size:12px">حذف</button></td>
       </tr>`;
     });
     
     html+='</tbody></table>';
     list.innerHTML=html;
   }catch(e){
-    list.innerHTML='<p style="text-align:center;color:#dc3545">Ø®Ø·Ø£ ÙÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ÙŠÙ†</p>';
+    list.innerHTML='<p style="text-align:center;color:#dc3545">خطأ في تحميل المستخدمين</p>';
   }
 }
 
@@ -639,7 +639,7 @@ window.addUser=async()=>{
   const classId=document.getElementById('new-user-class').value.trim();
   
   if(!name||!userId||!pass||!role){
-    alert('ÙŠØ±Ø¬Ù‰ Ù…Ù„Ø¡ ÙƒÙ„ Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø©');
+    alert('يرجى ملء كل الحقول المطلوبة');
     return;
   }
   
@@ -654,22 +654,22 @@ window.addUser=async()=>{
       createdAt:serverTimestamp()
     });
     
-    alert('ØªÙ… Ø¥Ø¶Ø§ÙØ© Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¨Ù†Ø¬Ø§Ø­');
+    alert('تم إضافة المستخدم بنجاح');
     closeAddUser();
     loadUsers();
   }catch(e){
-    alert('Ø®Ø·Ø£: '+e.message);
+    alert('خطأ: '+e.message);
   }
 };
 
 window.deleteUser=async id=>{
-  if(!confirm('Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…ØŸ'))return;
+  if(!confirm('هل أنت متأكد من حذف هذا المستخدم؟'))return;
   try{
     await deleteDoc(doc(db,'users',id));
-    alert('ØªÙ… Ø­Ø°Ù Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…');
+    alert('تم حذف المستخدم');
     loadUsers();
   }catch(e){
-    alert('Ø®Ø·Ø£: '+e.message);
+    alert('خطأ: '+e.message);
   }
 };
 </script>
