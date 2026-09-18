@@ -1,4 +1,4 @@
-﻿import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
+import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 var PERIODS = ['الحصة الأولى','الحصة الثانية','الحصة الثالثة','الحصة الرابعة','الحصة الخامسة','الحصة السادسة','الحصة السابعة'];
@@ -193,6 +193,17 @@ window.loadDailyAttSheet = async function() {
 };
 
 window.printDailySheet = function() {
+    var area = document.getElementById("dr-print-area");
+    if (!area) { if (window.showToast) window.showToast("اضغط عرض اولا","warning"); return; }
+    var date = document.getElementById("dr-date").value || "";
+    var classId = document.getElementById("dr-class").value || "";
+    var user = JSON.parse(localStorage.getItem("hs_user")||"{}");
+    if (window.ManzoumaReport) {
+        window.ManzoumaReport.printDirect(area.innerHTML, "\u0643\u0634\u0641 \u0627\u0644\u062d\u0636\u0648\u0631 \u0648\u0627\u0644\u063a\u064a\u0627\u0628", "\u0627\u0644\u0635\u0641: " + classId + " - " + date);
+        return;
+    }
+    // fallback
+    window.printDailySheet_old = function() {
     var area = document.getElementById('dr-print-area');
     if (!area) { if (window.showToast) window.showToast('اضغط عرض أولاً','warning'); return; }
     var date = document.getElementById('dr-date').value || '';
