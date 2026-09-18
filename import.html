@@ -183,7 +183,7 @@
         
         const btn = document.getElementById('process-btn');
         btn.disabled = true;
-        btn.innerHTML = "ó ,'1J *GJ&) B'9/) 'D(J'F'* H6. 'DA5HD...";
+        btn.innerHTML = "รณ ,'1J *GJ&) B'9/) 'D(J'F'* H6. 'DA5HD...";
 
         const user = JSON.parse(localStorage.getItem('hs_user'));
         const schoolId = user?.schoolId;
@@ -237,7 +237,7 @@
                 importedCount++;
                 batchOperationCount++;
 
-                // ¡ *1-JD 'D('*4 *DB'&J'K CD 400 9EDJ) DEF9 'D'57/'E (-/H/ A'J1(J3 'DB5HI (500)
+                // ยก *1-JD 'D('*4 *DB'&J'K CD 400 9EDJ) DEF9 'D'57/'E (-/H/ A'J1(J3 'DB5HI (500)
                 if (batchOperationCount >= 400) {
                     await batch.commit();
                     batch = writeBatch(db);
