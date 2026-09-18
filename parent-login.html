@@ -69,7 +69,7 @@ input:focus{border-color:var(--sky)}
     </button>
 
     <button class="btn-link" style="color:var(--mid);font-size:12px;margin-top:6px" onclick="window.location.href='index.html'">
-      /.HD 'DEH8AJF Ãª
+      /.HD 'DEH8AJF �
     </button>
   </div>
 
@@ -121,7 +121,7 @@ window.doLogin = async function() {
     const civilId = document.getElementById('inp-civil').value.trim();
     const pass = document.getElementById('inp-pass').value;
 
-    if (!schoolId || !civilId || !pass) return showErr('â€  #CED ,EJ9 'D-BHD');
+    if (!schoolId || !civilId || !pass) return showErr('� #CED ,EJ9 'D-BHD');
 
     const btn = document.getElementById('btn-login');
     btn.disabled = true;
@@ -150,8 +150,8 @@ window.doLogin = async function() {
         const msgs = {
             'functions/unauthenticated': 'L CDE) 'DE1H1 :J1 5-J-)',
             'functions/not-found': 'L 'D-3'( :J1 EH,H/  3,QD #HD'K',
-            'functions/resource-exhausted': 'Ã› ' + (e.message || '*,'H2* 'DE-'HD'* 'F*81 BDJD'K'),
-            'functions/invalid-argument': 'â€  #/.D 'D(J'F'* (4CD 5-J-'
+            'functions/resource-exhausted': '� ' + (e.message || '*,'H2* 'DE-'HD'* 'F*81 BDJD'K'),
+            'functions/invalid-argument': '� #/.D 'D(J'F'* (4CD 5-J-'
         };
         showErr(msgs[e.code] || ('L ' + (e.message || '-/+ .7# -'HD E1) #.1I')));
     } finally {

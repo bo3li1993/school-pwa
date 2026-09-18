@@ -1,4 +1,4 @@
-const CACHE_NAME = 'school-pwa-20260918163424';
+const CACHE_NAME = 'school-pwa-1789084959603';
 const STATIC_ASSETS = [
     './',
     './index.html',
