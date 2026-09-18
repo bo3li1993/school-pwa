@@ -1,0 +1,47 @@
+name: Fix Arabic Encoding
+on:
+  push:
+    branches: [main]
+jobs:
+  fix-encoding:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Fix Arabic encoding in all files
+        run: |
+          pip install chardet
+          python3 << EOF
+          import os, chardet
+          
+          exts = (".js", ".html", ".css")
+          skip = ("node_modules", ".git")
+          
+          for root, dirs, files in os.walk("."):
+              dirs[:] = [d for d in dirs if d not in skip]
+              for f in files:
+                  if not f.endswith(exts):
+                      continue
+                  path = os.path.join(root, f)
+                  with open(path, "rb") as fp:
+                      raw = fp.read()
+                  det = chardet.detect(raw)
+                  enc = det.get("encoding", "utf-8") or "utf-8"
+                  if enc.lower() in ("utf-8", "utf-8-sig", "ascii"):
+                      continue
+                  try:
+                      text = raw.decode(enc)
+                      with open(path, "w", encoding="utf-8") as fp:
+                          fp.write(text)
+                      print(f"Fixed: {path} ({enc})")
+                  except Exception as e:
+                      print(f"Skip: {path} - {e}")
+          EOF
+      - name: Commit fixes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "auto: fix Arabic encoding"
+          git push
