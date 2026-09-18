@@ -1,0 +1,11 @@
+// pdf_reports.js - PDF Reports System
+function getUserInfo(){try{return JSON.parse(localStorage.getItem("hs_user")||"{}");}catch(e){return{};}}
+function getTodayArabic(){return new Date().toLocaleDateString("ar-KW",{weekday:"long",year:"numeric",month:"long",day:"numeric"});}
+function openReportWindow(html){var b=new Blob([html],{type:"text/html;charset=utf-8"});var u=URL.createObjectURL(b);window.open(u,"_blank","width=900,height=700");}
+window.ManzoumaReport={
+  getSchoolInfo:function(){var u=getUserInfo();return{schoolName:u.schoolName||"",userName:u.name||""};},
+  buildHeader:function(title,sub){var s=this.getSchoolInfo();var d=getTodayArabic();return "<div style=\"border-bottom:3px double #0b2545;padding-bottom:12px;margin-bottom:20px\"><div style=\"display:flex;justify-content:space-between\"><div style=\"font-size:11px\"><b>\u062f\u0648\u0644\u0629 \u0627\u0644\u0643\u0648\u064a\u062a</b><br>\u0648\u0632\u0627\u0631\u0629 \u0627\u0644\u062a\u0631\u0628\u064a\u0629</div><div style=\"font-size:16px;font-weight:900;color:#0b2545\">"+title+"</div><div style=\"font-size:11px\"><b>"+s.schoolName+"</b><br>"+d+"</div></div></div>";},
+  buildFooter:function(){return "<div style=\"margin-top:30px;border-top:1px solid #ddd;padding-top:10px;display:flex;justify-content:space-between;font-size:10px;color:#666\"><div>\u0627\u0644\u0645\u0646\u0638\u0648\u0645\u0629 \u0627\u0644\u0631\u0642\u0645\u064a\u0629</div><div>\u062a\u0648\u0642\u064a\u0639: ______________</div></div>";},
+  printDirect:function(content,title,sub){var h="<!DOCTYPE html><html lang=\"ar\" dir=\"rtl\"><head><meta charset=\"UTF-8\"><link href=\"https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap\" rel=\"stylesheet\"><style>body{font-family:Cairo,sans-serif;direction:rtl;padding:20px}table{width:100%;border-collapse:collapse}th{background:#0b2545;color:#fff;padding:7px;font-size:11px}td{padding:6px;border-bottom:1px solid #eee;font-size:11px;text-align:center}@media print{body{padding:10px}}</style></head><body>"+this.buildHeader(title,sub||"")+content+this.buildFooter()+"</body></html>";var b=new Blob([h],{type:"text/html;charset=utf-8"});var u=URL.createObjectURL(b);var w=window.open(u,"_blank");if(w)setTimeout(function(){w.print();URL.revokeObjectURL(u);},800);}
+};
+console.log("PDF Reports Ready");
