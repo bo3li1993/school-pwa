@@ -12,14 +12,14 @@ export async function initStudentModule() {
     }
     var html = '';
     html += '<div class="card">';
-    html += '<h2><i class="bi bi-person-badge"></i> ملف الطالب</h2>';
+    html += '<h2><i class="bi bi-person-badge"></i> Ù…Ù„Ù Ø§Ù„Ø·Ø§Ù„Ø¨</h2>';
     html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
-    html += '<div><label style="font-size:12px;font-weight:800;display:block;margin-bottom:4px">الفصل</label>';
+    html += '<div><label style="font-size:12px;font-weight:800;display:block;margin-bottom:4px">Ø§Ù„ÙØµÙ„</label>';
     html += '<select id="st-class" onchange="window.loadClassStudents(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif">';
-    html += '<option value="">اختر الفصل</option>' + opts + '</select></div>';
-    html += '<div><label style="font-size:12px;font-weight:800;display:block;margin-bottom:4px">الطالب</label>';
+    html += '<option value="">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„</option>' + opts + '</select></div>';
+    html += '<div><label style="font-size:12px;font-weight:800;display:block;margin-bottom:4px">Ø§Ù„Ø·Ø§Ù„Ø¨</label>';
     html += '<select id="st-student" disabled onchange="window.showStudentProfile(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif">';
-    html += '<option value="">اختر الفصل أولاً</option></select></div>';
+    html += '<option value="">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ø£ÙˆÙ„Ø§Ù‹</option></select></div>';
     html += '</div></div><div id="st-results"></div>';
     container.innerHTML = html;
 }
@@ -28,9 +28,9 @@ window.loadClassStudents = async function(classId) {
     var sel = document.getElementById('st-student');
     if (!sel) return;
     sel.disabled = true;
-    sel.innerHTML = '<option>جاري التحميل</option>';
+    sel.innerHTML = '<option>Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„</option>';
     if (!classId) {
-        sel.innerHTML = '<option>اختر الفصل أولاً</option>';
+        sel.innerHTML = '<option>Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ø£ÙˆÙ„Ø§Ù‹</option>';
         return;
     }
     try {
@@ -45,21 +45,21 @@ window.loadClassStudents = async function(classId) {
             if (n) names.push(n);
         });
         names.sort(function(a, b) { return a.localeCompare(b, 'ar'); });
-        var opts = '<option value="">اختر الطالب</option>';
+        var opts = '<option value="">Ø§Ø®ØªØ± Ø§Ù„Ø·Ø§Ù„Ø¨</option>';
         for (var i = 0; i < names.length; i++) {
             opts += '<option value="' + names[i] + '">' + names[i] + '</option>';
         }
         sel.innerHTML = opts;
         sel.disabled = false;
     } catch (e) {
-        sel.innerHTML = '<option>خطأ في التحميل</option>';
+        sel.innerHTML = '<option>Ø®Ø·Ø£ ÙÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„</option>';
     }
 };
 
 window.showStudentProfile = async function(name) {
     var results = document.getElementById('st-results');
     if (!results || !name) return;
-    results.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa">جاري التحميل...</div>';
+    results.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa">Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div>';
 
     var schoolId = getActiveSchoolId();
     try {
@@ -75,7 +75,7 @@ window.showStudentProfile = async function(name) {
         var clinicSnap = allResults[2];
         var behSnap = allResults[3];
 
-        // ===== الغياب والتأخر =====
+        // ===== Ø§Ù„ØºÙŠØ§Ø¨ ÙˆØ§Ù„ØªØ£Ø®Ø± =====
         var absent = 0;
         var late = 0;
         var records = [];
@@ -95,7 +95,7 @@ window.showStudentProfile = async function(name) {
         for (var i = 0; i < records.length; i++) {
             var r = records[i];
             var color = r.status === 'absent' ? '#dc2626' : '#d97706';
-            var label = r.status === 'absent' ? 'غائب' : 'متأخر';
+            var label = r.status === 'absent' ? 'ØºØ§Ø¦Ø¨' : 'Ù…ØªØ£Ø®Ø±';
             attRows += '<tr>';
             attRows += '<td style="padding:8px">' + (r.date || '') + '</td>';
             attRows += '<td style="padding:8px;color:' + color + ';font-weight:800">' + label + '</td>';
@@ -104,7 +104,7 @@ window.showStudentProfile = async function(name) {
             attRows += '</tr>';
         }
 
-        // ===== الاستئذان (عدد المرات + التفاصيل) =====
+        // ===== Ø§Ù„Ø§Ø³ØªØ¦Ø°Ø§Ù† (Ø¹Ø¯Ø¯ Ø§Ù„Ù…Ø±Ø§Øª + Ø§Ù„ØªÙØ§ØµÙŠÙ„) =====
         var gateCount = gateSnap.size;
         var gateRecords = [];
         gateSnap.forEach(function(d) { gateRecords.push(d.data()); });
@@ -124,7 +124,7 @@ window.showStudentProfile = async function(name) {
             gateRows += '</tr>';
         }
 
-        // ===== زيارات العيادة (عدد المرات + التفاصيل) =====
+        // ===== Ø²ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø¹ÙŠØ§Ø¯Ø© (Ø¹Ø¯Ø¯ Ø§Ù„Ù…Ø±Ø§Øª + Ø§Ù„ØªÙØ§ØµÙŠÙ„) =====
         var clinicCount = clinicSnap.size;
         var clinicRecords = [];
         clinicSnap.forEach(function(d) { clinicRecords.push(d.data()); });
@@ -144,14 +144,14 @@ window.showStudentProfile = async function(name) {
             clinicRows += '</tr>';
         }
 
-        // ===== التعهدات والملاحظات السلوكية =====
+        // ===== Ø§Ù„ØªØ¹Ù‡Ø¯Ø§Øª ÙˆØ§Ù„Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ø³Ù„ÙˆÙƒÙŠØ© =====
         var behCount = behSnap.size;
         var pledgeCount = 0;
         var behRecords = [];
         behSnap.forEach(function(d) {
             var b = d.data();
             behRecords.push(b);
-            if (b.action === 'تعهد خطي رسمي') pledgeCount++;
+            if (b.action === 'ØªØ¹Ù‡Ø¯ Ø®Ø·ÙŠ Ø±Ø³Ù…ÙŠ') pledgeCount++;
         });
         behRecords.sort(function(a, b) {
             var da = a.date || '';
@@ -161,7 +161,7 @@ window.showStudentProfile = async function(name) {
         var behRows = '';
         for (var k = 0; k < behRecords.length; k++) {
             var br = behRecords[k];
-            var isPledge = br.action === 'تعهد خطي رسمي';
+            var isPledge = br.action === 'ØªØ¹Ù‡Ø¯ Ø®Ø·ÙŠ Ø±Ø³Ù…ÙŠ';
             var badgeColor = isPledge ? '#dc2626' : '#7c3aed';
             behRows += '<tr>';
             behRows += '<td style="padding:8px">' + (br.date || '') + '</td>';
@@ -171,72 +171,72 @@ window.showStudentProfile = async function(name) {
             behRows += '</tr>';
         }
 
-        // ===== بناء الصفحة =====
+        // ===== Ø¨Ù†Ø§Ø¡ Ø§Ù„ØµÙØ­Ø© =====
         var html = '';
         html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">';
-        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#dc2626">' + absent + '</div><div style="font-size:11px;color:#aaa">غياب</div></div>';
-        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#d97706">' + late + '</div><div style="font-size:11px;color:#aaa">تأخر</div></div>';
-        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#0891b2">' + gateCount + '</div><div style="font-size:11px;color:#aaa">استئذان</div></div>';
-        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#16a34a">' + clinicCount + '</div><div style="font-size:11px;color:#aaa">زيارة عيادة</div></div>';
+        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#dc2626">' + absent + '</div><div style="font-size:11px;color:#aaa">ØºÙŠØ§Ø¨</div></div>';
+        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#d97706">' + late + '</div><div style="font-size:11px;color:#aaa">ØªØ£Ø®Ø±</div></div>';
+        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#0891b2">' + gateCount + '</div><div style="font-size:11px;color:#aaa">Ø§Ø³ØªØ¦Ø°Ø§Ù†</div></div>';
+        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#16a34a">' + clinicCount + '</div><div style="font-size:11px;color:#aaa">Ø²ÙŠØ§Ø±Ø© Ø¹ÙŠØ§Ø¯Ø©</div></div>';
         html += '</div>';
 
         if (behCount > 0) {
             html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
-            html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#7c3aed">' + behCount + '</div><div style="font-size:11px;color:#aaa">إجمالي الإجراءات السلوكية</div></div>';
-            html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#dc2626">' + pledgeCount + '</div><div style="font-size:11px;color:#aaa">تعهد خطي رسمي</div></div>';
+            html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#7c3aed">' + behCount + '</div><div style="font-size:11px;color:#aaa">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª Ø§Ù„Ø³Ù„ÙˆÙƒÙŠØ©</div></div>';
+            html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#dc2626">' + pledgeCount + '</div><div style="font-size:11px;color:#aaa">ØªØ¹Ù‡Ø¯ Ø®Ø·ÙŠ Ø±Ø³Ù…ÙŠ</div></div>';
             html += '</div>';
         }
 
-        // كشف الغياب
-        html += '<div class="card"><h3 style="margin-bottom:10px">كشف الغياب</h3>';
+        // ÙƒØ´Ù Ø§Ù„ØºÙŠØ§Ø¨
+        html += '<div class="card"><h3 style="margin-bottom:10px">ÙƒØ´Ù Ø§Ù„ØºÙŠØ§Ø¨</h3>';
         if (attRows) {
             html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
-            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px">الحالة</th><th style="padding:8px">الحصة</th><th style="padding:8px">سجلها</th></tr>';
+            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th style="padding:8px">Ø§Ù„Ø­Ø§Ù„Ø©</th><th style="padding:8px">Ø§Ù„Ø­ØµØ©</th><th style="padding:8px">Ø³Ø¬Ù„Ù‡Ø§</th></tr>';
             html += attRows;
             html += '</table>';
         } else {
-            html += '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد غياب مسجل</div>';
+            html += '<div style="text-align:center;padding:20px;color:#aaa">Ù„Ø§ ÙŠÙˆØ¬Ø¯ ØºÙŠØ§Ø¨ Ù…Ø³Ø¬Ù„</div>';
         }
         html += '</div>';
 
-        // الاستئذان
-        html += '<div class="card"><h3 style="margin-bottom:10px">سجل الاستئذان (' + gateCount + ' مرة)</h3>';
+        // Ø§Ù„Ø§Ø³ØªØ¦Ø°Ø§Ù†
+        html += '<div class="card"><h3 style="margin-bottom:10px">Ø³Ø¬Ù„ Ø§Ù„Ø§Ø³ØªØ¦Ø°Ø§Ù† (' + gateCount + ' Ù…Ø±Ø©)</h3>';
         if (gateRows) {
             html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
-            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px">السبب</th><th style="padding:8px">استلمه</th></tr>';
+            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th style="padding:8px">Ø§Ù„Ø³Ø¨Ø¨</th><th style="padding:8px">Ø§Ø³ØªÙ„Ù…Ù‡</th></tr>';
             html += gateRows;
             html += '</table>';
         } else {
-            html += '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد استئذان مسجل</div>';
+            html += '<div style="text-align:center;padding:20px;color:#aaa">Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø§Ø³ØªØ¦Ø°Ø§Ù† Ù…Ø³Ø¬Ù„</div>';
         }
         html += '</div>';
 
-        // العيادة
-        html += '<div class="card"><h3 style="margin-bottom:10px">سجل زيارات العيادة (' + clinicCount + ' مرة)</h3>';
+        // Ø§Ù„Ø¹ÙŠØ§Ø¯Ø©
+        html += '<div class="card"><h3 style="margin-bottom:10px">Ø³Ø¬Ù„ Ø²ÙŠØ§Ø±Ø§Øª Ø§Ù„Ø¹ÙŠØ§Ø¯Ø© (' + clinicCount + ' Ù…Ø±Ø©)</h3>';
         if (clinicRows) {
             html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
-            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px">الشكوى</th><th style="padding:8px">الإجراء</th></tr>';
+            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th style="padding:8px">Ø§Ù„Ø´ÙƒÙˆÙ‰</th><th style="padding:8px">Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡</th></tr>';
             html += clinicRows;
             html += '</table>';
         } else {
-            html += '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد زيارات عيادة مسجلة</div>';
+            html += '<div style="text-align:center;padding:20px;color:#aaa">Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø²ÙŠØ§Ø±Ø§Øª Ø¹ÙŠØ§Ø¯Ø© Ù…Ø³Ø¬Ù„Ø©</div>';
         }
         html += '</div>';
 
-        // التعهدات والملاحظات السلوكية
-        html += '<div class="card"><h3 style="margin-bottom:10px">التعهدات والملاحظات السلوكية</h3>';
+        // Ø§Ù„ØªØ¹Ù‡Ø¯Ø§Øª ÙˆØ§Ù„Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ø³Ù„ÙˆÙƒÙŠØ©
+        html += '<div class="card"><h3 style="margin-bottom:10px">Ø§Ù„ØªØ¹Ù‡Ø¯Ø§Øª ÙˆØ§Ù„Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø§Ù„Ø³Ù„ÙˆÙƒÙŠØ©</h3>';
         if (behRows) {
             html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
-            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px">الإجراء</th><th style="padding:8px">الملاحظات</th><th style="padding:8px">الحالة</th></tr>';
+            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th style="padding:8px">Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡</th><th style="padding:8px">Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø§Øª</th><th style="padding:8px">Ø§Ù„Ø­Ø§Ù„Ø©</th></tr>';
             html += behRows;
             html += '</table>';
         } else {
-            html += '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد سجل سلوكي</div>';
+            html += '<div style="text-align:center;padding:20px;color:#aaa">Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø³Ø¬Ù„ Ø³Ù„ÙˆÙƒÙŠ</div>';
         }
         html += '</div>';
 
         results.innerHTML = html;
     } catch (e) {
-        results.innerHTML = '<div style="color:#dc2626;padding:20px">خطأ: ' + e.message + '</div>';
+        results.innerHTML = '<div style="color:#dc2626;padding:20px">Ø®Ø·Ø£: ' + e.message + '</div>';
     }
 };

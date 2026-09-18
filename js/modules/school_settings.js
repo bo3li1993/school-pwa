@@ -10,16 +10,16 @@ export async function initSchoolSettingsModule() {
 
     container.innerHTML = `
     <div class="card" style="border-top:5px solid var(--navy);">
-        <h2><i class="bi bi-gear-fill" style="color:var(--navy);"></i> إعدادات المدرسة</h2>
-        <p style="font-size:12px; color:var(--mid); margin-bottom:20px;">إدارة بيانات المدرسة والإعدادات العامة</p>
-        <div id="ss-loading" style="text-align:center; padding:30px; color:var(--mid);">⏳ جاري التحميل...</div>
+        <h2><i class="bi bi-gear-fill" style="color:var(--navy);"></i> Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</h2>
+        <p style="font-size:12px; color:var(--mid); margin-bottom:20px;">Ø¥Ø¯Ø§Ø±Ø© Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø¯Ø±Ø³Ø© ÙˆØ§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø¹Ø§Ù…Ø©</p>
+        <div id="ss-loading" style="text-align:center; padding:30px; color:var(--mid);">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div>
         <div id="ss-form" style="display:none;"></div>
     </div>
 
     <div class="card" style="border-top:5px solid var(--gold); margin-top:14px;">
-        <h3 style="font-size:14px; font-weight:900; margin-bottom:14px;"><i class="bi bi-bar-chart-fill" style="color:var(--gold);"></i> إحصاءات المدرسة</h3>
+        <h3 style="font-size:14px; font-weight:900; margin-bottom:14px;"><i class="bi bi-bar-chart-fill" style="color:var(--gold);"></i> Ø¥Ø­ØµØ§Ø¡Ø§Øª Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</h3>
         <div id="ss-stats" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px;">
-            <div style="text-align:center; padding:20px; color:var(--mid);">⏳</div>
+            <div style="text-align:center; padding:20px; color:var(--mid);">â³</div>
         </div>
     </div>`;
 
@@ -42,70 +42,70 @@ async function loadSchoolSettings() {
         formEl.innerHTML = `
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:16px;">
             <div>
-                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">اسم المدرسة</label>
+                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">Ø§Ø³Ù… Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</label>
                 <input type="text" id="ss-name" value="${data.name||''}"
                     style="width:100%; padding:10px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:700; box-sizing:border-box; outline:none;">
             </div>
             <div>
-                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">المنطقة التعليمية</label>
+                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">Ø§Ù„Ù…Ù†Ø·Ù‚Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ©</label>
                 <select id="ss-region" style="width:100%; padding:10px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:700; box-sizing:border-box; outline:none; background:#fff;">
-                    <option value="">-- اختر المنطقة --</option>
-                    ${['العاصمة','حولي','الفروانية','الأحمدي','مبارك الكبير','الجهراء'].map(r =>
+                    <option value="">-- Ø§Ø®ØªØ± Ø§Ù„Ù…Ù†Ø·Ù‚Ø© --</option>
+                    ${['Ø§Ù„Ø¹Ø§ØµÙ…Ø©','Ø­ÙˆÙ„ÙŠ','Ø§Ù„ÙØ±ÙˆØ§Ù†ÙŠØ©','Ø§Ù„Ø£Ø­Ù…Ø¯ÙŠ','Ù…Ø¨Ø§Ø±Ùƒ Ø§Ù„ÙƒØ¨ÙŠØ±','Ø§Ù„Ø¬Ù‡Ø±Ø§Ø¡'].map(r =>
                         `<option value="${r}" ${data.region===r?'selected':''}>${r}</option>`
                     ).join('')}
                 </select>
             </div>
             <div>
-                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">نوع المدرسة</label>
+                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">Ù†ÙˆØ¹ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</label>
                 <select id="ss-type" style="width:100%; padding:10px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:700; box-sizing:border-box; outline:none; background:#fff;">
-                    <option value="متوسطة بنين" ${data.type==='متوسطة بنين'?'selected':''}>متوسطة بنين</option>
-                    <option value="متوسطة بنات" ${data.type==='متوسطة بنات'?'selected':''}>متوسطة بنات</option>
-                    <option value="ابتدائية بنين" ${data.type==='ابتدائية بنين'?'selected':''}>ابتدائية بنين</option>
-                    <option value="ابتدائية بنات" ${data.type==='ابتدائية بنات'?'selected':''}>ابتدائية بنات</option>
-                    <option value="ثانوية بنين" ${data.type==='ثانوية بنين'?'selected':''}>ثانوية بنين</option>
-                    <option value="ثانوية بنات" ${data.type==='ثانوية بنات'?'selected':''}>ثانوية بنات</option>
+                    <option value="Ù…ØªÙˆØ³Ø·Ø© Ø¨Ù†ÙŠÙ†" ${data.type==='Ù…ØªÙˆØ³Ø·Ø© Ø¨Ù†ÙŠÙ†'?'selected':''}>Ù…ØªÙˆØ³Ø·Ø© Ø¨Ù†ÙŠÙ†</option>
+                    <option value="Ù…ØªÙˆØ³Ø·Ø© Ø¨Ù†Ø§Øª" ${data.type==='Ù…ØªÙˆØ³Ø·Ø© Ø¨Ù†Ø§Øª'?'selected':''}>Ù…ØªÙˆØ³Ø·Ø© Ø¨Ù†Ø§Øª</option>
+                    <option value="Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø¨Ù†ÙŠÙ†" ${data.type==='Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø¨Ù†ÙŠÙ†'?'selected':''}>Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø¨Ù†ÙŠÙ†</option>
+                    <option value="Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø¨Ù†Ø§Øª" ${data.type==='Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø¨Ù†Ø§Øª'?'selected':''}>Ø§Ø¨ØªØ¯Ø§Ø¦ÙŠØ© Ø¨Ù†Ø§Øª</option>
+                    <option value="Ø«Ø§Ù†ÙˆÙŠØ© Ø¨Ù†ÙŠÙ†" ${data.type==='Ø«Ø§Ù†ÙˆÙŠØ© Ø¨Ù†ÙŠÙ†'?'selected':''}>Ø«Ø§Ù†ÙˆÙŠØ© Ø¨Ù†ÙŠÙ†</option>
+                    <option value="Ø«Ø§Ù†ÙˆÙŠØ© Ø¨Ù†Ø§Øª" ${data.type==='Ø«Ø§Ù†ÙˆÙŠØ© Ø¨Ù†Ø§Øª'?'selected':''}>Ø«Ø§Ù†ÙˆÙŠØ© Ø¨Ù†Ø§Øª</option>
                 </select>
             </div>
             <div>
-                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">اللون الأساسي</label>
+                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">Ø§Ù„Ù„ÙˆÙ† Ø§Ù„Ø£Ø³Ø§Ø³ÙŠ</label>
                 <input type="color" id="ss-color" value="${data.primaryColor||'#0b2545'}"
                     style="width:100%; height:44px; border:1.5px solid var(--line); border-radius:8px; cursor:pointer; padding:2px;">
             </div>
             <div>
-                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">تاريخ انتهاء الاشتراك</label>
+                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">ØªØ§Ø±ÙŠØ® Ø§Ù†ØªÙ‡Ø§Ø¡ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</label>
                 <input type="date" id="ss-expiry" value="${data.subscriptionEnd||''}"
                     style="width:100%; padding:10px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:700; box-sizing:border-box; outline:none;">
             </div>
             <div>
-                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">الخطة</label>
+                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">Ø§Ù„Ø®Ø·Ø©</label>
                 <select id="ss-plan" style="width:100%; padding:10px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:700; box-sizing:border-box; outline:none; background:#fff;">
-                    <option value="basic" ${data.plan==='basic'?'selected':''}>أساسية</option>
-                    <option value="pro" ${data.plan==='pro'?'selected':''}>احترافية</option>
-                    <option value="enterprise" ${data.plan==='enterprise'?'selected':''}>مؤسسية</option>
+                    <option value="basic" ${data.plan==='basic'?'selected':''}>Ø£Ø³Ø§Ø³ÙŠØ©</option>
+                    <option value="pro" ${data.plan==='pro'?'selected':''}>Ø§Ø­ØªØ±Ø§ÙÙŠØ©</option>
+                    <option value="enterprise" ${data.plan==='enterprise'?'selected':''}>Ù…Ø¤Ø³Ø³ÙŠØ©</option>
                 </select>
             </div>
         </div>
 
-        <!-- حالة المدرسة -->
+        <!-- Ø­Ø§Ù„Ø© Ø§Ù„Ù…Ø¯Ø±Ø³Ø© -->
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; padding:14px; background:var(--off); border-radius:10px;">
-            <span style="font-weight:800; font-size:13px;">حالة المدرسة:</span>
+            <span style="font-weight:800; font-size:13px;">Ø­Ø§Ù„Ø© Ø§Ù„Ù…Ø¯Ø±Ø³Ø©:</span>
             <select id="ss-status" style="padding:8px 14px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:700; outline:none; background:#fff;">
-                <option value="active" ${data.status==='active'?'selected':''}>✅ نشطة</option>
-                <option value="suspended" ${data.status==='suspended'?'selected':''}>⏸ موقوفة</option>
-                <option value="expired" ${data.status==='expired'?'selected':''}>❌ منتهية</option>
+                <option value="active" ${data.status==='active'?'selected':''}>âœ… Ù†Ø´Ø·Ø©</option>
+                <option value="suspended" ${data.status==='suspended'?'selected':''}>â¸ Ù…ÙˆÙ‚ÙˆÙØ©</option>
+                <option value="expired" ${data.status==='expired'?'selected':''}>âŒ Ù…Ù†ØªÙ‡ÙŠØ©</option>
             </select>
-            <span style="font-size:12px; color:var(--mid);">معرّف المدرسة: <b>${schoolId}</b></span>
+            <span style="font-size:12px; color:var(--mid);">Ù…Ø¹Ø±Ù‘Ù Ø§Ù„Ù…Ø¯Ø±Ø³Ø©: <b>${schoolId}</b></span>
         </div>
 
-        <!-- معلومات التواصل -->
+        <!-- Ù…Ø¹Ù„ÙˆÙ…Ø§Øª Ø§Ù„ØªÙˆØ§ØµÙ„ -->
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:16px;">
             <div>
-                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">رقم هاتف المدرسة</label>
+                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">Ø±Ù‚Ù… Ù‡Ø§ØªÙ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</label>
                 <input type="text" id="ss-phone" value="${data.phone||''}"
                     style="width:100%; padding:10px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:700; box-sizing:border-box; outline:none;">
             </div>
             <div>
-                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">اسم المدير</label>
+                <label style="font-size:12px; font-weight:800; color:var(--mid); display:block; margin-bottom:5px;">Ø§Ø³Ù… Ø§Ù„Ù…Ø¯ÙŠØ±</label>
                 <input type="text" id="ss-principal" value="${data.principalName||''}"
                     style="width:100%; padding:10px; border:1.5px solid var(--line); border-radius:8px; font-family:'Cairo',sans-serif; font-size:13px; font-weight:700; box-sizing:border-box; outline:none;">
             </div>
@@ -113,11 +113,11 @@ async function loadSchoolSettings() {
 
         <button onclick="window.saveSchoolSettings()"
             style="background:var(--navy); color:#fff; border:none; padding:13px 28px; border-radius:8px; font-family:'Cairo',sans-serif; font-weight:900; font-size:14px; cursor:pointer;">
-            <i class="bi bi-check-circle-fill"></i> حفظ الإعدادات
+            <i class="bi bi-check-circle-fill"></i> Ø­ÙØ¸ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª
         </button>`;
 
     } catch(e) {
-        loadEl.innerHTML = `<div style="color:red; padding:20px;">❌ ${e.message}</div>`;
+        loadEl.innerHTML = `<div style="color:red; padding:20px;">âŒ ${e.message}</div>`;
     }
 }
 
@@ -135,9 +135,9 @@ window.saveSchoolSettings = async function() {
             phone: document.getElementById('ss-phone').value.trim(),
             principalName: document.getElementById('ss-principal').value.trim(),
         });
-        window.showToast?.('✅ تم حفظ إعدادات المدرسة');
+        window.showToast?.('âœ… ØªÙ… Ø­ÙØ¸ Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ù…Ø¯Ø±Ø³Ø©');
     } catch(e) {
-        window.showToast?.('❌ ' + e.message, 'error');
+        window.showToast?.('âŒ ' + e.message, 'error');
     }
 };
 
@@ -153,9 +153,9 @@ async function loadSchoolStats() {
         ]);
 
         var stats = [
-            { icon: '👥', num: studentsSnap.size, label: 'طالب' },
-            { icon: '👤', num: usersSnap.size, label: 'موظف' },
-            { icon: '🏫', num: classesSnap.size, label: 'فصل' },
+            { icon: 'ðŸ‘¥', num: studentsSnap.size, label: 'Ø·Ø§Ù„Ø¨' },
+            { icon: 'ðŸ‘¤', num: usersSnap.size, label: 'Ù…ÙˆØ¸Ù' },
+            { icon: 'ðŸ«', num: classesSnap.size, label: 'ÙØµÙ„' },
         ];
 
         statsEl.innerHTML = stats.map(s => `
@@ -165,6 +165,6 @@ async function loadSchoolStats() {
                 <span style="font-size:12px; font-weight:700; color:var(--mid);">${s.label}</span>
             </div>`).join('');
     } catch(e) {
-        statsEl.innerHTML = `<div style="color:red;">❌ ${e.message}</div>`;
+        statsEl.innerHTML = `<div style="color:red;">âŒ ${e.message}</div>`;
     }
 }

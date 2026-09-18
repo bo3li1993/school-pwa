@@ -7,20 +7,20 @@ export async function initArchiveModule() {
 
     container.innerHTML = `
     <div class="card" style="border-top: 5px solid var(--navy);">
-        <h2><i class="bi bi-archive-fill" style="color:var(--navy);"></i> أرشيف السنوات الدراسية السابقة</h2>
+        <h2><i class="bi bi-archive-fill" style="color:var(--navy);"></i> Ø£Ø±Ø´ÙŠÙ Ø§Ù„Ø³Ù†ÙˆØ§Øª Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠØ© Ø§Ù„Ø³Ø§Ø¨Ù‚Ø©</h2>
         <p style="font-size:13px; color:#666; margin-bottom:15px;">
-            اختر سنة دراسية لعرض ملخص إحصائي كامل عنها (يظهر فقط بعد تنفيذ الترحيل السنوي مرة واحدة على الأقل).
+            Ø§Ø®ØªØ± Ø³Ù†Ø© Ø¯Ø±Ø§Ø³ÙŠØ© Ù„Ø¹Ø±Ø¶ Ù…Ù„Ø®Øµ Ø¥Ø­ØµØ§Ø¦ÙŠ ÙƒØ§Ù…Ù„ Ø¹Ù†Ù‡Ø§ (ÙŠØ¸Ù‡Ø± ÙÙ‚Ø· Ø¨Ø¹Ø¯ ØªÙ†ÙÙŠØ° Ø§Ù„ØªØ±Ø­ÙŠÙ„ Ø§Ù„Ø³Ù†ÙˆÙŠ Ù…Ø±Ø© ÙˆØ§Ø­Ø¯Ø© Ø¹Ù„Ù‰ Ø§Ù„Ø£Ù‚Ù„).
         </p>
         <div id="archive-years-list" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-            <p style="color:#999;">⏳ جاري البحث عن سنوات مؤرشفة...</p>
+            <p style="color:#999;">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø¨Ø­Ø« Ø¹Ù† Ø³Ù†ÙˆØ§Øª Ù…Ø¤Ø±Ø´ÙØ©...</p>
         </div>
     </div>
     <div id="archive-results-area"></div>
 
     <div class="card" style="border-top: 4px solid var(--gold);">
-        <h2><i class="bi bi-mortarboard-fill" style="color:var(--gold);"></i> أرشيف الخريجين</h2>
+        <h2><i class="bi bi-mortarboard-fill" style="color:var(--gold);"></i> Ø£Ø±Ø´ÙŠÙ Ø§Ù„Ø®Ø±ÙŠØ¬ÙŠÙ†</h2>
         <div id="graduates-list">
-            <p style="text-align:center; color:#999; padding:15px;">⏳ جاري التحميل...</p>
+            <p style="text-align:center; color:#999; padding:15px;">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p>
         </div>
     </div>`;
 
@@ -38,7 +38,7 @@ async function loadArchiveYears() {
         snap.forEach(d => { if (d.data().academicYear) years.add(d.data().academicYear); });
 
         if (!years.size) {
-            listEl.innerHTML = '<p style="color:#999; padding:10px;">💡 لا توجد سنوات مؤرشفة بعد — تظهر تلقائياً بعد أول عملية ترحيل سنوي.</p>';
+            listEl.innerHTML = '<p style="color:#999; padding:10px;">ðŸ’¡ Ù„Ø§ ØªÙˆØ¬Ø¯ Ø³Ù†ÙˆØ§Øª Ù…Ø¤Ø±Ø´ÙØ© Ø¨Ø¹Ø¯ â€” ØªØ¸Ù‡Ø± ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¨Ø¹Ø¯ Ø£ÙˆÙ„ Ø¹Ù…Ù„ÙŠØ© ØªØ±Ø­ÙŠÙ„ Ø³Ù†ÙˆÙŠ.</p>';
             return;
         }
 
@@ -50,13 +50,13 @@ async function loadArchiveYears() {
             </button>
         `).join('');
     } catch (e) {
-        listEl.innerHTML = `<p style="color:red;">❌ خطأ: ${e.message}</p>`;
+        listEl.innerHTML = `<p style="color:red;">âŒ Ø®Ø·Ø£: ${e.message}</p>`;
     }
 }
 
 window.loadYearArchive = async function(yearLabel) {
     var resultsEl = document.getElementById('archive-results-area');
-    resultsEl.innerHTML = `<div class="card"><p style="text-align:center; padding:20px; color:#666; font-weight:700;">⏳ جاري تحميل إحصائيات ${yearLabel}...</p></div>`;
+    resultsEl.innerHTML = `<div class="card"><p style="text-align:center; padding:20px; color:#666; font-weight:700;">â³ Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª ${yearLabel}...</p></div>`;
 
     var schoolId = getActiveSchoolId();
 
@@ -74,38 +74,38 @@ window.loadYearArchive = async function(yearLabel) {
 
         var html = `
         <div class="card">
-            <h3 style="font-size:15px; margin-bottom:14px;"><i class="bi bi-graph-up"></i> ملخص السنة الدراسية ${yearLabel}</h3>
+            <h3 style="font-size:15px; margin-bottom:14px;"><i class="bi bi-graph-up"></i> Ù…Ù„Ø®Øµ Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠØ© ${yearLabel}</h3>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:16px;">
                 <div style="text-align:center; background:#fef2f2; padding:14px; border-radius:8px;">
                     <div style="font-size:24px; font-weight:900; color:var(--danger-color);">${absentCount}</div>
-                    <div style="font-size:11px; color:#666;">حالة غياب</div>
+                    <div style="font-size:11px; color:#666;">Ø­Ø§Ù„Ø© ØºÙŠØ§Ø¨</div>
                 </div>
                 <div style="text-align:center; background:#fffbeb; padding:14px; border-radius:8px;">
                     <div style="font-size:24px; font-weight:900; color:var(--gold);">${lateCount}</div>
-                    <div style="font-size:11px; color:#666;">حالة تأخير</div>
+                    <div style="font-size:11px; color:#666;">Ø­Ø§Ù„Ø© ØªØ£Ø®ÙŠØ±</div>
                 </div>
                 <div style="text-align:center; background:#f0fdf4; padding:14px; border-radius:8px;">
                     <div style="font-size:24px; font-weight:900; color:var(--success-color);">${behSnap.size}</div>
-                    <div style="font-size:11px; color:#666;">سجل سلوكي</div>
+                    <div style="font-size:11px; color:#666;">Ø³Ø¬Ù„ Ø³Ù„ÙˆÙƒÙŠ</div>
                 </div>
                 <div style="text-align:center; background:#eaf4fd; padding:14px; border-radius:8px;">
                     <div style="font-size:24px; font-weight:900; color:var(--sky);">${gateSnap.size}</div>
-                    <div style="font-size:11px; color:#666;">استئذان</div>
+                    <div style="font-size:11px; color:#666;">Ø§Ø³ØªØ¦Ø°Ø§Ù†</div>
                 </div>
                 <div style="text-align:center; background:#f8fafc; padding:14px; border-radius:8px;">
                     <div style="font-size:24px; font-weight:900; color:var(--navy);">${clinicSnap.size}</div>
-                    <div style="font-size:11px; color:#666;">زيارة عيادة</div>
+                    <div style="font-size:11px; color:#666;">Ø²ÙŠØ§Ø±Ø© Ø¹ÙŠØ§Ø¯Ø©</div>
                 </div>
             </div>
             <button onclick="window.exportArchivePDF('${yearLabel}', ${absentCount}, ${lateCount}, ${behSnap.size}, ${gateSnap.size}, ${clinicSnap.size})"
                 style="background:var(--danger-color); color:#fff; border:none; padding:10px 20px; border-radius:8px; font-weight:700; cursor:pointer;">
-                <i class="bi bi-file-earmark-pdf-fill"></i> تصدير تقرير الأرشيف PDF
+                <i class="bi bi-file-earmark-pdf-fill"></i> ØªØµØ¯ÙŠØ± ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø£Ø±Ø´ÙŠÙ PDF
             </button>
         </div>`;
 
         resultsEl.innerHTML = html;
     } catch (e) {
-        resultsEl.innerHTML = `<div class="card" style="color:red;">❌ خطأ: ${e.message}</div>`;
+        resultsEl.innerHTML = `<div class="card" style="color:red;">âŒ Ø®Ø·Ø£: ${e.message}</div>`;
     }
 };
 
@@ -113,25 +113,25 @@ window.exportArchivePDF = async function(yearLabel, absent, late, behavior, gate
     var contentHTML = `
     <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px; text-align:center; margin-bottom:16px;">
         <div style="border:1px solid #eee; border-radius:8px; padding:10px; border-right:4px solid #dc2626;">
-            <div style="font-size:22px; font-weight:900; color:#dc2626;">${absent}</div><div style="font-size:10px;">غياب</div>
+            <div style="font-size:22px; font-weight:900; color:#dc2626;">${absent}</div><div style="font-size:10px;">ØºÙŠØ§Ø¨</div>
         </div>
         <div style="border:1px solid #eee; border-radius:8px; padding:10px; border-right:4px solid #d97706;">
-            <div style="font-size:22px; font-weight:900; color:#d97706;">${late}</div><div style="font-size:10px;">تأخير</div>
+            <div style="font-size:22px; font-weight:900; color:#d97706;">${late}</div><div style="font-size:10px;">ØªØ£Ø®ÙŠØ±</div>
         </div>
         <div style="border:1px solid #eee; border-radius:8px; padding:10px; border-right:4px solid #059669;">
-            <div style="font-size:22px; font-weight:900; color:#059669;">${behavior}</div><div style="font-size:10px;">سلوك</div>
+            <div style="font-size:22px; font-weight:900; color:#059669;">${behavior}</div><div style="font-size:10px;">Ø³Ù„ÙˆÙƒ</div>
         </div>
         <div style="border:1px solid #eee; border-radius:8px; padding:10px; border-right:4px solid #1a78c2;">
-            <div style="font-size:22px; font-weight:900; color:#1a78c2;">${gatepass}</div><div style="font-size:10px;">استئذان</div>
+            <div style="font-size:22px; font-weight:900; color:#1a78c2;">${gatepass}</div><div style="font-size:10px;">Ø§Ø³ØªØ¦Ø°Ø§Ù†</div>
         </div>
         <div style="border:1px solid #eee; border-radius:8px; padding:10px; border-right:4px solid #0b2545;">
-            <div style="font-size:22px; font-weight:900; color:#0b2545;">${clinic}</div><div style="font-size:10px;">عيادة</div>
+            <div style="font-size:22px; font-weight:900; color:#0b2545;">${clinic}</div><div style="font-size:10px;">Ø¹ÙŠØ§Ø¯Ø©</div>
         </div>
     </div>`;
-    await window.ManzoumaReport.exportPDF(contentHTML, `أرشيف_${yearLabel}`, `تقرير الأرشيف — السنة الدراسية ${yearLabel}`);
+    await window.ManzoumaReport.exportPDF(contentHTML, `Ø£Ø±Ø´ÙŠÙ_${yearLabel}`, `ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø£Ø±Ø´ÙŠÙ â€” Ø§Ù„Ø³Ù†Ø© Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠØ© ${yearLabel}`);
 };
 
-// ===== أرشيف الخريجين =====
+// ===== Ø£Ø±Ø´ÙŠÙ Ø§Ù„Ø®Ø±ÙŠØ¬ÙŠÙ† =====
 async function loadGraduatesList() {
     var listEl = document.getElementById('graduates-list');
     var schoolId = getActiveSchoolId();
@@ -139,13 +139,13 @@ async function loadGraduatesList() {
     try {
         var snap = await getDocs(query(collection(db, 'graduates'), where('schoolId', '==', schoolId)));
         if (snap.empty) {
-            listEl.innerHTML = '<p style="text-align:center; color:#999; padding:15px;">لا يوجد خريجون مؤرشفون بعد</p>';
+            listEl.innerHTML = '<p style="text-align:center; color:#999; padding:15px;">Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø®Ø±ÙŠØ¬ÙˆÙ† Ù…Ø¤Ø±Ø´ÙÙˆÙ† Ø¨Ø¹Ø¯</p>';
             return;
         }
 
         var docs = snap.docs.sort((a, b) => (b.data().graduatedAt?.seconds || 0) - (a.data().graduatedAt?.seconds || 0));
         var html = '<table style="width:100%; border-collapse:collapse; font-size:13px;">';
-        html += '<thead><tr style="background:#f8fafc;"><th style="padding:8px;">الاسم</th><th style="padding:8px;">آخر فصل</th><th style="padding:8px;">سنة التخرج</th></tr></thead><tbody>';
+        html += '<thead><tr style="background:#f8fafc;"><th style="padding:8px;">Ø§Ù„Ø§Ø³Ù…</th><th style="padding:8px;">Ø¢Ø®Ø± ÙØµÙ„</th><th style="padding:8px;">Ø³Ù†Ø© Ø§Ù„ØªØ®Ø±Ø¬</th></tr></thead><tbody>';
         docs.forEach(d => {
             var g = d.data();
             html += `<tr style="border-bottom:1px solid #eee;">
@@ -157,6 +157,6 @@ async function loadGraduatesList() {
         html += '</tbody></table>';
         listEl.innerHTML = html;
     } catch (e) {
-        listEl.innerHTML = `<p style="color:red; text-align:center; padding:15px;">❌ خطأ: ${e.message}</p>`;
+        listEl.innerHTML = `<p style="color:red; text-align:center; padding:15px;">âŒ Ø®Ø·Ø£: ${e.message}</p>`;
     }
 }

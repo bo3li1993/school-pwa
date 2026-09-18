@@ -1,11 +1,11 @@
-/* ═══════════════════════════════════════════════════════
-   المنظومة الرقمية — CSS المشترك الموحد
-   يُحمَّل في كل صفحات النظام
-═══════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ© â€” CSS Ø§Ù„Ù…Ø´ØªØ±Ùƒ Ø§Ù„Ù…ÙˆØ­Ø¯
+   ÙŠÙØ­Ù…ÙŽÙ‘Ù„ ÙÙŠ ÙƒÙ„ ØµÙØ­Ø§Øª Ø§Ù„Ù†Ø¸Ø§Ù…
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 
-/* ══════════════ متغيرات التصميم ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Ù…ØªØºÙŠØ±Ø§Øª Ø§Ù„ØªØµÙ…ÙŠÙ… â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 :root {
   --navy:    #0b2545;
   --sky:     #1a78c2;
@@ -28,7 +28,7 @@
   --sidebar-w: 260px;
 }
 
-/* ══════════════ Reset ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Reset â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -45,7 +45,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ══════════════ Splash Screen ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Splash Screen â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .splash {
   position: fixed; inset: 0;
   background: var(--navy);
@@ -65,7 +65,7 @@ body {
 .splash-mark p  { color: rgba(255,255,255,.55); font-size: 12.5px; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .splash { transition: none; } }
 
-/* ══════════════ Toast ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Toast â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @keyframes toastIn  { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
 @keyframes toastOut { from { opacity:1; } to { opacity:0; } }
 
@@ -79,7 +79,7 @@ body {
   white-space: nowrap;
 }
 
-/* ══════════════ Cards ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Cards â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .card {
   background: var(--white);
   border: 1px solid var(--line);
@@ -89,7 +89,7 @@ body {
 }
 .card h2, .card h3 { color: var(--navy); font-weight: 900; margin-bottom: 10px; }
 
-/* ══════════════ Badges ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Badges â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .badge {
   display: inline-block; padding: 2px 8px; border-radius: 6px;
   font-size: 11px; font-weight: 700; color: #fff;
@@ -99,7 +99,7 @@ body {
 .badge.info    { background: var(--sky); }
 .badge.warn    { background: var(--gold); }
 
-/* ══════════════ Form Elements ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Form Elements â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 input, select, textarea {
   width: 100%;
   padding: 10px 12px;
@@ -116,7 +116,7 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus { border-color: var(--sky); }
 label { font-weight: 700; font-size: 12.5px; color: var(--text); display: block; margin-bottom: 5px; }
 
-/* ══════════════ Buttons ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Buttons â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 18px; border-radius: 8px; border: none;
@@ -138,7 +138,7 @@ label { font-weight: 700; font-size: 12.5px; color: var(--text); display: block;
 .btn-sm { padding: 6px 14px; font-size: 12px; }
 .btn-block { width: 100%; }
 
-/* ══════════════ Tables ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Tables â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: right; }
 th { background: #f4f6f9; padding: 9px 10px; font-weight: 900; font-size: 13px; color: var(--navy); }
@@ -146,7 +146,7 @@ td { padding: 8px 10px; border-bottom: 1px solid var(--line); font-weight: 600; 
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #f8fafc; }
 
-/* ══════════════ Stats Grid ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Stats Grid â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -161,7 +161,7 @@ tr:hover td { background: #f8fafc; }
 .stat-box .num { font-size: 28px; font-weight: 900; line-height: 1.1; }
 .stat-box .lbl { font-size: 11px; color: var(--mid); font-weight: 700; margin-top: 4px; }
 
-/* ══════════════ Header Nav (للصفحات البسيطة) ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Header Nav (Ù„Ù„ØµÙØ­Ø§Øª Ø§Ù„Ø¨Ø³ÙŠØ·Ø©) â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .header-nav {
   background: var(--navy); color: #fff;
   padding: 14px 20px;
@@ -178,19 +178,19 @@ tr:hover td { background: #f8fafc; }
   display: inline-flex; align-items: center; gap: 6px;
 }
 
-/* ══════════════ Workspace Container ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Workspace Container â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .workspace-container {
   max-width: 1100px; width: 100%;
   margin: 16px auto; padding: 0 16px;
 }
 
-/* ══════════════ Loading Box ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Loading Box â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .loading-box { text-align: center; padding: 60px; color: var(--mid); font-weight: 700; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 .hidden { display: none !important; }
 
-/* ══════════════ Bottom Nav (Mobile) ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Bottom Nav (Mobile) â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .bottom-nav {
   display: none;
   position: fixed; right: 0; left: 0; bottom: 0;
@@ -213,7 +213,7 @@ tr:hover td { background: #f8fafc; }
 .bn-item.active { color: var(--sky); }
 .bn-item.active i { background: var(--ice); color: var(--sky); }
 
-/* ══════════════ More Page ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• More Page â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .more-group { margin-bottom: 22px; }
 .more-group-title { font-size: 12.5px; font-weight: 800; color: var(--mid); letter-spacing: .3px; margin: 0 4px 9px; }
 .more-list { background: var(--white); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
@@ -233,7 +233,7 @@ tr:hover td { background: #f8fafc; }
 .more-row span { flex: 1; font-weight: 700; font-size: 14px; color: var(--text); }
 .more-row .bi-chevron-left { color: var(--mid); font-size: 13px; }
 
-/* ══════════════ Sidebar (admin) ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Sidebar (admin) â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .sidebar {
   width: var(--sidebar-w); background: var(--navy); color: #fff;
   height: 100vh; position: fixed; right: 0; top: 0;
@@ -282,9 +282,9 @@ tr:hover td { background: #f8fafc; }
 }
 .sidebar-overlay.show { display: block; }
 
-/* ══════════════ Responsive Breakpoints ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Responsive Breakpoints â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ── تابلت (768px - 1024px) ── */
+/* â”€â”€ ØªØ§Ø¨Ù„Øª (768px - 1024px) â”€â”€ */
 @media (max-width: 1024px) {
   .sidebar { width: 220px; }
   .main { margin-right: 220px; }
@@ -293,10 +293,10 @@ tr:hover td { background: #f8fafc; }
   .stats-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
 }
 
-/* ── جوال (max 768px) ── */
+/* â”€â”€ Ø¬ÙˆØ§Ù„ (max 768px) â”€â”€ */
 @media (max-width: 768px) {
 
-  /* Sidebar → Drawer */
+  /* Sidebar â†’ Drawer */
   .sidebar {
     transform: translateX(100%);
     width: 280px;
@@ -316,7 +316,7 @@ tr:hover td { background: #f8fafc; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .stat-box .num { font-size: 24px; }
 
-  /* Tables → Scroll */
+  /* Tables â†’ Scroll */
   .table-wrap { margin: 0 -4px; border-radius: 8px; }
   table { font-size: 13px; min-width: 500px; }
   th, td { padding: 8px 8px; }
@@ -334,21 +334,21 @@ tr:hover td { background: #f8fafc; }
   .workspace-container { margin: 10px auto; padding: 0 10px; }
 
   /* Forms */
-  input, select, textarea { font-size: 16px !important; } /* منع zoom في iOS */
+  input, select, textarea { font-size: 16px !important; } /* Ù…Ù†Ø¹ zoom ÙÙŠ iOS */
   label { font-size: 13px; }
 }
 
-/* ── جوال صغير (max 480px) ── */
+/* â”€â”€ Ø¬ÙˆØ§Ù„ ØµØºÙŠØ± (max 480px) â”€â”€ */
 @media (max-width: 480px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .stat-box { padding: 12px; }
   .stat-box .num { font-size: 22px; }
   .stat-box .lbl { font-size: 10px; }
-  .btn-header span { display: none; } /* يخفي النص ويبقى الأيقون */
+  .btn-header span { display: none; } /* ÙŠØ®ÙÙŠ Ø§Ù„Ù†Øµ ÙˆÙŠØ¨Ù‚Ù‰ Ø§Ù„Ø£ÙŠÙ‚ÙˆÙ† */
   .card { padding: 12px; }
 }
 
-/* ══════════════ Print ══════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â• Print â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @media print {
   .sidebar, .bottom-nav, .topbar .menu-toggle,
   .logout-btn, .btn-header, .sidebar-overlay { display: none !important; }

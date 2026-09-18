@@ -8,21 +8,21 @@ export async function initReportsModule() {
     container.innerHTML = `
     <div style="max-width:1100px;margin:0 auto;padding:16px;">
         <h2 style="font-size:18px;font-weight:900;color:var(--navy);margin-bottom:20px;">
-            <i class="bi bi-file-earmark-text-fill" style="color:var(--gold);"></i> التقارير المتقدمة
+            <i class="bi bi-file-earmark-text-fill" style="color:var(--gold);"></i> Ø§Ù„ØªÙ‚Ø§Ø±ÙŠØ± Ø§Ù„Ù…ØªÙ‚Ø¯Ù…Ø©
         </h2>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
 
-            <!-- تقرير الغياب الشهري -->
+            <!-- ØªÙ‚Ø±ÙŠØ± Ø§Ù„ØºÙŠØ§Ø¨ Ø§Ù„Ø´Ù‡Ø±ÙŠ -->
             <div class="card" style="border-top:4px solid var(--red);">
                 <h3 style="font-size:14px;font-weight:900;margin-bottom:12px;">
-                    <i class="bi bi-calendar-x-fill" style="color:var(--red);"></i> تقرير الغياب الشهري
+                    <i class="bi bi-calendar-x-fill" style="color:var(--red);"></i> ØªÙ‚Ø±ÙŠØ± Ø§Ù„ØºÙŠØ§Ø¨ Ø§Ù„Ø´Ù‡Ø±ÙŠ
                 </h3>
                 <select id="report-month-absence" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;margin-bottom:10px;">
-                    <option value="">-- اختر الشهر --</option>
+                    <option value="">-- Ø§Ø®ØªØ± Ø§Ù„Ø´Ù‡Ø± --</option>
                 </select>
                 <select id="report-class-absence" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;margin-bottom:10px;">
-                    <option value="">كل الفصول</option>
+                    <option value="">ÙƒÙ„ Ø§Ù„ÙØµÙˆÙ„</option>
                 </select>
                 <div style="display:flex;gap:8px;">
                     <button onclick="window.exportAbsenceReportPDF()" style="flex:1;background:var(--red);color:#fff;border:none;padding:10px;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;cursor:pointer;">
@@ -34,13 +34,13 @@ export async function initReportsModule() {
                 </div>
             </div>
 
-            <!-- تقرير الإنذارات -->
+            <!-- ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø¥Ù†Ø°Ø§Ø±Ø§Øª -->
             <div class="card" style="border-top:4px solid var(--gold);">
                 <h3 style="font-size:14px;font-weight:900;margin-bottom:12px;">
-                    <i class="bi bi-exclamation-triangle-fill" style="color:var(--gold);"></i> تقرير الإنذارات
+                    <i class="bi bi-exclamation-triangle-fill" style="color:var(--gold);"></i> ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø¥Ù†Ø°Ø§Ø±Ø§Øª
                 </h3>
                 <select id="report-month-warnings" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;margin-bottom:10px;">
-                    <option value="">-- اختر الشهر --</option>
+                    <option value="">-- Ø§Ø®ØªØ± Ø§Ù„Ø´Ù‡Ø± --</option>
                 </select>
                 <div style="display:flex;gap:8px;">
                     <button onclick="window.exportWarningsReportPDF()" style="flex:1;background:var(--gold);color:#fff;border:none;padding:10px;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;cursor:pointer;">
@@ -52,13 +52,13 @@ export async function initReportsModule() {
                 </div>
             </div>
 
-            <!-- تقرير السلوك -->
+            <!-- ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø³Ù„ÙˆÙƒ -->
             <div class="card" style="border-top:4px solid #8b5cf6;">
                 <h3 style="font-size:14px;font-weight:900;margin-bottom:12px;">
-                    <i class="bi bi-person-exclamation-fill" style="color:#8b5cf6;"></i> تقرير السلوك
+                    <i class="bi bi-person-exclamation-fill" style="color:#8b5cf6;"></i> ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø³Ù„ÙˆÙƒ
                 </h3>
                 <select id="report-month-behavior" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;margin-bottom:10px;">
-                    <option value="">-- اختر الشهر --</option>
+                    <option value="">-- Ø§Ø®ØªØ± Ø§Ù„Ø´Ù‡Ø± --</option>
                 </select>
                 <div style="display:flex;gap:8px;">
                     <button onclick="window.exportBehaviorReportPDF()" style="flex:1;background:#8b5cf6;color:#fff;border:none;padding:10px;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;cursor:pointer;">
@@ -70,13 +70,13 @@ export async function initReportsModule() {
                 </div>
             </div>
 
-            <!-- تقرير الطلاب الكامل -->
+            <!-- ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„ÙƒØ§Ù…Ù„ -->
             <div class="card" style="border-top:4px solid var(--sky);">
                 <h3 style="font-size:14px;font-weight:900;margin-bottom:12px;">
-                    <i class="bi bi-people-fill" style="color:var(--sky);"></i> كشف الطلاب الكامل
+                    <i class="bi bi-people-fill" style="color:var(--sky);"></i> ÙƒØ´Ù Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„ÙƒØ§Ù…Ù„
                 </h3>
                 <select id="report-class-students" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;margin-bottom:10px;">
-                    <option value="">كل الفصول</option>
+                    <option value="">ÙƒÙ„ Ø§Ù„ÙØµÙˆÙ„</option>
                 </select>
                 <div style="display:flex;gap:8px;">
                     <button onclick="window.exportStudentsFullPDF()" style="flex:1;background:var(--sky);color:#fff;border:none;padding:10px;border-radius:6px;font-family:Cairo,sans-serif;font-weight:700;cursor:pointer;">
@@ -97,7 +97,7 @@ export async function initReportsModule() {
 async function loadReportFilters() {
     var schoolId = getActiveSchoolId();
 
-    // تحميل الأشهر
+    // ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø£Ø´Ù‡Ø±
     var months = [];
     for (var i = 0; i < 12; i++) {
         var d = new Date();
@@ -116,7 +116,7 @@ async function loadReportFilters() {
         sel.value = months[0].val;
     });
 
-    // تحميل الفصول
+    // ØªØ­Ù…ÙŠÙ„ Ø§Ù„ÙØµÙˆÙ„
     try {
         var snap = await getDocs(query(collection(db,"students"), where("schoolId","==",schoolId)));
         var classes = {};
@@ -133,14 +133,14 @@ async function loadReportFilters() {
     } catch(e) {}
 }
 
-// ════════════════════════════════════════════════════════════════
-// تقرير الغياب - PDF
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ØªÙ‚Ø±ÙŠØ± Ø§Ù„ØºÙŠØ§Ø¨ - PDF
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 window.exportAbsenceReportPDF = async function() {
     var schoolId = getActiveSchoolId();
     var month = document.getElementById("report-month-absence").value;
     var classId = document.getElementById("report-class-absence").value;
-    if (!month) { alert("يرجى اختيار الشهر"); return; }
+    if (!month) { alert("ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø´Ù‡Ø±"); return; }
 
     var fromDate = month + "-01";
     var toDate = month + "-31";
@@ -166,27 +166,27 @@ window.exportAbsenceReportPDF = async function() {
     snap.forEach(function(d) {
         var a = d.data();
         i++;
-        rows += '<tr><td>' + i + '</td><td style="font-weight:900;">' + (a.studentName||"--") + '</td><td>' + (a.classId||"--") + '</td><td>' + (a.date||"--") + '</td><td>' + (a.period?"الحصة "+a.period:"--") + '</td><td>' + (a.recordedBy||"--") + '</td></tr>';
+        rows += '<tr><td>' + i + '</td><td style="font-weight:900;">' + (a.studentName||"--") + '</td><td>' + (a.classId||"--") + '</td><td>' + (a.date||"--") + '</td><td>' + (a.period?"Ø§Ù„Ø­ØµØ© "+a.period:"--") + '</td><td>' + (a.recordedBy||"--") + '</td></tr>';
     });
 
     var win = window.open("","_blank");
     win.document.write('<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;padding:20px;direction:rtl;font-size:13px}.header{text-align:center;border-bottom:2px solid #0b2545;margin-bottom:16px;padding-bottom:12px}h1{color:#0b2545;font-size:16px;margin:0}p{color:#666;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#0b2545;color:#fff;padding:8px;text-align:right;font-size:12px}td{padding:7px 8px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#f8fafc}.footer{margin-top:20px;text-align:center;font-size:11px;color:#999}</style></head><body>');
-    win.document.write('<div class="header"><h1>تقرير الغياب الشهري</h1><p>المدرسة: ' + (currentUser.schoolName||"") + ' | الشهر: ' + month + ' | الفصل: ' + (classId||"الكل") + '</p><p>التاريخ: ' + new Date().toLocaleDateString("ar-KW") + ' | اعده: ' + (currentUser.name||"") + '</p></div>');
-    win.document.write('<table><thead><tr><th>#</th><th>اسم الطالب</th><th>الفصل</th><th>التاريخ</th><th>الحصة</th><th>المسجل</th></tr></thead><tbody>' + rows + '</tbody></table>');
-    win.document.write('<div class="footer">إجمالي الغيابات: ' + snap.size + ' غياب</div>');
+    win.document.write('<div class="header"><h1>ØªÙ‚Ø±ÙŠØ± Ø§Ù„ØºÙŠØ§Ø¨ Ø§Ù„Ø´Ù‡Ø±ÙŠ</h1><p>Ø§Ù„Ù…Ø¯Ø±Ø³Ø©: ' + (currentUser.schoolName||"") + ' | Ø§Ù„Ø´Ù‡Ø±: ' + month + ' | Ø§Ù„ÙØµÙ„: ' + (classId||"Ø§Ù„ÙƒÙ„") + '</p><p>Ø§Ù„ØªØ§Ø±ÙŠØ®: ' + new Date().toLocaleDateString("ar-KW") + ' | Ø§Ø¹Ø¯Ù‡: ' + (currentUser.name||"") + '</p></div>');
+    win.document.write('<table><thead><tr><th>#</th><th>Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨</th><th>Ø§Ù„ÙØµÙ„</th><th>Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th>Ø§Ù„Ø­ØµØ©</th><th>Ø§Ù„Ù…Ø³Ø¬Ù„</th></tr></thead><tbody>' + rows + '</tbody></table>');
+    win.document.write('<div class="footer">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„ØºÙŠØ§Ø¨Ø§Øª: ' + snap.size + ' ØºÙŠØ§Ø¨</div>');
     win.document.write("</body></html>");
     win.document.close();
     setTimeout(function() { win.print(); }, 600);
 };
 
-// ════════════════════════════════════════════════════════════════
-// تقرير الغياب - Excel
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ØªÙ‚Ø±ÙŠØ± Ø§Ù„ØºÙŠØ§Ø¨ - Excel
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 window.exportAbsenceReportExcel = async function() {
     var schoolId = getActiveSchoolId();
     var month = document.getElementById("report-month-absence").value;
     var classId = document.getElementById("report-class-absence").value;
-    if (!month) { alert("يرجى اختيار الشهر"); return; }
+    if (!month) { alert("ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø´Ù‡Ø±"); return; }
 
     var fromDate = month + "-01";
     var toDate = month + "-31";
@@ -198,24 +198,24 @@ window.exportAbsenceReportExcel = async function() {
         where("status","==","absent"));
 
     var snap = await getDocs(q);
-    var rows = [["#","اسم الطالب","الفصل","التاريخ","الحصة","المسجل"]];
+    var rows = [["#","Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨","Ø§Ù„ÙØµÙ„","Ø§Ù„ØªØ§Ø±ÙŠØ®","Ø§Ù„Ø­ØµØ©","Ø§Ù„Ù…Ø³Ø¬Ù„"]];
     var i = 0;
     snap.forEach(function(d) {
         var a = d.data();
         i++;
-        rows.push([i, a.studentName||"", a.classId||"", a.date||"", a.period?"الحصة "+a.period:"", a.recordedBy||""]);
+        rows.push([i, a.studentName||"", a.classId||"", a.date||"", a.period?"Ø§Ù„Ø­ØµØ© "+a.period:"", a.recordedBy||""]);
     });
 
-    exportToCSV(rows, "تقرير-الغياب-" + month);
+    exportToCSV(rows, "ØªÙ‚Ø±ÙŠØ±-Ø§Ù„ØºÙŠØ§Ø¨-" + month);
 };
 
-// ════════════════════════════════════════════════════════════════
-// تقرير الإنذارات - PDF
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø¥Ù†Ø°Ø§Ø±Ø§Øª - PDF
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 window.exportWarningsReportPDF = async function() {
     var schoolId = getActiveSchoolId();
     var month = document.getElementById("report-month-warnings").value;
-    if (!month) { alert("يرجى اختيار الشهر"); return; }
+    if (!month) { alert("ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø´Ù‡Ø±"); return; }
 
     var snap = await getDocs(query(collection(db,"warnings"),
         where("schoolId","==",schoolId),
@@ -233,9 +233,9 @@ window.exportWarningsReportPDF = async function() {
 
     var win = window.open("","_blank");
     win.document.write('<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;padding:20px;direction:rtl;font-size:13px}.header{text-align:center;border-bottom:2px solid #0b2545;margin-bottom:16px;padding-bottom:12px}h1{color:#0b2545;font-size:16px;margin:0}p{color:#666;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#d4920a;color:#fff;padding:8px;text-align:right;font-size:12px}td{padding:7px 8px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#fff9ec}</style></head><body>');
-    win.document.write('<div class="header"><h1>تقرير الإنذارات</h1><p>المدرسة: ' + (currentUser.schoolName||"") + ' | الشهر: ' + month + '</p><p>التاريخ: ' + new Date().toLocaleDateString("ar-KW") + '</p></div>');
-    win.document.write('<table><thead><tr><th>#</th><th>اسم الطالب</th><th>الفصل</th><th>مستوى الإنذار</th><th>ايام الغياب</th><th>التاريخ</th><th>الصادر من</th></tr></thead><tbody>' + rows + '</tbody></table>');
-    win.document.write('<div style="margin-top:20px;text-align:center;font-size:11px;color:#999;">إجمالي الإنذارات: ' + snap.size + '</div>');
+    win.document.write('<div class="header"><h1>ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø¥Ù†Ø°Ø§Ø±Ø§Øª</h1><p>Ø§Ù„Ù…Ø¯Ø±Ø³Ø©: ' + (currentUser.schoolName||"") + ' | Ø§Ù„Ø´Ù‡Ø±: ' + month + '</p><p>Ø§Ù„ØªØ§Ø±ÙŠØ®: ' + new Date().toLocaleDateString("ar-KW") + '</p></div>');
+    win.document.write('<table><thead><tr><th>#</th><th>Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨</th><th>Ø§Ù„ÙØµÙ„</th><th>Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø¥Ù†Ø°Ø§Ø±</th><th>Ø§ÙŠØ§Ù… Ø§Ù„ØºÙŠØ§Ø¨</th><th>Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th>Ø§Ù„ØµØ§Ø¯Ø± Ù…Ù†</th></tr></thead><tbody>' + rows + '</tbody></table>');
+    win.document.write('<div style="margin-top:20px;text-align:center;font-size:11px;color:#999;">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø¥Ù†Ø°Ø§Ø±Ø§Øª: ' + snap.size + '</div>');
     win.document.write("</body></html>");
     win.document.close();
     setTimeout(function() { win.print(); }, 600);
@@ -244,27 +244,27 @@ window.exportWarningsReportPDF = async function() {
 window.exportWarningsReportExcel = async function() {
     var schoolId = getActiveSchoolId();
     var month = document.getElementById("report-month-warnings").value;
-    if (!month) { alert("يرجى اختيار الشهر"); return; }
+    if (!month) { alert("ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø´Ù‡Ø±"); return; }
 
     var snap = await getDocs(query(collection(db,"warnings"),
         where("schoolId","==",schoolId),
         where("date",">=",month+"-01"),
         where("date","<=",month+"-31")));
 
-    var rows = [["#","اسم الطالب","الفصل","مستوى الإنذار","ايام الغياب","التاريخ","الصادر من"]];
+    var rows = [["#","Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨","Ø§Ù„ÙØµÙ„","Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø¥Ù†Ø°Ø§Ø±","Ø§ÙŠØ§Ù… Ø§Ù„ØºÙŠØ§Ø¨","Ø§Ù„ØªØ§Ø±ÙŠØ®","Ø§Ù„ØµØ§Ø¯Ø± Ù…Ù†"]];
     var i = 0;
     snap.forEach(function(d) {
         var w = d.data();
         i++;
         rows.push([i, w.studentName||"", w.classId||"", w.level||"", w.absentDays||"", w.date||"", w.issuedBy||""]);
     });
-    exportToCSV(rows, "تقرير-الإنذارات-" + month);
+    exportToCSV(rows, "ØªÙ‚Ø±ÙŠØ±-Ø§Ù„Ø¥Ù†Ø°Ø§Ø±Ø§Øª-" + month);
 };
 
 window.exportBehaviorReportPDF = async function() {
     var schoolId = getActiveSchoolId();
     var month = document.getElementById("report-month-behavior").value;
-    if (!month) { alert("يرجى اختيار الشهر"); return; }
+    if (!month) { alert("ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø´Ù‡Ø±"); return; }
 
     var snap = await getDocs(query(collection(db,"behavior"),
         where("schoolId","==",schoolId),
@@ -282,9 +282,9 @@ window.exportBehaviorReportPDF = async function() {
 
     var win = window.open("","_blank");
     win.document.write('<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;padding:20px;direction:rtl;font-size:13px}.header{text-align:center;border-bottom:2px solid #8b5cf6;margin-bottom:16px;padding-bottom:12px}h1{color:#8b5cf6;font-size:16px;margin:0}p{color:#666;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#8b5cf6;color:#fff;padding:8px;text-align:right;font-size:12px}td{padding:7px 8px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#f5f3ff}</style></head><body>');
-    win.document.write('<div class="header"><h1>تقرير السلوك</h1><p>المدرسة: ' + (currentUser.schoolName||"") + ' | الشهر: ' + month + '</p><p>التاريخ: ' + new Date().toLocaleDateString("ar-KW") + '</p></div>');
-    win.document.write('<table><thead><tr><th>#</th><th>اسم الطالب</th><th>الفصل</th><th>نوع السلوك</th><th>الملاحظات</th><th>التاريخ</th><th>المسجل</th></tr></thead><tbody>' + rows + '</tbody></table>');
-    win.document.write('<div style="margin-top:20px;text-align:center;font-size:11px;color:#999;">إجمالي: ' + snap.size + '</div>');
+    win.document.write('<div class="header"><h1>ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø³Ù„ÙˆÙƒ</h1><p>Ø§Ù„Ù…Ø¯Ø±Ø³Ø©: ' + (currentUser.schoolName||"") + ' | Ø§Ù„Ø´Ù‡Ø±: ' + month + '</p><p>Ø§Ù„ØªØ§Ø±ÙŠØ®: ' + new Date().toLocaleDateString("ar-KW") + '</p></div>');
+    win.document.write('<table><thead><tr><th>#</th><th>Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨</th><th>Ø§Ù„ÙØµÙ„</th><th>Ù†ÙˆØ¹ Ø§Ù„Ø³Ù„ÙˆÙƒ</th><th>Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø§Øª</th><th>Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th>Ø§Ù„Ù…Ø³Ø¬Ù„</th></tr></thead><tbody>' + rows + '</tbody></table>');
+    win.document.write('<div style="margin-top:20px;text-align:center;font-size:11px;color:#999;">Ø¥Ø¬Ù…Ø§Ù„ÙŠ: ' + snap.size + '</div>');
     win.document.write("</body></html>");
     win.document.close();
     setTimeout(function() { win.print(); }, 600);
@@ -293,21 +293,21 @@ window.exportBehaviorReportPDF = async function() {
 window.exportBehaviorReportExcel = async function() {
     var schoolId = getActiveSchoolId();
     var month = document.getElementById("report-month-behavior").value;
-    if (!month) { alert("يرجى اختيار الشهر"); return; }
+    if (!month) { alert("ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ø´Ù‡Ø±"); return; }
 
     var snap = await getDocs(query(collection(db,"behavior"),
         where("schoolId","==",schoolId),
         where("date",">=",month+"-01"),
         where("date","<=",month+"-31")));
 
-    var rows = [["#","اسم الطالب","الفصل","نوع السلوك","الملاحظات","التاريخ","المسجل"]];
+    var rows = [["#","Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨","Ø§Ù„ÙØµÙ„","Ù†ÙˆØ¹ Ø§Ù„Ø³Ù„ÙˆÙƒ","Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø§Øª","Ø§Ù„ØªØ§Ø±ÙŠØ®","Ø§Ù„Ù…Ø³Ø¬Ù„"]];
     var i = 0;
     snap.forEach(function(d) {
         var b = d.data();
         i++;
         rows.push([i, b.studentName||"", b.classId||"", b.action||"", b.notes||"", b.date||"", b.referredBy||""]);
     });
-    exportToCSV(rows, "تقرير-السلوك-" + month);
+    exportToCSV(rows, "ØªÙ‚Ø±ÙŠØ±-Ø§Ù„Ø³Ù„ÙˆÙƒ-" + month);
 };
 
 window.exportStudentsFullPDF = async function() {
@@ -320,7 +320,7 @@ window.exportStudentsFullPDF = async function() {
         : query(collection(db,"students"), where("schoolId","==",schoolId));
 
     var snap = await getDocs(q);
-    // ترتيب أبجدي: أولاً بالصف (6/1، 6/2...7/1...) ثم أبجدي بالاسم
+    // ØªØ±ØªÙŠØ¨ Ø£Ø¨Ø¬Ø¯ÙŠ: Ø£ÙˆÙ„Ø§Ù‹ Ø¨Ø§Ù„ØµÙ (6/1ØŒ 6/2...7/1...) Ø«Ù… Ø£Ø¨Ø¬Ø¯ÙŠ Ø¨Ø§Ù„Ø§Ø³Ù…
     var students = snap.docs.map(function(d) { return d.data(); });
     students.sort(function(a, b) {
         var ca = (a.classId||"").split("/").map(Number);
@@ -337,9 +337,9 @@ window.exportStudentsFullPDF = async function() {
 
     var win = window.open("","_blank");
     win.document.write('<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;padding:20px;direction:rtl;font-size:13px}.header{text-align:center;border-bottom:2px solid #0b2545;margin-bottom:16px;padding-bottom:12px}h1{color:#0b2545;font-size:16px;margin:0}p{color:#666;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#0b2545;color:#fff;padding:8px;text-align:right;font-size:12px}td{padding:7px 8px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#f8fafc}</style></head><body>');
-    win.document.write('<div class="header"><h1>كشف الطلاب الكامل</h1><p>المدرسة: ' + (currentUser.schoolName||"") + ' | الفصل: ' + (classId||"الكل") + '</p><p>التاريخ: ' + new Date().toLocaleDateString("ar-KW") + ' | اعده: ' + (currentUser.name||"") + '</p></div>');
-    win.document.write('<table><thead><tr><th>#</th><th>اسم الطالب</th><th>الفصل</th><th>الرقم المدني</th><th>هاتف ولي الامر</th><th>رقم الطالب</th></tr></thead><tbody>' + rows + '</tbody></table>');
-    win.document.write('<div style="margin-top:20px;text-align:center;font-size:11px;color:#999;">إجمالي الطلاب: ' + snap.size + '</div>');
+    win.document.write('<div class="header"><h1>ÙƒØ´Ù Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„ÙƒØ§Ù…Ù„</h1><p>Ø§Ù„Ù…Ø¯Ø±Ø³Ø©: ' + (currentUser.schoolName||"") + ' | Ø§Ù„ÙØµÙ„: ' + (classId||"Ø§Ù„ÙƒÙ„") + '</p><p>Ø§Ù„ØªØ§Ø±ÙŠØ®: ' + new Date().toLocaleDateString("ar-KW") + ' | Ø§Ø¹Ø¯Ù‡: ' + (currentUser.name||"") + '</p></div>');
+    win.document.write('<table><thead><tr><th>#</th><th>Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨</th><th>Ø§Ù„ÙØµÙ„</th><th>Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ù…Ø¯Ù†ÙŠ</th><th>Ù‡Ø§ØªÙ ÙˆÙ„ÙŠ Ø§Ù„Ø§Ù…Ø±</th><th>Ø±Ù‚Ù… Ø§Ù„Ø·Ø§Ù„Ø¨</th></tr></thead><tbody>' + rows + '</tbody></table>');
+    win.document.write('<div style="margin-top:20px;text-align:center;font-size:11px;color:#999;">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø·Ù„Ø§Ø¨: ' + snap.size + '</div>');
     win.document.write("</body></html>");
     win.document.close();
     setTimeout(function() { win.print(); }, 600);
@@ -354,7 +354,7 @@ window.exportStudentsFullExcel = async function() {
         : query(collection(db,"students"), where("schoolId","==",schoolId));
 
     var snap = await getDocs(q);
-    var rows = [["#","اسم الطالب","الفصل","الرقم المدني","هاتف ولي الامر","رقم الطالب"]];
+    var rows = [["#","Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨","Ø§Ù„ÙØµÙ„","Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ù…Ø¯Ù†ÙŠ","Ù‡Ø§ØªÙ ÙˆÙ„ÙŠ Ø§Ù„Ø§Ù…Ø±","Ø±Ù‚Ù… Ø§Ù„Ø·Ø§Ù„Ø¨"]];
     var i = 0;
     var students2 = snap.docs.map(function(d) { return d.data(); });
     students2.sort(function(a, b) {
@@ -367,12 +367,12 @@ window.exportStudentsFullExcel = async function() {
     students2.forEach(function(s, idx) {
         rows.push([idx+1, s.name||"", s.classId||"", s.civilId||"", s.parentPhone||"", s.studentId||""]);
     });
-    exportToCSV(rows, "كشف-الطلاب-" + (classId||"الكل"));
+    exportToCSV(rows, "ÙƒØ´Ù-Ø§Ù„Ø·Ù„Ø§Ø¨-" + (classId||"Ø§Ù„ÙƒÙ„"));
 };
 
-// ════════════════════════════════════════════════════════════════
-// تصدير CSV
-// ════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ØªØµØ¯ÙŠØ± CSV
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function exportToCSV(rows, filename) {
     var BOM = "\uFEFF";
     var csv = BOM + rows.map(function(row) {

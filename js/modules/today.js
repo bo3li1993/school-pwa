@@ -11,48 +11,48 @@ export async function initTodayModule() {
     container.innerHTML = `
     <div style="max-width:800px;margin:0 auto;padding:16px">
         <h2 style="font-size:17px;font-weight:900;color:var(--navy);margin-bottom:14px">
-            <i class="bi bi-speedometer2" style="color:var(--sky)"></i> لوحة المؤشرات — ${new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}
+            <i class="bi bi-speedometer2" style="color:var(--sky)"></i> Ù„ÙˆØ­Ø© Ø§Ù„Ù…Ø¤Ø´Ø±Ø§Øª â€” ${new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}
         </h2>
 
         <!-- KPI -->
         <div id="kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
             <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
                 <div style="font-size:30px;font-weight:900;color:var(--navy)" id="kpi-students">-</div>
-                <div style="font-size:11px;color:var(--mid);font-weight:700">إجمالي الطلاب</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø·Ù„Ø§Ø¨</div>
             </div>
             <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
                 <div style="font-size:30px;font-weight:900;color:#dc2626" id="kpi-absent">-</div>
-                <div style="font-size:11px;color:var(--mid);font-weight:700">غائب اليوم</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">ØºØ§Ø¦Ø¨ Ø§Ù„ÙŠÙˆÙ…</div>
             </div>
             <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
                 <div style="font-size:30px;font-weight:900;color:#d97706" id="kpi-late">-</div>
-                <div style="font-size:11px;color:var(--mid);font-weight:700">متأخر</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">Ù…ØªØ£Ø®Ø±</div>
             </div>
             <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
                 <div style="font-size:30px;font-weight:900;color:var(--green)" id="kpi-rate">-</div>
-                <div style="font-size:11px;color:var(--mid);font-weight:700">نسبة الحضور</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">Ù†Ø³Ø¨Ø© Ø§Ù„Ø­Ø¶ÙˆØ±</div>
             </div>
         </div>
 
-        <!-- رسم بياني — الغياب بالفصول -->
+        <!-- Ø±Ø³Ù… Ø¨ÙŠØ§Ù†ÙŠ â€” Ø§Ù„ØºÙŠØ§Ø¨ Ø¨Ø§Ù„ÙØµÙˆÙ„ -->
         <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
-            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">📊 الغياب حسب الفصل</h3>
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">ðŸ“Š Ø§Ù„ØºÙŠØ§Ø¨ Ø­Ø³Ø¨ Ø§Ù„ÙØµÙ„</h3>
             <div id="chart-classes" style="display:flex;align-items:flex-end;gap:6px;height:160px;direction:ltr"></div>
         </div>
 
-        <!-- رسم بياني — الغياب آخر 7 أيام -->
+        <!-- Ø±Ø³Ù… Ø¨ÙŠØ§Ù†ÙŠ â€” Ø§Ù„ØºÙŠØ§Ø¨ Ø¢Ø®Ø± 7 Ø£ÙŠØ§Ù… -->
         <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
-            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">📈 الغياب — آخر 7 أيام</h3>
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">ðŸ“ˆ Ø§Ù„ØºÙŠØ§Ø¨ â€” Ø¢Ø®Ø± 7 Ø£ÙŠØ§Ù…</h3>
             <div id="chart-week" style="display:flex;align-items:flex-end;gap:8px;height:140px;direction:ltr"></div>
         </div>
 
-        <!-- أكثر طلاب غياب -->
+        <!-- Ø£ÙƒØ«Ø± Ø·Ù„Ø§Ø¨ ØºÙŠØ§Ø¨ -->
         <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
-            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">🔴 أكثر 5 طلاب غياباً</h3>
-            <div id="top-absent" style="font-size:13px">⏳ جاري التحميل...</div>
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">ðŸ”´ Ø£ÙƒØ«Ø± 5 Ø·Ù„Ø§Ø¨ ØºÙŠØ§Ø¨Ø§Ù‹</h3>
+            <div id="top-absent" style="font-size:13px">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div>
         </div>
 
-        <!-- إعلانات -->
+        <!-- Ø¥Ø¹Ù„Ø§Ù†Ø§Øª -->
         <div id="admin-announcements"></div>
     </div>`;
 
@@ -61,12 +61,12 @@ export async function initTodayModule() {
 
 async function loadDashboard(schoolId, today) {
     try {
-        // إجمالي الطلاب
+        // Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø·Ù„Ø§Ø¨
         var studSnap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
         var totalStudents = studSnap.size;
         document.getElementById('kpi-students').textContent = totalStudents;
 
-        // غياب اليوم
+        // ØºÙŠØ§Ø¨ Ø§Ù„ÙŠÙˆÙ…
         var attSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',today)));
         var records = attSnap.docs.map(d=>d.data());
         var absentNames = new Set(); var lateNames = new Set();
@@ -77,7 +77,7 @@ async function loadDashboard(schoolId, today) {
         var rate = totalStudents > 0 ? Math.floor(((totalStudents - absentNames.size)/totalStudents)*100*10)/10 : 0;
         document.getElementById('kpi-rate').textContent = rate + '%';
 
-        // رسم الغياب بالفصول
+        // Ø±Ø³Ù… Ø§Ù„ØºÙŠØ§Ø¨ Ø¨Ø§Ù„ÙØµÙˆÙ„
         var byClass = {};
         records.filter(r=>r.status==='absent').forEach(r => { byClass[r.classId] = (byClass[r.classId]||0)+1; });
         var classes = Object.keys(byClass).sort((a,b)=>{var pa=a.split('/'),pb=b.split('/');return(parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0)});
@@ -90,16 +90,16 @@ async function loadDashboard(schoolId, today) {
                 <div style="width:100%;background:#dc262633;border-radius:6px 6px 0 0;height:${Math.max(pct,8)}%;min-height:8px;transition:height .5s"></div>
                 <div style="font-size:9px;font-weight:700;color:var(--mid);margin-top:4px;writing-mode:vertical-rl;transform:rotate(180deg)">${c}</div>
             </div>`;
-        }).join('') || '<div style="color:#aaa;font-size:13px;padding:20px;text-align:center;width:100%">لا يوجد غياب اليوم ✅</div>';
+        }).join('') || '<div style="color:#aaa;font-size:13px;padding:20px;text-align:center;width:100%">Ù„Ø§ ÙŠÙˆØ¬Ø¯ ØºÙŠØ§Ø¨ Ø§Ù„ÙŠÙˆÙ… âœ…</div>';
 
-        // آخر 7 أيام
+        // Ø¢Ø®Ø± 7 Ø£ÙŠØ§Ù…
         var days = [];
         for(var i=6;i>=0;i--) {
             var d = new Date(); d.setDate(d.getDate()-i);
             d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
             days.push(d.toISOString().slice(0,10));
         }
-        // جلب كل الغياب
+        // Ø¬Ù„Ø¨ ÙƒÙ„ Ø§Ù„ØºÙŠØ§Ø¨
         var weekSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('status','==','absent')));
         var weekData = {};
         days.forEach(d => weekData[d] = 0);
@@ -118,7 +118,7 @@ async function loadDashboard(schoolId, today) {
             </div>`;
         }).join('');
 
-        // أكثر 5 طلاب غياباً
+        // Ø£ÙƒØ«Ø± 5 Ø·Ù„Ø§Ø¨ ØºÙŠØ§Ø¨Ø§Ù‹
         var studentCounts = {};
         weekSnap.docs.forEach(d => { var r=d.data(); studentCounts[r.studentName+'|'+r.classId] = (studentCounts[r.studentName+'|'+r.classId]||0)+1; });
         var topAbsent = Object.entries(studentCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
@@ -130,16 +130,16 @@ async function loadDashboard(schoolId, today) {
                 <span style="width:24px;height:24px;border-radius:50%;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900">${i+1}</span>
                 <span style="flex:1;font-weight:700">${name}</span>
                 <span style="font-size:11px;color:var(--mid)">${cls}</span>
-                <span style="background:${color}22;color:${color};padding:2px 10px;border-radius:6px;font-weight:900;font-size:12px">${count} يوم</span>
+                <span style="background:${color}22;color:${color};padding:2px 10px;border-radius:6px;font-weight:900;font-size:12px">${count} ÙŠÙˆÙ…</span>
             </div>`;
-        }).join('') : '<div style="color:#16a34a;font-weight:700">✅ لا يوجد طلاب متكرري الغياب</div>';
+        }).join('') : '<div style="color:#16a34a;font-weight:700">âœ… Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø·Ù„Ø§Ø¨ Ù…ØªÙƒØ±Ø±ÙŠ Ø§Ù„ØºÙŠØ§Ø¨</div>';
 
-        // إعلانات
+        // Ø¥Ø¹Ù„Ø§Ù†Ø§Øª
         var annSnap = await getDocs(query(collection(db,'school_announcements'), where('schoolId','==',schoolId), where('active','==',true)));
         var annDiv = document.getElementById('admin-announcements');
         if(annSnap.size > 0 && annDiv) {
             annDiv.innerHTML = `<div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:14px;padding:16px">
-                <h3 style="font-size:14px;font-weight:900;color:#92400e;margin-bottom:8px">📢 إعلانات المدرسة</h3>
+                <h3 style="font-size:14px;font-weight:900;color:#92400e;margin-bottom:8px">ðŸ“¢ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø§Ù„Ù…Ø¯Ø±Ø³Ø©</h3>
                 ${annSnap.docs.map(d=>`<div style="font-size:13px;color:#78350f;padding:6px 0;border-bottom:1px solid #fde68a;font-weight:600">${d.data().text}</div>`).join('')}
             </div>`;
         }
