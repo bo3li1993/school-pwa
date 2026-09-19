@@ -1,58 +1,114 @@
-// اسم الكاش الديناميكي المعتمد على تاريخ اليوم تلقائياً لضمان التحديث الفوري d/m/y
-const CACHE_NAME = `hosainan-school-${new Date().toISOString().slice(0,10)}`;
-
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'manzoma-v11';
+const STATIC_ASSETS = [
     './',
     './index.html',
     './admin.html',
     './teacher.html',
     './parent.html',
-    './guard.html',
-    './social.html',
-    './tv.html',
-    './super.html',
-    './import.html',
-    'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
-    'https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap'
+    './department_head.html',
+    './style.css',
+    './manifest.json',
+    './logo.png',
+    './js/firebase-config.js',
+    './js/cleanup.js',
 ];
 
-// 1. تثبيت الكاش وحفظ الملفات الأساسية لسرعة الـ PWA
-self.addEventListener('install', event => {
+// ط·آ·ط¢آ·ط·آ¹ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ«ط·آ·ط¢آ·ط·آ¢ط¢آ¨ط·آ·ط¢آ¸ط·آ¸ط¢آ¹ط·آ·ط¢آ·ط·آ¹ط¢آ¾: ط·آ·ط¢آ·ط·آ¢ط¢آ®ط·آ·ط¢آ·ط·آ¢ط¢آ²ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¹آ©ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¢آ  ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¢آ¦ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط·آ¸ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¹ط¢آ¾ ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ·ط·آ¢ط¢آ£ط·آ·ط¢آ·ط·آ¢ط¢آ³ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ³ط·آ·ط¢آ¸ط·آ¸ط¢آ¹ط·آ·ط¢آ·ط·آ¢ط¢آ©
+self.addEventListener('install', function(event) {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(ASSETS_TO_CACHE);
+        caches.open(CACHE_NAME).then(function(cache) {
+            return cache.addAll(STATIC_ASSETS.map(function(url) {
+                return new Request(url, { cache: 'reload' });
+            }));
+        }).then(function() {
+            return self.skipWaiting();
+        }).catch(function(e) {
+            console.warn('SW install error:', e);
         })
     );
-    self.skipWaiting();
 });
 
-// 2. تفعيل وحذف كل الكاش القديم فوراً (وليس بانتظار تغيير التاريخ فقط)
-self.addEventListener('activate', event => {
+// ط·آ·ط¢آ·ط·آ¹ط¢آ¾ط·آ·ط¢آ¸ط·آ¸ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ¹ط·آ·ط¢آ¸ط·آ¸ط¢آ¹ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†: ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ­ط·آ·ط¢آ·ط·آ¢ط¢آ°ط·آ·ط¢آ¸ط·آ¸ط¢آ¾ ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط·آ¦أ¢â‚¬â„¢ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ´ ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¹â€کط·آ·ط¢آ·ط·آ¢ط¢آ¯ط·آ·ط¢آ¸ط·آ¸ط¢آ¹ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¢آ¦
+self.addEventListener('activate', function(event) {
     event.waitUntil(
-        caches.keys().then(keys => {
+        caches.keys().then(function(keys) {
             return Promise.all(
-                keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+                keys.filter(function(key) { return key !== CACHE_NAME; })
+                    .map(function(key) { return caches.delete(key); })
             );
+        }).then(function() {
+            return self.clients.claim();
         })
     );
-    self.clients.claim();
 });
 
-// 3. محرك الجلب: "الشبكة أولاً" لضمان ظهور أي تحديث فوراً عند توفر الإنترنت،
-//    وفقط عند انقطاع الشبكة (أو فشل الجلب) نرجع لآخر نسخة محفوظة بالكاش (دعم العمل بدون نت)
-self.addEventListener('fetch', event => {
-    // نتخطى طلبات السيرفر الحي لفايربيس والتوثيق لضمان دقة البيانات الحية دائمًا
-    if (event.request.url.includes('firestore') || event.request.url.includes('identitytoolkit') || event.request.url.includes('googleapis')) return;
+// ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ·ط·آ¢ط¢آ·ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ·ط·آ¢ط¢آ¨ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¹ط¢آ¾: Network First ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط£آ¢أ¢â‚¬ع‘ط¢آ¬ HTMLط·آ·ط¢آ·ط·آ¥أ¢â‚¬â„¢ Cache First ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¢آ¦ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط·آ¸ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¹ط¢آ¾ ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ·ط·آ¢ط¢آ«ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ¨ط·آ·ط¢آ·ط·آ¹ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ©
+self.addEventListener('fetch', function(event) {
+    var url = event.request.url;
 
-    event.respondWith(
-        fetch(event.request).then(networkResponse => {
-            // نحدّث الكاش بأحدث نسخة لاستخدامها لاحقاً عند انقطاع النت
-            const resClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
-            return networkResponse;
-        }).catch(() => {
-            // لا يوجد إنترنت → نرجع لآخر نسخة محفوظة، وإن لم توجد نرجع لصفحة الدخول
-            return caches.match(event.request).then(cached => cached || caches.match('./index.html'));
-        })
-    );
+    // ط·آ·ط¢آ·ط·آ¹ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ¬ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط·إ’ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع† Firebase ط·آ·ط¢آ¸ط·آ«أ¢â‚¬آ Google
+    if (url.includes('firestore.googleapis.com') ||
+        url.includes('firebase.googleapis.com') ||
+        url.includes('identitytoolkit.googleapis.com') ||
+        url.includes('googleapis.com') ||
+        url.includes('cloudfunctions.net') ||
+        url.includes('gstatic.com') ||
+        url.includes('fonts.googleapis.com')) {
+        return;
+    }
+
+    // HTML: Network First ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¢آ¦ط·آ·ط¢آ·ط·آ¢ط¢آ¹ fallback
+    if (event.request.mode === 'navigate' ||
+        (event.request.method === 'GET' &&
+         event.request.headers.get('accept') &&
+         event.request.headers.get('accept').includes('text/html'))) {
+        event.respondWith(
+            fetch(event.request).then(function(response) {
+                if (response && response.status === 200) {
+                    var clone = response.clone();
+                    caches.open(CACHE_NAME).then(function(cache) {
+                        cache.put(event.request, clone);
+                    });
+                }
+                return response;
+            }).catch(function() {
+                return caches.match(event.request).then(function(cached) {
+                    return cached || caches.match('./index.html');
+                });
+            })
+        );
+        return;
+    }
+
+    // ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬ط¢آ¦ط·آ·ط¢آ¸ط£آ¢أ¢â€ڑآ¬أ¢â‚¬ع†ط·آ·ط¢آ¸ط·آ¸ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¹ط¢آ¾ ط·آ·ط¢آ·ط·آ¢ط¢آ«ط·آ·ط¢آ·ط·آ¢ط¢آ§ط·آ·ط¢آ·ط·آ¢ط¢آ¨ط·آ·ط¢آ·ط·آ¹ط¢آ¾ط·آ·ط¢آ·ط·آ¢ط¢آ©: Cache First
+    if (event.request.method === 'GET') {
+        event.respondWith(
+            caches.match(event.request).then(function(cached) {
+                if (cached) return cached;
+                return fetch(event.request).then(function(response) {
+                    if (response && response.status === 200 && response.type !== 'opaque') {
+                        var clone = response.clone();
+                        caches.open(CACHE_NAME).then(function(cache) {
+                            cache.put(event.request, clone);
+                        });
+                    }
+                    return response;
+                }).catch(function() {
+                    return caches.match('./index.html');
+                });
+            })
+        );
+    }
+});
+
+// Offline page
+self.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+    if (event.data && event.data.type === 'CACHE_URLS') {
+        caches.open(CACHE_NAME).then(function(cache) {
+            cache.addAll(event.data.urls || []);
+        });
+    }
 });
