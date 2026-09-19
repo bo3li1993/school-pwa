@@ -36,11 +36,26 @@ export async function initBehaviorModule() {
                         </select>
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:12px; color:#444;">3. المعلم المحيل للحالة (جهة الإحالة):</label>
+                        <label style="font-weight:700; font-size:12px; color:#444;">3. نوع السلوك المرصود:</label>
+                        <select id="beh-behavior-type" required>
+                            <option value="">-- اختر نوع السلوك --</option>
+                            <option value="غياب بدون عذر">غياب بدون عذر</option>
+                            <option value="تأخر متكرر">تأخر متكرر</option>
+                            <option value="عدم الانتباه">عدم الانتباه في الفصل</option>
+                            <option value="مشاجرة">مشاجرة</option>
+                            <option value="غش في الاختبار">غش في الاختبار</option>
+                            <option value="إتلاف ممتلكات">إتلاف ممتلكات</option>
+                            <option value="إحضار ممنوعات">إحضار ممنوعات</option>
+                            <option value="عدم الالتزام بالزي">عدم الالتزام بالزي</option>
+                            <option value="سلوك آخر">سلوك آخر</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; font-size:12px; color:#444;">4. المعلم المحيل للحالة (جهة الإحالة):</label>
                         <input type="text" id="beh-referred-by" value="${currentUser.name || ''}" readonly style="padding:12px; background:var(--off); color:var(--mid); font-weight:700;">
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:12px; color:#444;">4. الإجراء التربوي المتخذ:</label>
+                        <label style="font-weight:700; font-size:12px; color:#444;">5. الإجراء التربوي المتخذ:</label>
                         <select id="beh-action-type" required>
                             <option value="تنبيه شفهي مبدئي">⚠️ تنبيه شفهي مبدئي وتوجيه إرشادي</option>
                             <option value="تعهد خطي رسمي">📝 أخذ تعهد خطي رسمي بحضور الأخصائي</option>
@@ -50,7 +65,7 @@ export async function initBehaviorModule() {
                         </select>
                     </div>
                     <div>
-                        <label style="font-weight:700; font-size:12px; color:#444;">5. موقف وحالة المتابعة السلوكية:</label>
+                        <label style="font-weight:700; font-size:12px; color:#444;">6. موقف وحالة المتابعة السلوكية:</label>
                         <select id="beh-followup-status" required>
                             <option value="تمت المتابعة والإقفال">✅ تمت المتابعة والإقفال رسمياً</option>
                             <option value="قيد المتابعة والمراجعة">⏳ لا، قيد المتابعة والمراجعة المستمرة</option>
@@ -189,6 +204,7 @@ window.handleRegisterBehaviorLive = async function(e) {
     var sName = document.getElementById('beh-student-select').value;
     var cId = document.getElementById('beh-class-select').value;
     var refBy = document.getElementById('beh-referred-by').value.trim();
+    var behaviorType = document.getElementById('beh-behavior-type')?.value || '';
     var action = document.getElementById('beh-action-type').value;
     var followup = document.getElementById('beh-followup-status').value;
     var notes = document.getElementById('beh-notes').value.trim();
@@ -205,6 +221,7 @@ window.handleRegisterBehaviorLive = async function(e) {
             name: sName.trim(),
             classId: cId.trim(),
             referredBy: refBy,
+            type: behaviorType,
             action: action,
             followUpStatus: followup,
             notes: notes,
@@ -262,7 +279,7 @@ function buildBehaviorRowHtml(data) {
             <td style="padding:10px; font-weight:bold; color:#7f8c8d;">📅 ${data.dateStr || data.date || '-'}</td>
             <td style="padding:10px;"><b>👤 ${data.studentName || data.name || '-'}</b></td>
             <td style="padding:10px; text-align:center;"><span class="badge info" style="background:var(--accent-color); padding:3px 8px; color:#fff; border-radius:4px;">${data.classId || '-'}</span></td>
-            <td style="padding:10px; text-align:center;"><span class="badge danger" style="background:#c0392b; padding:4px 8px; color:#fff; border-radius:4px; font-weight:bold;">${data.action || 'إجراء معتمد'}</span></td>
+            <td style="padding:10px; text-align:center;"><span style="background:#7c3aed; color:#fff; padding:2px 7px; border-radius:4px; font-size:11px; font-weight:700;">${data.type || '-'}</span></td><td style="padding:10px; text-align:center;"><span class="badge danger" style="background:#c0392b; padding:4px 8px; color:#fff; border-radius:4px; font-weight:bold;">${data.action || 'إجراء معتمد'}</span></td>
             <td style="padding:10px; text-align:center;">${statusBadge}</td>
             <td style="padding:10px; font-weight:700; color:#2980b9;">أ. ${data.referredBy || 'غير محدد'}</td>
             <td style="padding:10px; color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>

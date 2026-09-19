@@ -1,17 +1,23 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
-import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, getDocs, query, where, doc, setDoc, deleteDoc, getDoc }
+    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initClassesModule() {
-    var container = document.getElementById('tab-classes') || document.getElementById('tab-classes');
+    var container = document.getElementById('tab-classes');
     if (!container) return;
 
-    // 🛡️ جدار حماية وعزل الأخطاء
     try {
         container.innerHTML = `
-        <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
-            <h2><i class="bi bi-door-open-fill" style="color:var(--primary-color);"></i> نظام جرد وفحص الفصول الدراسية المعتمدة</h2>
-            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">استعراض إحصائي شامل لتوزيع الفصول وكثافة قيد الطلاب الحالية بداخل غرف المنشأة.</p>
-            
+        <div class="card" style="border-top:5px solid var(--primary-color); text-align:right;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+                <h2 style="margin:0;"><i class="bi bi-door-open-fill" style="color:var(--primary-color);"></i> الفصول الدراسية</h2>
+                <button onclick="window.showAddClassModal()"
+                    style="background:var(--primary-color); color:#fff; border:none; padding:9px 18px; border-radius:8px; font-family:'Cairo',sans-serif; font-weight:700; font-size:13px; cursor:pointer;">
+                    <i class="bi bi-plus-circle-fill"></i> إضافة فصل
+                </button>
+            </div>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; font-weight:bold;">استعراض الفصول وتوزيع الطلاب — يمكن إضافة أو حذف فصل من هنا.</p>
+
             <div style="overflow-x:auto;">
                 <table>
                     <thead>
@@ -19,85 +25,163 @@ export async function initClassesModule() {
                             <th>الفصل الدراسي</th>
                             <th style="text-align:center;">عدد الطلاب</th>
                             <th style="text-align:center;">الحالة</th>
-                            <th style="text-align:center;">عرض / تعديل</th>
+                            <th style="text-align:center;">إجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="school-classes-tbody">
-                        <tr><td colspan="3" style="text-align:center; color:#999; padding:15px; font-weight:bold;">⏳ جاري فحص كثافة الفصول السحابية...</td></tr>
+                        <tr><td colspan="4" style="text-align:center; color:#999; padding:15px;">⏳ جاري تحميل الفصول...</td></tr>
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- Modal إضافة فصل -->
+        <div id="add-class-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+            <div style="background:#fff; border-radius:16px; padding:26px; max-width:380px; width:100%; direction:rtl; font-family:'Cairo',sans-serif;">
+                <h3 style="font-weight:900; margin-bottom:16px; color:#0b2545;"><i class="bi bi-plus-circle-fill" style="color:var(--primary-color);"></i> إضافة فصل جديد</h3>
+                <label style="font-size:13px; font-weight:700; display:block; margin-bottom:6px;">اسم الفصل (مثال: 6/5 أو 10/1)</label>
+                <input type="text" id="new-class-id" placeholder="6/5"
+                    style="width:100%; padding:11px; border:1.5px solid #e2e8f0; border-radius:8px; font-family:'Cairo',sans-serif; font-size:14px; font-weight:700; box-sizing:border-box; margin-bottom:16px; text-align:center;">
+                <div style="display:flex; gap:8px;">
+                    <button onclick="window.saveNewClass()"
+                        style="flex:1; background:var(--primary-color); color:#fff; border:none; padding:11px; border-radius:8px; font-family:'Cairo',sans-serif; font-weight:700; cursor:pointer;">
+                        <i class="bi bi-check-circle-fill"></i> حفظ
+                    </button>
+                    <button onclick="document.getElementById('add-class-modal').style.display='none'"
+                        style="background:#fff; color:#666; border:1.5px solid #e2e8f0; padding:11px 18px; border-radius:8px; font-family:'Cairo',sans-serif; font-weight:700; cursor:pointer;">
+                        إلغاء
+                    </button>
+                </div>
+            </div>
         </div>`;
 
-        loadSchoolClassesStatsLive();
+        await loadSchoolClasses();
     } catch(e) {
-        container.innerHTML = `
-            <div class="card" style="border-top:5px solid var(--danger-color); color:var(--danger-color); text-align:center; padding:20px; font-weight:bold;">
-                ⚠️ تعذر تحميل شاشة جرد الفصول: ${e.message}
-            </div>`;
+        container.innerHTML = `<div class="card" style="border-top:5px solid var(--danger-color); color:var(--danger-color); text-align:center; padding:20px; font-weight:bold;">⚠️ تعذر تحميل الفصول: ${e.message}</div>`;
     }
 }
 
-async function loadSchoolClassesStatsLive() {
+async function loadSchoolClasses() {
     var tbody = document.getElementById('school-classes-tbody');
     if (!tbody) return;
 
-    var schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية الديناميكية
+    var schoolId = getActiveSchoolId();
+    if (!schoolId) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red; padding:15px;">❌ لم يتم تحديد المدرسة</td></tr>'; return; }
 
     try {
-        // سحب كشف طلاب المدرسة الحالية فقط
-        var qStudents = query(collection(db, 'students'), where('schoolId', '==', schoolId));
-        var snap = await getDocs(qStudents);
+        // جلب الفصول المخصصة من Firestore
+        var classesSnap = await getDocs(query(collection(db, 'classes'), where('schoolId', '==', schoolId)));
         
-        // دعم التوافقية للمدرسة القديمة (في حال وجود داتا قديمة بدون schoolId)
-        if (snap.empty && schoolId === 'hosainan') {
-            snap = await getDocs(getActiveSchoolId() ? query(collection(db, 'students'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'students'));
-        }
+        // جلب الطلاب لحساب الكثافة
+        var studentsSnap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
 
         var classCounts = {};
-        var defaultClasses = ["6/1", "6/2", "6/3", "6/4", "7/1", "7/2", "7/3", "7/4", "8/1", "8/2", "8/3", "8/4", "9/1", "9/2"];
-        defaultClasses.forEach(c => classCounts[c] = 0);
 
-        snap.forEach(doc => {
-            var d = doc.data();
-            // فلترة أمنية إضافية لضمان عدم خلط داتا المدارس
-            if ((!d.schoolId || d.schoolId === schoolId) && d.classId) {
-                var cId = d.classId.trim();
-                if (classCounts[cId] !== undefined) {
-                    classCounts[cId]++;
-                } else {
-                    classCounts[cId] = 1;
-                }
+        // إضافة الفصول المخزنة
+        classesSnap.forEach(d => { classCounts[d.data().classId || d.id] = 0; });
+
+        // إذا ما في فصول مخزنة، استخدم الفصول الافتراضية
+        if (Object.keys(classCounts).length === 0) {
+            ["6/1","6/2","6/3","6/4","7/1","7/2","7/3","7/4","8/1","8/2","8/3","8/4","9/1","9/2"].forEach(c => classCounts[c] = 0);
+        }
+
+        // حساب عدد الطلاب في كل فصل
+        studentsSnap.forEach(d => {
+            var cId = d.data().classId?.trim();
+            if (cId) {
+                if (classCounts[cId] !== undefined) classCounts[cId]++;
+                else classCounts[cId] = 1; // فصل موجود في الطلاب لكن غير مخزن
             }
         });
 
+        var sortedClasses = Object.keys(classCounts).sort((a, b) => {
+            var [ag, as_] = a.split('/').map(Number);
+            var [bg, bs] = b.split('/').map(Number);
+            return ag !== bg ? ag - bg : as_ - bs;
+        });
+
         var html = '';
-        Object.keys(classCounts).sort().forEach(cId => {
+        sortedClasses.forEach(cId => {
             var count = classCounts[cId];
+            var isActive = count > 0;
             html += `
                 <tr style="border-bottom:1px solid #eee;">
                     <td><b>🏫 صف ${cId}</b></td>
                     <td style="text-align:center; font-weight:800; color:var(--primary-color); font-size:16px; cursor:pointer;" onclick="window.showClassStudents('${cId}')">${count}</td>
-                    <td style="text-align:center;"><span style="background:${count > 0 ? '#2ecc71' : '#f1c40f'}; color:#fff; padding:3px 10px; border-radius:6px; font-size:12px; font-weight:700;">${count > 0 ? 'نشط ومستقر' : 'خالٍ من الطلاب'}</span></td>
                     <td style="text-align:center;">
+                        <span style="background:${isActive ? 'var(--green,#059669)' : '#f1c40f'}; color:#fff; padding:3px 10px; border-radius:6px; font-size:12px; font-weight:700;">
+                            ${isActive ? 'نشط' : 'فارغ'}
+                        </span>
+                    </td>
+                    <td style="text-align:center; display:flex; gap:6px; justify-content:center; padding:8px;">
                         <button onclick="window.showClassStudents('${cId}')"
-                            style="background:var(--sky,#1a78c2);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">
+                            style="background:var(--sky,#1a78c2); color:#fff; border:none; padding:5px 10px; border-radius:6px; font-family:'Cairo',sans-serif; font-size:11px; font-weight:700; cursor:pointer;">
                             👁 عرض
                         </button>
+                        <button onclick="window.deleteClassConfirm('${cId}', ${count})"
+                            style="background:${isActive ? '#e5e7eb' : 'var(--red,#dc2626)'}; color:${isActive ? '#999' : '#fff'}; border:none; padding:5px 10px; border-radius:6px; font-family:'Cairo',sans-serif; font-size:11px; font-weight:700; cursor:${isActive ? 'not-allowed' : 'pointer'};"
+                            ${isActive ? 'title="لا يمكن حذف فصل فيه طلاب" disabled' : ''}>
+                            🗑 حذف
+                        </button>
                     </td>
-                </tr>
-            `;
+                </tr>`;
         });
 
-        tbody.innerHTML = html || '<tr><td colspan="3" style="text-align:center; padding:15px;">💡 لا توجد فصول دراسية مقيدة.</td></tr>';
+        tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center; padding:15px; color:#aaa;">💡 لا توجد فصول. أضف فصلاً جديداً.</td></tr>';
+
     } catch(err) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red; padding:15px; font-weight:bold;">❌ تعذر استدعاء الكثافة الطلابية من السيرفر الموحد.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red; padding:15px;">❌ ${err.message}</td></tr>`;
     }
 }
 
+window.showAddClassModal = function() {
+    document.getElementById('new-class-id').value = '';
+    document.getElementById('add-class-modal').style.display = 'flex';
+    setTimeout(() => document.getElementById('new-class-id').focus(), 100);
+};
+
+window.saveNewClass = async function() {
+    var classId = document.getElementById('new-class-id').value.trim();
+    if (!classId) { window.showToast?.('أدخل اسم الفصل', 'warning'); return; }
+
+    // التحقق من الصيغة (رقم/رقم)
+    if (!/^\d+\/\d+$/.test(classId)) {
+        window.showToast?.('صيغة الفصل غير صحيحة — مثال: 6/1', 'warning');
+        return;
+    }
+
+    var schoolId = getActiveSchoolId();
+    try {
+        var docRef = doc(db, 'classes', `${schoolId}_${classId.replace('/', '-')}`);
+        var existing = await getDoc(docRef);
+        if (existing.exists()) { window.showToast?.('الفصل موجود مسبقاً', 'warning'); return; }
+
+        await setDoc(docRef, { classId, schoolId, createdAt: new Date().toISOString() });
+        document.getElementById('add-class-modal').style.display = 'none';
+        window.showToast?.(`✅ تم إضافة فصل ${classId}`);
+        await loadSchoolClasses();
+    } catch(e) {
+        window.showToast?.('❌ ' + e.message, 'error');
+    }
+};
+
+window.deleteClassConfirm = async function(classId, studentCount) {
+    if (studentCount > 0) { window.showToast?.('لا يمكن حذف فصل فيه طلاب', 'warning'); return; }
+    if (!confirm(`هل تريد حذف فصل ${classId}؟ لا يمكن التراجع.`)) return;
+
+    var schoolId = getActiveSchoolId();
+    try {
+        await deleteDoc(doc(db, 'classes', `${schoolId}_${classId.replace('/', '-')}`));
+        window.showToast?.(`✅ تم حذف فصل ${classId}`);
+        await loadSchoolClasses();
+    } catch(e) {
+        window.showToast?.('❌ ' + e.message, 'error');
+    }
+};
+
 // ══ عرض طلاب الفصل مع إمكانية نقلهم ══
 window.showClassStudents = async function(classId) {
-    var { getDocs: gd, query: q, collection: col, where: wh, updateDoc, doc }
+    var { getDocs: gd, query: q, collection: col, where: wh, updateDoc, doc: docFn }
         = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
     var { db: database, getActiveSchoolId: getSchool }
         = await import('../firebase-config.js');
@@ -105,7 +189,7 @@ window.showClassStudents = async function(classId) {
     document.getElementById('class-students-modal')?.remove();
 
     var modal = document.createElement('div');
-    modal.id    = 'class-students-modal';
+    modal.id = 'class-students-modal';
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
     modal.innerHTML = `
     <div style="background:#fff;border-radius:16px;padding:22px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;direction:rtl;font-family:'Cairo',sans-serif">
@@ -125,10 +209,8 @@ window.showClassStudents = async function(classId) {
 
         if(snap.empty) { body.innerHTML = '<div style="padding:20px;color:#aaa">لا يوجد طلاب في هذا الفصل</div>'; return; }
 
-        // جلب كل الفصول للنقل
         var allSnap = await gd(q(col(database,'students'), wh('schoolId','==',schoolId)));
         var allClasses = [...new Set(allSnap.docs.map(d=>d.data().classId).filter(Boolean))].sort();
-        var classOpts  = allClasses.map(c=>`<option value="${c}">${c}</option>`).join('');
 
         var rows = snap.docs.map(d => {
             var s = d.data();
@@ -158,12 +240,11 @@ window.moveStudent = async function(studentId, currentClass) {
     if(!newClass || newClass === currentClass) { window.showToast?.('اختر فصلاً مختلفاً','warning'); return; }
 
     try {
-        var { updateDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-        var { db: database }   = await import('../firebase-config.js');
-        await updateDoc(doc(database,'students',studentId), { classId: newClass });
+        var { updateDoc, doc: docFn } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        var { db: database } = await import('../firebase-config.js');
+        await updateDoc(docFn(database,'students',studentId), { classId: newClass });
         window.showToast?.(`✅ تم نقل الطالب إلى ${newClass}`);
         document.getElementById('class-students-modal')?.remove();
-        // تحديث الجدول
-        setTimeout(() => document.querySelector('[data-tab="tab-classes"]')?.click(), 500);
+        await loadSchoolClasses();
     } catch(e) { window.showToast?.('❌ ' + e.message, 'error'); }
 };

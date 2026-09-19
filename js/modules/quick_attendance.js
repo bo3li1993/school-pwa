@@ -215,63 +215,63 @@ export async function initQuickAttendanceModule() {
 
     <div class="qa-topbar">
         <div>
-            <h2><i class="bi bi-clipboard2-check-fill"></i> ÙƒØ´Ù Ø§Ù„Ø­Ø¶ÙˆØ± Ø§Ù„Ø³Ø±ÙŠØ¹</h2>
-            <span>Ù„Ù„Ù…Ø¯ÙŠØ± ÙˆØ§Ù„ÙˆÙƒÙŠÙ„ ÙˆØ§Ù„Ù…Ø´Ø±Ù</span>
+            <h2><i class="bi bi-clipboard2-check-fill"></i> كشف الحضور السريع</h2>
+            <span>للمدير والوكيل والمشرف</span>
         </div>
-        <span class="qa-date-badge">ðŸ“… ${today}</span>
+        <span class="qa-date-badge">📅 ${today}</span>
     </div>
 
-    <!-- Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„ÙØµÙ„ ÙˆØ§Ù„Ø­ØµØ© -->
+    <!-- اختيار الفصل والحصة -->
     <div class="qa-class-selector">
-        <label><i class="bi bi-door-open-fill"></i> Ø§Ù„ÙØµÙ„:</label>
+        <label><i class="bi bi-door-open-fill"></i> الفصل:</label>
         <select id="qa-class-select" class="qa-class-select" onchange="window.qaOnClassChange(this.value)">
-            <option value="">-- Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ --</option>
+            <option value="">-- اختر الفصل --</option>
         </select>
     </div>
 
-    <!-- ØªØ¨ÙˆÙŠØ¨Ø§Øª Ø§Ù„Ø­ØµØµ -->
+    <!-- تبويبات الحصص -->
     <div class="qa-period-tabs" id="qa-period-tabs" style="display:none;">
         ${[1,2,3,4,5,6,7].map(p => `
         <button class="qa-period-tab ${p===1?'active':''}" onclick="window.qaSelectPeriod(${p}, this)">
-            Ø­${p}
+            ح${p}
         </button>`).join('')}
     </div>
 
-    <!-- Ø§Ù„Ø¥Ø­ØµØ§Ø¦ÙŠØ§Øª -->
+    <!-- الإحصائيات -->
     <div class="qa-stats" id="qa-stats" style="display:none;">
         <div class="qa-stat present">
             <span class="qa-stat-num" id="qa-present-count">0</span>
-            <span class="qa-stat-label">Ø­Ø§Ø¶Ø±</span>
+            <span class="qa-stat-label">حاضر</span>
         </div>
         <div class="qa-stat absent">
             <span class="qa-stat-num" id="qa-absent-count">0</span>
-            <span class="qa-stat-label">ØºØ§Ø¦Ø¨</span>
+            <span class="qa-stat-label">غائب</span>
         </div>
         <div class="qa-stat late">
             <span class="qa-stat-num" id="qa-late-count">0</span>
-            <span class="qa-stat-label">Ù…ØªØ£Ø®Ø±</span>
+            <span class="qa-stat-label">متأخر</span>
         </div>
     </div>
 
-    <!-- Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø·Ù„Ø§Ø¨ -->
+    <!-- قائمة الطلاب -->
     <div id="qa-students-container">
-        <div class="qa-empty">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ù„Ø¹Ø±Ø¶ Ø§Ù„Ø·Ù„Ø§Ø¨</div>
+        <div class="qa-empty">اختر الفصل لعرض الطلاب</div>
     </div>
 
-    <!-- Ø²Ø± Ø§Ù„Ø­ÙØ¸ -->
+    <!-- زر الحفظ -->
     <div id="qa-save-section" style="display:none;">
         <button class="qa-save-btn" id="qa-save-btn" onclick="window.qaSaveAttendance()">
-            <i class="bi bi-check-circle-fill"></i> Ø­ÙØ¸ ÙƒØ´Ù Ø§Ù„Ø­Ø¶ÙˆØ±
+            <i class="bi bi-check-circle-fill"></i> حفظ كشف الحضور
         </button>
     </div>
 
-    <!-- Ø³Ø¬Ù„ Ø§Ù„ÙŠÙˆÙ… -->
+    <!-- سجل اليوم -->
     <div class="qa-log-section">
-        <div class="qa-log-header"><i class="bi bi-list-check"></i> Ø³Ø¬Ù„ Ø§Ù„ØºÙŠØ§Ø¨ Ø§Ù„ÙŠÙˆÙ…</div>
-        <div id="qa-today-log"><div class="qa-empty">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div></div>
+        <div class="qa-log-header"><i class="bi bi-list-check"></i> سجل الغياب اليوم</div>
+        <div id="qa-today-log"><div class="qa-empty">⏳ جاري التحميل...</div></div>
     </div>`;
 
-    // ØªØ­Ù…ÙŠÙ„ Ø§Ù„ÙØµÙˆÙ„
+    // تحميل الفصول
     try {
         var snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
         var classes = [...new Set(snap.docs.map(d => d.data().classId).filter(Boolean))].sort((a, b) => {
@@ -287,7 +287,7 @@ export async function initQuickAttendanceModule() {
         });
     } catch(e) {}
 
-    // ØªØ­Ù…ÙŠÙ„ Ø³Ø¬Ù„ Ø§Ù„ÙŠÙˆÙ…
+    // تحميل سجل اليوم
     await qaLoadTodayLog();
 }
 
@@ -308,7 +308,7 @@ window.qaOnClassChange = async function(classId) {
     var periodTabs = document.getElementById('qa-period-tabs');
 
     if (!classId) {
-        container.innerHTML = '<div class="qa-empty">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„ Ù„Ø¹Ø±Ø¶ Ø§Ù„Ø·Ù„Ø§Ø¨</div>';
+        container.innerHTML = '<div class="qa-empty">اختر الفصل لعرض الطلاب</div>';
         saveSection.style.display = 'none';
         stats.style.display = 'none';
         periodTabs.style.display = 'none';
@@ -316,7 +316,7 @@ window.qaOnClassChange = async function(classId) {
     }
 
     periodTabs.style.display = 'flex';
-    container.innerHTML = '<div class="qa-empty">â³ Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø·Ù„Ø§Ø¨...</div>';
+    container.innerHTML = '<div class="qa-empty">⏳ جاري تحميل الطلاب...</div>';
     studentStatuses = {};
     allStudentsLoaded = [];
 
@@ -332,7 +332,7 @@ window.qaOnClassChange = async function(classId) {
             .sort((a, b) => a.localeCompare(b, 'ar'));
 
         if (!allStudentsLoaded.length) {
-            container.innerHTML = '<div class="qa-empty">Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø·Ù„Ø§Ø¨ ÙÙŠ Ù‡Ø°Ø§ Ø§Ù„ÙØµÙ„</div>';
+            container.innerHTML = '<div class="qa-empty">لا يوجد طلاب في هذا الفصل</div>';
             return;
         }
 
@@ -344,9 +344,9 @@ window.qaOnClassChange = async function(classId) {
                 return `<div class="qa-student-row">
                     <span class="qa-student-name">${idx + 1}. ${name}</span>
                     <div class="qa-status-btns" id="qbtns-${safeId}">
-                        <button class="qa-btn present active" onclick="window.qaSetStatus('${name.replace(/'/g, "\\'")}', 'present', this.parentElement)">Ø­Ø§Ø¶Ø± âœ“</button>
-                        <button class="qa-btn absent" onclick="window.qaSetStatus('${name.replace(/'/g, "\\'")}', 'absent', this.parentElement)">ØºØ§Ø¦Ø¨ âœ—</button>
-                        <button class="qa-btn late" onclick="window.qaSetStatus('${name.replace(/'/g, "\\'")}', 'late', this.parentElement)">Ù…ØªØ£Ø®Ø± â°</button>
+                        <button class="qa-btn present active" onclick="window.qaSetStatus('${name.replace(/'/g, "\\'")}', 'present', this.parentElement)">حاضر ✓</button>
+                        <button class="qa-btn absent" onclick="window.qaSetStatus('${name.replace(/'/g, "\\'")}', 'absent', this.parentElement)">غائب ✗</button>
+                        <button class="qa-btn late" onclick="window.qaSetStatus('${name.replace(/'/g, "\\'")}', 'late', this.parentElement)">متأخر ⏰</button>
                     </div>
                 </div>`;
             }).join('') + '</div>';
@@ -356,7 +356,7 @@ window.qaOnClassChange = async function(classId) {
         qaUpdateStats();
 
     } catch(e) {
-        container.innerHTML = `<div class="qa-empty" style="color:#dc2626;">âŒ ${e.message}</div>`;
+        container.innerHTML = `<div class="qa-empty" style="color:#dc2626;">❌ ${e.message}</div>`;
     }
 };
 
@@ -383,7 +383,7 @@ window.qaSaveAttendance = async function() {
     var btn = document.getElementById('qa-save-btn');
 
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø­ÙØ¸...';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الحفظ...';
 
     try {
         var batch = writeBatch(db);
@@ -412,21 +412,21 @@ window.qaSaveAttendance = async function() {
 
         if (batchCount > 0) await batch.commit();
 
-        window.showToast?.('âœ… ØªÙ… Ø­ÙØ¸ ÙƒØ´Ù Ø§Ù„Ø­Ø¶ÙˆØ± Ø¨Ù†Ø¬Ø§Ø­');
-        btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> ØªÙ… Ø§Ù„Ø­ÙØ¸ âœ“';
+        window.showToast?.('✅ تم حفظ كشف الحضور بنجاح');
+        btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم الحفظ ✓';
         btn.style.background = '#16a34a';
         await qaLoadTodayLog();
 
         setTimeout(() => {
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Ø­ÙØ¸ ÙƒØ´Ù Ø§Ù„Ø­Ø¶ÙˆØ±';
+            btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> حفظ كشف الحضور';
             btn.style.background = '';
         }, 3000);
 
     } catch(e) {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Ø­ÙØ¸ ÙƒØ´Ù Ø§Ù„Ø­Ø¶ÙˆØ±';
-        window.showToast?.('âŒ ' + e.message, 'error');
+        btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> حفظ كشف الحضور';
+        window.showToast?.('❌ ' + e.message, 'error');
     }
 };
 
@@ -446,7 +446,7 @@ async function qaLoadTodayLog() {
         ));
 
         if (snap.empty) {
-            logEl.innerHTML = '<div class="qa-empty">âœ… Ù„Ø§ ÙŠÙˆØ¬Ø¯ ØºÙŠØ§Ø¨ Ø§Ù„ÙŠÙˆÙ…</div>';
+            logEl.innerHTML = '<div class="qa-empty">✅ لا يوجد غياب اليوم</div>';
             return;
         }
 
@@ -460,10 +460,10 @@ async function qaLoadTodayLog() {
         logEl.innerHTML = `<table style="width:100%; border-collapse:collapse; font-size:13px;">
             <thead>
                 <tr style="background:var(--off);">
-                    <th style="padding:10px 12px; text-align:right; font-weight:900;">Ø§Ù„Ø·Ø§Ù„Ø¨</th>
-                    <th style="padding:10px 12px; text-align:center;">Ø§Ù„ÙØµÙ„</th>
-                    <th style="padding:10px 12px; text-align:center;">Ø§Ù„Ø­ØµØ©</th>
-                    <th style="padding:10px 12px; text-align:center;">Ø§Ù„Ø­Ø§Ù„Ø©</th>
+                    <th style="padding:10px 12px; text-align:right; font-weight:900;">الطالب</th>
+                    <th style="padding:10px 12px; text-align:center;">الفصل</th>
+                    <th style="padding:10px 12px; text-align:center;">الحصة</th>
+                    <th style="padding:10px 12px; text-align:center;">الحالة</th>
                 </tr>
             </thead>
             <tbody>
@@ -471,10 +471,10 @@ async function qaLoadTodayLog() {
                 <tr style="border-bottom:1px solid #f0f0f0;">
                     <td style="padding:10px 12px; font-weight:700;">${r.studentName || '-'}</td>
                     <td style="padding:10px 12px; text-align:center;">${r.classId || '-'}</td>
-                    <td style="padding:10px 12px; text-align:center;">Ø­${r.period || '-'}</td>
+                    <td style="padding:10px 12px; text-align:center;">ح${r.period || '-'}</td>
                     <td style="padding:10px 12px; text-align:center;">
                         <span style="background:${r.status==='absent'?'#fef2f2':'#fffbeb'}; color:${r.status==='absent'?'#dc2626':'#d97706'}; padding:3px 10px; border-radius:6px; font-size:12px; font-weight:700;">
-                            ${r.status==='absent'?'ØºØ§Ø¦Ø¨':'Ù…ØªØ£Ø®Ø±'}
+                            ${r.status==='absent'?'غائب':'متأخر'}
                         </span>
                     </td>
                 </tr>`).join('')}
@@ -482,6 +482,6 @@ async function qaLoadTodayLog() {
         </table>`;
 
     } catch(e) {
-        logEl.innerHTML = `<div class="qa-empty" style="color:#dc2626;">âŒ ${e.message}</div>`;
+        logEl.innerHTML = `<div class="qa-empty" style="color:#dc2626;">❌ ${e.message}</div>`;
     }
 }

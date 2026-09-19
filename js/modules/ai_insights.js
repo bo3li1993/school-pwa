@@ -277,19 +277,12 @@ ${data.topStudents.slice(0,15).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.abs
 اكتشف: ١) الأنماط الزمنية (أيام/فترات) ٢) الأنماط الجغرافية (فصول/مراحل) ٣) أنماط الطلاب المتكررين ٤) علاقة الغياب بالسلوك والعيادة ٥) توقعات للأسبوع القادم`;
         }
 
-        // استدعاء Claude API
-        var response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                model: 'claude-sonnet-4-6',
-                max_tokens: 1000,
-                messages: [{ role: 'user', content: prompt }]
-            })
-        });
-
-        var result = await response.json();
-        var text = result.content?.[0]?.text || 'لم يتم الحصول على نتيجة';
+        // استدعاء Cloud Function (آمن - API key في السيرفر)
+        var { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+        var fns = getFunctions(undefined, 'me-central1');
+        var analyzeAI = httpsCallable(fns, 'analyzeAttendance');
+        var result = await analyzeAI({ prompt });
+        var text = result.data?.text || 'لم يتم الحصول على نتيجة';
 
         loadingEl.classList.remove('show');
         resultEl.textContent = text;

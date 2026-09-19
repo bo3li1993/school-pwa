@@ -320,11 +320,18 @@ window.exportStudentsFullPDF = async function() {
         : query(collection(db,"students"), where("schoolId","==",schoolId));
 
     var snap = await getDocs(q);
+    // ترتيب أبجدي: أولاً بالصف (6/1، 6/2...7/1...) ثم أبجدي بالاسم
+    var students = snap.docs.map(function(d) { return d.data(); });
+    students.sort(function(a, b) {
+        var ca = (a.classId||"").split("/").map(Number);
+        var cb = (b.classId||"").split("/").map(Number);
+        if ((ca[0]||0) !== (cb[0]||0)) return (ca[0]||0) - (cb[0]||0);
+        if ((ca[1]||0) !== (cb[1]||0)) return (ca[1]||0) - (cb[1]||0);
+        return (a.name||"").localeCompare(b.name||"", "ar");
+    });
     var rows = "";
-    var i = 0;
-    snap.forEach(function(d) {
-        var s = d.data();
-        i++;
+    students.forEach(function(s, idx) {
+        var i = idx + 1;
         rows += '<tr><td>' + i + '</td><td style="font-weight:900;">' + (s.name||"--") + '</td><td>' + (s.classId||"--") + '</td><td>' + (s.civilId||"--") + '</td><td>' + (s.parentPhone||"--") + '</td><td>' + (s.studentId||"--") + '</td></tr>';
     });
 
@@ -349,10 +356,16 @@ window.exportStudentsFullExcel = async function() {
     var snap = await getDocs(q);
     var rows = [["#","اسم الطالب","الفصل","الرقم المدني","هاتف ولي الامر","رقم الطالب"]];
     var i = 0;
-    snap.forEach(function(d) {
-        var s = d.data();
-        i++;
-        rows.push([i, s.name||"", s.classId||"", s.civilId||"", s.parentPhone||"", s.studentId||""]);
+    var students2 = snap.docs.map(function(d) { return d.data(); });
+    students2.sort(function(a, b) {
+        var ca = (a.classId||"").split("/").map(Number);
+        var cb = (b.classId||"").split("/").map(Number);
+        if ((ca[0]||0) !== (cb[0]||0)) return (ca[0]||0) - (cb[0]||0);
+        if ((ca[1]||0) !== (cb[1]||0)) return (ca[1]||0) - (cb[1]||0);
+        return (a.name||"").localeCompare(b.name||"", "ar");
+    });
+    students2.forEach(function(s, idx) {
+        rows.push([idx+1, s.name||"", s.classId||"", s.civilId||"", s.parentPhone||"", s.studentId||""]);
     });
     exportToCSV(rows, "كشف-الطلاب-" + (classId||"الكل"));
 };

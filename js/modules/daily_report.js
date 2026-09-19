@@ -1,4 +1,4 @@
-import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
+﻿import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 var PERIODS = ['الحصة الأولى','الحصة الثانية','الحصة الثالثة','الحصة الرابعة','الحصة الخامسة','الحصة السادسة','الحصة السابعة'];

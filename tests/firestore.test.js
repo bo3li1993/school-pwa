@@ -1,4 +1,4 @@
-const { initializeTestEnvironment, assertFails, assertSucceeds } = require("@firebase/rules-unit-testing");
+﻿const { initializeTestEnvironment, assertFails, assertSucceeds } = require("@firebase/rules-unit-testing");
 const { doc, getDoc, setDoc, updateDoc, addDoc, collection } = require("firebase/firestore");
 const fs = require("fs");
 
