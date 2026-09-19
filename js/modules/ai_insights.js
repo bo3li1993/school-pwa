@@ -2,10 +2,10 @@ import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, query, where, getDocs }
   from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// Ù…ÙˆØ¯ÙŠÙ„ Ø§Ù„ØªÙ‚Ø§Ø±ÙŠØ± Ø§Ù„Ø°ÙƒÙŠØ© â€” Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©
-// ÙŠØ³ØªØ®Ø¯Ù… Anthropic Claude API Ù„ØªØ­Ù„ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØºÙŠØ§Ø¨
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ══════════════════════════════════════════════════════
+// موديل التقارير الذكية — المنظومة الرقمية
+// يستخدم Anthropic Claude API لتحليل بيانات الغياب
+// ══════════════════════════════════════════════════════
 
 export async function initAiInsightsModule() {
     var container = document.getElementById('tab-ai-insights');
@@ -40,82 +40,82 @@ export async function initAiInsightsModule() {
         .insight-chip:hover{opacity:.8}
     </style>
 
-    <!-- Ù‡ÙŠØ¯Ø± -->
+    <!-- هيدر -->
     <div class="ai-card" style="border-top:4px solid var(--sky);background:linear-gradient(135deg,var(--off),var(--white))">
         <div class="ai-title">
             <i class="bi bi-robot" style="color:var(--sky);font-size:18px"></i>
-            Ø§Ù„ØªÙ‚Ø§Ø±ÙŠØ± Ø§Ù„Ø°ÙƒÙŠØ© â€” ØªØ­Ù„ÙŠÙ„ Ø¨Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ
+            التقارير الذكية — تحليل بالذكاء الاصطناعي
         </div>
         <p style="font-size:13px;color:var(--mid);margin-bottom:14px;font-weight:600">
-            ÙŠÙ‚ÙˆÙ… Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ Ø¨ØªØ­Ù„ÙŠÙ„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØºÙŠØ§Ø¨ ÙˆØ§Ù„Ø³Ù„ÙˆÙƒ ÙˆØ§Ø³ØªØ®Ù„Ø§Øµ Ø§Ù„ØªÙˆØµÙŠØ§Øª ÙˆØ§Ù„Ø£Ù†Ù…Ø§Ø· Ø§Ù„Ù…Ø®ÙÙŠØ©
+            يقوم الذكاء الاصطناعي بتحليل بيانات الغياب والسلوك واستخلاص التوصيات والأنماط المخفية
         </p>
 
-        <!-- Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„ÙØªØ±Ø© -->
+        <!-- اختيار الفترة -->
         <div style="margin-bottom:14px">
-            <label style="font-weight:800;font-size:12px;color:var(--mid);display:block;margin-bottom:8px">Ø§Ø®ØªØ± ÙØªØ±Ø© Ø§Ù„ØªØ­Ù„ÙŠÙ„:</label>
+            <label style="font-weight:800;font-size:12px;color:var(--mid);display:block;margin-bottom:8px">اختر فترة التحليل:</label>
             <div class="period-grid">
-                <button class="period-btn active" onclick="selectPeriod(this,'week')">Ø¢Ø®Ø± Ø£Ø³Ø¨ÙˆØ¹</button>
-                <button class="period-btn" onclick="selectPeriod(this,'month')">Ø¢Ø®Ø± Ø´Ù‡Ø±</button>
-                <button class="period-btn" onclick="selectPeriod(this,'semester')">Ø§Ù„ÙØµÙ„ ÙƒØ§Ù…Ù„Ø§Ù‹</button>
-                <button class="period-btn" onclick="selectPeriod(this,'today')">Ø§Ù„ÙŠÙˆÙ… ÙÙ‚Ø·</button>
+                <button class="period-btn active" onclick="selectPeriod(this,'week')">آخر أسبوع</button>
+                <button class="period-btn" onclick="selectPeriod(this,'month')">آخر شهر</button>
+                <button class="period-btn" onclick="selectPeriod(this,'semester')">الفصل كاملاً</button>
+                <button class="period-btn" onclick="selectPeriod(this,'today')">اليوم فقط</button>
             </div>
         </div>
 
         <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="ai-btn" id="btn-analyze" onclick="window.runAiAnalysis('general')">
-                <i class="bi bi-graph-up-arrow"></i> ØªØ­Ù„ÙŠÙ„ Ø´Ø§Ù…Ù„ Ù„Ù„ØºÙŠØ§Ø¨
+                <i class="bi bi-graph-up-arrow"></i> تحليل شامل للغياب
             </button>
             <button class="ai-btn secondary" id="btn-risks" onclick="window.runAiAnalysis('risks')">
-                <i class="bi bi-shield-exclamation"></i> Ø·Ù„Ø§Ø¨ ÙÙŠ Ø®Ø·Ø±
+                <i class="bi bi-shield-exclamation"></i> طلاب في خطر
             </button>
             <button class="ai-btn secondary" id="btn-recommendations" onclick="window.runAiAnalysis('recommendations')">
-                <i class="bi bi-lightbulb"></i> ØªÙˆØµÙŠØ§Øª Ù„Ù„Ø¥Ø¯Ø§Ø±Ø©
+                <i class="bi bi-lightbulb"></i> توصيات للإدارة
             </button>
             <button class="ai-btn secondary" id="btn-patterns" onclick="window.runAiAnalysis('patterns')">
-                <i class="bi bi-bezier2"></i> Ø£Ù†Ù…Ø§Ø· Ø§Ù„ØºÙŠØ§Ø¨
+                <i class="bi bi-bezier2"></i> أنماط الغياب
             </button>
         </div>
 
         <div class="ai-loading" id="ai-loading">
-            <div style="font-size:32px;margin-bottom:10px">ðŸ¤–</div>
-            <div>Ø§Ù„Ø°ÙƒØ§Ø¡ Ø§Ù„Ø§ØµØ·Ù†Ø§Ø¹ÙŠ ÙŠØ­Ù„Ù„ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª<span class="ai-dots">...</span></div>
-            <div style="font-size:12px;margin-top:6px;color:#aaa">Ù‚Ø¯ ÙŠØ³ØªØºØ±Ù‚ Ø¨Ø¶Ø¹ Ø«ÙˆØ§Ù†Ù</div>
+            <div style="font-size:32px;margin-bottom:10px">🤖</div>
+            <div>الذكاء الاصطناعي يحلل البيانات<span class="ai-dots">...</span></div>
+            <div style="font-size:12px;margin-top:6px;color:#aaa">قد يستغرق بضع ثوانٍ</div>
         </div>
 
         <div class="ai-result" id="ai-result"></div>
     </div>
 
-    <!-- Ù…Ù„Ø®Øµ Ø³Ø±ÙŠØ¹ -->
+    <!-- ملخص سريع -->
     <div class="ai-card">
-        <div class="ai-title"><i class="bi bi-lightning-fill" style="color:var(--gold)"></i> Ù…Ù„Ø®Øµ Ø³Ø±ÙŠØ¹ â€” Ø¨Ø¯ÙˆÙ† Ø°ÙƒØ§Ø¡ Ø§ØµØ·Ù†Ø§Ø¹ÙŠ</div>
-        <div class="stat-summary" id="quick-stats">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div>
+        <div class="ai-title"><i class="bi bi-lightning-fill" style="color:var(--gold)"></i> ملخص سريع — بدون ذكاء اصطناعي</div>
+        <div class="stat-summary" id="quick-stats">⏳ جاري التحميل...</div>
         <div id="quick-chips" style="margin-top:12px"></div>
     </div>
 
-    <!-- Ø¬Ø¯ÙˆÙ„ Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„Ø£ÙƒØ«Ø± ØºÙŠØ§Ø¨Ø§Ù‹ -->
+    <!-- جدول الطلاب الأكثر غياباً -->
     <div class="ai-card">
-        <div class="ai-title"><i class="bi bi-person-x-fill" style="color:var(--red)"></i> Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„Ø£ÙƒØ«Ø± ØºÙŠØ§Ø¨Ø§Ù‹</div>
+        <div class="ai-title"><i class="bi bi-person-x-fill" style="color:var(--red)"></i> الطلاب الأكثر غياباً</div>
         <div style="overflow-x:auto">
             <table style="width:100%;border-collapse:collapse;font-size:13px" id="top-absent-table">
                 <thead>
                     <tr style="background:var(--off)">
                         <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">#</th>
-                        <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">Ø§Ù„Ø·Ø§Ù„Ø¨</th>
-                        <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">Ø§Ù„ÙØµÙ„</th>
-                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">Ø£ÙŠØ§Ù… Ø§Ù„ØºÙŠØ§Ø¨</th>
-                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">Ø§Ù„Ù…Ø³ØªÙˆÙ‰</th>
-                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">Ø¥Ø¬Ø±Ø§Ø¡</th>
+                        <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">الطالب</th>
+                        <th style="padding:9px 12px;text-align:right;font-weight:800;font-size:12px;color:var(--mid)">الفصل</th>
+                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">أيام الغياب</th>
+                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">المستوى</th>
+                        <th style="padding:9px 12px;text-align:center;font-weight:800;font-size:12px;color:var(--mid)">إجراء</th>
                     </tr>
                 </thead>
                 <tbody id="top-absent-tbody">
-                    <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mid)">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</td></tr>
+                    <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mid)">⏳ جاري التحميل...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
     `;
 
-    // ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø£ÙˆÙ„ÙŠØ©
+    // تحميل البيانات الأولية
     await loadQuickStats();
     await loadTopAbsentStudents();
 }
@@ -128,7 +128,7 @@ window.selectPeriod = function(btn, period) {
     selectedPeriod = period;
 };
 
-// â•â• Ø­Ø³Ø§Ø¨ Ù†Ø·Ø§Ù‚ Ø§Ù„ØªØ§Ø±ÙŠØ® â•â•
+// ══ حساب نطاق التاريخ ══
 function getDateRange(period) {
     var to   = getTodayISO();
     var from = new Date();
@@ -139,7 +139,7 @@ function getDateRange(period) {
     return { from: from.toISOString().slice(0,10), to };
 }
 
-// â•â• Ø¬Ù„Ø¨ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØªØ­Ù„ÙŠÙ„ â•â•
+// ══ جلب بيانات التحليل ══
 async function fetchAnalysisData(period) {
     var schoolId = getActiveSchoolId();
     var { from, to } = getDateRange(period);
@@ -162,8 +162,8 @@ async function fetchAnalysisData(period) {
         if(data.status==='absent') absentCount++;
         else if(data.status==='late') lateCount++;
 
-        var name = data.studentName||data.name||'â€”';
-        var cls  = data.classId||'â€”';
+        var name = data.studentName||data.name||'—';
+        var cls  = data.classId||'—';
         if(!byStudent[name]) byStudent[name] = { name, cls, absent:0, late:0 };
         if(data.status==='absent') byStudent[name].absent++;
         else if(data.status==='late') byStudent[name].late++;
@@ -181,7 +181,7 @@ async function fetchAnalysisData(period) {
 
     var topStudents = Object.values(byStudent).sort((a,b)=>b.absent-a.absent).slice(0,20);
     var topClasses  = Object.entries(byClass).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    var days = ['Ø§Ù„Ø£Ø­Ø¯','Ø§Ù„Ø§Ø«Ù†ÙŠÙ†','Ø§Ù„Ø«Ù„Ø§Ø«Ø§Ø¡','Ø§Ù„Ø£Ø±Ø¨Ø¹Ø§Ø¡','Ø§Ù„Ø®Ù…ÙŠØ³'];
+    var days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
     var worstDay = Object.entries(byDay).sort((a,b)=>b[1]-a[1])[0];
     var atRisk = topStudents.filter(s=>s.absent>=5).length;
     var studentsNeedWarning = topStudents.filter(s=>s.absent>=3).length;
@@ -193,14 +193,14 @@ async function fetchAnalysisData(period) {
         clinicCount: clinicSnap.size,
         topStudents,
         topClasses,
-        worstDay: worstDay ? `${days[worstDay[0]]} (${worstDay[1]} ØºÙŠØ§Ø¨)` : 'â€”',
+        worstDay: worstDay ? `${days[worstDay[0]]} (${worstDay[1]} غياب)` : '—',
         atRisk, studentsNeedWarning,
         avgPerDay: Object.keys(byDate).length > 0
             ? Math.round(absentCount / Object.keys(byDate).length) : 0
     };
 }
 
-// â•â• ØªØ´ØºÙŠÙ„ Ø§Ù„ØªØ­Ù„ÙŠÙ„ Ø§Ù„Ø°ÙƒÙŠ â•â•
+// ══ تشغيل التحليل الذكي ══
 window.runAiAnalysis = async function(type) {
     var resultEl  = document.getElementById('ai-result');
     var loadingEl = document.getElementById('ai-loading');
@@ -208,81 +208,88 @@ window.runAiAnalysis = async function(type) {
     resultEl.classList.remove('show');
     loadingEl.classList.add('show');
 
-    // ØªØ¹Ø·ÙŠÙ„ Ø§Ù„Ø£Ø²Ø±Ø§Ø±
+    // تعطيل الأزرار
     document.querySelectorAll('.ai-btn').forEach(b=>b.disabled=true);
 
     try {
         var data = await fetchAnalysisData(selectedPeriod);
-        var periodLabel = {week:'Ø¢Ø®Ø± Ø£Ø³Ø¨ÙˆØ¹',month:'Ø¢Ø®Ø± Ø´Ù‡Ø±',semester:'Ø§Ù„ÙØµÙ„ Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠ',today:'Ø§Ù„ÙŠÙˆÙ…'}[selectedPeriod];
+        var periodLabel = {week:'آخر أسبوع',month:'آخر شهر',semester:'الفصل الدراسي',today:'اليوم'}[selectedPeriod];
 
-        // Ø¨Ù†Ø§Ø¡ Ø§Ù„Ù€ prompt Ø­Ø³Ø¨ Ù†ÙˆØ¹ Ø§Ù„ØªØ­Ù„ÙŠÙ„
+        // بناء الـ prompt حسب نوع التحليل
         var prompt = '';
 
         if(type==='general') {
-            prompt = `Ø£Ù†Øª Ù…Ø³ØªØ´Ø§Ø± ØªØ±Ø¨ÙˆÙŠ Ù…ØªØ®ØµØµ Ù„Ù„Ù…Ø¯Ø§Ø±Ø³ Ø§Ù„ÙƒÙˆÙŠØªÙŠØ©. Ø­Ù„Ù‘Ù„ Ù‡Ø°Ù‡ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª ÙˆÙ‚Ø¯Ù‘Ù… ØªÙ‚Ø±ÙŠØ±Ø§Ù‹ Ø´Ø§Ù…Ù„Ø§Ù‹ Ø¨Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©:
+            prompt = `أنت مستشار تربوي متخصص للمدارس الكويتية. حلّل هذه البيانات وقدّم تقريراً شاملاً باللغة العربية:
 
-**Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØºÙŠØ§Ø¨ â€” ${periodLabel}:**
-- Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø­Ø§Ù„Ø§Øª Ø§Ù„ØºÙŠØ§Ø¨: ${data.absentCount}
-- Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø­Ø§Ù„Ø§Øª Ø§Ù„ØªØ£Ø®ÙŠØ±: ${data.lateCount}
-- Ù…ØªÙˆØ³Ø· Ø§Ù„ØºÙŠØ§Ø¨ Ø§Ù„ÙŠÙˆÙ…ÙŠ: ${data.avgPerDay} Ø·Ø§Ù„Ø¨
-- Ø£ÙŠØ§Ù… Ø§Ù„Ø¹Ù…Ù„ ÙÙŠ Ø§Ù„ÙØªØ±Ø©: ${data.totalDays} ÙŠÙˆÙ…
-- Ø­ÙˆØ§Ø¯Ø« Ø³Ù„ÙˆÙƒÙŠØ©: ${data.behaviorCount}
-- Ù…Ø±Ø§Ø¬Ø¹Ø§Øª Ø§Ù„Ø¹ÙŠØ§Ø¯Ø©: ${data.clinicCount}
-- Ø·Ù„Ø§Ø¨ ÙÙŠ Ø®Ø·Ø± (5+ Ø£ÙŠØ§Ù…): ${data.atRisk}
-- Ø§Ù„ÙŠÙˆÙ… Ø§Ù„Ø£Ø³ÙˆØ£ ØºÙŠØ§Ø¨Ø§Ù‹: ${data.worstDay}
+**بيانات الغياب — ${periodLabel}:**
+- إجمالي حالات الغياب: ${data.absentCount}
+- إجمالي حالات التأخير: ${data.lateCount}
+- متوسط الغياب اليومي: ${data.avgPerDay} طالب
+- أيام العمل في الفترة: ${data.totalDays} يوم
+- حوادث سلوكية: ${data.behaviorCount}
+- مراجعات العيادة: ${data.clinicCount}
+- طلاب في خطر (5+ أيام): ${data.atRisk}
+- اليوم الأسوأ غياباً: ${data.worstDay}
 
-**Ø£ÙƒØ«Ø± Ø§Ù„ÙØµÙˆÙ„ ØºÙŠØ§Ø¨Ø§Ù‹:**
-${data.topClasses.map(([c,n],i)=>`${i+1}. ${c}: ${n} ØºÙŠØ§Ø¨`).join('\n')}
+**أكثر الفصول غياباً:**
+${data.topClasses.map(([c,n],i)=>`${i+1}. ${c}: ${n} غياب`).join('\n')}
 
-**Ø£ÙƒØ«Ø± Ø§Ù„Ø·Ù„Ø§Ø¨ ØºÙŠØ§Ø¨Ø§Ù‹:**
-${data.topStudents.slice(0,10).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.absent} ØºÙŠØ§Ø¨`).join('\n')}
+**أكثر الطلاب غياباً:**
+${data.topStudents.slice(0,10).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.absent} غياب`).join('\n')}
 
-Ù‚Ø¯Ù‘Ù…: Ù¡) Ù…Ù„Ø®Øµ ØªÙ†ÙÙŠØ°ÙŠ Ù¢) Ø£Ø¨Ø±Ø² Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ù£) Ù†Ù‚Ø§Ø· Ø§Ù„Ù‚Ù„Ù‚ Ù¤) ØªÙˆØµÙŠØ§Øª Ø¹Ù…Ù„ÙŠØ© Ù„Ù„Ø¥Ø¯Ø§Ø±Ø©`;
+قدّم: ١) ملخص تنفيذي ٢) أبرز الملاحظات ٣) نقاط القلق ٤) توصيات عملية للإدارة`;
 
         } else if(type==='risks') {
-            prompt = `Ø£Ù†Øª Ù…Ø³ØªØ´Ø§Ø± ØªØ±Ø¨ÙˆÙŠ. Ø­Ø¯Ù‘Ø¯ Ø§Ù„Ø·Ù„Ø§Ø¨ ÙÙŠ Ø®Ø·Ø± ÙˆØµÙ†Ù‘ÙÙ‡Ù… Ø­Ø³Ø¨ Ø§Ù„Ø£ÙˆÙ„ÙˆÙŠØ©:
+            prompt = `أنت مستشار تربوي. حدّد الطلاب في خطر وصنّفهم حسب الأولوية:
 
-**Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„Ø£ÙƒØ«Ø± ØºÙŠØ§Ø¨Ø§Ù‹ â€” ${periodLabel}:**
-${data.topStudents.slice(0,15).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.absent} ÙŠÙˆÙ… ØºÙŠØ§Ø¨ØŒ ${s.late} ØªØ£Ø®ÙŠØ±`).join('\n')}
+**الطلاب الأكثر غياباً — ${periodLabel}:**
+${data.topStudents.slice(0,15).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.absent} يوم غياب، ${s.late} تأخير`).join('\n')}
 
-**Ø§Ù„Ù…Ø¹Ø§ÙŠÙŠØ± Ø§Ù„ÙƒÙˆÙŠØªÙŠØ© Ù„Ù„Ø¥Ù†Ø°Ø§Ø±:**
-- 3 ØºÙŠØ§Ø¨Ø§Øª: ØªÙ†Ø¨ÙŠÙ‡
-- 5 ØºÙŠØ§Ø¨Ø§Øª: Ø§Ø³ØªØ¯Ø¹Ø§Ø¡ ÙˆÙ„ÙŠ Ø§Ù„Ø£Ù…Ø±
-- 8 ØºÙŠØ§Ø¨Ø§Øª: Ø¥Ù†Ø°Ø§Ø± Ø±Ø³Ù…ÙŠ
-- 10 ØºÙŠØ§Ø¨Ø§Øª: Ø­Ø±Ù…Ø§Ù† Ù…Ù† Ø§Ù„Ø§Ø®ØªØ¨Ø§Ø±Ø§Øª
+**المعايير الكويتية للإنذار:**
+- 3 غيابات: تنبيه
+- 5 غيابات: استدعاء ولي الأمر
+- 8 غيابات: إنذار رسمي
+- 10 غيابات: حرمان من الاختبارات
 
-Ù‚Ø¯Ù‘Ù…: Ù¡) Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø·Ù„Ø§Ø¨ Ù…ØµÙ†Ù‘ÙØ© Ø­Ø³Ø¨ Ù…Ø³ØªÙˆÙ‰ Ø§Ù„Ø®Ø·Ø± Ù¢) Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨ Ù„ÙƒÙ„ Ù…Ø³ØªÙˆÙ‰ Ù£) Ø£ÙˆÙ„ÙˆÙŠØ§Øª Ø§Ù„Ù…ØªØ§Ø¨Ø¹Ø©`;
+قدّم: ١) قائمة الطلاب مصنّفة حسب مستوى الخطر ٢) الإجراء المطلوب لكل مستوى ٣) أولويات المتابعة`;
 
         } else if(type==='recommendations') {
-            prompt = `Ø£Ù†Øª Ù…Ø³ØªØ´Ø§Ø± ØªØ±Ø¨ÙˆÙŠ Ù…ØªØ®ØµØµ. Ø¨Ù†Ø§Ø¡Ù‹ Ø¹Ù„Ù‰ Ù‡Ø°Ù‡ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ù‚Ø¯Ù‘Ù… ØªÙˆØµÙŠØ§Øª Ø¹Ù…Ù„ÙŠØ©:
+            prompt = `أنت مستشار تربوي متخصص. بناءً على هذه البيانات قدّم توصيات عملية:
 
-**Ù…Ù„Ø®Øµ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª â€” ${periodLabel}:**
-- ØºÙŠØ§Ø¨: ${data.absentCount} | ØªØ£Ø®ÙŠØ±: ${data.lateCount} | Ù…ØªÙˆØ³Ø· ÙŠÙˆÙ…ÙŠ: ${data.avgPerDay}
-- Ø£Ø³ÙˆØ£ ÙŠÙˆÙ…: ${data.worstDay}
-- Ø·Ù„Ø§Ø¨ ÙŠØ­ØªØ§Ø¬ÙˆÙ† ØªØ¯Ø®Ù„Ø§Ù‹: ${data.studentsNeedWarning}
-- Ø­ÙˆØ§Ø¯Ø« Ø³Ù„ÙˆÙƒÙŠØ©: ${data.behaviorCount}
-- Ø§Ù„ÙØµÙ„ Ø§Ù„Ø£ÙƒØ«Ø± ØºÙŠØ§Ø¨Ø§Ù‹: ${data.topClasses[0]?.[0]||'â€”'} (${data.topClasses[0]?.[1]||0} ØºÙŠØ§Ø¨)
+**ملخص البيانات — ${periodLabel}:**
+- غياب: ${data.absentCount} | تأخير: ${data.lateCount} | متوسط يومي: ${data.avgPerDay}
+- أسوأ يوم: ${data.worstDay}
+- طلاب يحتاجون تدخلاً: ${data.studentsNeedWarning}
+- حوادث سلوكية: ${data.behaviorCount}
+- الفصل الأكثر غياباً: ${data.topClasses[0]?.[0]||'—'} (${data.topClasses[0]?.[1]||0} غياب)
 
-Ù‚Ø¯Ù‘Ù… ØªÙˆØµÙŠØ§Øª Ø¹Ù…Ù„ÙŠØ© ÙÙŠ: Ù¡) Ø§Ù„ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø£ÙˆÙ„ÙŠØ§Ø¡ Ø§Ù„Ø£Ù…ÙˆØ± Ù¢) Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡Ø§Øª Ø§Ù„ÙˆÙ‚Ø§Ø¦ÙŠØ© Ù£) Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„Ù†ÙØ³ÙŠ ÙˆØ§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠ Ù¤) ØªØ­Ø³ÙŠÙ† Ø¨ÙŠØ¦Ø© Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ù¥) Ø®Ø·Ø© Ù…ØªØ§Ø¨Ø¹Ø© Ø£Ø³Ø¨ÙˆØ¹ÙŠØ©`;
+قدّم توصيات عملية في: ١) التواصل مع أولياء الأمور ٢) الإجراءات الوقائية ٣) الدعم النفسي والاجتماعي ٤) تحسين بيئة المدرسة ٥) خطة متابعة أسبوعية`;
 
         } else if(type==='patterns') {
-            prompt = `Ø£Ù†Øª Ù…Ø­Ù„Ù„ Ø¨ÙŠØ§Ù†Ø§Øª ØªØ±Ø¨ÙˆÙŠØ©. Ø§ÙƒØªØ´Ù Ø§Ù„Ø£Ù†Ù…Ø§Ø· Ø§Ù„Ù…Ø®ÙÙŠØ© ÙÙŠ Ù‡Ø°Ù‡ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª:
+            prompt = `أنت محلل بيانات تربوية. اكتشف الأنماط المخفية في هذه البيانات:
 
-**Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ØºÙŠØ§Ø¨ â€” ${periodLabel}:**
-- Ø¥Ø¬Ù…Ø§Ù„ÙŠ: ${data.absentCount} ØºÙŠØ§Ø¨ Ø®Ù„Ø§Ù„ ${data.totalDays} ÙŠÙˆÙ… Ø¹Ù…Ù„
-- Ø§Ù„ÙŠÙˆÙ… Ø§Ù„Ø£Ø³ÙˆØ£: ${data.worstDay}
-- Ø§Ù„ÙØµÙˆÙ„ Ø§Ù„Ù…ØªÙƒØ±Ø±Ø© ÙÙŠ Ø§Ù„ØºÙŠØ§Ø¨: ${data.topClasses.slice(0,5).map(([c,n])=>`${c}(${n})`).join('ØŒ ')}
-- Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„Ù…ØªÙƒØ±Ø±ÙˆÙ†: ${data.topStudents.filter(s=>s.absent>=3).length} Ø·Ø§Ù„Ø¨ Ø¨Ù€ 3+ Ø£ÙŠØ§Ù…
+**بيانات الغياب — ${periodLabel}:**
+- إجمالي: ${data.absentCount} غياب خلال ${data.totalDays} يوم عمل
+- اليوم الأسوأ: ${data.worstDay}
+- الفصول المتكررة في الغياب: ${data.topClasses.slice(0,5).map(([c,n])=>`${c}(${n})`).join('، ')}
+- الطلاب المتكررون: ${data.topStudents.filter(s=>s.absent>=3).length} طالب بـ 3+ أيام
 
-Ø§ÙƒØªØ´Ù: Ù¡) Ø§Ù„Ø£Ù†Ù…Ø§Ø· Ø§Ù„Ø²Ù…Ù†ÙŠØ© (Ø£ÙŠØ§Ù…/ÙØªØ±Ø§Øª) Ù¢) Ø§Ù„Ø£Ù†Ù…Ø§Ø· Ø§Ù„Ø¬ØºØ±Ø§ÙÙŠØ© (ÙØµÙˆÙ„/Ù…Ø±Ø§Ø­Ù„) Ù£) Ø£Ù†Ù…Ø§Ø· Ø§Ù„Ø·Ù„Ø§Ø¨ Ø§Ù„Ù…ØªÙƒØ±Ø±ÙŠÙ† Ù¤) Ø¹Ù„Ø§Ù‚Ø© Ø§Ù„ØºÙŠØ§Ø¨ Ø¨Ø§Ù„Ø³Ù„ÙˆÙƒ ÙˆØ§Ù„Ø¹ÙŠØ§Ø¯Ø© Ù¥) ØªÙˆÙ‚Ø¹Ø§Øª Ù„Ù„Ø£Ø³Ø¨ÙˆØ¹ Ø§Ù„Ù‚Ø§Ø¯Ù…`;
+اكتشف: ١) الأنماط الزمنية (أيام/فترات) ٢) الأنماط الجغرافية (فصول/مراحل) ٣) أنماط الطلاب المتكررين ٤) علاقة الغياب بالسلوك والعيادة ٥) توقعات للأسبوع القادم`;
         }
 
-        // Ø§Ø³ØªØ¯Ø¹Ø§Ø¡ Cloud Function (Ø¢Ù…Ù† - API key ÙÙŠ Ø§Ù„Ø³ÙŠØ±ÙØ±)
-        var { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
-        var fns = getFunctions(undefined, 'me-central1');
-        var analyzeAI = httpsCallable(fns, 'analyzeAttendance');
-        var result = await analyzeAI({ prompt });
-        var text = result.data?.text || 'Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø­ØµÙˆÙ„ Ø¹Ù„Ù‰ Ù†ØªÙŠØ¬Ø©';
+        // استدعاء Claude API
+        var response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-6',
+                max_tokens: 1000,
+                messages: [{ role: 'user', content: prompt }]
+            })
+        });
+
+        var result = await response.json();
+        var text = result.content?.[0]?.text || 'لم يتم الحصول على نتيجة';
 
         loadingEl.classList.remove('show');
         resultEl.textContent = text;
@@ -291,14 +298,14 @@ ${data.topStudents.slice(0,15).map((s,i)=>`${i+1}. ${s.name} (${s.cls}): ${s.abs
 
     } catch(e) {
         loadingEl.classList.remove('show');
-        resultEl.textContent = 'âŒ ØªØ¹Ø°Ø± Ø§Ù„ØªØ­Ù„ÙŠÙ„: ' + e.message;
+        resultEl.textContent = '❌ تعذر التحليل: ' + e.message;
         resultEl.classList.add('show');
     } finally {
         document.querySelectorAll('.ai-btn').forEach(b=>b.disabled=false);
     }
 };
 
-// â•â• Ù…Ù„Ø®Øµ Ø³Ø±ÙŠØ¹ â•â•
+// ══ ملخص سريع ══
 async function loadQuickStats() {
     var el = document.getElementById('quick-stats');
     var chips = document.getElementById('quick-chips');
@@ -321,24 +328,24 @@ async function loadQuickStats() {
             ? Math.round(((stuTotal.size - todayAbs.size) / stuTotal.size) * 100) : 100;
 
         el.innerHTML = `
-            <div class="stat-mini"><div class="n" style="color:var(--red)">${todayAbs.size}</div><div class="l">ØºÙŠØ§Ø¨ Ø§Ù„ÙŠÙˆÙ…</div></div>
-            <div class="stat-mini"><div class="n" style="color:var(--sky)">${weekAbs.size}</div><div class="l">ØºÙŠØ§Ø¨ Ø§Ù„Ø£Ø³Ø¨ÙˆØ¹</div></div>
-            <div class="stat-mini"><div class="n" style="color:var(--green)">${attendRate}%</div><div class="l">Ù†Ø³Ø¨Ø© Ø§Ù„Ø­Ø¶ÙˆØ±</div></div>
-            <div class="stat-mini"><div class="n" style="color:var(--navy)">${stuTotal.size}</div><div class="l">Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø·Ù„Ø§Ø¨</div></div>`;
+            <div class="stat-mini"><div class="n" style="color:var(--red)">${todayAbs.size}</div><div class="l">غياب اليوم</div></div>
+            <div class="stat-mini"><div class="n" style="color:var(--sky)">${weekAbs.size}</div><div class="l">غياب الأسبوع</div></div>
+            <div class="stat-mini"><div class="n" style="color:var(--green)">${attendRate}%</div><div class="l">نسبة الحضور</div></div>
+            <div class="stat-mini"><div class="n" style="color:var(--navy)">${stuTotal.size}</div><div class="l">إجمالي الطلاب</div></div>`;
 
-        // chips Ø°ÙƒÙŠØ©
+        // chips ذكية
         var insightChips = [];
-        if(todayAbs.size > 20) insightChips.push(`<span class="insight-chip chip-danger">âš ï¸ ØºÙŠØ§Ø¨ Ù…Ø±ØªÙØ¹ Ø§Ù„ÙŠÙˆÙ…: ${todayAbs.size}</span>`);
-        if(attendRate >= 95) insightChips.push(`<span class="insight-chip chip-success">ðŸŽ‰ Ù†Ø³Ø¨Ø© Ø­Ø¶ÙˆØ± Ù…Ù…ØªØ§Ø²Ø© ${attendRate}%</span>`);
-        if(attendRate < 85) insightChips.push(`<span class="insight-chip chip-warn">ðŸ“‰ Ù†Ø³Ø¨Ø© Ø§Ù„Ø­Ø¶ÙˆØ± Ø£Ù‚Ù„ Ù…Ù† 85%</span>`);
-        if(weekAbs.size > todayAbs.size * 5) insightChips.push(`<span class="insight-chip chip-info">ðŸ“Š Ø§Ù„Ø£Ø³Ø¨ÙˆØ¹ Ø£Ø¹Ù„Ù‰ Ù…Ù† Ø§Ù„Ù…ØªÙˆØ³Ø·</span>`);
+        if(todayAbs.size > 20) insightChips.push(`<span class="insight-chip chip-danger">⚠️ غياب مرتفع اليوم: ${todayAbs.size}</span>`);
+        if(attendRate >= 95) insightChips.push(`<span class="insight-chip chip-success">🎉 نسبة حضور ممتازة ${attendRate}%</span>`);
+        if(attendRate < 85) insightChips.push(`<span class="insight-chip chip-warn">📉 نسبة الحضور أقل من 85%</span>`);
+        if(weekAbs.size > todayAbs.size * 5) insightChips.push(`<span class="insight-chip chip-info">📊 الأسبوع أعلى من المتوسط</span>`);
 
-        chips.innerHTML = insightChips.join('') || '<span style="color:var(--mid);font-size:13px;font-weight:700">Ù„Ø§ ØªÙˆØ¬Ø¯ ØªÙ†Ø¨ÙŠÙ‡Ø§Øª Ø®Ø§ØµØ© Ø§Ù„ÙŠÙˆÙ… âœ…</span>';
+        chips.innerHTML = insightChips.join('') || '<span style="color:var(--mid);font-size:13px;font-weight:700">لا توجد تنبيهات خاصة اليوم ✅</span>';
 
-    } catch(e) { el.innerHTML = 'âŒ ØªØ¹Ø°Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„'; }
+    } catch(e) { el.innerHTML = '❌ تعذر التحميل'; }
 }
 
-// â•â• Ø£ÙƒØ«Ø± Ø§Ù„Ø·Ù„Ø§Ø¨ ØºÙŠØ§Ø¨Ø§Ù‹ â•â•
+// ══ أكثر الطلاب غياباً ══
 async function loadTopAbsentStudents() {
     var tbody = document.getElementById('top-absent-tbody');
     var schoolId = getActiveSchoolId();
@@ -350,8 +357,8 @@ async function loadTopAbsentStudents() {
         var byStudent = {};
         snap.forEach(d => {
             var data = d.data();
-            var name = data.studentName||data.name||'â€”';
-            var cls  = data.classId||'â€”';
+            var name = data.studentName||data.name||'—';
+            var cls  = data.classId||'—';
             var phone= data.parentPhone||'';
             var key  = `${name}__${cls}`;
             if(!byStudent[key]) byStudent[key] = { name, cls, phone, count:0 };
@@ -360,16 +367,16 @@ async function loadTopAbsentStudents() {
 
         var sorted = Object.values(byStudent).sort((a,b)=>b.count-a.count).slice(0,20);
         if(!sorted.length) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mid)">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø³Ø¬Ù„Ø§Øª ØºÙŠØ§Ø¨</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mid)">لا توجد سجلات غياب</td></tr>';
             return;
         }
 
         tbody.innerHTML = sorted.map((s,i) => {
-            var level = s.count >= 10 ? ['ðŸ”´ Ø­Ø±Ù…Ø§Ù†','#dc2626']
-                : s.count >= 8 ? ['ðŸŸ  Ø¥Ù†Ø°Ø§Ø± Ø±Ø³Ù…ÙŠ','#ea580c']
-                : s.count >= 5 ? ['ðŸŸ¡ Ø§Ø³ØªØ¯Ø¹Ø§Ø¡','#d97706']
-                : s.count >= 3 ? ['ðŸ“¢ ØªÙ†Ø¨ÙŠÙ‡','#6b7280']
-                : ['âœ… Ø·Ø¨ÙŠØ¹ÙŠ','#16a34a'];
+            var level = s.count >= 10 ? ['🔴 حرمان','#dc2626']
+                : s.count >= 8 ? ['🟠 إنذار رسمي','#ea580c']
+                : s.count >= 5 ? ['🟡 استدعاء','#d97706']
+                : s.count >= 3 ? ['📢 تنبيه','#6b7280']
+                : ['✅ طبيعي','#16a34a'];
 
             var phone = (s.phone||'').replace(/\D/g,'');
             return `<tr style="border-bottom:1px solid var(--line)">
@@ -384,23 +391,23 @@ async function loadTopAbsentStudents() {
                     ${phone ? `<button onclick="window.sendAbsenceAlert('${s.name}','${s.cls}','${s.count}','${phone}')"
                         style="background:#25d366;color:#fff;border:none;padding:5px 10px;border-radius:6px;
                         font-family:'Cairo',sans-serif;font-size:11px;font-weight:700;cursor:pointer">
-                        <i class="bi bi-whatsapp"></i> ÙˆØ§ØªØ³Ø§Ø¨
-                    </button>` : '<span style="color:#ccc;font-size:11px">Ù„Ø§ Ø±Ù‚Ù…</span>'}
+                        <i class="bi bi-whatsapp"></i> واتساب
+                    </button>` : '<span style="color:#ccc;font-size:11px">لا رقم</span>'}
                 </td>
             </tr>`;
         }).join('');
 
-    } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;padding:20px">âŒ ${e.message}</td></tr>`; }
+    } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;padding:20px">❌ ${e.message}</td></tr>`; }
 }
 
 window.sendAbsenceAlert = function(name, cls, count, phone) {
     var today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
-    var level = count >= 10 ? 'Ø­Ø±Ù…Ø§Ù† Ù…Ù† Ø§Ù„Ø§Ø®ØªØ¨Ø§Ø±Ø§Øª' : count >= 8 ? 'Ø¥Ù†Ø°Ø§Ø± Ø±Ø³Ù…ÙŠ' : count >= 5 ? 'Ø§Ø³ØªØ¯Ø¹Ø§Ø¡ ÙˆÙ„ÙŠ Ø§Ù„Ø£Ù…Ø±' : 'ØªÙ†Ø¨ÙŠÙ‡';
+    var level = count >= 10 ? 'حرمان من الاختبارات' : count >= 8 ? 'إنذار رسمي' : count >= 5 ? 'استدعاء ولي الأمر' : 'تنبيه';
     var msg = encodeURIComponent(
-        `Ø§Ù„Ø³Ù„Ø§Ù… Ø¹Ù„ÙŠÙƒÙ… ÙˆÙ„ÙŠ Ø£Ù…Ø± Ø§Ù„Ø·Ø§Ù„Ø¨ ${name} â€” ÙØµÙ„ ${cls}ØŒ\n` +
-        `Ù†ÙØ¹Ù„Ù…ÙƒÙ… Ø¨Ø£Ù† Ø§Ø¨Ù†ÙƒÙ… Ø¨Ù„Øº Ø¹Ø¯Ø¯ ØºÙŠØ§Ø¨Ø§ØªÙ‡ ${count} ÙŠÙˆÙ…Ø§Ù‹ Ø­ØªÙ‰ ØªØ§Ø±ÙŠØ® ${today}.\n` +
-        `Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¡ Ø§Ù„Ù…ØªØ±ØªØ¨: ${level}.\n` +
-        `ÙŠØ±Ø¬Ù‰ Ù…Ø±Ø§Ø¬Ø¹Ø© Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø¯Ø±Ø³Ø©.`
+        `السلام عليكم ولي أمر الطالب ${name} — فصل ${cls}،\n` +
+        `نُعلمكم بأن ابنكم بلغ عدد غياباته ${count} يوماً حتى تاريخ ${today}.\n` +
+        `الإجراء المترتب: ${level}.\n` +
+        `يرجى مراجعة إدارة المدرسة.`
     );
     window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
 };

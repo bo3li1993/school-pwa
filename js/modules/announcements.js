@@ -2,119 +2,88 @@
 function escHtml(str) { var d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
 
 import { db, getActiveSchoolId } from '../firebase-config.js';
-import { collection, query, where, addDoc, deleteDoc, updateDoc, doc, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, query, where, addDoc, deleteDoc, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// â•â• onSnapshot cleanup â•â•
+// â•گâ•گ onSnapshot cleanup â•گâ•گ
 let _annUnsubs = [];
 window._cleanupAnnouncements = function() {
     _annUnsubs.forEach(fn => { try { fn(); } catch(e) {} });
     _annUnsubs = [];
 };
 
+
 let unsubscribeAnnouncements = null;
 
-function getTodayISO() {
-    return new Date().toISOString().split('T')[0];
-}
-
-// Ø§Ù„Ø¯Ø§Ù„Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ© Ù„ØªØ´ØºÙŠÙ„ Ø§Ù„Ù…ÙˆØ¯ÙŠÙˆÙ„ Ø¹Ù†Ø¯ ÙØªØ­ Ø§Ù„ØªØ¨ÙˆÙŠØ¨
+// âڑ، ط§ظ„ط¯ط§ظ„ط© ط§ظ„ط±ط¦ظٹط³ظٹط© ظ„طھط´ط؛ظٹظ„ ط§ظ„ظ…ظˆط¯ظٹظˆظ„ ط¹ظ†ط¯ ظپطھط­ ط§ظ„طھط¨ظˆظٹط¨
 export function initAnnouncementsModule() {
     var container = document.getElementById('tab-announcements');
     if (!container) return;
 
+    // ط¨ظ†ط§ط، ط§ظ„ظˆط§ط¬ظ‡ط© ط§ظ„ط¨ط±ظ…ط¬ظٹط© ط§ظ„ظƒط§ظ…ظ„ط© (ظ†ظ…ظˆط°ط¬ ط§ظ„ط¥ط¶ط§ظپط© + ظ‚ط§ط¦ظ…ط© ط§ظ„ط¹ط±ط¶ ط§ظ„ظ„ط­ط¸ظٹط©)
     container.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 24px; font-family: 'Cairo', sans-serif; direction: rtl; padding: 8px;">
-
-            <!-- Ø¨Ø·Ø§Ù‚Ø© Ø¥Ø¶Ø§ÙØ© Ø¥Ø¹Ù„Ø§Ù† -->
+        <div style="display: flex; flex-direction: column; gap: 24px; font-family: 'Cairo', sans-serif; direction: rtl;">
+            
+            <!-- ًں“£ ط¨ط·ط§ظ‚ط© ط¥ط¶ط§ظپط© ط¥ط¹ظ„ط§ظ† ط£ظˆ ط®ط¨ط± ط¬ط¯ظٹط¯ ظ„ظ„ظ…ط¯ط±ط³ط© -->
             <div class="card" style="background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                 <h2 style="color: #0b2545; font-weight: 900; font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
-                    <i class="bi bi-megaphone-fill" style="color: #d4920a;"></i> Ù†Ø´Ø± Ø¥Ø¹Ù„Ø§Ù† Ø£Ùˆ ØªØ¹Ù…ÙŠÙ… Ø¬Ø¯ÙŠØ¯ Ù„Ù„Ù…Ù†Ø´Ø£Ø©
+                    <i class="bi bi-megaphone-fill" style="color: #d4920a;"></i> ظ†ط´ط± ط¥ط¹ظ„ط§ظ† ط£ظˆ طھط¹ظ…ظٹظ… ط¬ط¯ظٹط¯ ظ„ظ„ظ…ظ†ط´ط£ط©
                 </h2>
-
+                
                 <form id="form-add-announcement" onsubmit="window.handlePublishAnnouncement(event)">
                     <div style="margin-bottom: 14px;">
-                        <label style="display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: #111827;">Ø¹Ù†ÙˆØ§Ù† Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† / Ø§Ù„Ø®Ø¨Ø± Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ</label>
-                        <input type="text" id="ann-title" placeholder="Ù…Ø«Ø§Ù„: ØªØ¹Ù…ÙŠÙ… Ø¨Ø´Ø£Ù† Ø¬Ø¯Ø§ÙˆÙ„ Ø§Ø®ØªØ¨Ø§Ø±Ø§Øª Ø§Ù„ÙØªØ±Ø© Ø§Ù„Ø¯Ø±Ø§Ø³ÙŠØ© Ø§Ù„Ø£ÙˆÙ„Ù‰" required style="width: 100%; padding: 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 14.5px; font-weight: 600; outline: none; font-family: 'Cairo', sans-serif; box-sizing: border-box;">
+                        <label style="display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: #111827;">ط¹ظ†ظˆط§ظ† ط§ظ„ط¥ط¹ظ„ط§ظ† / ط§ظ„ط®ط¨ط± ط§ظ„ط±ط¦ظٹط³ظٹ</label>
+                        <input type="text" id="ann-title" placeholder="ظ…ط«ط§ظ„: طھط¹ظ…ظٹظ… ط¨ط´ط£ظ† ط¬ط¯ط§ظˆظ„ ط§ط®طھط¨ط§ط±ط§طھ ط§ظ„ظپطھط±ط© ط§ظ„ط¯ط±ط§ط³ظٹط© ط§ظ„ط£ظˆظ„ظ‰" required style="width: 100%; padding: 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 14.5px; font-weight: 600; outline: none;">
                     </div>
-
+                    
                     <div style="margin-bottom: 14px;">
-                        <label style="display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: #111827;">ØªÙØ§ØµÙŠÙ„ ÙˆÙ…Ø­ØªÙˆÙ‰ Ø§Ù„ØªØ¹Ù…ÙŠÙ… Ø¨Ø§Ù„ÙƒØ§Ù…Ù„</label>
-                        <textarea id="ann-content" rows="4" placeholder="Ø§ÙƒØªØ¨ ØªÙØ§ØµÙŠÙ„ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙˆØ§Ù„ØªØ¹Ù„ÙŠÙ…Ø§Øª Ø§Ù„Ù…ÙˆØ¬Ù‡Ø© Ù„Ù„Ù‡ÙŠØ¦Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ© Ø£Ùˆ Ø£ÙˆÙ„ÙŠØ§Ø¡ Ø§Ù„Ø£Ù…ÙˆØ± Ù‡Ù†Ø§..." required style="width: 100%; padding: 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 14.5px; font-weight: 600; outline: none; resize: vertical; font-family: 'Cairo', sans-serif; box-sizing: border-box;"></textarea>
+                        <label style="display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: #111827;">طھظپط§طµظٹظ„ ظˆظ…ط­طھظˆظ‰ ط§ظ„طھط¹ظ…ظٹظ… ط¨ط§ظ„ظƒط§ظ…ظ„</label>
+                        <textarea id="ann-content" rows="4" placeholder="ط§ظƒطھط¨ طھظپط§طµظٹظ„ ط§ظ„ط¥ط¹ظ„ط§ظ† ظˆط§ظ„طھط¹ظ„ظٹظ…ط§طھ ط§ظ„ظ…ظˆط¬ظ‡ط© ظ„ظ„ظ‡ظٹط¦ط© ط§ظ„طھط¹ظ„ظٹظ…ظٹط© ط£ظˆ ط£ظˆظ„ظٹط§ط، ط§ظ„ط£ظ…ظˆط± ظ‡ظ†ط§..." required style="width: 100%; padding: 12px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 14.5px; font-weight: 600; outline: none; resize: vertical; font-family: 'Cairo', sans-serif;"></textarea>
                     </div>
-
-                    <!-- Ø§Ù„Ø£ÙˆÙ„ÙˆÙŠØ© â€” ÙÙƒØ±Ø© Ø¬Ø¯ÙŠØ¯Ø© -->
-                    <div style="margin-bottom: 14px;">
-                        <label style="display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: #111827;">Ø£Ù‡Ù…ÙŠØ© Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†</label>
-                        <select id="ann-priority" style="width: 100%; padding: 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13.5px; font-family: 'Cairo', sans-serif; background: #fff;">
-                            <option value="normal">ðŸ”µ Ø¹Ø§Ø¯ÙŠ</option>
-                            <option value="important">ðŸŸ¡ Ù…Ù‡Ù…</option>
-                            <option value="urgent">ðŸ”´ Ø¹Ø§Ø¬Ù„</option>
-                        </select>
-                    </div>
-
-                    <!-- Ø§Ù„Ø¬Ù‡Ø© Ø§Ù„Ù…Ø³ØªÙ‡Ø¯ÙØ© â€” ÙÙƒØ±Ø© Ø¬Ø¯ÙŠØ¯Ø© -->
-                    <div style="margin-bottom: 14px;">
-                        <label style="display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: #111827;">Ø§Ù„Ø¬Ù‡Ø© Ø§Ù„Ù…Ø³ØªÙ‡Ø¯ÙØ©</label>
-                        <select id="ann-target" style="width: 100%; padding: 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13.5px; font-family: 'Cairo', sans-serif; background: #fff;">
-                            <option value="all">ðŸ‘¥ Ø§Ù„Ø¬Ù…ÙŠØ¹</option>
-                            <option value="staff">ðŸ‘¨â€ðŸ« Ø§Ù„Ù‡ÙŠØ¦Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ© ÙÙ‚Ø·</option>
-                            <option value="parents">ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Ø£ÙˆÙ„ÙŠØ§Ø¡ Ø§Ù„Ø£Ù…ÙˆØ± ÙÙ‚Ø·</option>
-                        </select>
-                    </div>
-
+                    
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: #111827;">Ø¥Ø±ÙØ§Ù‚ ØµÙˆØ±Ø© Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† Ø§Ù„ÙØ¹Ø§Ù„ÙŠØ© Ø£Ùˆ Ù„ÙˆØ­Ø© Ø§Ù„Ø´Ø±Ù (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)</label>
-                        <input type="file" id="ann-image-file" accept="image/*" onchange="window.processAnnouncementImage(event)" style="width: 100%; padding: 8px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; background: #f9fafb; cursor: pointer; box-sizing: border-box;">
-                        <div id="ann-image-preview" style="margin-top: 10px; display: none; align-items: center; gap: 8px;">
+                        <label style="display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 6px; color: #111827;">ط¥ط±ظپط§ظ‚ طµظˆط±ط© ط§ظ„ط¥ط¹ظ„ط§ظ† ط§ظ„ظپط¹ط§ظ„ظٹط© ط£ظˆ ظ„ظˆط­ط© ط§ظ„ط´ط±ظپ (ط§ط®طھظٹط§ط±ظٹ)</label>
+                        <input type="file" id="ann-image-file" accept="image/*" onchange="window.processAnnouncementImage(event)" style="width: 100%; padding: 8px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; background: #f9fafb; cursor: pointer;">
+                        <div id="ann-image-preview" style="margin-top: 10px; display: none;">
                             <img id="img-preview-src" src="" style="max-height: 160px; border-radius: 8px; border: 1px dashed #1a78c2; padding: 4px;">
-                            <button type="button" onclick="window.clearAnnouncementImage()" style="background: #dc2626; color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Cairo', sans-serif;">Ø­Ø°Ù Ø§Ù„ØµÙˆØ±Ø©</button>
+                            <button type="button" onclick="window.clearAnnouncementImage()" style="background: #dc2626; color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-right: 8px; cursor: pointer;">ط­ط°ظپ ط§ظ„طµظˆط±ط©</button>
                         </div>
                     </div>
-
+                    
                     <div style="text-align: left;">
-                        <button type="submit" id="btn-publish-ann" style="background: #1a78c2; color: #fff; border: none; padding: 12px 28px; border-radius: 8px; font-weight: 700; font-size: 14.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: 'Cairo', sans-serif;">
-                            <i class="bi bi-send-fill"></i> Ø¨Ø« ÙˆÙ†Ø´Ø± Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙÙˆØ±Ø§Ù‹
+                        <button type="submit" id="btn-publish-ann" style="background: #1a78c2; color: #fff; border: none; padding: 12px 28px; border-radius: 8px; font-weight: 700; font-size: 14.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s;">
+                            <i class="bi bi-send-fill"></i> ط¨ط« ظˆظ†ط´ط± ط§ظ„ط¥ط¹ظ„ط§ظ† ظپظˆط±ط§ظ‹ ظ„ظˆط¬ظ‡ط§طھ ط§ظ„ظ…ظ†طµط©
                         </button>
                     </div>
                 </form>
             </div>
-
-            <!-- ÙÙ„ØªØ± Ø§Ù„Ø¨Ø­Ø« â€” ÙÙƒØ±Ø© Ø¬Ø¯ÙŠØ¯Ø© -->
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <input id="ann-search" type="text" placeholder="ðŸ” Ø§Ø¨Ø­Ø« ÙÙŠ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª..." oninput="window.filterAnnouncements()" style="flex: 1; min-width: 200px; padding: 10px 14px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13.5px; font-family: 'Cairo', sans-serif; outline: none;">
-                <select id="ann-filter-priority" onchange="window.filterAnnouncements()" style="padding: 10px; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Cairo', sans-serif; background: #fff;">
-                    <option value="all">ÙƒÙ„ Ø§Ù„Ø£Ù‡Ù…ÙŠØ©</option>
-                    <option value="urgent">ðŸ”´ Ø¹Ø§Ø¬Ù„</option>
-                    <option value="important">ðŸŸ¡ Ù…Ù‡Ù…</option>
-                    <option value="normal">ðŸ”µ Ø¹Ø§Ø¯ÙŠ</option>
-                </select>
-            </div>
-
-            <!-- Ù‚Ø§Ø¦Ù…Ø© Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø§Ù„Ø­ÙŠØ© -->
+            
+            <!-- ًں“° ظ…ط¹ط±ط¶ ط§ظ„ط¥ط¹ظ„ط§ظ†ط§طھ ط§ظ„ط­ظٹط© ط§ظ„ظ…ظ†ط´ظˆط±ط© ط­ط§ظ„ظٹط§ظ‹ ط¨ط§ظ„ظ…ط¯ط±ط³ط© -->
             <div>
                 <h3 style="color: #0b2545; font-weight: 900; font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-                    <i class="bi bi-collection-play-fill" style="color: #1a78c2;"></i> Ø¬Ø¯Ø§Ø± Ø§Ù„Ø£Ø®Ø¨Ø§Ø± ÙˆØ§Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø§Ù„Ù†Ø´Ø·Ø© Ø¨Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø­Ø§Ù„ÙŠØ§Ù‹
+                    <i class="bi bi-collection-play-fill" style="color: #1a78c2;"></i> ط¬ط¯ط§ط± ط§ظ„ط£ط®ط¨ط§ط± ظˆط§ظ„ط¥ط¹ظ„ط§ظ†ط§طھ ط§ظ„ظ†ط´ط·ط© ط¨ط§ظ„ظ…ط¯ط±ط³ط© ط­ط§ظ„ظٹط§ظ‹
                 </h3>
                 <div id="container-announcements-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
-                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280; font-weight: 700;">â³ Ø¬Ø§Ø±ÙŠ ÙØ­Øµ Ø±Ø§Ø¯Ø§Ø± Ø§Ù„Ø£Ø®Ø¨Ø§Ø± ÙˆØ§Ø³ØªØ¯Ø¹Ø§Ø¡ Ø§Ù„Ø³Ø¬Ù„Ø§Øª...</div>
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #6b7280; font-weight: 700;">âڈ³ ط¬ط§ط±ظٹ ظپط­طµ ط±ط§ط¯ط§ط± ط§ظ„ط£ط®ط¨ط§ط± ظˆط§ط³طھط¯ط¹ط§ط، ط§ظ„ط³ط¬ظ„ط§طھ...</div>
                 </div>
             </div>
 
         </div>
     `;
 
+    // طھطµظپظٹط± ظˆطھظ†ط¸ظٹظپ ط£ظٹ طµظˆط± ظ…ط¹ظ„ظ‚ط© ظ…ظ† ط§ظ„ط¬ظ„ط³ط§طھ ط§ظ„ط³ط§ط¨ظ‚ط©
     window.currentAnnouncementBase64Image = "";
-    window._allAnnouncements = [];
+
+    // طھط´ط؛ظٹظ„ ظ…ط­ط±ظƒ ط§ظ„ط§ط³طھظ…ط§ط¹ ط§ظ„ط­ظٹ ط§ظ„ظ…ظˆط­ط¯ ظ„ظ„ط¥ط¹ظ„ط§ظ†ط§طھ ط§ظ„ط®ط§طµط© ط¨ظ‡ط°ظ‡ ط§ظ„ظ…ط¯ط±ط³ط© ظپظ‚ط·
     startLiveAnnouncementsListener();
 }
 
-// Ù…Ø¹Ø§Ù„Ø¬Ø© Ø§Ù„ØµÙˆØ±Ø© Ø§Ù„Ù…Ø±ÙÙˆØ¹Ø©
+// ًں–¼ï¸ڈ ظ…ط¹ط§ظ„ط¬ط© ط§ظ„طµظˆط±ط© ط§ظ„ظ…ط±ظپظˆط¹ط© ظˆط¶ط؛ط·ظ‡ط§ ظ…ط­ظ„ظٹط§ظ‹ ظ„طھظپط§ط¯ظٹ ظ…ط´ط§ظƒظ„ ط³ظٹط±ظپط±ط§طھ ط§ظ„ظ…ظٹط¯ظٹط§
 window.processAnnouncementImage = function(event) {
     var file = event.target.files[0];
     if (!file) return;
 
-    if (file.size > 800 * 1024) {
-        window.showToast("âš ï¸ Ø§Ù„ØµÙˆØ±Ø© ÙƒØ¨ÙŠØ±Ø© Ø¬Ø¯Ø§Ù‹! ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± ØµÙˆØ±Ø© Ø¨Ø­Ø¬Ù… Ø£Ù‚Ù„ Ù…Ù† 800 ÙƒÙŠÙ„ÙˆØ¨Ø§ÙŠØª.", "warning");
+    if (file.size > 800 * 1024) { // ط­ظ…ط§ظٹط© ظ„ظ…ظ†ط¹ ط±ظپط¹ طµظˆط± ط¹ظ…ظ„ط§ظ‚ط© طھط³طھظ‡ظ„ظƒ ط§ظ„ط°ط§ظƒط±ط©
+        window.showToast("âڑ ï¸ڈ ط§ظ„طµظˆط±ط© ظƒط¨ظٹط±ط© ط¬ط¯ط§ظ‹! ظٹط±ط¬ظ‰ ط§ط®طھظٹط§ط± طµظˆط±ط© ط¨ط­ط¬ظ… ط£ظ‚ظ„ ظ…ظ† 800 ظƒظٹظ„ظˆط¨ط§ظٹطھ ظ„ط¶ظ…ط§ظ† ط³ط±ط¹ط© ط§ظ„طھط­ظ…ظٹظ„.", "warning");
         event.target.value = "";
         return;
     }
@@ -127,12 +96,13 @@ window.processAnnouncementImage = function(event) {
         if (previewDiv && imgPreview) {
             imgPreview.src = e.target.result;
             previewDiv.style.display = 'flex';
+            previewDiv.style.alignItems = 'center';
         }
     };
     reader.readAsDataURL(file);
 };
 
-// ØªØµÙÙŠØ± Ø®Ø§Ù†Ø© Ø§Ù„ØµÙˆØ±Ø©
+// ًں—‘ï¸ڈ طھطµظپظٹط± ط®ط§ظ†ط© ط§ظ„طµظˆط±ط©
 window.clearAnnouncementImage = function() {
     window.currentAnnouncementBase64Image = "";
     var fileInput = document.getElementById('ann-image-file');
@@ -141,7 +111,7 @@ window.clearAnnouncementImage = function() {
     if (previewDiv) previewDiv.style.display = "none";
 };
 
-// Ù†Ø´Ø± Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙÙŠ Firestore
+// ًںڑ€ ظ…ط­ط±ظƒ ط¶ط® ظˆطھظˆط«ظٹظ‚ ط§ظ„ط¥ط¹ظ„ط§ظ† ظپظٹ ط§ظ„ظپط§ظٹط±ط³طھظˆط± ط¨ط¨طµظ…ط© ط§ظ„ظ…ظ†ط´ط£ط© ط§ظ„طµط§ط±ظ…ط©
 window.handlePublishAnnouncement = async function(event) {
     event.preventDefault();
     var schoolId = getActiveSchoolId();
@@ -149,110 +119,47 @@ window.handlePublishAnnouncement = async function(event) {
 
     var titleEl = document.getElementById('ann-title');
     var contentEl = document.getElementById('ann-content');
-    var priorityEl = document.getElementById('ann-priority');
-    var targetEl = document.getElementById('ann-target');
     var btn = document.getElementById('btn-publish-ann');
 
-    if (!titleEl.value.trim() || !contentEl.value.trim()) {
-        window.showToast("âš ï¸ ÙŠØ±Ø¬Ù‰ ØªØ¹Ø¨Ø¦Ø© Ø§Ù„Ø­Ù‚ÙˆÙ„ Ø§Ù„Ù…Ø·Ù„ÙˆØ¨Ø© Ø£ÙˆÙ„Ø§Ù‹", "warning");
+    if (!titleEl || !contentEl || !titleEl.value.trim() || !contentEl.value.trim()) {
+        window.showToast("âڑ ï¸ڈ ظٹط±ط¬ظ‰ طھط¹ط¨ط¦ط© ط§ظ„ط­ظ‚ظˆظ„ ط§ظ„ظ…ط·ظ„ظˆط¨ط© ط£ظˆظ„ط§ظ‹", "warning");
         return;
     }
 
     btn.disabled = true;
-    btn.innerHTML = "â³ Ø¬Ø§Ø±ÙŠ Ù†Ø´Ø± ÙˆØªØ¹Ù…ÙŠÙ… Ø§Ù„Ø¨Ù„Ø§Øº...";
+    btn.innerHTML = "âڈ³ ط¬ط§ط±ظٹ ظ†ط´ط± ظˆطھط¹ظ…ظٹظ… ط§ظ„ط¨ظ„ط§ط؛...";
 
     try {
         var userSession = JSON.parse(localStorage.getItem('hs_user') || '{}');
-
+        
         await addDoc(collection(db, 'announcements'), {
             schoolId: schoolId,
             title: titleEl.value.trim(),
             content: contentEl.value.trim(),
             imageUrl: window.currentAnnouncementBase64Image || "",
-            priority: priorityEl?.value || "normal",
-            target: targetEl?.value || "all",
-            publisherName: userSession.name || "Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø¯Ø±Ø³Ø©",
+            publisherName: userSession.name || "ط¥ط¯ط§ط±ط© ط§ظ„ظ…ط¯ط±ط³ط©",
             dateStr: getTodayISO(),
             timeStr: new Date().toLocaleTimeString('ar-KW', { hour12: true, hour: '2-digit', minute: '2-digit' }),
             createdAt: new Date().toISOString()
         });
 
-        window.showToast("âœ… ØªÙ… Ø¨Ø« ÙˆÙ†Ø´Ø± Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† Ø¨Ù†Ø¬Ø§Ø­ ÙÙŠ Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©.");
+        window.showToast("âœ… طھظ… ط¨ط« ظˆظ†ط´ط± ط§ظ„ط¥ط¹ظ„ط§ظ† ط¨ظ†ط¬ط§ط­ ظپظٹ ط§ظ„ظ…ظ†ط¸ظˆظ…ط© ط§ظ„ط±ظ‚ظ…ظٹط©.");
+        
+        // ط¥ط¹ط§ط¯ط© طھظ‡ظٹط¦ط© ط§ظ„ظ†ظ…ظˆط°ط¬
         titleEl.value = "";
         contentEl.value = "";
-        if (priorityEl) priorityEl.value = "normal";
-        if (targetEl) targetEl.value = "all";
         window.clearAnnouncementImage();
 
     } catch (error) {
         console.error("Error publishing announcement:", error);
-        window.showToast("âŒ ÙØ´Ù„ Ø§Ù„Ù†Ø´Ø± Ø§Ù„Ø³Ø­Ø§Ø¨ÙŠ: " + error.message, "error");
+        window.showToast("â‌Œ ظپط´ظ„ ط§ظ„ظ†ط´ط± ط§ظ„ط³ط­ط§ط¨ظٹ: " + error.message, "error");
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-send-fill"></i> Ø¨Ø« ÙˆÙ†Ø´Ø± Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙÙˆØ±Ø§Ù‹';
+        btn.innerHTML = '<i class="bi bi-send-fill"></i> ط¨ط« ظˆظ†ط´ط± ط§ظ„ط¥ط¹ظ„ط§ظ† ظپظˆط±ط§ظ‹ ظ„ظˆط¬ظ‡ط§طھ ط§ظ„ظ…ظ†طµط©';
     }
 };
 
-// ÙÙ„ØªØ±Ø© Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª
-window.filterAnnouncements = function() {
-    var search = (document.getElementById('ann-search')?.value || '').trim().toLowerCase();
-    var priority = document.getElementById('ann-filter-priority')?.value || 'all';
-
-    var filtered = (window._allAnnouncements || []).filter(ann => {
-        var matchSearch = !search || ann.title.toLowerCase().includes(search) || ann.content.toLowerCase().includes(search);
-        var matchPriority = priority === 'all' || ann.priority === priority;
-        return matchSearch && matchPriority;
-    });
-
-    renderAnnouncements(filtered);
-};
-
-// Ø¹Ø±Ø¶ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª
-function renderAnnouncements(list) {
-    var listContainer = document.getElementById('container-announcements-list');
-    if (!listContainer) return;
-
-    if (!list || list.length === 0) {
-        listContainer.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:50px; background:#f9fafb; border:1px dashed #cbd5e1; border-radius:12px; color:#6b7280; font-weight:700;">
-                <i class="bi bi-megaphone" style="font-size:32px; display:block; margin-bottom:8px; color:#94a3b8;"></i>
-                Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¥Ø¹Ù„Ø§Ù†Ø§Øª Ø£Ùˆ ØªØ¹Ø§Ù…ÙŠÙ… Ù†Ø´Ø·Ø© Ù…Ù†Ø´ÙˆØ±Ø© Ù„Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø­Ø§Ù„ÙŠØ§Ù‹.
-            </div>
-        `;
-        return;
-    }
-
-    var priorityColors = { urgent: '#dc2626', important: '#d97706', normal: '#1a78c2' };
-    var priorityLabels = { urgent: 'ðŸ”´ Ø¹Ø§Ø¬Ù„', important: 'ðŸŸ¡ Ù…Ù‡Ù…', normal: 'ðŸ”µ Ø¹Ø§Ø¯ÙŠ' };
-    var targetLabels = { all: 'ðŸ‘¥ Ø§Ù„Ø¬Ù…ÙŠØ¹', staff: 'ðŸ‘¨â€ðŸ« Ø§Ù„Ù‡ÙŠØ¦Ø© Ø§Ù„ØªØ¹Ù„ÙŠÙ…ÙŠØ©', parents: 'ðŸ‘¨â€ðŸ‘©â€ðŸ‘§ Ø£ÙˆÙ„ÙŠØ§Ø¡ Ø§Ù„Ø£Ù…ÙˆØ±' };
-
-    listContainer.innerHTML = list.map(ann => `
-        <div class="card" style="background:#fff; border:1px solid #e5e7eb; border-right: 4px solid ${priorityColors[ann.priority] || '#1a78c2'}; border-radius:12px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,0.02); position:relative;">
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
-                    <span style="background:${priorityColors[ann.priority] || '#1a78c2'}22; color:${priorityColors[ann.priority] || '#1a78c2'}; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:800;">${priorityLabels[ann.priority] || 'ðŸ”µ Ø¹Ø§Ø¯ÙŠ'}</span>
-                    <span style="background:#f3f4f6; color:#6b7280; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700;">${targetLabels[ann.target] || 'ðŸ‘¥ Ø§Ù„Ø¬Ù…ÙŠØ¹'}</span>
-                </div>
-                ${ann.imageUrl ? `<img src="${ann.imageUrl}" style="width:100%; max-height:150px; object-fit:cover; border-radius:8px; margin-bottom:12px; border:1px solid #f3f4f6;">` : ''}
-                <h4 style="color:#0b2545; font-weight:900; font-size:15px; margin-bottom:6px; line-height:1.4;">${escHtml(ann.title)}</h4>
-                <p style="color:#374151; font-size:13px; font-weight:600; line-height:1.6; white-space:pre-wrap; margin-bottom:12px;">${escHtml(ann.content)}</p>
-            </div>
-
-            <div style="border-top:1px dashed #f3f4f6; padding-top:10px; margin-top:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <div style="font-size:11px; color:#6b7280; font-weight:700;">
-                    <span><i class="bi bi-person-circle"></i> ${escHtml(ann.publisherName)}</span><br>
-                    <span style="color:#9ca3af; margin-top:2px; display:inline-block;"><i class="bi bi-clock"></i> ${escHtml(ann.dateStr)} â€” ${escHtml(ann.timeStr)}</span>
-                </div>
-                <div style="display:flex; gap:6px;">
-                    <button onclick="window.handleEditAnnouncement('${ann.id}', \`${escHtml(ann.title)}\`, \`${escHtml(ann.content)}\`)" style="background:rgba(26,120,194,0.08); color:#1a78c2; border:1px solid rgba(26,120,194,0.15); padding:6px 10px; border-radius:6px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:11px;"><i class="bi bi-pencil-fill"></i> ØªØ¹Ø¯ÙŠÙ„</button>
-                    <button onclick="window.handleDeleteAnnouncement('${ann.id}')" style="background:rgba(220,38,38,0.08); color:#dc2626; border:1px solid rgba(220,38,38,0.15); padding:6px 10px; border-radius:6px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:11px;"><i class="bi bi-trash3-fill"></i> Ø­Ø°Ù</button>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Ø§Ù„Ù…Ø³ØªÙ…Ø¹ Ø§Ù„Ø­ÙŠ Ù„Ù„Ø¥Ø¹Ù„Ø§Ù†Ø§Øª
+// ًں“، ظ…ط³طھظ…ط¹ ط±ط§ط¯ط§ط± ط§ظ„ط¥ط¹ظ„ط§ظ†ط§طھ ط§ظ„ظ„ط­ط¸ظٹ ظˆط§ظ„ظ…ط¤ظ…ظ† ط¨ط§ظ„ط¨طµظ…ط© ظ„طھط£ظ…ظٹظ† ط§ظ„طھط¹ط¯ط¯ظٹط© (Multi-tenant SaaS)
 function startLiveAnnouncementsListener() {
     var schoolId = getActiveSchoolId();
     if (!schoolId) return;
@@ -265,49 +172,57 @@ function startLiveAnnouncementsListener() {
     );
 
     unsubscribeAnnouncements = onSnapshot(q, (snapshot) => {
-        var arr = [];
-        snapshot.forEach(d => arr.push({ id: d.id, ...d.data() }));
-        arr.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
-        window._allAnnouncements = arr;
-        window.filterAnnouncements();
-    }, (error) => {
-        console.error("Live announcements error:", error);
-    });
+        var listContainer = document.getElementById('container-announcements-list');
+        if (!listContainer) return;
 
-    _annUnsubs.push(unsubscribeAnnouncements);
+        if (snapshot.empty) {
+            listContainer.innerHTML = `
+                <div style="grid-column:1/-1; text-align:center; padding:50px; background:#f9fafb; border:1px dashed #cbd5e1; border-radius:12px; color:#6b7280; font-weight:700;">
+                    <i class="bi bi-megaphone" style="font-size:32px; display:block; margin-bottom:8px; color:#94a3b8;"></i>
+                    ظ„ط§ طھظˆط¬ط¯ ط¥ط¹ظ„ط§ظ†ط§طھ ط£ظˆ طھط¹ط§ظ…ظٹظ… ظ†ط´ط·ط© ظ…ظ†ط´ظˆط±ط© ظ„ظ‡ط°ظ‡ ط§ظ„ظ…ط¯ط±ط³ط© ط­ط§ظ„ظٹط§ظ‹.
+                </div>
+            `;
+            return;
+        }
+
+        // طھط¬ظ…ظٹط¹ ط§ظ„ط³ط¬ظ„ط§طھ ظˆظپط±ط²ظ‡ط§ ظ…ط­ظ„ظٹط§ظ‹ ظ…ظ† ط§ظ„ط£ط­ط¯ط« ظ„ظ„ط£ظ‚ط¯ظ… ظ„ط¹ط¯ظ… ط§ط³طھظ‡ظ„ط§ظƒ ظپظ‡ط§ط±ط³ ظ…ط±ظƒط¨ط© ظ…ط¹ظ‚ط¯ط©
+        var announcementsArray = [];
+        snapshot.forEach(doc => {
+            announcementsArray.push({ id: doc.id, ...doc.data() });
+        });
+        announcementsArray.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+        listContainer.innerHTML = announcementsArray.map(ann => `
+            <div class="card" style="background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 2px 4px rgba(0,0,0,0.02); transition: 0.2s; position:relative;">
+                <div>
+                    ${ann.imageUrl ? `<img src="${ann.imageUrl}" style="width:100%; max-height:150px; object-fit:cover; border-radius:8px; margin-bottom:12px; border:1px solid #f3f4f6;">` : ''}
+                    <h4 style="color:#0b2545; font-weight:900; font-size:15px; margin-bottom:6px; line-height:1.4; padding-left:24px;">${escHtml(ann.title)}</h4>
+                    <p style="color:#374151; font-size:13px; font-weight:600; line-height:1.6; white-space:pre-wrap; margin-bottom:12px;">${escHtml(ann.content)}</p>
+                </div>
+                
+                <div style="border-top:1px dashed #f3f4f6; padding-top:10px; margin-top:10px; display:flex; justify-content:space-between; align-items:center; font-size:11px; color:#6b7280; font-weight:700;">
+                    <div>
+                        <span><i class="bi bi-person-circle"></i> ${escHtml(ann.publisherName)}</span><br>
+                        <span style="color:#9ca3af; margin-top:2px; display:inline-block;"><i class="bi bi-clock"></i> ${escHtml(ann.dateStr)} â€” ${escHtml(ann.timeStr)}</span>
+                    </div>
+                    <button onclick="window.handleDeleteAnnouncement('${ann.id}')" style="background:rgba(220,38,38,0.08); color:#dc2626; border:1px solid rgba(220,38,38,0.15); padding:6px 10px; border-radius:6px; font-weight:700; cursor:pointer; font-family:'Cairo'; font-size:11px; transition:0.2s;"><i class="bi bi-trash3-fill"></i> ط­ط°ظپ ط§ظ„ط¥ط¹ظ„ط§ظ†</button>
+                </div>
+            </div>
+        `).join('');
+
+    }, (error) => {
+        console.error("Live announcements core error:", error);
+    });
 }
 
-// ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†
-window.handleEditAnnouncement = function(annId, currentTitle, currentContent) {
-    var newTitle = prompt("Ø¹Ù†ÙˆØ§Ù† Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†:", currentTitle);
-    if (newTitle === null) return;
-    var newContent = prompt("Ù…Ø­ØªÙˆÙ‰ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†:", currentContent);
-    if (newContent === null) return;
-
-    if (!newTitle.trim() || !newContent.trim()) {
-        window.showToast("âš ï¸ Ù„Ø§ ÙŠÙ…ÙƒÙ† ØªØ±Ùƒ Ø§Ù„Ø­Ù‚ÙˆÙ„ ÙØ§Ø±ØºØ©", "warning");
-        return;
-    }
-
-    updateDoc(doc(db, 'announcements', annId), {
-        title: newTitle.trim(),
-        content: newContent.trim(),
-        editedAt: new Date().toISOString()
-    }).then(() => {
-        window.showToast("âœ… ØªÙ… ØªØ¹Ø¯ÙŠÙ„ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† Ø¨Ù†Ø¬Ø§Ø­.");
-    }).catch(err => {
-        window.showToast("âŒ ØªØ¹Ø°Ø± Ø§Ù„ØªØ¹Ø¯ÙŠÙ„: " + err.message, "error");
-    });
-};
-
-// Ø­Ø°Ù Ø§Ù„Ø¥Ø¹Ù„Ø§Ù†
+// ًں—‘ï¸ڈ ظ…ظˆط¯ظٹظˆظ„ ط­ط°ظپ ط§ظ„ط¥ط¹ظ„ط§ظ† ظ…ظ† ط¬ط¯ط§ط± ط§ظ„ظ…ط¯ط±ط³ط©
 window.handleDeleteAnnouncement = async function(annId) {
-    if (!confirm("Ù‡Ù„ Ø£Ù†Øª Ù…ØªØ£ÙƒØ¯ Ù…Ù† Ø±ØºØ¨ØªÙƒ ÙÙŠ Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† ÙˆØ¥Ø²Ø§Ù„ØªÙ‡ Ù†Ù‡Ø§Ø¦ÙŠØ§Ù‹ Ù…Ù† Ø´Ø§Ø´Ø§Øª Ø§Ù„Ù…Ø¹Ù„Ù…ÙŠÙ† ÙˆØ§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø©ØŸ")) return;
+    if (!confirm("ظ‡ظ„ ط£ظ†طھ ظ…طھط£ظƒط¯ ظ…ظ† ط±ط؛ط¨طھظƒ ظپظٹ ط­ط°ظپ ظ‡ط°ط§ ط§ظ„ط¥ط¹ظ„ط§ظ† ظˆط¥ط²ط§ظ„طھظ‡ ظ†ظ‡ط§ط¦ظٹط§ظ‹ ظ…ظ† ط´ط§ط´ط§طھ ط§ظ„ظ…ط¹ظ„ظ…ظٹظ† ظˆط§ظ„ظ…ظ†ط¸ظˆظ…ط©طں")) return;
 
     try {
         await deleteDoc(doc(db, 'announcements', annId));
-        window.showToast("âœ” ØªÙ… Ø³Ø­Ø¨ ÙˆØ¥Ø²Ø§Ù„Ø© Ø§Ù„Ø¥Ø¹Ù„Ø§Ù† Ù…Ù† Ø¬Ø¯Ø§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø¨Ù†Ø¬Ø§Ø­.");
+        window.showToast("âœ“ طھظ… ط³ط­ط¨ ظˆط¥ط²ط§ظ„ط© ط§ظ„ط¥ط¹ظ„ط§ظ† ظ…ظ† ط¬ط¯ط§ط± ط§ظ„ظ…ط¯ط±ط³ط© ط¨ظ†ط¬ط§ط­.");
     } catch (error) {
-        window.showToast("âŒ ØªØ¹Ø°Ø± Ø¥ØªÙ…Ø§Ù… Ø§Ù„Ø­Ø°Ù: " + error.message, "error");
+        window.showToast("â‌Œ طھط¹ط°ط± ط¥طھظ…ط§ظ… ط§ظ„ط­ط°ظپ: " + error.message, "error");
     }
 };

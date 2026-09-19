@@ -1,7 +1,7 @@
 import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-var PERIODS = ['Ø§Ù„Ø­ØµØ© Ø§Ù„Ø£ÙˆÙ„Ù‰','Ø§Ù„Ø­ØµØ© Ø§Ù„Ø«Ø§Ù†ÙŠØ©','Ø§Ù„Ø­ØµØ© Ø§Ù„Ø«Ø§Ù„Ø«Ø©','Ø§Ù„Ø­ØµØ© Ø§Ù„Ø±Ø§Ø¨Ø¹Ø©','Ø§Ù„Ø­ØµØ© Ø§Ù„Ø®Ø§Ù…Ø³Ø©','Ø§Ù„Ø­ØµØ© Ø§Ù„Ø³Ø§Ø¯Ø³Ø©','Ø§Ù„Ø­ØµØ© Ø§Ù„Ø³Ø§Ø¨Ø¹Ø©'];
+var PERIODS = ['الحصة الأولى','الحصة الثانية','الحصة الثالثة','الحصة الرابعة','الحصة الخامسة','الحصة السادسة','الحصة السابعة'];
 
 export async function initDailyReportModule() {
     var container = document.getElementById('tab-daily-report');
@@ -10,14 +10,14 @@ export async function initDailyReportModule() {
     var html = '';
     html += '<div style="max-width:900px;margin:0 auto;padding:16px">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">';
-    html += '<h2 style="font-size:17px;font-weight:900;color:var(--navy);margin:0"><i class="bi bi-clipboard-data-fill" style="color:var(--sky)"></i> Ø§Ù„ÙƒØ´Ù Ø§Ù„ÙŠÙˆÙ…ÙŠ</h2>';
+    html += '<h2 style="font-size:17px;font-weight:900;color:var(--navy);margin:0"><i class="bi bi-clipboard-data-fill" style="color:var(--sky)"></i> الكشف اليومي</h2>';
     html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
     html += '<input type="date" id="dr-date" value="' + getTodayISO() + '" style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif;font-size:13px">';
-    html += '<select id="dr-class" style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif;font-size:13px;font-weight:700"><option value="">Ø§Ø®ØªØ± Ø§Ù„ÙØµÙ„</option></select>';
-    html += '<button onclick="window.loadDailyAttSheet()" style="background:var(--sky);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-size:12px;font-weight:800;cursor:pointer"><i class="bi bi-eye"></i> Ø¹Ø±Ø¶</button>';
-    html += '<button onclick="window.printDailySheet()" style="background:var(--navy);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-size:12px;font-weight:800;cursor:pointer"><i class="bi bi-printer-fill"></i> Ø·Ø¨Ø§Ø¹Ø©</button>';
+    html += '<select id="dr-class" style="padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif;font-size:13px;font-weight:700"><option value="">اختر الفصل</option></select>';
+    html += '<button onclick="window.loadDailyAttSheet()" style="background:var(--sky);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-size:12px;font-weight:800;cursor:pointer"><i class="bi bi-eye"></i> عرض</button>';
+    html += '<button onclick="window.printDailySheet()" style="background:var(--navy);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-family:Cairo,sans-serif;font-size:12px;font-weight:800;cursor:pointer"><i class="bi bi-printer-fill"></i> طباعة</button>';
     html += '</div></div>';
-    html += '<div id="dr-content"><div style="text-align:center;padding:40px;color:#aaa;font-weight:700">Ø§Ø®ØªØ± Ø§Ù„ØªØ§Ø±ÙŠØ® ÙˆØ§Ù„ÙØµÙ„ Ø«Ù… Ø§Ø¶ØºØ· Ø¹Ø±Ø¶</div></div>';
+    html += '<div id="dr-content"><div style="text-align:center;padding:40px;color:#aaa;font-weight:700">اختر التاريخ والفصل ثم اضغط عرض</div></div>';
     html += '</div>';
     container.innerHTML = html;
 
@@ -41,9 +41,9 @@ window.loadDailyAttSheet = async function() {
     var date = document.getElementById('dr-date').value;
     var classId = document.getElementById('dr-class').value;
     var content = document.getElementById('dr-content');
-    if (!date || !classId) { if (window.showToast) window.showToast('Ø§Ø®ØªØ± Ø§Ù„ØªØ§Ø±ÙŠØ® ÙˆØ§Ù„ÙØµÙ„','warning'); return; }
+    if (!date || !classId) { if (window.showToast) window.showToast('اختر التاريخ والفصل','warning'); return; }
 
-    content.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa">Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div>';
+    content.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa">جاري التحميل...</div>';
     var schoolId = getActiveSchoolId();
 
     try {
@@ -91,8 +91,8 @@ window.loadDailyAttSheet = async function() {
         var tbl = '';
         tbl += '<div id="dr-print-area">';
         tbl += '<div style="text-align:center;margin-bottom:12px">';
-        tbl += '<div style="font-size:15px;font-weight:900;color:var(--navy)">ÙƒØ´Ù Ø§Ù„Ø­Ø¶ÙˆØ± ÙˆØ§Ù„ØºÙŠØ§Ø¨</div>';
-        tbl += '<div style="font-size:13px;font-weight:700">Ø§Ù„ØµÙ: ' + classId + ' &nbsp;|&nbsp; ' + dayName + ' ' + date + '</div>';
+        tbl += '<div style="font-size:15px;font-weight:900;color:var(--navy)">كشف الحضور والغياب</div>';
+        tbl += '<div style="font-size:13px;font-weight:700">الصف: ' + classId + ' &nbsp;|&nbsp; ' + dayName + ' ' + date + '</div>';
         tbl += '</div>';
 
         tbl += '<div style="overflow-x:auto">';
@@ -100,18 +100,18 @@ window.loadDailyAttSheet = async function() {
 
         tbl += '<thead>';
         tbl += '<tr style="background:#0b2545;color:#fff">';
-        tbl += '<th style="padding:8px;border:1px solid #ddd;min-width:30px;text-align:center">Ù…</th>';
-        tbl += '<th style="padding:8px;border:1px solid #ddd;min-width:160px;text-align:right">Ø§Ø³Ù… Ø§Ù„Ø·Ø§Ù„Ø¨</th>';
+        tbl += '<th style="padding:8px;border:1px solid #ddd;min-width:30px;text-align:center">م</th>';
+        tbl += '<th style="padding:8px;border:1px solid #ddd;min-width:160px;text-align:right">اسم الطالب</th>';
         for (var p = 0; p < PERIODS.length; p++) {
             tbl += '<th style="padding:6px 4px;border:1px solid #ddd;text-align:center;min-width:70px;font-size:11px">';
-            tbl += 'Ø§Ù„Ø­ØµØ© ' + (p+1);
+            tbl += 'الحصة ' + (p+1);
             tbl += '</th>';
         }
         tbl += '</tr>';
 
         tbl += '<tr style="background:#eaf4fd">';
         tbl += '<td style="border:1px solid #ddd"></td>';
-        tbl += '<td style="border:1px solid #ddd;padding:4px 8px;font-size:10px;color:var(--mid);font-weight:700">Ø§Ù„Ù…Ø¹Ù„Ù… Ø§Ù„Ù…Ø³Ø¬Ù‘Ù„</td>';
+        tbl += '<td style="border:1px solid #ddd;padding:4px 8px;font-size:10px;color:var(--mid);font-weight:700">المعلم المسجّل</td>';
         for (var p2 = 0; p2 < PERIODS.length; p2++) {
             var tName = periodTeacher[p2] || '';
             tbl += '<td style="border:1px solid #ddd;padding:3px 4px;text-align:center;font-size:9px;color:#555;font-weight:600">' + tName + '</td>';
@@ -172,15 +172,15 @@ window.loadDailyAttSheet = async function() {
             if (r.status === 'late') lateCount++;
         });
         tbl += '<div style="display:flex;gap:16px;margin-top:12px;font-size:12px;font-weight:700">';
-        tbl += '<span>Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ø·Ù„Ø§Ø¨: <b>' + students.length + '</b></span>';
-        tbl += '<span style="color:#dc2626">ØºØ§Ø¦Ø¨: <b>' + absCount + '</b></span>';
-        tbl += '<span style="color:#d97706">Ù…ØªØ£Ø®Ø±: <b>' + lateCount + '</b></span>';
+        tbl += '<span>إجمالي الطلاب: <b>' + students.length + '</b></span>';
+        tbl += '<span style="color:#dc2626">غائب: <b>' + absCount + '</b></span>';
+        tbl += '<span style="color:#d97706">متأخر: <b>' + lateCount + '</b></span>';
         tbl += '</div>';
 
         tbl += '<div style="margin-top:16px;padding:12px;background:#f9fafb;border-radius:6px;border-right:3px solid #6b7280;font-size:11px;color:#666">';
-        tbl += '<div style="font-weight:700;margin-bottom:6px">ÙˆØ³ÙŠÙ„Ø© Ø§Ù„Ø¥ÙŠØ¶Ø§Ø­:</div>';
-        tbl += '<div>âœ“ = Ø­Ø§Ø¶Ø± | âœ• = ØºØ§Ø¦Ø¨ | âŠ” = Ù…ØªØ£Ø®Ø± | ? = Ù„Ù… ÙŠØªÙ… Ø§Ù„ØªØ³Ø¬ÙŠÙ„</div>';
-        tbl += '<div style="margin-top:6px;color:#9ca3af">Ø§Ù„ØµÙÙˆÙ Ø§Ù„ÙØ§ØªØ­Ø© = Ù„Ù… ÙŠØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø­Ø¶ÙˆØ± Ù…Ù† Ø§Ù„Ù…Ø¹Ù„Ù…</div>';
+        tbl += '<div style="font-weight:700;margin-bottom:6px">وسيلة الإيضاح:</div>';
+        tbl += '<div>✓ = حاضر | ✕ = غائب | ⊔ = متأخر | ? = لم يتم التسجيل</div>';
+        tbl += '<div style="margin-top:6px;color:#9ca3af">الصفوف الفاتحة = لم يتم تسجيل الحضور من المعلم</div>';
         tbl += '</div>';
 
         tbl += '</div>';
@@ -188,13 +188,13 @@ window.loadDailyAttSheet = async function() {
         content.innerHTML = tbl;
 
     } catch(e) {
-        content.innerHTML = '<div style="color:#dc2626;padding:20px">Ø®Ø·Ø£: ' + e.message + '</div>';
+        content.innerHTML = '<div style="color:#dc2626;padding:20px">خطأ: ' + e.message + '</div>';
     }
 };
 
 window.printDailySheet = function() {
     var area = document.getElementById('dr-print-area');
-    if (!area) { if (window.showToast) window.showToast('Ø§Ø¶ØºØ· Ø¹Ø±Ø¶ Ø£ÙˆÙ„Ø§Ù‹','warning'); return; }
+    if (!area) { if (window.showToast) window.showToast('اضغط عرض أولاً','warning'); return; }
     var date = document.getElementById('dr-date').value || '';
     var classId = document.getElementById('dr-class').value || '';
     var content = area.innerHTML;
@@ -207,14 +207,14 @@ window.printDailySheet = function() {
     html += '@media print{body{padding:10px}}';
     html += '</style></head><body>';
     html += '<div style="display:flex;justify-content:space-between;margin-bottom:10px">';
-    html += '<div style="font-size:11px">ÙˆØ²Ø§Ø±Ø© Ø§Ù„ØªØ±Ø¨ÙŠØ©</div>';
-    html += '<div style="font-size:14px;font-weight:900">ÙƒØ´Ù Ø§Ù„Ø­Ø¶ÙˆØ± ÙˆØ§Ù„ØºÙŠØ§Ø¨ â€” Ø§Ù„ØµÙ ' + classId + '</div>';
+    html += '<div style="font-size:11px">وزارة التربية</div>';
+    html += '<div style="font-size:14px;font-weight:900">كشف الحضور والغياب — الصف ' + classId + '</div>';
     html += '<div style="font-size:11px">' + date + '</div>';
     html += '</div>';
     html += content;
     html += '<div style="margin-top:30px;display:flex;justify-content:space-between;font-size:11px">';
-    html += '<div>ØªÙˆÙ‚ÙŠØ¹ Ø§Ù„Ù…Ø¹Ù„Ù…: ______________</div>';
-    html += '<div>ØªÙˆÙ‚ÙŠØ¹ Ø§Ù„Ù…Ø¯ÙŠØ±: ______________</div>';
+    html += '<div>توقيع المعلم: ______________</div>';
+    html += '<div>توقيع المدير: ______________</div>';
     html += '</div>';
     html += '</body></html>';
     var blob = new Blob([html], {type:'text/html;charset=utf-8'});
