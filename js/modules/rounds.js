@@ -1,107 +1,70 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, addDoc, query, where, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-let _roundsUnsubs = [];
-window._cleanupRounds = function() {
-    _roundsUnsubs.forEach(fn => { try { fn(); } catch(e) {} });
-    _roundsUnsubs = [];
-};
-
 export async function initRoundsModule() {
-    var container = document.getElementById('tab-rounds');
+    const container = document.getElementById('tab-rounds');
     if (!container) return;
 
-    var currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
-
     container.innerHTML = `
-    <div style="max-width:600px;margin:0 auto;padding:16px">
-        <div class="card" style="border-top:5px solid var(--gold)">
-            <h2><i class="bi bi-clipboard-check-fill" style="color:var(--gold)"></i> ØªÙˆØ«ÙŠÙ‚ Ø¬ÙˆÙ„Ø© ØªÙÙ‚Ø¯ Ø§Ù„Ø¬Ù†Ø§Ø­</h2>
-            <p style="font-size:12px;color:var(--mid);font-weight:700;margin-bottom:14px">Ø³Ø¬Ù‘Ù„ Ù…Ù„Ø§Ø­Ø¸Ø§ØªÙƒ Ø£Ø«Ù†Ø§Ø¡ Ø§Ù„Ø¬ÙˆÙ„Ø© Ø§Ù„ØªÙÙ‚Ø¯ÙŠØ©</p>
-            
-            <label style="font-weight:700;font-size:12px;display:block;margin-bottom:4px">Ø§Ù„Ù…Ø´Ø±Ù</label>
-            <input type="text" id="round-officer-name" value="${currentUser.name||''}" readonly style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-size:14px;background:#f8f9fc;margin-bottom:10px">
-            
-            <label style="font-weight:700;font-size:12px;display:block;margin-bottom:4px">Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø© Ø§Ù„Ø¥Ø¯Ø§Ø±ÙŠØ©</label>
-            <textarea id="round-wing-notes" rows="3" placeholder="Ù…Ø«Ø§Ù„: Ø§Ù„Ø¬Ù†Ø§Ø­ Ù…Ù†Ø¸Ù…ØŒ Ø§Ù„Ø­ØµØµ Ù…Ù†ØªØ¸Ù…Ø©..." style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;resize:none;margin-bottom:10px"></textarea>
-            
-            <label style="font-weight:700;font-size:12px;display:block;margin-bottom:4px">Ø¥Ø±ÙØ§Ù‚ ØµÙˆØ±Ø© (Ø§Ø®ØªÙŠØ§Ø±ÙŠ)</label>
-            <input type="file" id="round-image" accept="image/*" style="width:100%;padding:8px;border:1.5px dashed var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;margin-bottom:12px">
-            
-            <button onclick="window.saveWingRound()" style="width:100%;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-weight:800;font-size:14px;cursor:pointer">
-                <i class="bi bi-check-circle-fill"></i> Ø­ÙØ¸ Ø§Ù„Ø¬ÙˆÙ„Ø©
-            </button>
-        </div>
+    <div class="card" style="border-top:5px solid var(--accent-color); padding:20px; background:#fff; border-radius:12px; margin-bottom:20px;">
+        <h2><i class="bi bi-clipboard-check-fill"></i> توثيق ورصد جولة تفقد الجناح المدرسي اليومية</h2>
+        <p style="font-size:12px; color:#666; font-weight:bold; margin-bottom:15px;">نموذج المشرف الإداري لتوثيق استقرار الفصول وحصر النواقص الهندسية والتنظيمية بالأجنحة.</p>
+        <form id="wing-round-form" onsubmit="window.handleRegisterWingRoundLive(event)">
+            <label style="font-weight:700; font-size:12px;">اسم المشرف الإداري / وكيل الجناح</label>
+            <input type="text" id="round-officer-name" placeholder="أدخل اسم الوكيل المسؤول" required style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+            <label style="font-weight:700; font-size:12px;">الملاحظة الإدارية (حالة النظافة والاستقرار)</label>
+            <input type="text" id="round-wing-notes" placeholder="مثال: الجناح مستقر..." required style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+            <button type="submit" style="background:var(--accent-color); width:100%; font-weight:bold; border:none; padding:12px; color:#fff; cursor:pointer; border-radius:5px;"><i class="bi bi-bookmark-plus-fill"></i> تقييد وحفظ الجولة الإدارية</button>
+        </form>
+    </div>
 
-        <div class="card">
-            <h2><i class="bi bi-list-columns-reverse" style="color:var(--sky)"></i> Ø³Ø¬Ù„ Ø§Ù„Ø¬ÙˆÙ„Ø§Øª</h2>
-            <div id="wing-rounds-list"><div style="text-align:center;padding:20px;color:#aaa;font-weight:700">â³ Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù…ÙŠÙ„...</div></div>
+    <div class="card" style="border-top: 5px solid var(--primary-color); padding:20px; border-radius:12px;">
+        <h2><i class="bi bi-list-columns-reverse"></i> سجل الجولات التفقدية (أرشيف لايف)</h2>
+        <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead><tr style="background:#f4f6f9;"><th style="padding:10px; text-align:right;">المشرف</th><th style="padding:10px; text-align:right;">الملاحظة المرصودة</th></tr></thead>
+                <tbody id="wing-rounds-tbody"><tr><td colspan="2" style="text-align:center; padding:15px;">جاري تحميل سجلات الجولات...</td></tr></tbody>
+            </table>
         </div>
     </div>`;
 
     loadWingRoundsLive();
 }
 
-window.saveWingRound = async function() {
-    var name = document.getElementById('round-officer-name').value.trim();
-    var notes = document.getElementById('round-wing-notes').value.trim();
-    if(!notes) { window.showToast?.('Ø§ÙƒØªØ¨ Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø©','warning'); return; }
-
-    var schoolId = getActiveSchoolId();
-
+window.handleRegisterWingRoundLive = async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('round-officer-name').value.trim();
+    const notes = document.getElementById('round-wing-notes').value.trim();
+    const schoolId = getActiveSchoolId(); // 🏢 ربط مركزي سحابي
+    
     try {
-        var data = {
-            schoolId,
+        await addDoc(collection(db, 'wing_rounds'), {
+            schoolId: schoolId, // 🔑 الحماية الأمنية
             officerName: name,
             notes: notes,
             createdAt: serverTimestamp()
-        };
-
-        // Ø¥Ø±ÙØ§Ù‚ ØµÙˆØ±Ø©
-        var fileInput = document.getElementById('round-image');
-        if(fileInput && fileInput.files[0]) {
-            var file = fileInput.files[0];
-            if(file.size > 500000) { window.showToast?.('Ø§Ù„ØµÙˆØ±Ø© ÙƒØ¨ÙŠØ±Ø© â€” Ø£Ù‚Ù„ Ù…Ù† 500KB','warning'); return; }
-            var base64 = await new Promise(res => {
-                var reader = new FileReader();
-                reader.onload = e => res(e.target.result);
-                reader.readAsDataURL(file);
-            });
-            data.imageBase64 = base64;
-        }
-
-        await addDoc(collection(db, 'wing_rounds'), data);
-        window.showToast?.('âœ… ØªÙ… Ø­ÙØ¸ Ø§Ù„Ø¬ÙˆÙ„Ø©');
-        document.getElementById('round-wing-notes').value = '';
-        if(fileInput) fileInput.value = '';
-    } catch(err) { window.showToast?.('âŒ ' + err.message, 'error'); }
+        });
+        alert('✓ تم التوثيق بنجاح.');
+        document.getElementById('wing-round-form').reset();
+    } catch(err) { alert('خطأ: ' + err.message); }
 };
 
 function loadWingRoundsLive() {
-    var list = document.getElementById('wing-rounds-list');
-    if (!list) return;
+    const tbody = document.getElementById('wing-rounds-tbody');
+    if (!tbody) return;
 
-    var schoolId = getActiveSchoolId();
-    var q = query(collection(db, 'wing_rounds'), where('schoolId', '==', schoolId));
-
-    var unsub = onSnapshot(q, snap => {
-        if(snap.empty) { list.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-weight:700">ðŸ“­ Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¬ÙˆÙ„Ø§Øª Ù…Ø³Ø¬Ù‘Ù„Ø©</div>'; return; }
-
-        var rounds = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
-
-        list.innerHTML = rounds.map(r => {
-            var time = r.createdAt?.toDate?.();
-            var timeStr = time ? time.toLocaleDateString('ar-KW') + ' ' + time.toLocaleTimeString('ar-KW',{hour:'2-digit',minute:'2-digit'}) : '';
-            return `<div style="padding:12px;border-bottom:1px solid var(--line)">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                    <span style="font-weight:800;font-size:13px">ðŸ‘¤ ${r.officerName||''}</span>
-                    <span style="font-size:10px;color:var(--mid)">${timeStr}</span>
-                </div>
-                <div style="font-size:13px;color:#555;line-height:1.5">${r.notes||''}</div>
-                ${r.imageBase64 ? '<img src="'+r.imageBase64+'" style="max-width:100%;max-height:200px;border-radius:8px;margin-top:8px" />' : ''}
-            </div>`;
-        }).join('');
+    const schoolId = getActiveSchoolId();
+    // استعلام محمي خاص بالمدرسة فقط
+    const q = query(collection(db, 'wing_rounds'), where('schoolId', '==', schoolId));
+    
+    onSnapshot(q, (snap) => {
+        let html = '';
+        snap.forEach(d => {
+            const data = d.data();
+            html += `<tr><td style="padding:10px; font-weight:bold;">👤 ${data.officerName || '-'}</td><td style="padding:10px; color:#555;">${data.notes || '-'}</td></tr>`;
+        });
+        tbody.innerHTML = html || '<tr><td colspan="2" style="text-align:center; padding:15px; color:#999;">💡 لا توجد جولات مرصودة لهذا اليوم.</td></tr>';
+    }, (err) => {
+        console.error("خطأ في جلب الجولات:", err);
     });
-
-    _roundsUnsubs.push(unsub);
 }

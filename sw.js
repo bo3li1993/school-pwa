@@ -1,114 +1,58 @@
-const CACHE_NAME = 'school-pwa-1789084959603';
-const STATIC_ASSETS = [
+// اسم الكاش الديناميكي المعتمد على تاريخ اليوم تلقائياً لضمان التحديث الفوري d/m/y
+const CACHE_NAME = `hosainan-school-${new Date().toISOString().slice(0,10)}`;
+
+const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './admin.html',
     './teacher.html',
     './parent.html',
-    './department_head.html',
-    './style.css',
-    './manifest.json',
-    './logo.png',
-    './js/firebase-config.js',
-    './js/cleanup.js',
+    './guard.html',
+    './social.html',
+    './tv.html',
+    './super.html',
+    './import.html',
+    'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
+    'https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap'
 ];
 
-// Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â«Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â¨Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¹Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾: Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â®Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â²Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â¹Ø¢Â©Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â¢Ø¢Â  Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â¢Ø¢Â¦Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â£Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â³Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â³Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¹Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â©
-self.addEventListener('install', function(event) {
+// 1. تثبيت الكاش وحفظ الملفات الأساسية لسرعة الـ PWA
+self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(function(cache) {
-            return cache.addAll(STATIC_ASSETS.map(function(url) {
-                return new Request(url, { cache: 'reload' });
-            }));
-        }).then(function() {
-            return self.skipWaiting();
-        }).catch(function(e) {
-            console.warn('SW install error:', e);
+        caches.open(CACHE_NAME).then(cache => {
+            return cache.addAll(ASSETS_TO_CACHE);
         })
     );
+    self.skipWaiting();
 });
 
-// Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â¹Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¹Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ : Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â­Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â°Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¾ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¦Ø£Â¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â´ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â¹Ã¢â‚¬Ú©Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â¯Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¹Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â¢Ø¢Â¦
-self.addEventListener('activate', function(event) {
+// 2. تفعيل وحذف كل الكاش القديم فوراً (وليس بانتظار تغيير التاريخ فقط)
+self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys().then(function(keys) {
+        caches.keys().then(keys => {
             return Promise.all(
-                keys.filter(function(key) { return key !== CACHE_NAME; })
-                    .map(function(key) { return caches.delete(key); })
+                keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
             );
-        }).then(function() {
-            return self.clients.claim();
         })
     );
+    self.clients.claim();
 });
 
-// Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â¨Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾: Network First Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â€šÂ¬Ø¹â€˜Ø·Â¢Ø¢Â¬ HTMLØ·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¥Ø£Â¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Cache First Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â¢Ø¢Â¦Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â«Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â¨Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â©
-self.addEventListener('fetch', function(event) {
-    var url = event.request.url;
+// 3. محرك الجلب: "الشبكة أولاً" لضمان ظهور أي تحديث فوراً عند توفر الإنترنت،
+//    وفقط عند انقطاع الشبكة (أو فشل الجلب) نرجع لآخر نسخة محفوظة بالكاش (دعم العمل بدون نت)
+self.addEventListener('fetch', event => {
+    // نتخطى طلبات السيرفر الحي لفايربيس والتوثيق لضمان دقة البيانات الحية دائمًا
+    if (event.request.url.includes('firestore') || event.request.url.includes('identitytoolkit') || event.request.url.includes('googleapis')) return;
 
-    // Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â¬Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â·Ø¥â€™Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€  Firebase Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â«Ø£Â¢Ã¢â€šÂ¬Ø¢Â Google
-    if (url.includes('firestore.googleapis.com') ||
-        url.includes('firebase.googleapis.com') ||
-        url.includes('identitytoolkit.googleapis.com') ||
-        url.includes('googleapis.com') ||
-        url.includes('cloudfunctions.net') ||
-        url.includes('gstatic.com') ||
-        url.includes('fonts.googleapis.com')) {
-        return;
-    }
-
-    // HTML: Network First Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â¢Ø¢Â¦Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â¹ fallback
-    if (event.request.mode === 'navigate' ||
-        (event.request.method === 'GET' &&
-         event.request.headers.get('accept') &&
-         event.request.headers.get('accept').includes('text/html'))) {
-        event.respondWith(
-            fetch(event.request).then(function(response) {
-                if (response && response.status === 200) {
-                    var clone = response.clone();
-                    caches.open(CACHE_NAME).then(function(cache) {
-                        cache.put(event.request, clone);
-                    });
-                }
-                return response;
-            }).catch(function() {
-                return caches.match(event.request).then(function(cached) {
-                    return cached || caches.match('./index.html');
-                });
-            })
-        );
-        return;
-    }
-
-    // Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø·Â¢Ø¢Â¦Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â£Ø¢Â¢Ø£Â¢Ã¢â‚¬Ú‘Ø¢Â¬Ø£Â¢Ã¢â€šÂ¬Ø¹â€ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â¸Ø·Â·Ø¢Â¸Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾ Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â«Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â§Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â¨Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¹Ø·Â¢Ø¢Â¾Ø·Â·Ø¢Â·Ø·Â¢Ø¢Â·Ø·Â·Ø¢Â¢Ø·Â¢Ø¢Â©: Cache First
-    if (event.request.method === 'GET') {
-        event.respondWith(
-            caches.match(event.request).then(function(cached) {
-                if (cached) return cached;
-                return fetch(event.request).then(function(response) {
-                    if (response && response.status === 200 && response.type !== 'opaque') {
-                        var clone = response.clone();
-                        caches.open(CACHE_NAME).then(function(cache) {
-                            cache.put(event.request, clone);
-                        });
-                    }
-                    return response;
-                }).catch(function() {
-                    return caches.match('./index.html');
-                });
-            })
-        );
-    }
-});
-
-// Offline page
-self.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'SKIP_WAITING') {
-        self.skipWaiting();
-    }
-    if (event.data && event.data.type === 'CACHE_URLS') {
-        caches.open(CACHE_NAME).then(function(cache) {
-            cache.addAll(event.data.urls || []);
-        });
-    }
+    event.respondWith(
+        fetch(event.request).then(networkResponse => {
+            // نحدّث الكاش بأحدث نسخة لاستخدامها لاحقاً عند انقطاع النت
+            const resClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+            return networkResponse;
+        }).catch(() => {
+            // لا يوجد إنترنت → نرجع لآخر نسخة محفوظة، وإن لم توجد نرجع لصفحة الدخول
+            return caches.match(event.request).then(cached => cached || caches.match('./index.html'));
+        })
+    );
 });

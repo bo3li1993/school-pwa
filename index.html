@@ -1,677 +1,244 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ© | ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„</title>
-<link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="style.css">
-<link rel="icon" type="image/x-icon" href="./favicon.ico">
-<link rel="apple-touch-icon" href="./logo.png">
-<meta name="theme-color" content="#0b2545">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-<style>
-:root {
-    --primary: #0b2545;
-    --accent:  #d4920a;
-    --sky:     #1a78c2;
-    --red:     #dc2626;
-    --green:   #16a34a;
-    --mid:     #6b7280;
-    --line:    #e5e7eb;
-    --off:     #f8f9fc;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | المنظومة الرقمية الموحدة</title>
+  <link rel="manifest" href="manifest.json">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        
+        :root {
+  --navy:  #0b2545;
+  --sky:   #1a78c2;
+  --ice:   #eaf4fd;
+  --gold:  #d4920a;
+  --white: #ffffff;
+  --off:   #f8f9fc;
+  --line:  #e5e7eb;
+  --text:  #111827;
+  --mid:   #6b7280;
+  --green: #059669;
+  --red:   #dc2626;
+            --bg-dark: var(--off);
+            --card-bg: var(--off);
+            --primary: var(--sky);
+            --accent: var(--gold);
+            --success: #25d366;
+            --text-main: #f1f5f9;
+        }
 
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
 
-body {
-    background: var(--primary);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    transition: background .5s;
-    position: relative;
-    overflow-x: hidden;
-}
+        .login-container { background: var(--card-bg); width: 100%; max-width: 420px; padding: 30px; border-radius: 16px; border: 1px solid var(--line); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); text-align: center; margin-bottom: 20px; }
+        h1 { font-size: 26px; font-weight: 900; margin-bottom: 10px; color: #fff; }
+        p { font-size: 14px; color: #94a3b8; margin-bottom: 25px; }
 
-body::before {
-    content: '';
-    position: fixed;
-    top: -120px; left: -120px;
-    width: 400px; height: 400px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.04);
-    pointer-events: none;
-}
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--line); background: var(--off); color: #fff; font-size: 14px; text-align: center; }
+        input:focus { border-color: var(--primary); outline: none; }
 
-body::after {
-    content: '';
-    position: fixed;
-    bottom: -80px; right: -80px;
-    width: 300px; height: 300px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.03);
-    pointer-events: none;
-}
+        button { width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: #fff; margin-bottom: 10px; }
+        .btn-success { background: var(--success); color: #fff; margin-top: 5px; }
+        .btn-install { background: var(--green); color: #fff; max-width: 420px; margin-bottom: 15px; display: none; }
 
-/* Ø¨Ø·Ø§Ù‚Ø© Ø§Ù„Ø¯Ø®ÙˆÙ„ */
-.login-card {
-    background: #fff;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 24px 64px rgba(0,0,0,.3);
-    overflow: hidden;
-    animation: slideUp .4s ease;
-}
-
-@keyframes slideUp {
-    from { opacity:0; transform:translateY(30px); }
-    to   { opacity:1; transform:translateY(0); }
-}
-
-/* Ù‡ÙŠØ¯Ø± Ø§Ù„Ø¨Ø·Ø§Ù‚Ø© */
-.login-header {
-    background: var(--primary);
-    padding: 28px 28px 24px;
-    text-align: center;
-    position: relative;
-    transition: background .5s;
-}
-
-.login-logo {
-    width: 64px; height: 64px;
-    border-radius: 16px;
-    background: rgba(255,255,255,.15);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 12px;
-    overflow: hidden;
-    border: 2px solid rgba(255,255,255,.2);
-}
-
-.login-logo img { width:100%; height:100%; object-fit:cover; }
-.login-logo i   { font-size:28px; color:#fff; }
-
-.login-title {
-    font-size: 18px;
-    font-weight: 900;
-    color: #fff;
-    margin-bottom: 4px;
-}
-
-.login-sub {
-    font-size: 12px;
-    color: rgba(255,255,255,.65);
-    font-weight: 700;
-}
-
-/* Ø¬Ø³Ù… Ø§Ù„Ø¨Ø·Ø§Ù‚Ø© */
-.login-body { padding: 28px; }
-
-.login-label {
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--mid);
-    display: block;
-    margin-bottom: 6px;
-}
-
-.login-input, .login-select {
-    width: 100%;
-    padding: 13px 16px;
-    border: 2px solid var(--line);
-    border-radius: 10px;
-    font-family: 'Cairo',sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    color: #111;
-    background: var(--off);
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-    margin-bottom: 14px;
-    text-align: right;
-}
-
-.login-input:focus, .login-select:focus {
-    border-color: var(--primary);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(11,37,69,.08);
-}
-
-.login-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Cairo',sans-serif;
-    font-size: 15px;
-    font-weight: 900;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all .2s;
-    margin-bottom: 8px;
-}
-
-.login-btn:hover   { opacity:.92; transform:translateY(-1px); }
-.login-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
-
-.back-btn {
-    width: 100%;
-    padding: 10px;
-    background: transparent;
-    color: var(--mid);
-    border: 2px solid var(--line);
-    border-radius: 10px;
-    font-family: 'Cairo',sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .2s;
-}
-
-.back-btn:hover { border-color: var(--primary); color: var(--primary); }
-
-.error-msg {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 14px;
-    display: none;
-    text-align: center;
-}
-.error-msg.show { display: block; }
-
-/* Ø¨Ø·Ø§Ù‚Ø§Øª Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ */
-.school-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px;
-    border: 2px solid var(--line);
-    border-radius: 12px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all .2s;
-    background: #fff;
-}
-
-.school-card:hover {
-    border-color: var(--primary);
-    background: #f0f4ff;
-    transform: translateX(-3px);
-}
-
-.school-card-logo {
-    width: 48px; height: 48px;
-    border-radius: 10px;
-    background: var(--off);
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 1px solid var(--line);
-}
-
-.school-card-logo img { width:100%; height:100%; object-fit:cover; }
-.school-card-logo i   { font-size:22px; color: var(--mid); }
-
-.school-card-info { flex: 1; text-align: right; }
-.school-card-name { font-weight: 900; font-size: 14px; color: #111; margin-bottom: 2px; }
-.school-card-region { font-size: 12px; color: var(--mid); font-weight: 700; }
-
-.school-card-arrow { color: var(--mid); font-size: 18px; }
-
-/* Ø´Ø§Ø±Ø© Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ */
-.school-badge {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 5px;
-    margin-top: 3px;
-    display: inline-block;
-}
-.badge-active   { background: #f0fdf4; color: #16a34a; }
-.badge-expiring { background: #fffbeb; color: #d97706; }
-.badge-expired  { background: #fef2f2; color: #dc2626; }
-
-/* ÙØ§ØµÙ„ Ø®Ø·ÙˆØ§Øª */
-.step-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 0 28px 16px;
-}
-
-.step-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--line);
-    transition: all .3s;
-}
-.step-dot.active { background: var(--primary); width: 24px; border-radius: 4px; }
-
-/* search bar */
-.search-bar {
-    width: 100%;
-    padding: 11px 16px;
-    border: 2px solid var(--line);
-    border-radius: 10px;
-    font-family: 'Cairo',sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    background: var(--off);
-    outline: none;
-    margin-bottom: 14px;
-    text-align: right;
-    transition: border-color .2s;
-}
-.search-bar:focus { border-color: var(--primary); background: #fff; }
-
-/* loading */
-.loading-schools {
-    text-align: center;
-    padding: 30px;
-    color: var(--mid);
-    font-weight: 700;
-    font-size: 13px;
-}
-
-/* footer */
-.login-footer {
-    text-align: center;
-    padding: 0 28px 20px;
-}
-.login-footer a {
-    font-size: 12px;
-    color: var(--mid);
-    text-decoration: none;
-    font-weight: 700;
-}
-.login-footer a:hover { color: var(--primary); }
-
-/* lockdown */
-#lockdown-screen {
-    display: none;
-    position: fixed; inset: 0;
-    background: var(--primary);
-    z-index: 999;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-    text-align: center;
-    color: #fff;
-}
-#lockdown-screen.show { display: flex; }
-</style>
+        /* نافذة المحاكاة الذكية المدمجة */
+        .demo-section { margin-top: 20px; width: 100%; max-width: 800px; display: none; }
+        .screen-frame { background: var(--card-bg); border: 4px solid var(--line); border-radius: 12px; height: 400px; position: relative; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); text-align: right; }
+        .cursor { position: absolute; width: 20px; height: 20px; background: url('https://cur.cursors-4u.net/arrow/arr-13/arr1219.png'), auto; z-index: 9999; transition: all 1s ease-in-out; pointer-events: none; }
+        .sim-sidebar { width: 200px; background: var(--off); height: 100%; position: absolute; right: 0; padding: 15px; border-left: 1px solid var(--line); }
+        .sim-main { margin-right: 200px; padding: 25px; height: 100%; position: relative; }
+        .sim-popup { display: none; position: absolute; top: 25%; left: 15%; background: white; color: black; padding: 20px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); width: 300px; text-align: center; }
+        .subtitle-bar { background: var(--card-bg); border: 1px solid var(--line); padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; color: #fbbf24; font-weight: 700; width: 100%; max-width: 800px; }
+    </style>
 </head>
 <body>
 
-<!-- Ø´Ø§Ø´Ø© Ø§Ù„Ø¥ØºÙ„Ø§Ù‚ -->
-<div id="lockdown-screen">
-    <div id="lock-icon" style="font-size:64px; margin-bottom:16px;">â›”</div>
-    <h2 id="lock-title" style="font-size:22px; font-weight:900; margin-bottom:10px;"></h2>
-    <p id="lock-msg" style="font-size:14px; color:rgba(255,255,255,.75); max-width:320px; line-height:1.7;"></p>
-</div>
+    <!-- زر تثبيت التطبيق PWA -->
+    <button id="btn-install-pwa" class="btn-install"><i class="bi bi-phone"></i> ثبّت المنظومة كتطبيق على جهازك</button>
 
-<!-- Ø§Ù„Ø¨Ø·Ø§Ù‚Ø© Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ© -->
-<div class="login-card" id="main-card">
-
-    <!-- Ù‡ÙŠØ¯Ø± -->
-    <div class="login-header" id="login-header">
-        <div class="login-logo" id="school-logo">
-            <i class="bi bi-building-fill-check"></i>
-        </div>
-        <div class="login-title" id="school-name">Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©</div>
-        <div class="login-sub" id="school-sub">Ù†Ø¸Ø§Ù… Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ Ø§Ù„Ù…ØªÙƒØ§Ù…Ù„</div>
-    </div>
-
-    <!-- Ù…Ø¤Ø´Ø± Ø§Ù„Ø®Ø·ÙˆØ§Øª -->
-    <div class="step-indicator" id="step-indicator">
-        <div class="step-dot active" id="dot-1"></div>
-        <div class="step-dot" id="dot-2"></div>
-    </div>
-
-    <!-- ===== Ø§Ù„Ø®Ø·ÙˆØ© 1: Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© ===== -->
-    <div id="step-school" class="login-body" style="padding-top:0;">
-        <p style="font-size:13px; font-weight:700; color:var(--mid); margin-bottom:14px; text-align:center;">
-            <i class="bi bi-search"></i> Ø§Ø®ØªØ± Ù…Ø¯Ø±Ø³ØªÙƒ Ù„Ù„Ù…ØªØ§Ø¨Ø¹Ø©
-        </p>
-
-        <input type="text" class="search-bar" id="school-search"
-            placeholder="ðŸ” Ø§Ø¨Ø­Ø« Ø¹Ù† Ù…Ø¯Ø±Ø³ØªÙƒ..."
-            oninput="window.filterSchools(this.value)">
-
-        <div id="schools-list">
-            <div class="loading-schools">
-                <i class="bi bi-hourglass-split" style="font-size:24px; display:block; margin-bottom:8px;"></i>
-                Ø¬Ø§Ø±ÙŠ ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø¯Ø§Ø±Ø³...
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== Ø§Ù„Ø®Ø·ÙˆØ© 2: Ø§Ù„Ø¯Ø®ÙˆÙ„ ===== -->
-    <div id="step-login" class="login-body" style="display:none; padding-top:0;">
-        <div id="error-msg" class="error-msg"></div>
-
-        <label class="login-label" for="inp-id">
-            <i class="bi bi-person-badge-fill"></i> Ù…Ø¹Ø±Ù‘Ù Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…
-        </label>
-        <input type="text" id="inp-id" class="login-input"
-            placeholder="Ø£Ø¯Ø®Ù„ Ø±Ù‚Ù…Ùƒ Ø£Ùˆ Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…"
-            autocomplete="username" autocapitalize="off" spellcheck="false">
-
-        <label class="login-label" for="inp-pass">
-            <i class="bi bi-lock-fill"></i> ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±
-        </label>
-        <div style="position:relative; margin-bottom:14px;">
-            <input type="password" id="inp-pass" class="login-input"
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
-                autocomplete="current-password"
-                style="margin-bottom:0; padding-left:46px;"
-                onkeydown="if(event.key==='Enter') window.doLogin()">
-            <button type="button" onclick="window.togglePass()"
-                style="position:absolute; left:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--mid); font-size:18px;">
-                <i class="bi bi-eye-fill" id="pass-eye"></i>
-            </button>
-        </div>
-
-        <button class="login-btn" id="login-btn" onclick="window.doLogin()">
-            <i class="bi bi-shield-lock-fill"></i> Ø¯Ø®ÙˆÙ„
-        </button>
-
-        <button class="back-btn" onclick="window.goBack()">
-            <i class="bi bi-arrow-right"></i> Ø§Ù„Ø¹ÙˆØ¯Ø© Ù„Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø©
-        </button>
-    </div>
-
-    <div class="login-footer">
-        <a href="privacy.html">Ø³ÙŠØ§Ø³Ø© Ø§Ù„Ø®ØµÙˆØµÙŠØ©</a>
+    <!-- بطاقة الدخول الموحدة -->
+    <div class="login-container">
+        <h1>المنظومة الرقمية الموحدة</h1>
+        <p>مدرسة سالم الحسينان المتوسطة</p>
         
+        <form onsubmit="window.login(event)">
+            <input type="text" id="id" placeholder="رقم المستخدم" required>
+            <input type="password" id="pass" placeholder="كلمة المرور" required>
+            <button type="submit" class="btn-primary"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول</button>
+        </form>
+
+        <!-- زر تشغيل العرض التوضيحي المدمج -->
+        <button class="btn-success" onclick="startIntegratedDemo()"><i class="bi bi-play-btn-fill"></i> شاهد العرض الحي للمنظومة</button>
     </div>
-</div>
 
-<script type="module">
-import { db, auth } from './js/firebase-config.js';
-import { collection, getDocs, query, where, doc, getDoc }
-    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-import { getFunctions, httpsCallable }
-    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
-import { signInWithCustomToken }
-    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-
-const functions   = getFunctions(auth.app, 'me-central1');
-const loginUserFn = httpsCallable(functions, 'loginUser');
-
-// ===== Ø­Ø§Ù„Ø© Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ =====
-var selectedSchool = null;
-var allSchools = [];
-
-// ===== ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ =====
-async function loadSchools() {
-    var listEl = document.getElementById('schools-list');
-    try {
-        var snap = await getDocs(query(collection(db, 'schools')));
-        allSchools = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-            .filter(s => s.status !== 'deleted')
-            .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
-
-        renderSchools(allSchools);
-    } catch(e) {
-        listEl.innerHTML = `<div style="text-align:center; color:#dc2626; padding:20px; font-weight:700;">âŒ ØªØ¹Ø°Ø± ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø¯Ø§Ø±Ø³</div>`;
-    }
-}
-
-function renderSchools(schools) {
-    var listEl = document.getElementById('schools-list');
-    if (!schools.length) {
-        listEl.innerHTML = '<div class="loading-schools">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø¯Ø§Ø±Ø³ Ù…Ø·Ø§Ø¨Ù‚Ø©</div>';
-        return;
-    }
-
-    listEl.innerHTML = schools.map(s => {
-        var today = new Date().toISOString().slice(0,10);
-        var expiry = s.subscriptionEnd || '';
-        var daysLeft = expiry ? Math.ceil((new Date(expiry) - new Date()) / 86400000) : 999;
-        var badge = '';
-        if (s.status === 'suspended') {
-            badge = '<span class="school-badge badge-expired">Ù…ÙˆÙ‚ÙˆÙØ©</span>';
-        } else if (daysLeft <= 30 && daysLeft > 0) {
-            badge = `<span class="school-badge badge-expiring">ØªÙ†ØªÙ‡ÙŠ Ø®Ù„Ø§Ù„ ${daysLeft} ÙŠÙˆÙ…</span>`;
-        } else if (daysLeft <= 0) {
-            badge = '<span class="school-badge badge-expired">Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ</span>';
-        } else {
-            badge = '<span class="school-badge badge-active">Ù†Ø´Ø·Ø©</span>';
-        }
-
-        return `
-        <div class="school-card" onclick="window.selectSchool('${s.id}')">
-            <div class="school-card-logo">
-                ${s.logoUrl
-                    ? `<img src="${s.logoUrl}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-                    : ''}
-                <i class="bi bi-building" ${s.logoUrl ? 'style="display:none"' : ''}></i>
+    <!-- شاشة المحاكاة الحركية التفاعلية -->
+    <div class="demo-section" id="demo-zone">
+        <div class="screen-frame">
+            <div class="cursor" id="fake-cursor" style="top: 220px; left: 300px;"></div>
+            
+            <div class="sim-sidebar">
+                <h3 style="color:var(--accent); font-size:13px; margin-bottom:20px;"><i class="bi bi-shield-check"></i> سالم الحسينان</h3>
+                <div id="sim-nav-1" style="padding:8px; background:var(--off); border-radius:6px; font-size:12px; margin-bottom:8px; font-weight:bold;"><i class="bi bi-graph-up"></i> المؤشرات اليومية</div>
+                <div id="sim-nav-2" style="padding:8px; font-size:12px; opacity:0.5;"><i class="bi bi-file-earmark-pdf"></i> تقارير الغياب</div>
             </div>
-            <div class="school-card-info">
-                <div class="school-card-name">${s.name || s.id}</div>
-                <div class="school-card-region">${s.region || 'ÙˆØ²Ø§Ø±Ø© Ø§Ù„ØªØ±Ø¨ÙŠØ© â€” Ø§Ù„ÙƒÙˆÙŠØª'}</div>
-                ${badge}
+
+            <div class="sim-main">
+                <div id="sim-content">
+                    <h2 style="font-size:18px; font-weight:700; margin-bottom:15px;">لوحة الإجراءات السريعة والمباشرة</h2>
+                    <div style="background:var(--line); padding:15px; border-radius:10px;">
+                        <span style="font-size:12px; color:#cbd5e1; display:block; margin-bottom:8px;">محرك بث غياب الحصة الحالي لأولياء الأمور:</span>
+                        <select style="padding:6px; width:120px; border-radius:6px; font-weight:bold;"><option>الصف 9/1</option></select>
+                        <button id="sim-whatsapp-btn" style="background:var(--success); color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; margin-right:8px;">بث للواتساب</button>
+                    </div>
+                </div>
+
+                <div class="sim-popup" id="sim-whatsapp-popup">
+                    <h3 style="color:var(--success); font-size:16px; margin-bottom:10px;"><i class="bi bi-check-circle-fill"></i> نجح محرك البث!</h3>
+                    <p style="font-size:12px; color:var(--mid); line-height:1.5;">تم حصر طلاب غياب صف 9/1 وإرسال رسائل فورية لهواتف أولياء الأمور عبر الواتساب تلقائياً ومجاناً.</p>
+                </div>
             </div>
-            <i class="bi bi-chevron-left school-card-arrow"></i>
-        </div>`;
-    }).join('');
-}
+        </div>
+        
+        <div class="subtitle-bar" id="sim-subtitle">جاري تجهيز بيئة العرض التفاعلي...</div>
+    </div>
 
-window.filterSchools = function(query) {
-    var filtered = allSchools.filter(s =>
-        (s.name || '').includes(query) ||
-        (s.region || '').includes(query) ||
-        s.id.includes(query.toLowerCase())
-    );
-    renderSchools(filtered);
-};
-
-// ===== Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© =====
-window.selectSchool = async function(schoolId) {
-    var school = allSchools.find(s => s.id === schoolId);
-    if (!school) return;
-
-    // ØªØ­Ù‚Ù‚ Ù…Ù† Ø­Ø§Ù„Ø© Ø§Ù„Ù…Ø¯Ø±Ø³Ø©
-    if (school.status === 'suspended') {
-        showLockdown('â›”', 'Ø§Ù„Ø­Ø³Ø§Ø¨ Ù…ÙˆÙ‚ÙˆÙ', 'ØªÙ… Ø¥ÙŠÙ‚Ø§Ù Ø­Ø³Ø§Ø¨ Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©. ÙŠØ±Ø¬Ù‰ Ø§Ù„ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„ÙÙ†ÙŠ Ù„ØªØ¬Ø¯ÙŠØ¯ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ.');
-        return;
-    }
-
-    var today = new Date().toISOString().slice(0,10);
-    if (school.subscriptionEnd && school.subscriptionEnd < today) {
-        showLockdown('â°', 'Ø§Ù†ØªÙ‡Ù‰ Ø§Ù„Ø§Ø´ØªØ±Ø§Ùƒ', 'Ø§Ù†ØªÙ‡Øª Ù…Ø¯Ø© Ø§Ø´ØªØ±Ø§Ùƒ Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©. ÙŠØ±Ø¬Ù‰ Ø§Ù„ØªÙˆØ§ØµÙ„ Ù…Ø¹ Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„ÙÙ†ÙŠ Ù„Ù„ØªØ¬Ø¯ÙŠØ¯.');
-        return;
-    }
-
-    selectedSchool = school;
-
-    // ØªØ­Ø¯ÙŠØ« Ø§Ù„Ù‡ÙŠØ¯Ø±
-    document.getElementById('school-name').textContent = school.name || school.id;
-    document.getElementById('school-sub').textContent = school.region || 'ÙˆØ²Ø§Ø±Ø© Ø§Ù„ØªØ±Ø¨ÙŠØ© â€” Ø§Ù„ÙƒÙˆÙŠØª';
-    if (school.primaryColor) {
-        document.documentElement.style.setProperty('--primary', school.primaryColor);
-        document.getElementById('login-header').style.background = school.primaryColor;
-    }
-    if (school.logoUrl) {
-        document.getElementById('school-logo').innerHTML = `<img src="${school.logoUrl}" alt="${school.name}">`;
-    }
-    document.title = `Ø¯Ø®ÙˆÙ„ | ${school.name}`;
-
-    // Ø§Ù„Ø§Ù†ØªÙ‚Ø§Ù„ Ù„Ù„Ø®Ø·ÙˆØ© 2
-    document.getElementById('step-school').style.display = 'none';
-    document.getElementById('step-login').style.display = 'block';
-    document.getElementById('dot-1').classList.remove('active');
-    document.getElementById('dot-2').classList.add('active');
-    document.getElementById('inp-id').focus();
-
-    // Ø­ÙØ¸ Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø§Ù„Ù…Ø®ØªØ§Ø±Ø©
-    localStorage.setItem('hs_last_school', schoolId);
-};
-
-// ===== Ø§Ù„Ø¹ÙˆØ¯Ø© =====
-window.goBack = function() {
-    selectedSchool = null;
-    document.getElementById('step-school').style.display = 'block';
-    document.getElementById('step-login').style.display = 'none';
-    document.getElementById('dot-1').classList.add('active');
-    document.getElementById('dot-2').classList.remove('active');
-    document.getElementById('error-msg').classList.remove('show');
-    document.getElementById('inp-id').value = '';
-    document.getElementById('inp-pass').value = '';
-
-    // Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„Ù‡ÙŠØ¯Ø± Ù„Ù„ÙˆØ¶Ø¹ Ø§Ù„Ø§ÙØªØ±Ø§Ø¶ÙŠ
-    document.getElementById('school-name').textContent = 'Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©';
-    document.getElementById('school-sub').textContent = 'Ù†Ø¸Ø§Ù… Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„Ù…Ø¯Ø§Ø±Ø³ Ø§Ù„Ù…ØªÙƒØ§Ù…Ù„';
-    document.getElementById('login-header').style.background = '';
-    document.documentElement.style.setProperty('--primary', '#0b2545');
-    document.getElementById('school-logo').innerHTML = '<i class="bi bi-building-fill-check"></i>';
-    document.title = 'Ø§Ù„Ù…Ù†Ø¸ÙˆÙ…Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ© | ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„';
-};
-
-// ===== Ø¥Ø¸Ù‡Ø§Ø±/Ø¥Ø®ÙØ§Ø¡ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± =====
-window.togglePass = function() {
-    var input = document.getElementById('inp-pass');
-    var eye = document.getElementById('pass-eye');
-    if (input.type === 'password') {
-        input.type = 'text';
-        eye.className = 'bi bi-eye-slash-fill';
-    } else {
-        input.type = 'password';
-        eye.className = 'bi bi-eye-fill';
-    }
-};
-
-// ===== ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ =====
-window.doLogin = async function() {
-    var id   = document.getElementById('inp-id').value.trim();
-    var pass = document.getElementById('inp-pass').value.trim();
-    var btn  = document.getElementById('login-btn');
-    var err  = document.getElementById('error-msg');
-
-    err.classList.remove('show');
-
-    if (!selectedSchool) {
-        err.textContent = 'âš ï¸ ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø£ÙˆÙ„Ø§Ù‹';
-        err.classList.add('show'); return;
-    }
-
-    if (!id || !pass) {
-        err.textContent = 'âš ï¸ Ø£Ø¯Ø®Ù„ Ø±Ù‚Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… ÙˆÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±';
-        err.classList.add('show'); return;
-    }
-
-    btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Ø¬Ø§Ø±ÙŠ Ø§Ù„ØªØ­Ù‚Ù‚...';
-
-    try {
-        var result   = await loginUserFn({ schoolId: selectedSchool.id, userId: id, password: pass });
-        var userData = result.data;
-
-        if (userData.schoolId !== selectedSchool.id) {
-            throw { code: 'school-mismatch' };
-        }
-
-        // Ø­ÙØ¸ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…
-        localStorage.setItem('hs_user', JSON.stringify({
-            uid: userData.userId,
-            name: userData.name,
-            role: userData.role,
-            schoolId: userData.schoolId,
-            schoolName: selectedSchool.name,
-            department: userData.department || ''
-        }));
-
-        // ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ù€ Firebase
-        await signInWithCustomToken(auth, userData.token);
-
-        // Ø§Ù„ØªÙˆØ¬ÙŠÙ‡ Ø­Ø³Ø¨ Ø§Ù„Ø¯ÙˆØ±
-        var rolePages = {
-            admin: 'admin.html', assistant_manager: 'admin.html',
-            wing_supervisor: 'admin.html', department_head: 'department_head.html',
-            social_worker: 'social.html', nurse: 'nurse.html',
-            guard: 'guard.html', teacher: 'teacher.html',
-            parent: 'parent.html'
-        };
-
-        var page = rolePages[userData.role] || 'admin.html';
-        window.location.replace(page);
-
-    } catch(e) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-shield-lock-fill"></i> Ø¯Ø®ÙˆÙ„';
-
-        var msg = 'âŒ Ø­Ø¯Ø« Ø®Ø·Ø£ ØºÙŠØ± Ù…ØªÙˆÙ‚Ø¹';
-        if (e.code === 'school-mismatch') msg = 'âŒ Ù‡Ø°Ø§ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ù„Ø§ ÙŠÙ†ØªÙ…ÙŠ Ù„Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø¯Ø±Ø³Ø©';
-        else if (e.message?.includes('unauthenticated') || e.message?.includes('401')) msg = 'âŒ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø£Ùˆ Ø§Ù„Ù…Ø¹Ø±Ù‘Ù ØºÙŠØ± ØµØ­ÙŠØ­';
-        else if (e.message?.includes('resource-exhausted') || e.message?.includes('429')) msg = 'â³ ØªÙ… ØªØ¬Ø§ÙˆØ² Ø¹Ø¯Ø¯ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø§Øª â€” Ø§Ù†ØªØ¸Ø± 15 Ø¯Ù‚ÙŠÙ‚Ø©';
-        else if (e.message?.includes('locked')) msg = 'ðŸ”’ Ø§Ù„Ø­Ø³Ø§Ø¨ Ù…Ù‚ÙÙ„ Ù…Ø¤Ù‚ØªØ§Ù‹ â€” Ø§Ù†ØªØ¸Ø± 15 Ø¯Ù‚ÙŠÙ‚Ø©';
-        else if (e.message?.includes('network') || e.message?.includes('fetch')) msg = 'ðŸ“¡ ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„Ø§ØªØµØ§Ù„ Ø¨Ø§Ù„Ø¥Ù†ØªØ±Ù†Øª';
-
-        err.textContent = msg;
-        err.classList.add('show');
-    }
-};
-
-// ===== Ø´Ø§Ø´Ø© Ø§Ù„Ø¥ØºÙ„Ø§Ù‚ =====
-function showLockdown(icon, title, msg) {
-    document.getElementById('lock-icon').textContent = icon;
-    document.getElementById('lock-title').textContent = title;
-    document.getElementById('lock-msg').textContent = msg;
-    document.getElementById('lockdown-screen').classList.add('show');
-}
-
-// ===== ØªØ­Ù…ÙŠÙ„ Ø£ÙˆÙ„ÙŠ =====
-// Ø¥Ø°Ø§ Ø¹Ù†Ø¯Ù‡ Ù…Ø¯Ø±Ø³Ø© Ù…Ø­ÙÙˆØ¸Ø©ØŒ Ù†Ø¨Ø¯Ø£ ÙÙŠÙ‡Ø§ Ù…Ø¨Ø§Ø´Ø±Ø©
-var lastSchool = localStorage.getItem('hs_last_school');
-
-loadSchools().then(() => {
-    if (lastSchool) {
-        var school = allSchools.find(s => s.id === lastSchool);
-        if (school && school.status !== 'suspended') {
-            // ØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ù…Ø¯Ø±Ø³Ø© Ø§Ù„Ù…Ø­ÙÙˆØ¸Ø© Ø¨ØµØ±ÙŠØ§Ù‹
-            setTimeout(() => {
-                var cards = document.querySelectorAll('.school-card');
-                cards.forEach(card => {
-                    if (card.getAttribute('onclick').includes(lastSchool)) {
-                        card.style.borderColor = 'var(--primary)';
-                        card.style.background = '#f0f4ff';
-                    }
-                });
-            }, 100);
-        }
-    }
-});
-
-// Ø¯Ø¹Ù… Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ù€ ?school=xxx Ù…Ù† Ø§Ù„Ø±ÙˆØ§Ø¨Ø· Ø§Ù„Ù‚Ø¯ÙŠÙ…Ø©
-var urlParams = new URLSearchParams(window.location.search);
-var schoolFromUrl = urlParams.get('school')?.trim().toLowerCase();
-if (schoolFromUrl) {
-    loadSchools().then(() => {
-        window.selectSchool(schoolFromUrl);
+    <!-- محرك العمليات السحابية والأمان -->
+    <script type="module">
+// قراءة كود المدرسة من الرابط (?school=alanwar) — للروابط المخصصة
+const urlParams = new URLSearchParams(window.location.search);
+const schoolFromUrl = urlParams.get('school');
+if(schoolFromUrl) {
+    // عرض اسم المدرسة المتوقع كرسالة ترحيب بصرية فقط (لا تأثير على المنطق)
+    document.addEventListener('DOMContentLoaded', () => {
+        const hint = document.createElement('div');
+        hint.style.cssText = 'background:var(--ice);color:var(--sky);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;text-align:center;margin-bottom:14px;';
+        hint.textContent = `🏫 بوابة دخول: ${schoolFromUrl}`;
+        const card = document.querySelector('.login-card') || document.querySelector('form')?.parentElement;
+        if(card) card.insertBefore(hint, card.firstChild);
     });
 }
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+        import { db, auth } from './js/firebase-config.js';
+        import { collection, query, where, getDocs, getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+        window.login = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('id').value;
+            const pass = document.getElementById('pass').value;
+            
+            // جلب كل المستخدمين بنفس الرقم (قد يكونون من مدارس مختلفة)
+            const snap = await getDocs(query(collection(db, 'users'), where('userId', '==', id)));
+            if(snap.empty) return alert('❌ رقم المستخدم غير مسجل في النظام');
+            
+            // مطابقة كلمة المرور أولاً — يحل مشكلة تعارض المدارس
+            let userData = null;
+            for(const d of snap.docs) {
+                const dData = d.data();
+                const storedPass = String(dData.plainPass || '').trim();
+                const inputPass  = String(pass || '').trim();
+                if(storedPass === inputPass) { userData = dData; break; }
+            }
+            if(!userData) return alert('❌ كلمة المرور غير صحيحة');
+            if(!userData.schoolId) return alert('❌ المستخدم غير مرتبط بمدرسة — تواصل مع مدير المدرسة');
+
+            // 🔒 لو الرابط مخصص لمدرسة معينة (?school=xxx) — يجب أن يطابق schoolId المستخدم
+            if(schoolFromUrl && userData.schoolId !== schoolFromUrl) {
+                return alert(`❌ هذا الرابط مخصص لمدرسة أخرى\nرجاءً استخدم رابط مدرستك الصحيح`);
+            }
+
+            // فحص حالة المدرسة
+            const schoolSnap = await getDoc(doc(db, 'schools', userData.schoolId));
+            if(!schoolSnap.exists()) return alert('❌ مدرستك غير مسجلة في النظام');
+            const schoolData = schoolSnap.data();
+
+            if(schoolData.status === 'suspended')
+                return alert('⚠️ تم إيقاف اشتراك هذه المدرسة مؤقتاً\nللاستفسار تواصل مع المطور');
+            if(schoolData.subscriptionEnd && new Date(schoolData.subscriptionEnd) < new Date())
+                return alert('⚠️ انتهى اشتراك مدرستك\nللتجديد تواصل مع المطور');
+
+            // حفظ الجلسة والتوجيه
+            const role = String(userData.role || '').trim().toLowerCase();
+            localStorage.setItem('hs_user', JSON.stringify({
+                userId:     userData.userId,
+                name:       userData.name || '',
+                role:       role,
+                schoolId:   userData.schoolId,
+                schoolName: schoolData.name || '',
+                classId:    userData.classId || ''
+            }));
+            
+            // توجيه حسب الدور
+            const adminRoles = ['admin','assistant_manager','wing_supervisor','social_worker'];
+            window.location.replace(adminRoles.includes(role) ? 'admin.html' : 'teacher.html');
+        };
+
+        // الـ PWA Install Prompt
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            const installBtn = document.getElementById('btn-install-pwa');
+            installBtn.style.display = 'flex';
+            window.deferredPrompt = e;
+        });
+        document.getElementById('btn-install-pwa').addEventListener('click', async () => {
+            if(!window.deferredPrompt) return;
+            window.deferredPrompt.prompt();
+            await window.deferredPrompt.userChoice;
+            window.deferredPrompt = null;
+            document.getElementById('btn-install-pwa').style.display = 'none';
+        });
+    </script>
+
+    <!-- محرك تشغيل العرض التفاعلي التلقائي -->
+    <script>
+        function startIntegratedDemo() {
+            const demoZone = document.getElementById('demo-zone');
+            demoZone.style.display = 'block';
+            demoZone.scrollIntoView({ behavior: 'smooth' });
+
+            const cursor = document.getElementById('fake-cursor');
+            const subtitle = document.getElementById('sim-subtitle');
+            const popup = document.getElementById('sim-whatsapp-popup');
+            const navReport = document.getElementById('sim-nav-2');
+
+            subtitle.textContent = "مرحباً بك في العرض الحي للمنظومة السحابية.. هكذا تدار البيانات الفنية للمدارس.";
+            
+            setTimeout(() => {
+                cursor.style.top = '125px';
+                cursor.style.left = '290px';
+                subtitle.textContent = "يختار المسؤول أو الوكيل الفصل الدراسي، ويتجه مباشرة إلى زر البث الذكي المباشر..";
+            }, 2500);
+
+            setTimeout(() => {
+                popup.style.display = 'block';
+                subtitle.textContent = "بضغطة واحدة، يقوم النظام بسحب الغياب الفعلي وإشعار أولياء الأمور تلقائياً عبر الواتساب دون تكاليف SMS!";
+            }, 5000);
+
+            setTimeout(() => {
+                popup.style.display = 'none';
+                cursor.style.top = '90px';
+                cursor.style.left = '650px';
+                subtitle.textContent = "الآن نتوجه بالماوس إلى موديول التقارير الإحصائية المعتمدة..";
+            }, 8500);
+
+            setTimeout(() => {
+                navReport.style.background = 'var(--off)';
+                navReport.style.opacity = '1';
+                subtitle.textContent = "يقوم النظام بتصدير كشوف الغياب التراكمي وتجهيز ملفات PDF المطابقة للمنطقة التعليمية فوراً.";
+            }, 10500);
+        }
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('✅ تم تشغيل محرك السرعة PWA بنجاح', reg.scope))
+                .catch(err => console.error('❌ فشل تشغيل PWA', err));
+        });
+    }
 </script>
 </body>
 </html>
