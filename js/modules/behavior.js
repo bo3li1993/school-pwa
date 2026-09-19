@@ -1,9 +1,19 @@
 import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, addDoc, query, where, serverTimestamp, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// ══ onSnapshot cleanup ══
+let _behaviorUnsubs = [];
+function cleanupBehavior() {
+    _behaviorUnsubs.forEach(fn => { try { fn(); } catch(e) {} });
+    _behaviorUnsubs = [];
+}
+
+
 export async function initBehaviorModule() {
-    const container = document.getElementById('tab-behavior');
+    var container = document.getElementById('tab-behavior');
     if (!container) return;
+
+    var currentUser = JSON.parse(localStorage.getItem('hs_user') || '{}');
 
     try {
         container.innerHTML = `
@@ -27,7 +37,7 @@ export async function initBehaviorModule() {
                     </div>
                     <div>
                         <label style="font-weight:700; font-size:12px; color:#444;">3. المعلم المحيل للحالة (جهة الإحالة):</label>
-                        <input type="text" id="beh-referred-by" placeholder="مثال: أ. محمد الشمري" required style="padding:12px;">
+                        <input type="text" id="beh-referred-by" value="${currentUser.name || ''}" readonly style="padding:12px; background:var(--off); color:var(--mid); font-weight:700;">
                     </div>
                     <div>
                         <label style="font-weight:700; font-size:12px; color:#444;">4. الإجراء التربوي المتخذ:</label>
@@ -57,6 +67,17 @@ export async function initBehaviorModule() {
             </form>
         </div>
 
+        
+            <div style="display:flex; gap:8px; margin-top:12px;">
+                <button onclick="window.printBehaviorPDF()" 
+                    style="background:#dc2626; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> تصدير PDF
+                </button>
+                <button onclick="window.printBehaviorDirect()" 
+                    style="background:#0b2545; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo',sans-serif; font-size:13px;">
+                    <i class="bi bi-printer-fill"></i> طباعة مباشرة
+                </button>
+            </div>
         <div class="card" style="border-top: 5px solid var(--primary-color); text-align: right; background:#fff; padding:20px; border-radius:12px;">
             <h2><i class="bi bi-list-task"></i> الأرشيف المركزي لقرارات الضبط السلوكي والمتابعة</h2>
             <div style="overflow-x:auto;">
@@ -79,21 +100,21 @@ export async function initBehaviorModule() {
             </div>
         </div>`;
 
-        const classSelect = document.getElementById('beh-class-select');
-        const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية الحالية
+        var classSelect = document.getElementById('beh-class-select');
+        var schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية الحالية
 
         // تصفية الفصول المتاحة بناءً على طلاب المدرسة الحالية فقط لمنع التداخل
-        const qClasses = query(collection(db, 'students'), where('schoolId', '==', schoolId));
-        onSnapshot(qClasses, (snapshot) => {
-            let classesSet = new Set();
+        var qClasses = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+        _behaviorUnsubs.push(onSnapshot(qClasses, (snapshot) => {
+            var classesSet = new Set();
             snapshot.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
             
             // جلب احتياطي يدعم السجلات القديمة لمدرسة الحسينان الأساسية
             if (classesSet.size === 0 && schoolId === 'hosainan') {
-                const qFallback = query(collection(db, 'students'));
+                var qFallback = query(collection(db, 'students'));
                 getDocs(qFallback).then(fallbackSnap => {
                     fallbackSnap.forEach(doc => {
-                        const d = doc.data();
+                        var d = doc.data();
                         if(!d.schoolId && d.classId) classesSet.add(d.classId.trim());
                     });
                     renderClassesDropdown(classesSet, classSelect);
@@ -109,13 +130,13 @@ export async function initBehaviorModule() {
 
 function renderClassesDropdown(classesSet, element) {
     if (!element) return;
-    let htmlClasses = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
+    var htmlClasses = '<option value="">-- الرجاء اختيار الصف الدراسي --</option>';
     Array.from(classesSet).sort().forEach(c => { htmlClasses += `<option value="${c}">${c}</option>`; });
     element.innerHTML = htmlClasses;
 }
 
 window.handleBehClassChange = async function(classId) {
-    const studentSelect = document.getElementById('beh-student-select');
+    var studentSelect = document.getElementById('beh-student-select');
     if (!studentSelect) return;
 
     if (!classId) {
@@ -127,22 +148,22 @@ window.handleBehClassChange = async function(classId) {
     studentSelect.innerHTML = '<option value="">⏳ جاري فرز أسماء الفصل أبجدياً لايف...</option>';
     studentSelect.disabled = true;
 
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     try {
         // فلترة مزدوجة: الفصل التابع للمدرسة الحالية فقط لضمان الخصوصية التامة
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
-        onSnapshot(q, (snapshot) => {
-            let arr = [];
+        var q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
+        _behaviorUnsubs.push(onSnapshot(q, (snapshot) => {
+            var arr = [];
             snapshot.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
             
             // خط دفاع خلفي للداتا العامة القديمة
             if (arr.length === 0 && schoolId === 'hosainan') {
-                const qFallback = query(collection(db, 'students'), where('classId', '==', classId.trim()));
+                var qFallback = query(collection(db, 'students'), where('classId', '==', classId.trim()));
                 getDocs(qFallback).then(fallbackSnap => {
-                    let fArr = [];
+                    var fArr = [];
                     fallbackSnap.forEach(doc => {
-                        const d = doc.data();
+                        var d = doc.data();
                         if(!d.schoolId && d.name) fArr.push(d.name.trim());
                     });
                     fArr.sort((a, b) => a.localeCompare(b, 'ar'));
@@ -157,7 +178,7 @@ window.handleBehClassChange = async function(classId) {
 };
 
 function populateStudentsDropdown(arr, element) {
-    let html = '<option value="">-- اختر اسم الطالب من الكشف المعتمد --</option>';
+    var html = '<option value="">-- اختر اسم الطالب من الكشف المعتمد --</option>';
     arr.forEach(name => { html += `<option value="${name}">${name}</option>`; });
     element.innerHTML = arr.length === 0 ? '<option value="">⚠️ لا يوجد طلاب بالفصل</option>' : html;
     element.disabled = arr.length === 0;
@@ -165,18 +186,18 @@ function populateStudentsDropdown(arr, element) {
 
 window.handleRegisterBehaviorLive = async function(e) {
     e.preventDefault();
-    const sName = document.getElementById('beh-student-select').value;
-    const cId = document.getElementById('beh-class-select').value;
-    const refBy = document.getElementById('beh-referred-by').value.trim();
-    const action = document.getElementById('beh-action-type').value;
-    const followup = document.getElementById('beh-followup-status').value;
-    const notes = document.getElementById('beh-notes').value.trim();
-    const schoolId = getActiveSchoolId(); // 🏢 ربط الـ SaaS المركزي
+    var sName = document.getElementById('beh-student-select').value;
+    var cId = document.getElementById('beh-class-select').value;
+    var refBy = document.getElementById('beh-referred-by').value.trim();
+    var action = document.getElementById('beh-action-type').value;
+    var followup = document.getElementById('beh-followup-status').value;
+    var notes = document.getElementById('beh-notes').value.trim();
+    var schoolId = getActiveSchoolId(); // 🏢 ربط الـ SaaS المركزي
 
-    if(!sName || !cId) { alert("⚠️ الرجاء تحديد الطالب والصف أولاً قبل الاعتماد!"); return; }
+    if(!sName || !cId) { window.showToast("⚠️ الرجاء تحديد الطالب والصف أولاً قبل الاعتماد!"); return; }
 
     try {
-        const todayISO = getTodayISO(); // التاريخ الدولي الموحد والمصحح للمقارنات التلقائية
+        var todayISO = getTodayISO(); // التاريخ الدولي الموحد والمصحح للمقارنات التلقائية
         
         await addDoc(collection(db, 'behavior'), {
             schoolId: schoolId, // 🔑 البصمة الأمنية للمدرسة الراصدة
@@ -192,31 +213,31 @@ window.handleRegisterBehaviorLive = async function(e) {
             createdAt: serverTimestamp()
         });
         
-        alert('✓ تم اعتماد وتسجيل الإجراء التربوي بنجاح، وتحديث ملف الطالب التراكمي فوراً.');
+        window.showToast('✓ تم اعتماد وتسجيل الإجراء التربوي بنجاح، وتحديث ملف الطالب التراكمي فوراً.');
         document.getElementById('behavior-reg-form').reset();
         document.getElementById('beh-student-select').innerHTML = '<option value="">-- بانتظار اختيار الفصل --</option>';
         document.getElementById('beh-student-select').disabled = true;
-    } catch(err) { alert('خطأ أثناء الحفظ السحابي: ' + err.message); }
+    } catch(err) { window.showToast('❌ خطأ: ' + err.message, 'error'); }
 };
 
 function loadBehaviorLogsLive() {
-    const tbody = document.getElementById('behavior-logs-tbody');
+    var tbody = document.getElementById('behavior-logs-tbody');
     if (!tbody) return;
 
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     // جلب وحصر أرشيف المتابعات السلوكية التابع للمدرسة الحالية فقط
-    const qLogs = query(collection(db, 'behavior'), where('schoolId', '==', schoolId));
+    var qLogs = query(collection(db, 'behavior'), where('schoolId', '==', schoolId));
 
-    onSnapshot(qLogs, (snapshot) => {
-        let html = '';
+    _behaviorUnsubs.push(onSnapshot(qLogs, (snapshot) => {
+        var html = '';
         
         // إذا كان فارغاً والمدرسة هي الحسينان، نسحب الأرشيف القديم الغير مقيد بـ schoolId
         if (snapshot.empty && schoolId === 'hosainan') {
             getDocs(getActiveSchoolId() ? query(collection(db, 'behavior'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'behavior')).then(oldSnap => {
-                let fHtml = '';
+                var fHtml = '';
                 oldSnap.forEach(d => {
-                    const data = d.data();
+                    var data = d.data();
                     if (!data.schoolId) fHtml += buildBehaviorRowHtml(data);
                 });
                 tbody.innerHTML = fHtml || '<tr><td colspan="7" style="text-align:center; color:#27ae60; padding:15px; font-weight:bold;">✅ السجل المركزي للمتابعة السلوكية سليم تماماً.</td></tr>';
@@ -232,7 +253,7 @@ function loadBehaviorLogsLive() {
 }
 
 function buildBehaviorRowHtml(data) {
-    const statusBadge = data.followUpStatus && data.followUpStatus.includes('تمت') ? 
+    var statusBadge = data.followUpStatus && data.followUpStatus.includes('تمت') ? 
         `<span class="badge success" style="background:#27ae60; padding:3px 8px; border-radius:4px; color:#fff;">تم الإقفال</span>` : 
         `<span class="badge warning" style="background:#e67e22; padding:3px 8px; border-radius:4px; color:#fff;">قيد المتابعة</span>`;
 
@@ -247,3 +268,44 @@ function buildBehaviorRowHtml(data) {
             <td style="padding:10px; color:#555; font-size:12px; font-weight:bold;">${data.notes || '-'}</td>
         </tr>`;
 }
+// ===== طباعة السجل =====
+window.printBehaviorPDF = async function() {
+    var tbody = document.getElementById('behavior-logs-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
+    var contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الإجراء</th><th>المتابعة</th><th>المحيل</th><th>الملاحظات</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    await window.ManzoumaReport.exportPDF(contentHTML, 'سجل_الإجراءات_السلوكية', 'سجل الإجراءات السلوكية');
+};
+
+window.printBehaviorDirect = function() {
+    var tbody = document.getElementById('behavior-logs-tbody');
+    if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
+    var contentHTML = `<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>الفصل</th><th>الإجراء</th><th>المتابعة</th><th>المحيل</th><th>الملاحظات</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    window.ManzoumaReport.printDirect(contentHTML, 'سجل الإجراءات السلوكية');
+};
+
+// ===== واتساب — إبلاغ ولي الأمر بالسلوك =====
+window.sendBehaviorWhatsApp = async function(studentName, classId, behaviorType, action) {
+    try {
+        var schoolId = getActiveSchoolId();
+        // جلب رقم ولي الأمر
+        var snap = await getDocs(query(
+            collection(db,'students'),
+            where('schoolId','==',schoolId),
+            where('name','==',studentName),
+            where('classId','==',classId)
+        ));
+        if(snap.empty) { window.showToast('⚠️ لم يُعثر على بيانات الطالب','warning'); return; }
+        var student = snap.docs[0].data();
+        var phone = (student.parentPhone||'').replace(/\D/g,'');
+        if(!phone) { window.showToast('⚠️ لا يوجد رقم هاتف لولي الأمر','warning'); return; }
+
+        var today = new Date().toLocaleDateString('ar-KW',{year:'numeric',month:'long',day:'numeric'});
+        var msg = encodeURIComponent(
+            `السلام عليكم ولي أمر الطالب ${studentName}،\n` +
+            `نُعلمكم بأنه تم تسجيل حادثة ${behaviorType} بتاريخ ${today}.\n` +
+            `الإجراء المتخذ: ${action||'—'}\n` +
+            `يرجى التواصل مع الإدارة للمزيد.`
+        );
+        window.open(`https://wa.me/965${phone}?text=${msg}`, '_blank');
+    } catch(e) { window.showToast('❌ '+e.message,'error'); }
+};

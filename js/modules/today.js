@@ -1,130 +1,151 @@
-import { db } from '../firebase-config.js';
-import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
+import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initTodayModule() {
-    const container = document.getElementById('tab-index') || document.querySelector('.tab-content.active');
-    if (!container) return;
+    var container = document.getElementById('tab-index');
+    if(!container) return;
+    var schoolId = getActiveSchoolId();
+    var today = getTodayISO();
+    var me = JSON.parse(localStorage.getItem('hs_user')||'{}');
 
-    // 1. بناء واجهة المؤشرات اليومية والإجراءات السريعة
     container.innerHTML = `
-        <div style="background:#fff; padding:25px; border-radius:12px; margin-bottom:20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h2 style="margin-top:0; color:#1e293b; font-weight:900;"><i class="bi bi-graph-up"></i> إحصائيات اليوم المباشرة</h2>
-            <div style="display:flex; gap:20px; margin-top: 20px;">
-                <div style="flex:1; background:#fff1f2; padding:20px; border-radius:10px; text-align:center; border: 1px solid #ffe4e6; border-bottom:5px solid #e74c3c;">
-                    <h3 style="color:#475569; margin:0 0 10px 0;">إجمالي الغياب</h3>
-                    <h1 id="today-absent-count" style="color:#e74c3c; font-size:48px; margin:0; font-weight:900;">0</h1>
-                </div>
-                <div style="flex:1; background:#fffbeb; padding:20px; border-radius:10px; text-align:center; border: 1px solid #fef3c7; border-bottom:5px solid #f59e0b;">
-                    <h3 style="color:#475569; margin:0 0 10px 0;">إجمالي التأخير</h3>
-                    <h1 id="today-late-count" style="color:#f59e0b; font-size:48px; margin:0; font-weight:900;">0</h1>
-                </div>
+    <div style="max-width:800px;margin:0 auto;padding:16px">
+        <h2 style="font-size:17px;font-weight:900;color:var(--navy);margin-bottom:14px">
+            <i class="bi bi-speedometer2" style="color:var(--sky)"></i> لوحة المؤشرات — ${new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}
+        </h2>
+
+        <!-- KPI -->
+        <div id="kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+            <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:30px;font-weight:900;color:var(--navy)" id="kpi-students">-</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">إجمالي الطلاب</div>
+            </div>
+            <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:30px;font-weight:900;color:#dc2626" id="kpi-absent">-</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">غائب اليوم</div>
+            </div>
+            <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:30px;font-weight:900;color:#d97706" id="kpi-late">-</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">متأخر</div>
+            </div>
+            <div class="kpi-card" style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center">
+                <div style="font-size:30px;font-weight:900;color:var(--green)" id="kpi-rate">-</div>
+                <div style="font-size:11px;color:var(--mid);font-weight:700">نسبة الحضور</div>
             </div>
         </div>
 
-        <div style="background:#fff; padding:25px; border-radius:12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h3 style="margin-top:0; color:#1e293b;"><i class="bi bi-lightning-charge-fill" style="color:#f59e0b;"></i> إجراءات سريعة لليوم</h3>
-            <div style="background:#1e293b; padding:20px; border-radius:10px; margin-top:15px; display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-                <span style="color:#cbd5e1; font-weight:bold;">محرك بث الغياب لأولياء الأمور عبر الواتساب:</span>
-                <select id="whatsapp-class-select" style="padding:10px; border-radius:6px; font-weight:bold; border:none; outline:none; font-family:'Cairo';">
-                    <option value="6/1">الصف 6/1</option>
-                    <option value="7/1">الصف 7/1</option>
-                    <option value="8/1">الصف 8/1</option>
-                    <option value="9/1">الصف 9/1</option>
-                </select>
-                <button onclick="window.triggerWhatsAppBroadcast()" style="background:#25d366; color:white; border:none; padding:10px 20px; border-radius:6px; font-weight:bold; cursor:pointer; font-family:'Cairo'; font-size:15px; transition:0.3s;">
-                    <i class="bi bi-whatsapp"></i> بث الإشعارات الآن
-                </button>
-            </div>
+        <!-- رسم بياني — الغياب بالفصول -->
+        <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">📊 الغياب حسب الفصل</h3>
+            <div id="chart-classes" style="display:flex;align-items:flex-end;gap:6px;height:160px;direction:ltr"></div>
         </div>
-    `;
 
-    // 2. الفلترة السحابية الذكية (لجلب بيانات اليوم فقط)
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    const schoolId = user?.schoolId;
-    if (!schoolId) return;
+        <!-- رسم بياني — الغياب آخر 7 أيام -->
+        <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">📈 الغياب — آخر 7 أيام</h3>
+            <div id="chart-week" style="display:flex;align-items:flex-end;gap:8px;height:140px;direction:ltr"></div>
+        </div>
 
-    const d = new Date();
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    const todayISO = d.toISOString().split('T')[0];
+        <!-- أكثر طلاب غياب -->
+        <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px">
+            <h3 style="font-size:14px;font-weight:900;color:var(--navy);margin-bottom:12px">🔴 أكثر 5 طلاب غياباً</h3>
+            <div id="top-absent" style="font-size:13px">⏳ جاري التحميل...</div>
+        </div>
 
-    try {
-        const q = query(
-            collection(db, 'attendance'),
-            where('schoolId', '==', schoolId),
-            where('date', '==', todayISO)
-        );
+        <!-- إعلانات -->
+        <div id="admin-announcements"></div>
+    </div>`;
 
-        const snap = await getDocs(q);
-        
-        let absent = 0, late = 0;
-        snap.forEach(doc => {
-            const status = doc.data().status;
-            if(status === 'absent') absent++;
-            if(status === 'late') late++;
-        });
-
-        document.getElementById('today-absent-count').innerText = absent;
-        document.getElementById('today-late-count').innerText = late;
-
-    } catch (error) {
-        console.error("❌ خطأ في جلب بيانات اليوم:", error);
-    }
+    loadDashboard(schoolId, today);
 }
 
-// 3. محرك بث الواتساب المبرمج ليعمل بدون الحاجة لـ Indexes إضافية
-window.triggerWhatsAppBroadcast = async function() {
-    const classId = document.getElementById('whatsapp-class-select').value;
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    const schoolId = user?.schoolId;
-    
-    const d = new Date();
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    const todayISO = d.toISOString().split('T')[0];
-
-    const btn = event.currentTarget;
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '⏳ جاري الحصر...';
-    btn.disabled = true;
-
+async function loadDashboard(schoolId, today) {
     try {
-        // نسحب غياب المدرسة لليوم فقط (سريع جداً)
-        const q = query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('date', '==', todayISO));
-        const snap = await getDocs(q);
-        
-        const absentList = [];
-        
-        // نفلتر الفصل المطلوب داخل المتصفح (عشان نتجنب مشاكل الفايربيس)
-        snap.forEach(doc => {
-            const data = doc.data();
-            if(data.classId === classId && data.status === 'absent') {
-                if(!absentList.includes(data.studentName)) {
-                    absentList.push(data.studentName);
-                }
-            }
-        });
+        // إجمالي الطلاب
+        var studSnap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+        var totalStudents = studSnap.size;
+        document.getElementById('kpi-students').textContent = totalStudents;
 
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+        // غياب اليوم
+        var attSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('date','==',today)));
+        var records = attSnap.docs.map(d=>d.data());
+        var absentNames = new Set(); var lateNames = new Set();
+        records.forEach(r => { if(r.status==='absent') absentNames.add(r.studentName); if(r.status==='late') lateNames.add(r.studentName); });
 
-        if(absentList.length === 0) {
-            alert(`✅ لا يوجد غياب مسجل في النظام للصف ${classId} هذا اليوم.`);
-            return;
+        document.getElementById('kpi-absent').textContent = absentNames.size;
+        document.getElementById('kpi-late').textContent = lateNames.size;
+        var rate = totalStudents > 0 ? Math.floor(((totalStudents - absentNames.size)/totalStudents)*100*10)/10 : 0;
+        document.getElementById('kpi-rate').textContent = rate + '%';
+
+        // رسم الغياب بالفصول
+        var byClass = {};
+        records.filter(r=>r.status==='absent').forEach(r => { byClass[r.classId] = (byClass[r.classId]||0)+1; });
+        var classes = Object.keys(byClass).sort((a,b)=>{var pa=a.split('/'),pb=b.split('/');return(parseInt(pa[0])||0)-(parseInt(pb[0])||0)||(parseInt(pa[1])||0)-(parseInt(pb[1])||0)});
+        var maxVal = Math.max(...Object.values(byClass), 1);
+        var chartDiv = document.getElementById('chart-classes');
+        chartDiv.innerHTML = classes.map(c => {
+            var pct = (byClass[c]/maxVal)*100;
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
+                <div style="font-size:10px;font-weight:900;color:#dc2626;margin-bottom:4px">${byClass[c]}</div>
+                <div style="width:100%;background:#dc262633;border-radius:6px 6px 0 0;height:${Math.max(pct,8)}%;min-height:8px;transition:height .5s"></div>
+                <div style="font-size:9px;font-weight:700;color:var(--mid);margin-top:4px;writing-mode:vertical-rl;transform:rotate(180deg)">${c}</div>
+            </div>`;
+        }).join('') || '<div style="color:#aaa;font-size:13px;padding:20px;text-align:center;width:100%">لا يوجد غياب اليوم ✅</div>';
+
+        // آخر 7 أيام
+        var days = [];
+        for(var i=6;i>=0;i--) {
+            var d = new Date(); d.setDate(d.getDate()-i);
+            d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+            days.push(d.toISOString().slice(0,10));
+        }
+        // جلب كل الغياب
+        var weekSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('status','==','absent')));
+        var weekData = {};
+        days.forEach(d => weekData[d] = 0);
+        weekSnap.docs.forEach(d => { var r=d.data(); if(weekData[r.date]!==undefined) weekData[r.date]++; });
+        var weekMax = Math.max(...Object.values(weekData), 1);
+        var weekChart = document.getElementById('chart-week');
+        weekChart.innerHTML = days.map(d => {
+            var val = weekData[d];
+            var pct = (val/weekMax)*100;
+            var dayName = new Date(d).toLocaleDateString('ar-KW',{weekday:'short'});
+            var isToday = d === today;
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%">
+                <div style="font-size:10px;font-weight:900;color:${isToday?'var(--sky)':'#666'};margin-bottom:4px">${val}</div>
+                <div style="width:100%;background:${isToday?'var(--sky)':'#e5e7eb'};border-radius:6px 6px 0 0;height:${Math.max(pct,5)}%;min-height:5px"></div>
+                <div style="font-size:9px;font-weight:${isToday?'900':'600'};color:${isToday?'var(--sky)':'var(--mid)'};margin-top:4px">${dayName}</div>
+            </div>`;
+        }).join('');
+
+        // أكثر 5 طلاب غياباً
+        var studentCounts = {};
+        weekSnap.docs.forEach(d => { var r=d.data(); studentCounts[r.studentName+'|'+r.classId] = (studentCounts[r.studentName+'|'+r.classId]||0)+1; });
+        var topAbsent = Object.entries(studentCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+        var topDiv = document.getElementById('top-absent');
+        topDiv.innerHTML = topAbsent.length ? topAbsent.map((t,i) => {
+            var [key,count] = t; var [name,cls] = key.split('|');
+            var color = count>=10?'#dc2626':count>=5?'#d97706':'#6b7280';
+            return `<div style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid #f0f2f5;gap:10px">
+                <span style="width:24px;height:24px;border-radius:50%;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900">${i+1}</span>
+                <span style="flex:1;font-weight:700">${name}</span>
+                <span style="font-size:11px;color:var(--mid)">${cls}</span>
+                <span style="background:${color}22;color:${color};padding:2px 10px;border-radius:6px;font-weight:900;font-size:12px">${count} يوم</span>
+            </div>`;
+        }).join('') : '<div style="color:#16a34a;font-weight:700">✅ لا يوجد طلاب متكرري الغياب</div>';
+
+        // إعلانات
+        var annSnap = await getDocs(query(collection(db,'school_announcements'), where('schoolId','==',schoolId), where('active','==',true)));
+        var annDiv = document.getElementById('admin-announcements');
+        if(annSnap.size > 0 && annDiv) {
+            annDiv.innerHTML = `<div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:14px;padding:16px">
+                <h3 style="font-size:14px;font-weight:900;color:#92400e;margin-bottom:8px">📢 إعلانات المدرسة</h3>
+                ${annSnap.docs.map(d=>`<div style="font-size:13px;color:#78350f;padding:6px 0;border-bottom:1px solid #fde68a;font-weight:600">${d.data().text}</div>`).join('')}
+            </div>`;
         }
 
-        // إرسال البيانات لدالة الواتساب العالمية الموجودة في admin.html
-        if(window.sendAbsenceViaWhatsApp) {
-            window.sendAbsenceViaWhatsApp(classId, absentList, todayISO);
-        } else {
-             // دالة احتياطية لو تم مسح الكود الأساسي بالغلط
-             const msg = `*إشعار غياب رسمي*\n*${user.schoolName || 'المدرسة'}*\n*الفصل:* ${classId} | *التاريخ:* ${todayISO}\n\n*الغائبون (${absentList.length}):*\n` +
-                    absentList.map((n,i) => `${i+1}. ${n}`).join('\n') +
-                    `\n\n_المنظومة الرقمية الشاملة_`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-        }
     } catch(e) {
-        console.error("❌ خطأ في البث:", e);
-        alert("حدث خطأ في تجميع البيانات.");
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+        console.error('Dashboard:', e);
+        document.getElementById('kpi-students').textContent = '!';
     }
-};
+}

@@ -2,7 +2,7 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initTeacherPerfModule() {
-    const container = document.getElementById('tab-teacher-perf');
+    var container = document.getElementById('tab-teacher-perf');
     if (!container) return;
 
     try {
@@ -38,29 +38,29 @@ export async function initTeacherPerfModule() {
 }
 
 async function calculateTeacherPerformanceLive() {
-    const tbody = document.getElementById('teacher-perf-tbody');
+    var tbody = document.getElementById('teacher-perf-tbody');
     if (!tbody) return;
 
-    const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
+    var schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
 
     try {
         // استعلام ذكي ومحمي حسب المدرسة
-        const q = query(collection(db, 'technical_visits'), where('schoolId', '==', schoolId));
-        let snap = await getDocs(q);
+        var q = query(collection(db, 'technical_visits'), where('schoolId', '==', schoolId));
+        var snap = await getDocs(q);
 
         // توافقية الداتا القديمة
         if (snap.empty && schoolId === 'hosainan') {
             snap = await getDocs(getActiveSchoolId() ? query(collection(db, 'technical_visits'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'technical_visits'));
         }
 
-        let perfMap = {};
+        var perfMap = {};
 
         snap.forEach(doc => {
-            const data = doc.data();
+            var data = doc.data();
             // حماية أمنية للبيانات
             if (data.schoolId && data.schoolId !== schoolId) return;
 
-            const tName = data.teacherName ? data.teacherName.trim() : 'معلم غير معرف';
+            var tName = data.teacherName ? data.teacherName.trim() : 'معلم غير معرف';
             
             if (!perfMap[tName]) {
                 perfMap[tName] = { name: tName, subject: data.subject || 'القسم الفني', count: 0 };
@@ -68,11 +68,11 @@ async function calculateTeacherPerformanceLive() {
             perfMap[tName].count++;
         });
 
-        let sortedTeachers = Object.values(perfMap).sort((a,b) => b.count - a.count);
-        let html = '';
+        var sortedTeachers = Object.values(perfMap).sort((a,b) => b.count - a.count);
+        var html = '';
 
         sortedTeachers.forEach(t => {
-            let statusBadge = `<span class="badge" style="background:#2ecc71; color:#fff; padding:3px 8px; border-radius:4px;">مستقر (ممتاز)</span>`;
+            var statusBadge = `<span class="badge" style="background:#2ecc71; color:#fff; padding:3px 8px; border-radius:4px;">مستقر (ممتاز)</span>`;
             if(t.count < 2) statusBadge = `<span class="badge" style="background:#f39c12; color:#fff; padding:3px 8px; border-radius:4px;">يحتاج زيارات إضافية</span>`;
 
             html += `

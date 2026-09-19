@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0b2545">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <link class="apple-touch-icon" href="./logo.png">
@@ -13,7 +14,7 @@
 <title>بوابة الأخصائي الاجتماعي - المنظومة السحابية</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
 :root {
   --navy:  #0b2545;
   --sky:   #1a78c2;
@@ -26,8 +27,8 @@
   --mid:   #6b7280;
   --green: #059669;
   --red:   #dc2626;
-    --primary-color: var(--navy); --hover-color: var(--gold); --bg-light: #f4f6f9;
-    --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
+  --primary-color: var(--navy); --hover-color: var(--gold); --bg-light: #f4f6f9;
+  --success-color: #10b981; --danger-color: #ef4444; --warning-color: #f59e0b;
 }
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo', sans-serif; }
 body { background: var(--bg-light); display: flex; flex-direction: column; min-height: 100vh; direction: rtl; }
@@ -84,7 +85,21 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
   .bottom-nav{display:flex}
   .workspace-container{padding-bottom:80px}
 }
+
+/* ══ Dark Mode ══ */
+body.dark-mode { background:#161e2e !important; color:#e2e8f0 !important; }
+body.dark-mode .header-nav { background:#0f1928 !important; }
+body.dark-mode .card { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .workspace-container > * { background:#1e2535; }
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+  background:#1e2535 !important; color:#e2e8f0 !important; border-color:#2a3650 !important;
+}
+body.dark-mode table th { background:#0f1928 !important; }
+body.dark-mode .bottom-nav { background:#1e2535 !important; border-color:#2a3650 !important; }
+body.dark-mode .stat-box { background:#1e2535 !important; border-color:#2a3650 !important; }
+
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -137,11 +152,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     <div>
                         <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">1. اختر الفصل:</label>
                         <select id="pass-class" onchange="window.populateStudentsDropdownUnified('pass-class', 'pass-student-name')">
-                            <option value="6/1">6/1</option> <option value="6/2">6/2</option> <option value="6/3">6/3</option> <option value="6/4">6/4</option> <option value="6/5">6/5</option>
-                            <option value="7/1">7/1</option> <option value="7/2">7/2</option> <option value="7/3">7/3</option> <option value="7/4">7/4</option> <option value="7/5">7/5</option>
-                            <option value="8/1">8/1</option> <option value="8/2">8/2</option> <option value="8/3">8/3</option> <option value="8/4">8/4</option> <option value="8/5">8/5</option>
-                            <option value="9/1">9/1</option> <option value="9/2">9/2</option> <option value="9/3">9/3</option> <option value="9/4">9/4</option> <option value="9/5">9/5</option>
-                        </select>
+                            </select>
                     </div>
                     <div>
                         <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">2. اختر اسم الطالب من الكشف فورا:</label>
@@ -208,11 +219,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                     <div>
                         <label style="font-weight:700; font-size:12px;">1. فصل الطالب:</label>
                         <select id="beh-class" onchange="window.populateStudentsDropdownUnified('beh-class', 'beh-student-name')">
-                            <option value="6/1">6/1</option> <option value="6/2">6/2</option> <option value="6/3">6/3</option> <option value="6/4">6/4</option> <option value="6/5">6/5</option>
-                            <option value="7/1">7/1</option> <option value="7/2">7/2</option> <option value="7/3">7/3</option> <option value="7/4">7/4</option> <option value="7/5">7/5</option>
-                            <option value="8/1">8/1</option> <option value="8/2">8/2</option> <option value="8/3">8/3</option> <option value="8/4">8/4</option> <option value="8/5">8/5</option>
-                            <option value="9/1">9/1</option> <option value="9/2">9/2</option> <option value="9/3">9/3</option> <option value="9/4">9/4</option> <option value="9/5">9/5</option>
-                        </select>
+                            </select>
                     </div>
                     <div>
                         <label style="font-weight:700; font-size:12px;">2. اختر اسم الطالب من اللائحة فورا:</label>
@@ -271,11 +278,7 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
                 <div>
                     <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">1. اختر الفصل الدراسي:</label>
                     <select id="txt-profile-search-class" onchange="window.populateStudentsDropdownUnified('txt-profile-search-class', 'txt-profile-search-name')">
-                        <option value="6/1">6/1</option> <option value="6/2">6/2</option> <option value="6/3">6/3</option> <option value="6/4">6/4</option> <option value="6/5">6/5</option>
-                        <option value="7/1">7/1</option> <option value="7/2">7/2</option> <option value="7/3">7/3</option> <option value="7/4">7/4</option> <option value="7/5">7/5</option>
-                        <option value="8/1">8/1</option> <option value="8/2">8/2</option> <option value="8/3">8/3</option> <option value="8/4">8/4</option> <option value="8/5">8/5</option>
-                        <option value="9/1">9/1</option> <option value="9/2">9/2</option> <option value="9/3">9/3</option> <option value="9/4">9/4</option> <option value="9/5">9/5</option>
-                    </select>
+                        </select>
                 </div>
                 <div>
                     <label style="font-weight: 900; font-size: 12px; color: var(--primary-color); display:block; margin-bottom:5px;">2. اختر اسم الطالب من السجلات السحابية:</label>
@@ -414,17 +417,13 @@ th { background: #f1f5f9; color: var(--primary-color); font-weight: 900; }
 </div>
 
 <script type="module">
-import { db } from './js/firebase-config.js';
+import { db, getActiveSchoolId, getTodayISO, getSchoolClasses } from './js/firebase-config.js';
 import { collection, addDoc, doc, updateDoc, onSnapshot, getDocs, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 let currentWorkerId = "";
 let currentWorkerName = "الأخصائي الاجتماعي";
 
-// دالة مساعدة لجلب معرف المدرسة لضمان فصل الحسابات
-const getActiveSchoolId = () => {
-    const user = JSON.parse(localStorage.getItem('hs_user') || '{}');
-    return user.schoolId || 'default';
-};
+// getActiveSchoolId مستوردة من firebase-config.js
 
 function getUnifiedDateString() {
     const d = new Date();
@@ -512,8 +511,8 @@ window.broadcastGatepassLive = async function(e) {
     const reason = document.getElementById('pass-reason').value.trim();
     const schoolId = getActiveSchoolId();
 
-    if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً من القائمة!"); return; }
-    if (civil.length !== 12) { alert("⚠️ الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
+    if(!studentName) { showToast("⚠️ يرجى اختيار اسم الطالب أولاً من القائمة!"); return; }
+    if (civil.length !== 12) { showToast("⚠️ الرقم المدني للمستلم يجب أن يتكون من 12 رقم بالملي!"); return; }
 
     try {
         await addDoc(collection(db, 'gatepass'), {
@@ -521,10 +520,10 @@ window.broadcastGatepassLive = async function(e) {
             classId, studentName, relative, relation, relativeCivilId: civil, relativePhone: phone, reason,
             status: 'approved', dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), officerName: currentWorkerName
         });
-        alert(`🚀 تم بث استئذان الطالب [ ${studentName} ] بنجاح لشاشة الحارس عند البوابة.`);
+        showToast(`✓ تم بث استئذان الطالب [ ${studentName} ] بنجاح.`);
         document.getElementById('social-gatepass-form').reset();
         window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
-    } catch (err) { alert("خطأ: " + err.message); }
+    } catch (err) { showToast("❌ خطأ: " + err.message, "error"); }
 };
 
 // 🛡️ رصد وإثبات المخالفات والتميز السلوكي
@@ -538,11 +537,10 @@ window.saveBehaviorLogLive = async function(e) {
     const followup = document.getElementById('beh-followup').value;
     const schoolId = getActiveSchoolId();
 
-    if(!studentName) { alert("⚠️ يرجى اختيار اسم الطالب أولاً لرصد حالته!"); return; }
+    if(!studentName) { showToast("⚠️ يرجى اختيار اسم الطالب أولاً لرصد حالته!"); return; }
 
     try {
         // 🔗 موحّد مع نفس كولكشن "behavior" المستخدم بصفحة المدير والمعلم
-        // (كان سابقاً بكولكشن منفصل "behavior_logs" وهذا كان يخفي الحالات عن باقي الأدوار)
         await addDoc(collection(db, 'behavior'), {
             schoolId: schoolId, // 🔑 فصل البيانات للسيرفر
             classId, studentName, name: studentName,
@@ -551,17 +549,17 @@ window.saveBehaviorLogLive = async function(e) {
             dateStr: getUnifiedDateString(), date: getUnifiedDateString(), timeStr: getUnifiedTimeString(),
             officerName: currentWorkerName, createdAt: serverTimestamp()
         });
-        alert(`✓ تم توثيق ورصد الحالة السلوكية بنجاح للطالب [ ${studentName} ].`);
+        showToast(`✓ تم توثيق ورصد الحالة السلوكية بنجاح للطالب [ ${studentName} ].`);
         document.getElementById('social-behavior-form').reset();
         window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
-    } catch(err) { alert("خطأ بالحفظ: " + err.message); }
+    } catch(err) { showToast("❌ خطأ بالحفظ: " + err.message, "error"); }
 };
 
 // 👤 فحص رادار الـ 360 درجة لملف الطالب الموحد محلياً داخل نطاق المنشأة
 window.searchStudentFullProfileLive = async function() {
     const sClass = document.getElementById('txt-profile-search-class').value;
     const sName = document.getElementById('txt-profile-search-name').value;
-    if(!sName) { alert("⚠️ يرجى اختيار اسم الطالب من القائمة أولاً لفحص سجلاته."); return; }
+    if(!sName) { showToast("⚠️ يرجى اختيار اسم الطالب من القائمة أولاً لفحص سجلاته."); return; }
 
     const boxResults = document.getElementById('box-profile-results');
     const tableBeh = document.getElementById('table-profile-behavior');
@@ -580,7 +578,7 @@ window.searchStudentFullProfileLive = async function() {
     // أ) جلب الغياب المسجل من موديول المعلمين للمدرسة الحالية
     try {
         const qAtt = query(
-            collection(db, 'attendance'), // مواءمة مع جدول غياب المعلم
+            collection(db, 'attendance'), 
             where('schoolId', '==', schoolId),
             where('studentName', '==', sName.trim())
         );
@@ -657,9 +655,9 @@ window.saveNewCircularLive = async function(e) {
             schoolId: schoolId, // 🔑 الحظر الآمن للـ SaaS
             title, target, content, dateStr: getUnifiedDateString(), timeStr: getUnifiedTimeString(), senderName: currentWorkerName, createdAt: serverTimestamp()
         });
-        alert("✓ تم نشر وتعميم التوجيه بنجاح، وظهر في لوحات التحكم المستهدفة الحين.");
+        showToast("✓ تم نشر وتعميم التوجيه بنجاح، وظهر في لوحات التحكم المستهدفة الحين.");
         document.getElementById('social-message-form').reset();
-    } catch(err) { alert("خطأ بالبث: " + err.message); }
+    } catch(err) { showToast("❌ خطأ بالبث: " + err.message, "error"); }
 };
 
 // ⚙️ تحديث البروفايل الشخصي للأخصائي
@@ -674,21 +672,32 @@ window.updateSocialProfileLive = async function(e) {
         const schoolId = getActiveSchoolId();
         const q = query(collection(db, 'users'), where('schoolId','==',schoolId), where('userId','==',currentWorkerId));
         const snap = await getDocs(q);
-        if (snap.empty) { alert('⚠️ تعذر إيجاد حسابك بقاعدة البيانات.'); return; }
+        if (snap.empty) { showToast('⚠️ تعذر إيجاد حسابك بقاعدة البيانات.'); return; }
 
         const userDocRef = snap.docs[0].ref;
         let updatedData = { name: newName, email: newEmail, phone: newPhone };
-        if (newPass) updatedData.plainPass = newPass;
-
+        // كلمة المرور تُغيَّر عبر Cloud Function
         await updateDoc(userDocRef, updatedData);
+
+        // ✅ تغيير كلمة المرور عبر Cloud Function (مشفّر آمن)
+        if (newPass) {
+            try {
+                const { getFunctions, httpsCallable } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');
+                const fns = getFunctions(auth.app, 'me-central1');
+                const resetFn = httpsCallable(fns, 'resetUserPassword');
+                await resetFn({ userDocId: snap.docs[0].id, newPassword: newPass });
+            } catch(passErr) {
+                showToast('⚠️ تم حفظ البيانات لكن تعذر تغيير كلمة المرور: ' + passErr.message, 'warning');
+            }
+        }
         
         const localData = JSON.parse(localStorage.getItem('hs_user') || '{}');
         localData.name = newName;
         localStorage.setItem('hs_user', JSON.stringify(localData));
 
-        alert("✓ تم تحديث ملفك الشخصي وكلمة المرور بنجاح تام بقاعدة البيانات.");
+        showToast("✓ تم تحديث ملفك الشخصي وكلمة المرور بنجاح تام بقاعدة البيانات.");
         window.location.replace('social.html');
-    } catch(err) { alert("خطأ في الحفظ: " + err.message); }
+    } catch(err) { showToast("❌ خطأ في الحفظ: " + err.message, "error"); }
 };
 
 // ⚡ الاستماع المركزي اللحظي المقيد بـ schoolId لمنع تداخل المدارس
@@ -766,6 +775,43 @@ window.loadHistoricalArchiveLive = function() {
     startSocialCentralListeners(); 
 };
 
+// تدمير قنبلة الفواتير: تحميل الفصول ديناميكياً لصفحة الأخصائي عبر الدالة الموحدة الموفرة للتكاليف
+async function loadSocialClassDropdowns() {
+    try {
+        const schoolId = getActiveSchoolId();
+        if(!schoolId) return;
+
+        // استدعاء الموديول المركزي لتجنب قراءة كامل مستندات الطلاب
+        const classes = await getSchoolClasses(db, schoolId);
+
+        const opts = '<option value="">-- اختر الفصل --</option>' + classes.map(c=>`<option value="${c}">${c}</option>`).join('');
+        ['pass-class','beh-class','txt-profile-search-class'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerHTML = opts;
+        });
+    } catch(e) {
+        ['pass-class','beh-class','txt-profile-search-class'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerHTML = '<option value="">⚠️ خطأ بتحميل الفصول</option>';
+        });
+    }
+}
+
+// Toast (بدل alert)
+function showToast(msg, type='success') {
+    document.querySelectorAll('.sw-toast').forEach(t=>t.remove());
+    const t = document.createElement('div');
+    t.className = 'sw-toast';
+    const colors = {success:'#059669',error:'#dc2626',info:'#1a78c2',warning:'#d97706'};
+    t.style.cssText = `position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:11px 22px;
+        border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;z-index:99999;
+        color:#fff;background:${colors[type]||colors.success};box-shadow:0 4px 16px rgba(0,0,0,.2);
+        white-space:nowrap;max-width:90vw;text-align:center;`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);},2500);
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     const user = JSON.parse(localStorage.getItem('hs_user'));
     if (!user || user.role !== 'social_worker') {
@@ -794,6 +840,9 @@ document.addEventListener("DOMContentLoaded", function() {
     
     startSocialCentralListeners();
     
+    // تحميل الفصول ديناميكياً من نظام الكاش والفهرسة المحسن
+    loadSocialClassDropdowns();
+    
     // التغذية التلقائية للمساقط عند أول تشغيل
     window.populateStudentsDropdownUnified('pass-class', 'pass-student-name');
     window.populateStudentsDropdownUnified('beh-class', 'beh-student-name');
@@ -807,5 +856,21 @@ if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
 }
 </script>
+
+<script>
+if(localStorage.getItem('hs_dark_mode')==='1') document.body.classList.add('dark-mode');
+</script>
+
+
+<script>
+// ══ Service Worker — تسجيل بسيط بدون reload ══
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+        // تحقق من التحديثات كل 5 دقائق
+        setInterval(function() { reg.update(); }, 5 * 60 * 1000);
+    }).catch(function() {});
+}
+</script>
+
 </body>
 </html>

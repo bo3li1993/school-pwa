@@ -1,8 +1,21 @@
 import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// ══ Cache الطلاب ══
+let _rewardStudentsCache = null;
+let _rewardSchoolCache   = null;
+
+async function getCachedStudents(schoolId) {
+    if(_rewardStudentsCache && _rewardSchoolCache === schoolId) return _rewardStudentsCache;
+    var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',schoolId)));
+    _rewardStudentsCache = snap;
+    _rewardSchoolCache   = schoolId;
+    return snap;
+}
+
+
 export async function initRewardsModule() {
-    const container = document.getElementById('tab-honors');
+    var container = document.getElementById('tab-rewards');
     if (!container) return;
 
     try {
@@ -63,14 +76,14 @@ export async function initRewardsModule() {
         </div>`;
 
         // 🏢 تحميل الفصول المتاحة للمدرسة الحالية
-        const classSelect = document.getElementById('reward-class-select');
-        const schoolId = getActiveSchoolId();
-        const snap = await getDocs(query(collection(db, 'students'), where('schoolId', '==', schoolId)));
+        var classSelect = document.getElementById('reward-class-select');
+        var schoolId = getActiveSchoolId();
+        var snap = await getCachedStudents(schoolId);
         
-        let classesSet = new Set();
+        var classesSet = new Set();
         snap.forEach(doc => { if(doc.data().classId) classesSet.add(doc.data().classId.trim()); });
         
-        let html = '<option value="">-- اختر الفصل --</option>';
+        var html = '<option value="">-- اختر الفصل --</option>';
         Array.from(classesSet).sort().forEach(c => html += `<option value="${c}">${c}</option>`);
         classSelect.innerHTML = html;
 
@@ -81,7 +94,7 @@ export async function initRewardsModule() {
 }
 
 window.handleRewardClassChange = async function(classId) {
-    const studentSelect = document.getElementById('reward-student-select');
+    var studentSelect = document.getElementById('reward-student-select');
     if (!studentSelect) return;
 
     if (!classId) {
@@ -90,19 +103,19 @@ window.handleRewardClassChange = async function(classId) {
         return;
     }
 
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     studentSelect.innerHTML = '<option value="">⏳ جاري الفرز...</option>';
     studentSelect.disabled = true;
 
     try {
-        const q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
-        const snap = await getDocs(q);
+        var q = query(collection(db, 'students'), where('classId', '==', classId.trim()), where('schoolId', '==', schoolId));
+        var snap = await getDocs(q);
         
-        let arr = [];
+        var arr = [];
         snap.forEach(doc => { if(doc.data().name) arr.push(doc.data().name.trim()); });
         arr.sort((a, b) => a.localeCompare(b, 'ar'));
 
-        let html = '<option value="">-- اختر اسم الطالب --</option>';
+        var html = '<option value="">-- اختر اسم الطالب --</option>';
         arr.forEach(name => html += `<option value="${name}">${name}</option>`);
 
         studentSelect.innerHTML = arr.length === 0 ? '<option value="">⚠️ الفصل خالي</option>' : html;
@@ -114,7 +127,7 @@ window.handleRewardClassChange = async function(classId) {
 
 window.handleGrantPointsLive = async function(e) {
     e.preventDefault();
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
     
     await addDoc(collection(db, 'rewards'), {
         schoolId: schoolId, // 🔑 البصمة الأمنية
@@ -124,28 +137,28 @@ window.handleGrantPointsLive = async function(e) {
         reason: document.getElementById('reward-reason').value.trim(),
         createdAt: serverTimestamp()
     });
-    alert('✓ تم إيداع النقاط بنجاح.');
+    window.showToast('✓ تم إيداع النقاط بنجاح.');
     document.getElementById('rewards-grant-form').reset();
     loadRewardsLeaderboardLive();
 };
 
 async function loadRewardsLeaderboardLive() {
-    const tbody = document.getElementById('rewards-leaderboard-tbody');
+    var tbody = document.getElementById('rewards-leaderboard-tbody');
     if (!tbody) return;
 
-    const schoolId = getActiveSchoolId();
-    const snap = await getDocs(query(collection(db, 'rewards'), where('schoolId', '==', schoolId)));
+    var schoolId = getActiveSchoolId();
+    var snap = await getDocs(query(collection(db, 'rewards'), where('schoolId', '==', schoolId)));
     
-    let leaderboard = {};
+    var leaderboard = {};
     snap.forEach(d => {
-        const data = d.data();
-        const name = data.studentName || 'غير محدد';
+        var data = d.data();
+        var name = data.studentName || 'غير محدد';
         if(!leaderboard[name]) leaderboard[name] = { name: name, classId: data.classId || '-', total: 0 };
         leaderboard[name].total += parseInt(data.points || 0);
     });
 
-    let sorted = Object.values(leaderboard).sort((a,b) => b.total - a.total);
-    let html = '';
+    var sorted = Object.values(leaderboard).sort((a,b) => b.total - a.total);
+    var html = '';
     
     sorted.forEach((s, idx) => {
         html += `<tr>

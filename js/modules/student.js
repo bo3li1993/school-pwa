@@ -1,175 +1,242 @@
-import { db } from '../firebase-config.js';
-import { collection, query, where, getDocs, doc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { db, getActiveSchoolId } from '../firebase-config.js';
+import { collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-const ALL_CLASSES = [
-    '6/1','6/2','6/3','6/4',
-    '7/1','7/2','7/3','7/4',
-    '8/1','8/2','8/3','8/4',
-    '9/1','9/2','9/3','9/4'
-];
+var ALL_CLASSES = ['6/1','6/2','6/3','6/4','7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'];
 
 export async function initStudentModule() {
-    const container = document.getElementById('tab-student') || document.querySelector('.tab-content.active');
+    var container = document.getElementById('tab-student');
     if (!container) return;
-
-    container.innerHTML = `
-        <div style="background:#fff; padding:24px; border-radius:14px; border:1px solid var(--line); margin-bottom:18px;">
-            <h2 style="margin:0 0 16px; color:var(--navy); font-weight:900; font-size:16px;">
-                <i class="bi bi-person-badge"></i> ملف الطالب
-            </h2>
-
-            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-                <div>
-                    <label class="st-label">١. اختر الفصل</label>
-                    <select id="st-select-class" class="st-input" onchange="window.loadClassStudentsList(this.value)">
-                        <option value="">-- اختر الفصل --</option>
-                        ${ALL_CLASSES.map(c => `<option value="${c}">${c}</option>`).join('')}
-                    </select>
-                </div>
-                <div>
-                    <label class="st-label">٢. اختر اسم الطالب</label>
-                    <select id="st-select-student" class="st-input" disabled onchange="window.showStudentProfile(this.value)">
-                        <option value="">-- اختر الفصل أولاً --</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div id="student-results-container"></div>
-
-        <style>
-            .st-label{font-weight:700;font-size:12.5px;color:var(--text);display:block;margin-bottom:5px}
-            .st-input{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;text-align:right;outline:none;background:#fff}
-            .st-input:focus{border-color:var(--sky)}
-            .st-input:disabled{background:var(--off);color:var(--soft)}
-        </style>
-    `;
+    var opts = '';
+    for (var i = 0; i < ALL_CLASSES.length; i++) {
+        opts += '<option value="' + ALL_CLASSES[i] + '">' + ALL_CLASSES[i] + '</option>';
+    }
+    var html = '';
+    html += '<div class="card">';
+    html += '<h2><i class="bi bi-person-badge"></i> ملف الطالب</h2>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+    html += '<div><label style="font-size:12px;font-weight:800;display:block;margin-bottom:4px">الفصل</label>';
+    html += '<select id="st-class" onchange="window.loadClassStudents(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif">';
+    html += '<option value="">اختر الفصل</option>' + opts + '</select></div>';
+    html += '<div><label style="font-size:12px;font-weight:800;display:block;margin-bottom:4px">الطالب</label>';
+    html += '<select id="st-student" disabled onchange="window.showStudentProfile(this.value)" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;font-family:Cairo,sans-serif">';
+    html += '<option value="">اختر الفصل أولاً</option></select></div>';
+    html += '</div></div><div id="st-results"></div>';
+    container.innerHTML = html;
 }
 
-// ===== تخزين بيانات الفصل المحمّل حالياً =====
-let currentClassStudents = [];
-
-// ===== الخطوة 1: تحميل أسماء طلاب الفصل المختار =====
-window.loadClassStudentsList = async function(classId) {
-    const studentSelect = document.getElementById('st-select-student');
-    const resultsDiv = document.getElementById('student-results-container');
-    resultsDiv.innerHTML = '';
-    currentClassStudents = [];
-
+window.loadClassStudents = async function(classId) {
+    var sel = document.getElementById('st-student');
+    if (!sel) return;
+    sel.disabled = true;
+    sel.innerHTML = '<option>جاري التحميل</option>';
     if (!classId) {
-        studentSelect.disabled = true;
-        studentSelect.innerHTML = '<option value="">-- اختر الفصل أولاً --</option>';
+        sel.innerHTML = '<option>اختر الفصل أولاً</option>';
         return;
     }
-
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    const schoolId = user?.schoolId;
-    if (!schoolId) return;
-
-    studentSelect.disabled = true;
-    studentSelect.innerHTML = '<option value="">⏳ جاري التحميل...</option>';
-
     try {
-        const q = query(collection(db, 'students'),
-            where('schoolId', '==', schoolId),
+        var snap = await getDocs(query(
+            collection(db, 'students'),
+            where('schoolId', '==', getActiveSchoolId()),
             where('classId', '==', classId)
-        );
-        const snap = await getDocs(q);
+        ));
+        var names = [];
+        snap.forEach(function(d) {
+            var n = d.data().name;
+            if (n) names.push(n);
+        });
+        names.sort(function(a, b) { return a.localeCompare(b, 'ar'); });
+        var opts = '<option value="">اختر الطالب</option>';
+        for (var i = 0; i < names.length; i++) {
+            opts += '<option value="' + names[i] + '">' + names[i] + '</option>';
+        }
+        sel.innerHTML = opts;
+        sel.disabled = false;
+    } catch (e) {
+        sel.innerHTML = '<option>خطأ في التحميل</option>';
+    }
+};
 
-        currentClassStudents = [];
-        snap.forEach(docSnap => {
-            currentClassStudents.push({ id: docSnap.id, ...docSnap.data() });
+window.showStudentProfile = async function(name) {
+    var results = document.getElementById('st-results');
+    if (!results || !name) return;
+    results.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa">جاري التحميل...</div>';
+
+    var schoolId = getActiveSchoolId();
+    try {
+        var allResults = await Promise.all([
+            getDocs(query(collection(db, 'attendance'), where('schoolId', '==', schoolId), where('studentName', '==', name))),
+            getDocs(query(collection(db, 'gatepass'), where('schoolId', '==', schoolId), where('studentName', '==', name))),
+            getDocs(query(collection(db, 'clinic'), where('schoolId', '==', schoolId), where('studentName', '==', name))),
+            getDocs(query(collection(db, 'behavior'), where('schoolId', '==', schoolId), where('studentName', '==', name)))
+        ]);
+
+        var attSnap = allResults[0];
+        var gateSnap = allResults[1];
+        var clinicSnap = allResults[2];
+        var behSnap = allResults[3];
+
+        // ===== الغياب والتأخر =====
+        var absent = 0;
+        var late = 0;
+        var records = [];
+        attSnap.forEach(function(d) {
+            var r = d.data();
+            records.push(r);
+            if (r.status === 'absent') absent++;
+            if (r.status === 'late') late++;
+        });
+        records.sort(function(a, b) {
+            var da = a.date || '';
+            var db2 = b.date || '';
+            return db2.localeCompare(da);
         });
 
-        // فرز أبجدي عربي
-        currentClassStudents.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
-
-        if (currentClassStudents.length === 0) {
-            studentSelect.innerHTML = '<option value="">⚠️ لا يوجد طلاب في هذا الفصل</option>';
-            studentSelect.disabled = true;
-            return;
+        var attRows = '';
+        for (var i = 0; i < records.length; i++) {
+            var r = records[i];
+            var color = r.status === 'absent' ? '#dc2626' : '#d97706';
+            var label = r.status === 'absent' ? 'غائب' : 'متأخر';
+            attRows += '<tr>';
+            attRows += '<td style="padding:8px">' + (r.date || '') + '</td>';
+            attRows += '<td style="padding:8px;color:' + color + ';font-weight:800">' + label + '</td>';
+            attRows += '<td style="padding:8px">' + (r.period || '-') + '</td>';
+            attRows += '<td style="padding:8px;font-size:11px;color:#aaa">' + (r.recordedBy || '-') + '</td>';
+            attRows += '</tr>';
         }
 
-        studentSelect.innerHTML = '<option value="">-- اختر اسم الطالب --</option>' +
-            currentClassStudents.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        studentSelect.disabled = false;
+        // ===== الاستئذان (عدد المرات + التفاصيل) =====
+        var gateCount = gateSnap.size;
+        var gateRecords = [];
+        gateSnap.forEach(function(d) { gateRecords.push(d.data()); });
+        gateRecords.sort(function(a, b) {
+            var ta = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : 0;
+            var tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : 0;
+            return tb - ta;
+        });
+        var gateRows = '';
+        for (var g = 0; g < gateRecords.length; g++) {
+            var gr = gateRecords[g];
+            var gDate = gr.createdAt && gr.createdAt.toDate ? gr.createdAt.toDate().toLocaleDateString('ar-KW') : '-';
+            gateRows += '<tr>';
+            gateRows += '<td style="padding:8px">' + gDate + '</td>';
+            gateRows += '<td style="padding:8px">' + (gr.reason || '-') + '</td>';
+            gateRows += '<td style="padding:8px">' + (gr.relative || '-') + '</td>';
+            gateRows += '</tr>';
+        }
 
-    } catch (err) {
-        studentSelect.innerHTML = '<option value="">❌ خطأ في التحميل</option>';
-        console.error('خطأ تحميل الطلاب:', err);
+        // ===== زيارات العيادة (عدد المرات + التفاصيل) =====
+        var clinicCount = clinicSnap.size;
+        var clinicRecords = [];
+        clinicSnap.forEach(function(d) { clinicRecords.push(d.data()); });
+        clinicRecords.sort(function(a, b) {
+            var ta = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : 0;
+            var tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : 0;
+            return tb - ta;
+        });
+        var clinicRows = '';
+        for (var c = 0; c < clinicRecords.length; c++) {
+            var cr = clinicRecords[c];
+            var cDate = cr.createdAt && cr.createdAt.toDate ? cr.createdAt.toDate().toLocaleDateString('ar-KW') : '-';
+            clinicRows += '<tr>';
+            clinicRows += '<td style="padding:8px">' + cDate + '</td>';
+            clinicRows += '<td style="padding:8px">' + (cr.complaint || '-') + '</td>';
+            clinicRows += '<td style="padding:8px">' + (cr.treatment || '-') + '</td>';
+            clinicRows += '</tr>';
+        }
+
+        // ===== التعهدات والملاحظات السلوكية =====
+        var behCount = behSnap.size;
+        var pledgeCount = 0;
+        var behRecords = [];
+        behSnap.forEach(function(d) {
+            var b = d.data();
+            behRecords.push(b);
+            if (b.action === 'تعهد خطي رسمي') pledgeCount++;
+        });
+        behRecords.sort(function(a, b) {
+            var da = a.date || '';
+            var db2 = b.date || '';
+            return db2.localeCompare(da);
+        });
+        var behRows = '';
+        for (var k = 0; k < behRecords.length; k++) {
+            var br = behRecords[k];
+            var isPledge = br.action === 'تعهد خطي رسمي';
+            var badgeColor = isPledge ? '#dc2626' : '#7c3aed';
+            behRows += '<tr>';
+            behRows += '<td style="padding:8px">' + (br.date || '') + '</td>';
+            behRows += '<td style="padding:8px;color:' + badgeColor + ';font-weight:800;font-size:11px">' + (br.action || '-') + '</td>';
+            behRows += '<td style="padding:8px;font-size:12px">' + (br.notes || '-') + '</td>';
+            behRows += '<td style="padding:8px;font-size:11px;color:#aaa">' + (br.followUpStatus || '-') + '</td>';
+            behRows += '</tr>';
+        }
+
+        // ===== بناء الصفحة =====
+        var html = '';
+        html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">';
+        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#dc2626">' + absent + '</div><div style="font-size:11px;color:#aaa">غياب</div></div>';
+        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#d97706">' + late + '</div><div style="font-size:11px;color:#aaa">تأخر</div></div>';
+        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#0891b2">' + gateCount + '</div><div style="font-size:11px;color:#aaa">استئذان</div></div>';
+        html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#16a34a">' + clinicCount + '</div><div style="font-size:11px;color:#aaa">زيارة عيادة</div></div>';
+        html += '</div>';
+
+        if (behCount > 0) {
+            html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">';
+            html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#7c3aed">' + behCount + '</div><div style="font-size:11px;color:#aaa">إجمالي الإجراءات السلوكية</div></div>';
+            html += '<div class="card" style="text-align:center"><div style="font-size:26px;font-weight:900;color:#dc2626">' + pledgeCount + '</div><div style="font-size:11px;color:#aaa">تعهد خطي رسمي</div></div>';
+            html += '</div>';
+        }
+
+        // كشف الغياب
+        html += '<div class="card"><h3 style="margin-bottom:10px">كشف الغياب</h3>';
+        if (attRows) {
+            html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px">الحالة</th><th style="padding:8px">الحصة</th><th style="padding:8px">سجلها</th></tr>';
+            html += attRows;
+            html += '</table>';
+        } else {
+            html += '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد غياب مسجل</div>';
+        }
+        html += '</div>';
+
+        // الاستئذان
+        html += '<div class="card"><h3 style="margin-bottom:10px">سجل الاستئذان (' + gateCount + ' مرة)</h3>';
+        if (gateRows) {
+            html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px">السبب</th><th style="padding:8px">استلمه</th></tr>';
+            html += gateRows;
+            html += '</table>';
+        } else {
+            html += '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد استئذان مسجل</div>';
+        }
+        html += '</div>';
+
+        // العيادة
+        html += '<div class="card"><h3 style="margin-bottom:10px">سجل زيارات العيادة (' + clinicCount + ' مرة)</h3>';
+        if (clinicRows) {
+            html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px">الشكوى</th><th style="padding:8px">الإجراء</th></tr>';
+            html += clinicRows;
+            html += '</table>';
+        } else {
+            html += '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد زيارات عيادة مسجلة</div>';
+        }
+        html += '</div>';
+
+        // التعهدات والملاحظات السلوكية
+        html += '<div class="card"><h3 style="margin-bottom:10px">التعهدات والملاحظات السلوكية</h3>';
+        if (behRows) {
+            html += '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+            html += '<tr style="background:#f0f4f8"><th style="padding:8px;text-align:right">التاريخ</th><th style="padding:8px">الإجراء</th><th style="padding:8px">الملاحظات</th><th style="padding:8px">الحالة</th></tr>';
+            html += behRows;
+            html += '</table>';
+        } else {
+            html += '<div style="text-align:center;padding:20px;color:#aaa">لا يوجد سجل سلوكي</div>';
+        }
+        html += '</div>';
+
+        results.innerHTML = html;
+    } catch (e) {
+        results.innerHTML = '<div style="color:#dc2626;padding:20px">خطأ: ' + e.message + '</div>';
     }
-};
-
-// ===== الخطوة 2: عرض ملف الطالب المختار =====
-window.showStudentProfile = function(studentDocId) {
-    const resultsDiv = document.getElementById('student-results-container');
-    if (!studentDocId) { resultsDiv.innerHTML = ''; return; }
-
-    const data = currentClassStudents.find(s => s.id === studentDocId);
-    if (!data) return;
-
-    resultsDiv.innerHTML = `
-        <div style="background:#fff; padding:20px; border-radius:12px; border:1px solid var(--line); border-right:4px solid var(--sky); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
-            <div>
-                <h3 style="margin:0 0 6px; color:var(--navy); font-weight:900; font-size:17px;">${data.name}</h3>
-                <span style="background:var(--ice); color:var(--sky); padding:4px 10px; border-radius:6px; font-size:13px; font-weight:700;">
-                    فصل: <span id="class-display-${data.id}">${data.classId}</span>
-                </span>
-                <span style="color:var(--mid); font-size:13px; margin-right:10px;">
-                    <i class="bi bi-telephone-fill"></i> ${data.parentPhone || 'غير مسجل'}
-                </span>
-            </div>
-
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <button onclick="window.contactParent('${data.parentPhone||''}', '${data.name}')"
-                    style="background:#25d366; color:#fff; border:none; padding:9px 16px; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Cairo';">
-                    <i class="bi bi-whatsapp"></i> مراسلة
-                </button>
-
-                <div style="display:flex; align-items:center; gap:0; border:1.5px solid var(--line); border-radius:8px; overflow:hidden;">
-                    <select id="new-class-${data.id}" class="st-input" style="border:none; border-radius:0; min-width:100px;">
-                        <option value="">نقل لفصل...</option>
-                        ${ALL_CLASSES.filter(c => c !== data.classId).map(c => `<option value="${c}">${c}</option>`).join('')}
-                    </select>
-                    <button onclick="window.transferStudent('${data.id}')"
-                        style="background:var(--navy); color:#fff; border:none; padding:9px 16px; font-weight:700; cursor:pointer; font-family:'Cairo';">
-                        نقل
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-};
-
-// ===== نقل الطالب لفصل جديد =====
-window.transferStudent = async function(docId) {
-    const newClassInput = document.getElementById(`new-class-${docId}`).value.trim();
-    if (!newClassInput) return alert('⚠️ يرجى اختيار الفصل الجديد من القائمة');
-
-    if (!confirm(`هل أنت متأكد من نقل الطالب إلى فصل ${newClassInput}؟`)) return;
-
-    try {
-        await updateDoc(doc(db, 'students', docId), { classId: newClassInput });
-        document.getElementById(`class-display-${docId}`).textContent = newClassInput;
-        alert('✅ تم نقل الطالب بنجاح.');
-
-        // إعادة تحميل قائمة الفصل الحالي (الطالب انتقل فخرج من القائمة)
-        const currentClass = document.getElementById('st-select-class').value;
-        window.loadClassStudentsList(currentClass);
-        document.getElementById('student-results-container').innerHTML = '';
-
-    } catch (error) {
-        alert('❌ فشلت عملية النقل: ' + error.message);
-    }
-};
-
-// ===== التواصل مع ولي الأمر =====
-window.contactParent = function(phone, studentName) {
-    if (!phone) return alert('⚠️ رقم هاتف ولي الأمر غير مسجل في النظام.');
-
-    const user = JSON.parse(localStorage.getItem('hs_user'));
-    const msg = `مرحباً ولي أمر الطالب *${studentName}*،\nتتواصل معكم إدارة *${user?.schoolName || 'المدرسة'}* بخصوص مستوى الطالب وحضوره.\n\n_المنظومة الرقمية الشاملة_`;
-
-    let formattedPhone = phone.startsWith('965') ? phone : '965' + phone;
-    window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
 };

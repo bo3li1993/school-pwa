@@ -2,11 +2,11 @@ import { db, getActiveSchoolId } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initTeachersModule() {
-    const container = document.getElementById('tab-teacher-directory');
+    var container = document.getElementById('tab-teachers');
     if (!container) return;
 
     // 🏢 البصمة المدرسية للفلترة الأمنية
-    const schoolId = getActiveSchoolId();
+    var schoolId = getActiveSchoolId();
 
     try {
         container.innerHTML = `
@@ -30,17 +30,17 @@ export async function initTeachersModule() {
         </div>`;
 
         // استعلام ذكي يفلتر المستخدمين حسب المدرسة
-        const q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
-        let snap = await getDocs(q);
+        var q = query(collection(db, 'users'), where('schoolId', '==', schoolId));
+        var snap = await getDocs(q);
 
         // التوافقية للمدرسة الأم (سالم الحسينان) إذا كانت البيانات بدون حقل schoolId
         if (snap.empty && schoolId === 'hosainan') {
             snap = await getDocs(getActiveSchoolId() ? query(collection(db, 'users'), where('schoolId', '==', getActiveSchoolId())) : collection(db, 'users'));
         }
 
-        let html = '';
+        var html = '';
         snap.forEach(doc => {
-            const d = doc.data();
+            var d = doc.data();
             // تصفية أمنية إضافية لضمان عدم خلط البيانات
             if(d.schoolId && d.schoolId !== schoolId) return;
             

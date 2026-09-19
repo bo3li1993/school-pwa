@@ -2,7 +2,7 @@ import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
 import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 export async function initAttendanceModule() {
-    const container = document.getElementById('tab-absent');
+    var container = document.getElementById('tab-attendance');
     if (!container) return;
 
     try {
@@ -27,41 +27,41 @@ export async function initAttendanceModule() {
 }
 
 async function loadTodayAbsentsGroupedByClass() {
-    const wrapper = document.getElementById('live-absents-classes-container');
+    var wrapper = document.getElementById('live-absents-classes-container');
     if (!wrapper) return;
 
-    const schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
-    const todayISO = getTodayISO();       // 📅 التاريخ الموحد
+    var schoolId = getActiveSchoolId(); // 🏢 البصمة المدرسية
+    var todayISO = getTodayISO();       // 📅 التاريخ الموحد
 
     try {
         // الاستعلام المفلتر: غياب + مدرسة + تاريخ
         // ملاحظة: بما أننا نستخدم ISO، فنحن نقارن بحقل الـ date الموحد
-        const q = query(
+        var q = query(
             collection(db, 'attendance'), 
             where('schoolId', '==', schoolId),
             where('date', '==', todayISO), 
             where('status', '==', 'absent')
         );
         
-        let snap = await getDocs(q);
+        var snap = await getDocs(q);
 
         // دعم التوافقية للداتا القديمة (مدرسة الحسينان)
         if (snap.empty && schoolId === 'hosainan') {
-            const fallbackQ = query(collection(db, 'attendance'), where('date', '==', todayISO), where('status', '==', 'absent'));
+            var fallbackQ = query(collection(db, 'attendance'), where('date', '==', todayISO), where('status', '==', 'absent'));
             snap = await getDocs(fallbackQ);
         }
         
-        let byClass = {};
-        let count = 0;
+        var byClass = {};
+        var count = 0;
 
         snap.forEach(doc => {
-            const d = doc.data();
+            var d = doc.data();
             // تصفية أمنية للداتا القديمة
             if (d.schoolId && d.schoolId !== schoolId) return;
 
-            const classId = d.classId ? d.classId.trim() : 'غير محدد';
-            const sName = d.studentName || d.name || 'طالب غير معرف';
-            const teacher = d.recordedBy || 'هيئة التعليم';
+            var classId = d.classId ? d.classId.trim() : 'غير محدد';
+            var sName = d.studentName || d.name || 'طالب غير معرف';
+            var teacher = d.recordedBy || 'هيئة التعليم';
 
             if (!byClass[classId]) {
                 byClass[classId] = { classId: classId, students: [], teacherName: teacher };
@@ -75,9 +75,9 @@ async function loadTodayAbsentsGroupedByClass() {
             return;
         }
 
-        let html = '';
+        var html = '';
         Object.keys(byClass).sort().forEach(cId => {
-            const group = byClass[cId];
+            var group = byClass[cId];
             html += `
                 <div style="background:#fff0f0; border:1px solid #ffcccc; padding:15px; border-radius:10px; box-shadow:0 2px 5px rgba(0,0,0,0.01);">
                     <h4 style="color:var(--danger-color); font-size:15px; font-weight:900; margin-bottom:8px; border-bottom:1px dashed #ffcccc; padding-bottom:5px;">
