@@ -200,11 +200,11 @@ window.printDailySheet = function() {
     var content = area.innerHTML;
     var html = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">';
     html += '<style>';
-    html += 'body{font-family:Cairo,Arial,sans-serif;direction:rtl;padding:20px;font-size:12px}';
+    html += 'body{font-family:Cairo,Arial,sans-serif;direction:rtl;padding:20px;font-size:9px}';
     html += 'table{width:100%;border-collapse:collapse}';
-    html += 'th,td{border:1px solid #999;padding:5px;text-align:center}';
+    html += 'th,td{border:1px solid #999;padding:3px 4px;text-align:center;font-size:8.5px}';
     html += 'th{background:#0b2545;color:#fff}';
-    html += '@media print{body{padding:10px}}';
+    html += '@media print{body{padding:5px}@page{size:A4 portrait;margin:8mm}}';
     html += '</style></head><body>';
     html += '<div style="display:flex;justify-content:space-between;margin-bottom:10px">';
     html += '<div style="font-size:11px">وزارة التربية</div>';
