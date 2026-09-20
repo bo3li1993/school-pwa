@@ -235,9 +235,9 @@ window.showStudentProfile = async function(name) {
         }
         html += '</div>';
 
-        html += "<div style=\"text-align:center;margin-top:16px\"><button onclick=\"window.printStudentFile()\" style=\"background:#0b2545;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Cairo,sans-serif;font-size:13px;font-weight:800;cursor:pointer\"><i class=\"bi bi-printer-fill\"></i> طباعة ملف الطالب</button></div>"; results.innerHTML = html;
-    } catch (e) {
-        results.innerHTML = '<div style="color:#dc2626;padding:20px">خطأ: ' + e.message + '</div>';
+        html += '<div style="text-align:center;margin-top:16px"><button onclick="window.printStudentFile()" style="background:#0b2545;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Cairo,sans-serif;font-size:13px;font-weight:800;cursor:pointer">طباعة ملف الطالب</button></div>';
+        results.innerHTML = html;
+    } catch (e) {        results.innerHTML = '<div style="color:#dc2626;padding:20px">خطأ: ' + e.message + '</div>';
     }
     
 };window.printStudentFile = function() {
