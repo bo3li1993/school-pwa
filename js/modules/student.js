@@ -235,8 +235,29 @@ window.showStudentProfile = async function(name) {
         }
         html += '</div>';
 
-        results.innerHTML = html;
+        html += "<div style=\"text-align:center;margin-top:16px\"><button onclick=\"window.printStudentFile()\" style=\"background:#0b2545;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-family:Cairo,sans-serif;font-size:13px;font-weight:800;cursor:pointer\"><i class=\"bi bi-printer-fill\"></i> طباعة ملف الطالب</button></div>"; results.innerHTML = html;
     } catch (e) {
         results.innerHTML = '<div style="color:#dc2626;padding:20px">خطأ: ' + e.message + '</div>';
     }
+    
+window.printStudentFile = function() {
+  var results = document.getElementById('st-results');
+  if (!results || !results.innerHTML.trim()) { if(window.showToast) window.showToast('اختر طالب أولاً','warning'); return; }
+  var user = JSON.parse(localStorage.getItem('hs_user')||'{}');
+  var html = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">'
+    + '<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">'
+    + '<style>body{font-family:Cairo,sans-serif;direction:rtl;padding:16px;font-size:11px}'
+    + 'table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:5px;text-align:right;font-size:10px}'
+    + 'th{background:#0b2545;color:#fff}.card{margin-bottom:12px;border:1px solid #e5e7eb;border-radius:8px;padding:12px}'
+    + '@media print{@page{size:A4;margin:10mm}}</style></head><body>'
+    + '<div style="border-bottom:3px solid #0b2545;margin-bottom:16px;padding-bottom:10px;display:flex;justify-content:space-between">'
+    + '<div style="font-size:11px">دولة الكويت<br>وزارة التربية</div>'
+    + '<div style="text-align:center;font-size:16px;font-weight:900;color:#0b2545">ملف الطالب الشامل</div>'
+    + '<div style="text-align:left;font-size:11px">' + (user.schoolName||'') + '<br>' + new Date().toLocaleDateString('ar-KW') + '</div>'
+    + '</div>' + results.innerHTML
+    + '<div style="margin-top:20px;border-top:1px solid #ddd;padding-top:10px;display:flex;justify-content:space-between;font-size:10px">'
+    + '<div>المنظومة الرقمية</div><div>توقيع المرشد: ______________</div><div>توقيع المدير: ______________</div></div>'
+    + '<script>setTimeout(()=>window.print(),500)</script></body></html>';
+  var b = new Blob([html],{type:'text/html;charset=utf-8'});
+  window.open(URL.createObjectURL(b),'_blank');
 };
