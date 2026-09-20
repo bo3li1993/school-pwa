@@ -240,7 +240,7 @@ window.showStudentProfile = async function(name) {
         results.innerHTML = '<div style="color:#dc2626;padding:20px">خطأ: ' + e.message + '</div>';
     }
     
-window.printStudentFile = function() {
+};window.printStudentFile = function() {
   var results = document.getElementById('st-results');
   if (!results || !results.innerHTML.trim()) { if(window.showToast) window.showToast('اختر طالب أولاً','warning'); return; }
   var user = JSON.parse(localStorage.getItem('hs_user')||'{}');
