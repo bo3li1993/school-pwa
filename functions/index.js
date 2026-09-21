@@ -262,11 +262,9 @@ exports.createUser = onCall({ cors: CORS, region: REGION }, async (req) => {
   if (caller.role !== "superadmin" && caller.schoolId !== schoolId) {
     throw new HttpsError("permission-denied", "[msg]");
   }
-  const ALLOWED_ROLES = ["admin","assistant_manager","wing_supervisor","department_head","teacher","social_worker","nurse","guard"];
-  const ROLE_RANK = { superadmin:99, admin:80, assistant_manager:70, wing_supervisor:60, department_head:50, teacher:40, social_worker:30, nurse:30, guard:20 };
-  if (!ALLOWED_ROLES.includes(role)) {
-    throw new HttpsError("permission-denied", "[msg]");
-  }
+  const ALLOWED_ROLES = ["admin","assistant_manager","wing_supervisor","department_head","teacher","social_worker","nurse","guard","secretary"];
+  const ROLE_RANK = { superadmin:99, admin:80, assistant_manager:70, wing_supervisor:60, department_head:50, teacher:40, social_worker:30, nurse:30, guard:20, secretary:25 };    throw new HttpsError("permission-denied", "[msg]");
+
   if (caller.role !== "superadmin" && ROLE_RANK[caller.role] === undefined) {
     throw new HttpsError("permission-denied", "Unknown caller role");
   }
