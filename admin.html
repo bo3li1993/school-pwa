@@ -92,6 +92,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
   <div class="menu-sec-body">
     <div class="menu-item" data-tab="tab-class-compare" onclick="window.switchTab('tab-class-compare')"><i class="bi bi-bar-chart-fill"></i> مقارنة الفصول</div>
     <div class="menu-item" data-tab="tab-semester-report" onclick="window.switchTab('tab-semester-report')"><i class="bi bi-file-earmark-text-fill"></i> تقرير نهاية الفصل</div>
+    <div class="menu-item" data-tab="tab-schedule" onclick="window.switchTab('tab-schedule')"><i class="bi bi-calendar-week-fill"></i> الجدول المدرسي</div>
   </div>
   <div class="menu-divider"></div>
 
@@ -188,6 +189,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
       </div>
     </div>
     <div id="tab-ai-insights" class="tab-content"></div>
+    <div id="tab-schedule" class="tab-content"></div>
     <div id="tab-class-compare" class="tab-content"></div>
     <div id="tab-calendar" class="tab-content"></div>
     <div id="tab-semester-report" class="tab-content"></div>
@@ -270,6 +272,7 @@ var moduleMap={
     'tab-class-compare':{file:'./js/modules/class_compare.js',init:'initClassCompareModule'},
     'tab-calendar':{file:'./js/modules/school_calendar.js',init:'initCalendarModule'},
     'tab-semester-report':{file:'./js/modules/semester_report.js',init:'initSemesterReportModule'},
+    'tab-schedule':{file:'./js/modules/schedule.js',init:'initScheduleModule'},
     'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
 };
 var loadedTabs=new Set();
