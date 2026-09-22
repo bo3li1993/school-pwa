@@ -55,7 +55,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-circle"></i> الغياب المتكرر</div>
     <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
     <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
-    <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
+    <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div><div class="menu-item" data-tab="tab-social" onclick="window.switchTab('tab-social')"><i class="bi bi-person-heart"></i> الأخصائي الاجتماعي)"><i class="bi bi-heart-pulse"></i> العيادة</div>
     <div class="menu-item" data-tab="tab-warnings" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill"></i> الإنذارات</div>
   </div>
   <div class="menu-divider"></div>
@@ -119,7 +119,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div id="tab-repeat" class="tab-content"></div>
     <div id="tab-behavior" class="tab-content"></div>
     <div id="tab-gatepass" class="tab-content"></div>
-    <div id="tab-clinic" class="tab-content"></div>
+    <<div id="tab-clinic" class="tab-content"></div><div id="tab-social" class="tab-content"></div>>
     <div id="tab-warnings" class="tab-content"></div>
     <div id="tab-reports" class="tab-content"></div>
     <div id="tab-monthly" class="tab-content"></div>
@@ -250,7 +250,7 @@ var moduleMap={
     'tab-audit':{file:'./js/modules/audit.js',init:'initAuditModule'},
     'tab-backup':{file:'./js/modules/backup_manager.js',init:'initBackupModule'},
     'tab-departments':{file:'./js/modules/departments.js',init:'initDepartmentsModule'},
-    'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
+    'tab-social':{file:'./js/modules/social.js',init:'initSocialModule'},'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
 };
 var loadedTabs=new Set();
 
