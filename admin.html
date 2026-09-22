@@ -74,6 +74,9 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-eye"></i> زيارات المدير</div>
     <div class="menu-item" data-tab="tab-performance-committee" onclick="window.switchTab('tab-performance-committee')"><i class="bi bi-clipboard2-data-fill"></i> لجنة الأداء</div>
     <div class="menu-item" data-tab="tab-rounds" onclick="window.switchTab('tab-rounds','tab-performance-committee')"><i class="bi bi-binoculars"></i> جولة الجناح</div>
+    <div class="menu-item" data-tab="tab-coverage" onclick="window.switchTab('tab-coverage')"><i class="bi bi-shield-check"></i> تغطية الحصص</div>
+    <div class="menu-item" data-tab="tab-teacher-workload" onclick="window.switchTab('tab-teacher-workload')"><i class="bi bi-bar-chart-steps"></i> عبء المعلم</div>
+    <div class="menu-item" data-tab="tab-teacher-perf" onclick="window.switchTab('tab-teacher-perf')"><i class="bi bi-star-fill"></i> أداء المعلم</div>
   </div>
   <div class="menu-divider"></div>
 
@@ -93,6 +96,9 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div class="menu-item" data-tab="tab-class-compare" onclick="window.switchTab('tab-class-compare')"><i class="bi bi-bar-chart-fill"></i> مقارنة الفصول</div>
     <div class="menu-item" data-tab="tab-semester-report" onclick="window.switchTab('tab-semester-report')"><i class="bi bi-file-earmark-text-fill"></i> تقرير نهاية الفصل</div>
     <div class="menu-item" data-tab="tab-schedule" onclick="window.switchTab('tab-schedule')"><i class="bi bi-calendar-week-fill"></i> الجدول المدرسي</div>
+    <div class="menu-item" data-tab="tab-analytics" onclick="window.switchTab('tab-analytics')"><i class="bi bi-graph-up-arrow"></i> التحليلات المتقدمة</div>
+    <div class="menu-item" data-tab="tab-distribution" onclick="window.switchTab('tab-distribution')"><i class="bi bi-diagram-3-fill"></i> توزيع الطلاب</div>
+    <div class="menu-item" data-tab="tab-archive" onclick="window.switchTab('tab-archive')"><i class="bi bi-archive-fill"></i> الأرشيف</div>
   </div>
   <div class="menu-divider"></div>
 
@@ -190,6 +196,12 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     </div>
     <div id="tab-ai-insights" class="tab-content"></div>
     <div id="tab-schedule" class="tab-content"></div>
+    <div id="tab-analytics" class="tab-content"></div>
+    <div id="tab-coverage" class="tab-content"></div>
+    <div id="tab-distribution" class="tab-content"></div>
+    <div id="tab-teacher-workload" class="tab-content"></div>
+    <div id="tab-teacher-perf" class="tab-content"></div>
+    <div id="tab-archive" class="tab-content"></div>
     <div id="tab-class-compare" class="tab-content"></div>
     <div id="tab-calendar" class="tab-content"></div>
     <div id="tab-semester-report" class="tab-content"></div>
@@ -273,6 +285,12 @@ var moduleMap={
     'tab-calendar':{file:'./js/modules/school_calendar.js',init:'initCalendarModule'},
     'tab-semester-report':{file:'./js/modules/semester_report.js',init:'initSemesterReportModule'},
     'tab-schedule':{file:'./js/modules/schedule.js',init:'initScheduleModule'},
+    'tab-analytics':{file:'./js/modules/analytics.js',init:'initAnalyticsModule'},
+    'tab-coverage':{file:'./js/modules/coverage.js',init:'initCoverageModule'},
+    'tab-distribution':{file:'./js/modules/distribution.js',init:'initDistributionModule'},
+    'tab-teacher-workload':{file:'./js/modules/teacher_workload.js',init:'initTeacherWorkloadModule'},
+    'tab-teacher-perf':{file:'./js/modules/teacher_perf.js',init:'initTeacherPerfModule'},
+    'tab-archive':{file:'./js/modules/archive.js',init:'initArchiveModule'},
     'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
 };
 var loadedTabs=new Set();
