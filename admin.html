@@ -13,7 +13,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// دوال عامة — قبل HTML
 function toggleSec(t){var b=t.nextElementSibling;if(!b)return;if(!b.classList.contains('closed')){b.style.maxHeight=b.scrollHeight+'px';setTimeout(function(){b.style.maxHeight='0';b.classList.add('closed');t.classList.add('closed')},10)}else{b.classList.remove('closed');t.classList.remove('closed');b.style.maxHeight=b.scrollHeight+'px';setTimeout(function(){if(!b.classList.contains('closed'))b.style.maxHeight='none'},300)}}
 window.toggleDarkMode=function(){var d=document.body.classList.toggle('dark-mode');try{localStorage.setItem('hs_dark_mode',d?'1':'0')}catch(e){}var i=document.getElementById('dark-icon'),l=document.getElementById('dark-label');if(i)i.textContent=d?'🌙':'☀️';if(l)l.textContent=d?'ليلي':'نهاري'};
 try{if(localStorage.getItem('hs_dark_mode')==='1')document.body.classList.add('dark-mode')}catch(e){}
@@ -55,7 +54,8 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-circle"></i> الغياب المتكرر</div>
     <div class="menu-item" data-tab="tab-behavior" onclick="window.switchTab('tab-behavior')"><i class="bi bi-shield-exclamation"></i> السلوك</div>
     <div class="menu-item" data-tab="tab-gatepass" onclick="window.switchTab('tab-gatepass')"><i class="bi bi-door-open"></i> الاستئذان</div>
-    <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div><div class="menu-item" data-tab="tab-social" onclick="window.switchTab('tab-social')"><i class="bi bi-person-heart"></i> الأخصائي الاجتماعي)"><i class="bi bi-heart-pulse"></i> العيادة</div>
+    <div class="menu-item" data-tab="tab-clinic" onclick="window.switchTab('tab-clinic')"><i class="bi bi-heart-pulse"></i> العيادة</div>
+    <div class="menu-item" data-tab="tab-social" onclick="window.switchTab('tab-social')"><i class="bi bi-person-heart"></i> الأخصائي الاجتماعي</div>
     <div class="menu-item" data-tab="tab-warnings" onclick="window.switchTab('tab-warnings')"><i class="bi bi-exclamation-triangle-fill"></i> الإنذارات</div>
   </div>
   <div class="menu-divider"></div>
@@ -80,10 +80,10 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-megaphone-fill" style="color:#0891b2;margin-left:6px"></i>التواصل</span><i class="bi bi-chevron-down sec-chev"></i></div>
   <div class="menu-sec-body">
     <div class="menu-item" data-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i> المراسلات</div>
-
     <div class="menu-item" data-tab="tab-announcements" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone-fill"></i> الإعلانات</div>
     <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
     <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-star"></i> الحوافز</div>
+    <div class="menu-item" data-tab="tab-meetings" onclick="window.switchTab('tab-meetings')"><i class="bi bi-journal-text"></i> محضر الاجتماع</div>
   </div>
   <div class="menu-divider"></div>
 
@@ -113,13 +113,15 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div id="tab-classes" class="tab-content"></div>
     <div id="tab-import" class="tab-content"></div>
     <div id="tab-promotion" class="tab-content"></div>
-    <div id="tab-attendance" class="tab-content"></div><div id="tab-quick-attendance" class="tab-content"></div><div id="tab-quick-attendance" class="tab-content"></div>
+    <div id="tab-attendance" class="tab-content"></div>
+    <div id="tab-quick-attendance" class="tab-content"></div>
     <div id="tab-daily-report" class="tab-content"></div>
     <div id="tab-date" class="tab-content"></div>
     <div id="tab-repeat" class="tab-content"></div>
     <div id="tab-behavior" class="tab-content"></div>
     <div id="tab-gatepass" class="tab-content"></div>
-    <<div id="tab-clinic" class="tab-content"></div><div id="tab-social" class="tab-content"></div>>
+    <div id="tab-clinic" class="tab-content"></div>
+    <div id="tab-social" class="tab-content"></div>
     <div id="tab-warnings" class="tab-content"></div>
     <div id="tab-reports" class="tab-content"></div>
     <div id="tab-monthly" class="tab-content"></div>
@@ -132,6 +134,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div id="tab-announcements" class="tab-content"></div>
     <div id="tab-honors" class="tab-content"></div>
     <div id="tab-rewards" class="tab-content"></div>
+    <div id="tab-meetings" class="tab-content"></div>
     <div id="tab-users" class="tab-content"></div>
     <div id="tab-audit" class="tab-content"></div>
     <div id="tab-backup" class="tab-content"></div>
@@ -207,10 +210,8 @@ try {
 
 var schoolId = getActiveSchoolId();
 
-// تحديث role من Firestore
 (async()=>{try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(!s.empty){var f=s.docs[0].data();var nr=String(f.role||'').trim().toLowerCase();if(nr!==currentUser.role){currentUser.role=nr;currentUser.name=f.name||currentUser.name;localStorage.setItem('hs_user',JSON.stringify(currentUser));if(!['admin','assistant_manager','wing_supervisor'].includes(nr))window.location.replace('teacher.html')}}}catch(e){}})();
 
-// صلاحيات المشرف
 var _role2 = String(currentUser.role||'').trim().toLowerCase();
 if(_role2==='wing_supervisor'){
     var hide=['tab-students-manage','tab-import','tab-classes','tab-promotion','tab-attendance','tab-date','tab-behavior','tab-gatepass','tab-clinic','tab-reports','tab-monthly','tab-archive','tab-teachers','tab-teacher-workload','tab-teacher-perf','tab-manager-visits','tab-visits','tab-coverage','tab-announcements','tab-honors','tab-rewards','tab-users','tab-audit','tab-backup','tab-departments','tab-school-settings','tab-ai-insights'];
@@ -230,7 +231,8 @@ var moduleMap={
     'tab-students-manage':{file:'./js/modules/students_manage.js',init:'initStudentsManageModule'},
     'tab-classes':{file:'./js/modules/classes.js',init:'initClassesModule'},
     'tab-import':{file:'./js/modules/import_students.js',init:'initImportModule'},
-    'tab-attendance':{file:'./js/modules/attendance.js',init:'initAttendanceModule'},'tab-quick-attendance':{file:'./js/modules/quick_attendance.js',init:'initQuickAttendanceModule'},
+    'tab-attendance':{file:'./js/modules/attendance.js',init:'initAttendanceModule'},
+    'tab-quick-attendance':{file:'./js/modules/quick_attendance.js',init:'initQuickAttendanceModule'},
     'tab-daily-report':{file:'./js/modules/daily_report.js',init:'initDailyReportModule'},
     'tab-repeat':{file:'./js/modules/repeat.js',init:'initRepeatModule'},
     'tab-behavior':{file:'./js/modules/behavior.js',init:'initBehaviorModule'},
@@ -242,15 +244,19 @@ var moduleMap={
     'tab-teachers':{file:'./js/modules/teachers.js',init:'initTeachersModule'},
     'tab-visits':{file:'./js/modules/visits.js',init:'initVisitsModule'},
     'tab-manager-visits':{file:'./js/modules/manager_visits.js',init:'initManagerVisitsModule'},
-    'tab-rounds':{file:'./js/modules/rounds.js',init:'initRoundsModule'},'tab-performance-committee':{file:'./js/modules/performance_committee.js',init:'initPerformanceCommitteeModule'},
-    'tab-mailbox':{file:'./js/modules/mailbox.js',init:'initMailboxModule'},'tab-announcements':{file:'./js/modules/announcements.js',init:'initAnnouncementsModule'},
+    'tab-rounds':{file:'./js/modules/rounds.js',init:'initRoundsModule'},
+    'tab-performance-committee':{file:'./js/modules/performance_committee.js',init:'initPerformanceCommitteeModule'},
+    'tab-mailbox':{file:'./js/modules/mailbox.js',init:'initMailboxModule'},
+    'tab-announcements':{file:'./js/modules/announcements.js',init:'initAnnouncementsModule'},
     'tab-honors':{file:'./js/modules/honors.js',init:'initHonorsModule'},
     'tab-rewards':{file:'./js/modules/rewards.js',init:'initRewardsModule'},
+    'tab-meetings':{file:'./js/modules/meetings.js',init:'initMeetingsModule'},
     'tab-users':{file:'./js/modules/users.js',init:'initUsersModule'},
     'tab-audit':{file:'./js/modules/audit.js',init:'initAuditModule'},
     'tab-backup':{file:'./js/modules/backup_manager.js',init:'initBackupModule'},
     'tab-departments':{file:'./js/modules/departments.js',init:'initDepartmentsModule'},
-    'tab-social':{file:'./js/modules/social.js',init:'initSocialModule'},'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
+    'tab-social':{file:'./js/modules/social.js',init:'initSocialModule'},
+    'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
 };
 var loadedTabs=new Set();
 
@@ -274,10 +280,7 @@ window.switchTab=async function(tabId){
 
 async function loadMyAccount(){try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;var d=s.docs[0].data();document.getElementById('acc-name').value=d.name||'';document.getElementById('acc-email').value=d.email||'';document.getElementById('acc-dept').value=d.department||'';document.getElementById('acc-phone').value=d.phone||'';document.getElementById('acc-civil').value=d.civilId||'';document.getElementById('acc-filenum').value=d.fileNumber||'';document.getElementById('acc-hiredate').value=d.hireDate||''}catch(e){}}
 
-window.saveMyAccount=async function(){var n=document.getElementById('acc-name').value.trim();if(!n){showToast('الاسم مطلوب','error');return}try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;var updateData={name:n,email:document.getElementById('acc-email').value.trim(),department:document.getElementById('acc-dept').value.trim(),phone:document.getElementById('acc-phone').value.trim(),civilId:document.getElementById('acc-civil').value.trim(),fileNumber:document.getElementById('acc-filenum').value.trim(),hireDate:document.getElementById('acc-hiredate').value.trim()};
-        await updateDoc(s.docs[0].ref,updateData);
-        var newPass=document.getElementById('acc-pass').value.trim();
-        if(newPass){try{var{getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');var fns=getFunctions(undefined,'me-central1');var reset=httpsCallable(fns,'resetUserPassword');await reset({targetUserDocId:s.docs[0].id,newPassword:newPass});document.getElementById('acc-pass').value='';showToast('✅ تم تغيير كلمة المرور')}catch(pe){showToast('⚠️ تم حفظ البيانات لكن كلمة المرور ما تغيرت','warning')}}currentUser.name=n;localStorage.setItem('hs_user',JSON.stringify(currentUser));document.getElementById('lbl-admin-name').textContent='مرحباً '+n;showToast('✅ تم الحفظ')}catch(e){showToast('❌ '+e.message,'error')}};
+window.saveMyAccount=async function(){var n=document.getElementById('acc-name').value.trim();if(!n){showToast('الاسم مطلوب','error');return}try{var s=await getDocs(query(collection(db,'users'),where('schoolId','==',schoolId),where('userId','==',currentUser.userId)));if(s.empty)return;var updateData={name:n,email:document.getElementById('acc-email').value.trim(),department:document.getElementById('acc-dept').value.trim(),phone:document.getElementById('acc-phone').value.trim(),civilId:document.getElementById('acc-civil').value.trim(),fileNumber:document.getElementById('acc-filenum').value.trim(),hireDate:document.getElementById('acc-hiredate').value.trim()};await updateDoc(s.docs[0].ref,updateData);var newPass=document.getElementById('acc-pass').value.trim();if(newPass){try{var{getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js');var fns=getFunctions(undefined,'me-central1');var reset=httpsCallable(fns,'resetUserPassword');await reset({targetUserDocId:s.docs[0].id,newPassword:newPass});document.getElementById('acc-pass').value='';showToast('✅ تم تغيير كلمة المرور')}catch(pe){showToast('⚠️ تم حفظ البيانات لكن كلمة المرور ما تغيرت','warning')}}currentUser.name=n;localStorage.setItem('hs_user',JSON.stringify(currentUser));document.getElementById('lbl-admin-name').textContent='مرحباً '+n;showToast('✅ تم الحفظ')}catch(e){showToast('❌ '+e.message,'error')}};
 
 window.previewLogo=function(input){var f=input.files[0];if(!f)return;if(f.size>500000){showToast('الصورة كبيرة','warning');return}var r=new FileReader();r.onload=function(e){document.getElementById('set-logo-url').value=e.target.result;var p=document.getElementById('set-logo-preview');if(p){p.src=e.target.result;p.style.display='block'}};r.readAsDataURL(f)};
 
@@ -289,7 +292,6 @@ async function loadAnnouncements(){var l=document.getElementById('announcements-
 
 window.deleteAnn=async function(id){if(!confirm('حذف؟'))return;try{await deleteDoc(doc(db,'school_announcements',id));showToast('✅');loadAnnouncements()}catch(e){}};
 
-// الطباعة
 window.ManzoumaReport={
     getSchoolInfo(){var u=JSON.parse(localStorage.getItem('hs_user')||'{}');return{schoolName:u.schoolName||'',userName:u.name||''}},
     buildHeader(title,sub){var s=this.getSchoolInfo();var d=new Date().toLocaleDateString('ar-KW',{weekday:'long',year:'numeric',month:'long',day:'numeric'});return '<div style="border-bottom:3px double #0b2545;padding-bottom:12px;margin-bottom:20px;text-align:center"><div style="display:flex;justify-content:space-between"><div style="text-align:right;font-size:11px"><b>دولة الكويت</b><br>وزارة التربية</div><div style="font-size:16px;font-weight:900;color:#0b2545">'+title+'</div><div style="text-align:left;font-size:11px"><b>'+s.schoolName+'</b><br>'+d+'</div></div></div>'},
@@ -297,7 +299,6 @@ window.ManzoumaReport={
     printDirect(content,title,sub){var h='<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;direction:rtl;padding:20px}</style></head><body>'+this.buildHeader(title,sub||'')+content+this.buildFooter()+'</body></html>';var b=new Blob([h],{type:'text/html;charset=utf-8'});var u=URL.createObjectURL(b);var w=window.open(u,'_blank');if(w)setTimeout(function(){w.print();URL.revokeObjectURL(u)},800)}
 };
 
-// init
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { auth } from './js/firebase-config.js';
 
