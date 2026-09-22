@@ -850,12 +850,12 @@ exports.promoteStudents = onCall({ cors: CORS, region: REGION }, async (req) => 
 
 // ===== analyzeAttendance — تحليل الغياب بالذكاء الاصطناعي =====
 // أضف هذا الكود في نهاية functions/index.js قبل scheduledDailyBackup
-// ثم أضف في Firebase Secrets: ANTHROPIC_API_KEY
+// ثم أضف في Firebase Secrets: GROQ_API_KEY
 
 exports.analyzeAttendance = onCall({
   cors: CORS,
   region: REGION,
-  secrets: ["ANTHROPIC_API_KEY"]
+  secrets: ["GROQ_API_KEY"]
 }, async (req) => {
   const caller = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
 
@@ -864,21 +864,21 @@ exports.analyzeAttendance = onCall({
     throw new HttpsError("invalid-argument", "prompt غير صالح.");
   }
 
-  const apiKey = (process.env.ANTHROPIC_API_KEY || "").trim();
+  const apiKey = (process.env.GROQ_API_KEY || "").trim();
   if (!apiKey) {
     throw new HttpsError("internal", "مفتاح API غير مضبوط.");
   }
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
+        "Authorization": "Bearer " + apiKey,
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: "llama-3.3-70b-versatile",
         max_tokens: 1000,
         messages: [{ role: "user", content: prompt }]
       })
@@ -889,7 +889,7 @@ exports.analyzeAttendance = onCall({
     }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || "لم يتم الحصول على نتيجة";
+    const text = data.choices?.[0]?.message?.content || "لم يتم الحصول على نتيجة";
 
     return { text };
 
@@ -901,12 +901,12 @@ exports.analyzeAttendance = onCall({
 
 // ===== analyzeAttendance — تحليل الغياب بالذكاء الاصطناعي =====
 // أضف هذا الكود في نهاية functions/index.js قبل scheduledDailyBackup
-// ثم أضف في Firebase Secrets: ANTHROPIC_API_KEY
+// ثم أضف في Firebase Secrets: GROQ_API_KEY
 
 exports.analyzeAttendance = onCall({
   cors: CORS,
   region: REGION,
-  secrets: ["ANTHROPIC_API_KEY"]
+  secrets: ["GROQ_API_KEY"]
 }, async (req) => {
   const caller = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
 
@@ -915,21 +915,21 @@ exports.analyzeAttendance = onCall({
     throw new HttpsError("invalid-argument", "prompt غير صالح.");
   }
 
-  const apiKey = (process.env.ANTHROPIC_API_KEY || "").trim();
+  const apiKey = (process.env.GROQ_API_KEY || "").trim();
   if (!apiKey) {
     throw new HttpsError("internal", "مفتاح API غير مضبوط.");
   }
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
+        "Authorization": "Bearer " + apiKey,
         "anthropic-version": "2023-06-01"
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: "llama-3.3-70b-versatile",
         max_tokens: 1000,
         messages: [{ role: "user", content: prompt }]
       })
@@ -940,7 +940,7 @@ exports.analyzeAttendance = onCall({
     }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || "لم يتم الحصول على نتيجة";
+    const text = data.choices?.[0]?.message?.content || "لم يتم الحصول على نتيجة";
 
     return { text };
 
