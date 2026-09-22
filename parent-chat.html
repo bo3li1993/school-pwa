@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>مساعد ولي الأمر — المنظومة الرقمية</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Cairo',sans-serif}
+body{background:#f8fafc;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#0b2545;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.topbar h1{font-size:15px;font-weight:900;flex:1}
+.topbar p{font-size:11px;opacity:.7}
+.back-btn{background:rgba(255,255,255,.12);border:none;color:#fff;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700}
+.chat-area{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:80px}
+.msg{max-width:85%;padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.7;font-weight:600}
+.msg-bot{background:#fff;border:1px solid #e5e7eb;border-radius:14px 14px 14px 4px;align-self:flex-start}
+.msg-user{background:#0b2545;color:#fff;border-radius:14px 14px 4px 14px;align-self:flex-end}
+.msg-loading{background:#fff;border:1px solid #e5e7eb;border-radius:14px 14px 14px 4px;align-self:flex-start;padding:12px 16px}
+.typing{display:flex;gap:4px;align-items:center}
+.typing span{width:8px;height:8px;border-radius:50%;background:#6b7280;animation:bounce .8s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.input-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e7eb;padding:12px 16px;display:flex;gap:8px}
+.input-bar input{flex:1;border:1.5px solid #e5e7eb;border-radius:24px;padding:10px 16px;font-family:'Cairo',sans-serif;font-size:14px;outline:none;transition:border .15s}
+.input-bar input:focus{border-color:#1a78c2}
+.send-btn{background:#0b2545;color:#fff;border:none;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.quick-btns{display:flex;gap:6px;flex-wrap:wrap;padding:8px 16px;background:#fff;border-top:1px solid #f1f5f9}
+.quick-btn{background:#f1f5f9;border:none;padding:6px 12px;border-radius:20px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:#374151;transition:all .15s;white-space:nowrap}
+.quick-btn:hover{background:#dbeafe;color:#1d4ed8}
+.bot-avatar{width:32px;height:32px;border-radius:50%;background:#0b2545;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.msg-wrap{display:flex;gap:8px;align-items:flex-end}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="history.back()"><i class="bi bi-arrow-right"></i></button>
+  <div>
+    <h1>🤖 مساعد المنظومة الرقمية</h1>
+    <p>يجيب على أسئلتك عن ابنك وعن المدرسة</p>
+  </div>
+</div>
+
+<div class="quick-btns" id="quick-btns">
+  <button class="quick-btn" onclick="sendQuick('كم يوم تغيب ابني؟')">كم يوم غاب ابني؟</button>
+  <button class="quick-btn" onclick="sendQuick('ما هي مواعيد المدرسة؟')">مواعيد المدرسة</button>
+  <button class="quick-btn" onclick="sendQuick('كيف أتواصل مع معلم ابني؟')">كيف أتواصل مع المعلم؟</button>
+  <button class="quick-btn" onclick="sendQuick('ما هي إجراءات الغياب؟')">إجراءات الغياب</button>
+  <button class="quick-btn" onclick="sendQuick('متى الاختبارات القادمة؟')">مواعيد الاختبارات</button>
+</div>
+
+<div class="chat-area" id="chat-area">
+  <div class="msg-wrap">
+    <div class="bot-avatar">🤖</div>
+    <div class="msg msg-bot">مرحباً! أنا مساعد المنظومة الرقمية 👋<br>يمكنني مساعدتك في الاستفسار عن ابنك أو أي معلومة عن المدرسة. كيف يمكنني مساعدتك؟</div>
+  </div>
+</div>
+
+<div class="input-bar">
+  <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter') sendMsg()">
+  <button class="send-btn" onclick="sendMsg()"><i class="bi bi-send-fill"></i></button>
+</div>
+
+<script type="module">
+import { db } from './js/firebase-config.js';
+import { collection, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js';
+
+const saved = localStorage.getItem('hs_parent') || localStorage.getItem('hs_user');
+if(!saved) window.location.replace('index.html');
+let me = {};
+try { me = JSON.parse(saved); } catch(e) { window.location.replace('index.html'); }
+
+const schoolId = me.schoolId;
+const studentName = me.studentName || '';
+const fns = getFunctions(undefined, 'me-central1');
+
+// تحميل بيانات الطالب مسبقاً للسياق
+let studentContext = '';
+(async()=>{
+    try {
+        const [attSnap, behSnap, gateSnap] = await Promise.all([
+            getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('studentName','==',studentName), where('status','==','absent'))),
+            getDocs(query(collection(db,'behavior'), where('schoolId','==',schoolId), where('studentName','==',studentName))),
+            getDocs(query(collection(db,'gatepass'), where('schoolId','==',schoolId), where('studentName','==',studentName))),
+        ]);
+        studentContext = `معلومات الطالب ${studentName}: غاب ${attSnap.size} يوم، ${behSnap.size} حادثة سلوكية، ${gateSnap.size} استئذان.`;
+    } catch(e){}
+})();
+
+let history = [];
+
+window.sendMsg = async function() {
+    const inp = document.getElementById('chat-input');
+    const text = inp.value.trim();
+    if(!text) return;
+    inp.value = '';
+    addMsg(text, 'user');
+    await getResponse(text);
+};
+
+window.sendQuick = async function(text) {
+    addMsg(text, 'user');
+    await getResponse(text);
+};
+
+function addMsg(text, type) {
+    const area = document.getElementById('chat-area');
+    const div = document.createElement('div');
+    div.className = 'msg-wrap' + (type==='user'?' style="justify-content:flex-end"':'');
+    if(type==='user') div.style.justifyContent='flex-end';
+    div.innerHTML = type==='bot'
+        ? `<div class="bot-avatar">🤖</div><div class="msg msg-bot">${text}</div>`
+        : `<div class="msg msg-user">${text}</div>`;
+    area.appendChild(div);
+    area.scrollTop = area.scrollHeight;
+}
+
+function showTyping() {
+    const area = document.getElementById('chat-area');
+    const div = document.createElement('div');
+    div.className='msg-wrap'; div.id='typing-indicator';
+    div.innerHTML='<div class="bot-avatar">🤖</div><div class="msg-loading"><div class="typing"><span></span><span></span><span></span></div></div>';
+    area.appendChild(div);
+    area.scrollTop=area.scrollHeight;
+}
+
+function hideTyping() {
+    document.getElementById('typing-indicator')?.remove();
+}
+
+async function getResponse(userMsg) {
+    showTyping();
+    history.push({role:'user', content:userMsg});
+
+    const systemPrompt = `أنت مساعد ذكي لبوابة أولياء الأمور في المنظومة الرقمية لإدارة المدارس الكويتية.
+أنت تتحدث مع ولي أمر الطالب: ${studentName}.
+${studentContext}
+مدرسته: ${me.schoolName||''}
+أجب باللغة العربية الخليجية بشكل ودي وقصير. إذا سألك عن أرقام الغياب قدمها من البيانات المتاحة.
+للأسئلة العامة عن المدرسة أجب بشكل عام مفيد. لا تخترع معلومات غير موجودة.`;
+
+    try {
+        const analyzeAI = httpsCallable(fns, 'analyzeAttendance');
+        const result = await analyzeAI({
+            prompt: systemPrompt + '\n\nسؤال ولي الأمر: ' + userMsg
+        });
+        hideTyping();
+        const text = result.data?.text || 'عذراً، لم أستطع الإجابة. حاول مرة أخرى.';
+        history.push({role:'assistant', content:text});
+        addMsg(text, 'bot');
+    } catch(e) {
+        hideTyping();
+        addMsg('عذراً، حدث خطأ. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.', 'bot');
+    }
+}
+</script>
+</body>
+</html>

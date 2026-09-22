@@ -84,6 +84,14 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
     <div class="menu-item" data-tab="tab-rewards" onclick="window.switchTab('tab-rewards')"><i class="bi bi-star"></i> الحوافز</div>
     <div class="menu-item" data-tab="tab-meetings" onclick="window.switchTab('tab-meetings')"><i class="bi bi-journal-text"></i> محضر الاجتماع</div>
+    <div class="menu-item" data-tab="tab-calendar" onclick="window.switchTab('tab-calendar')"><i class="bi bi-calendar3"></i> تقويم المدرسة</div>
+  </div>
+  <div class="menu-divider"></div>
+
+  <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-bar-chart-fill" style="color:#d4920a;margin-left:6px"></i>التقارير المتقدمة</span><i class="bi bi-chevron-down sec-chev"></i></div>
+  <div class="menu-sec-body">
+    <div class="menu-item" data-tab="tab-class-compare" onclick="window.switchTab('tab-class-compare')"><i class="bi bi-bar-chart-fill"></i> مقارنة الفصول</div>
+    <div class="menu-item" data-tab="tab-semester-report" onclick="window.switchTab('tab-semester-report')"><i class="bi bi-file-earmark-text-fill"></i> تقرير نهاية الفصل</div>
   </div>
   <div class="menu-divider"></div>
 
@@ -180,6 +188,9 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
       </div>
     </div>
     <div id="tab-ai-insights" class="tab-content"></div>
+    <div id="tab-class-compare" class="tab-content"></div>
+    <div id="tab-calendar" class="tab-content"></div>
+    <div id="tab-semester-report" class="tab-content"></div>
   </div>
 </div>
 
@@ -256,6 +267,9 @@ var moduleMap={
     'tab-backup':{file:'./js/modules/backup_manager.js',init:'initBackupModule'},
     'tab-departments':{file:'./js/modules/departments.js',init:'initDepartmentsModule'},
     'tab-social':{file:'./js/modules/social.js',init:'initSocialModule'},
+    'tab-class-compare':{file:'./js/modules/class_compare.js',init:'initClassCompareModule'},
+    'tab-calendar':{file:'./js/modules/school_calendar.js',init:'initCalendarModule'},
+    'tab-semester-report':{file:'./js/modules/semester_report.js',init:'initSemesterReportModule'},
     'tab-ai-insights':{file:'./js/modules/ai_insights.js',init:'initAiInsightsModule'}
 };
 var loadedTabs=new Set();
