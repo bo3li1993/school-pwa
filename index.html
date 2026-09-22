@@ -14,329 +14,80 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
-:root {
-    --primary: #0b2545;
-    --accent:  #d4920a;
-    --sky:     #1a78c2;
-    --red:     #dc2626;
-    --green:   #16a34a;
-    --mid:     #6b7280;
-    --line:    #e5e7eb;
-    --off:     #f8f9fc;
-}
+:root{--primary:#0b2545;--accent:#d4920a;--sky:#1a78c2;--red:#dc2626;--green:#16a34a;--mid:#6b7280;--line:#e5e7eb;--off:#f8f9fc;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
+body{background:var(--primary);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;transition:background .5s;position:relative;overflow-x:hidden;}
+body::before{content:'';position:fixed;top:-120px;left:-120px;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none;}
+body::after{content:'';position:fixed;bottom:-80px;right:-80px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.03);pointer-events:none;}
+.login-card{background:#fff;border-radius:20px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.3);overflow:hidden;animation:slideUp .4s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+.login-header{background:var(--primary);padding:28px 28px 24px;text-align:center;position:relative;transition:background .5s;}
+.login-logo{width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;overflow:hidden;border:2px solid rgba(255,255,255,.2);}
+.login-logo img{width:100%;height:100%;object-fit:cover;}
+.login-logo i{font-size:28px;color:#fff;}
+.login-title{font-size:18px;font-weight:900;color:#fff;margin-bottom:4px;}
+.login-sub{font-size:12px;color:rgba(255,255,255,.65);font-weight:700;}
+.login-body{padding:28px;}
+.login-label{font-size:12px;font-weight:800;color:var(--mid);display:block;margin-bottom:6px;}
+.login-input,.login-select{width:100%;padding:13px 16px;border:2px solid var(--line);border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:700;color:#111;background:var(--off);outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:14px;text-align:right;}
+.login-input:focus,.login-select:focus{border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px rgba(11,37,69,.08);}
+.login-btn{width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;margin-bottom:8px;}
+.login-btn:hover{opacity:.92;transform:translateY(-1px);}
+.login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.back-btn{width:100%;padding:10px;background:transparent;color:var(--mid);border:2px solid var(--line);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
+.back-btn:hover{border-color:var(--primary);color:var(--primary);}
+.error-msg{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:700;margin-bottom:14px;display:none;text-align:center;}
+.error-msg.show{display:block;}
+.school-card{display:flex;align-items:center;gap:14px;padding:14px;border:2px solid var(--line);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .2s;background:#fff;}
+.school-card:hover{border-color:var(--primary);background:#f0f4ff;transform:translateX(-3px);}
+.school-card-logo{width:48px;height:48px;border-radius:10px;background:var(--off);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid var(--line);}
+.school-card-logo img{width:100%;height:100%;object-fit:cover;}
+.school-card-logo i{font-size:22px;color:var(--mid);}
+.school-card-info{flex:1;text-align:right;}
+.school-card-name{font-weight:900;font-size:14px;color:#111;margin-bottom:2px;}
+.school-card-region{font-size:12px;color:var(--mid);font-weight:700;}
+.school-card-arrow{color:var(--mid);font-size:18px;}
+.school-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;margin-top:3px;display:inline-block;}
+.badge-active{background:#f0fdf4;color:#16a34a;}
+.badge-expiring{background:#fffbeb;color:#d97706;}
+.badge-expired{background:#fef2f2;color:#dc2626;}
+.step-indicator{display:flex;align-items:center;justify-content:center;gap:8px;padding:0 28px 16px;}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:all .3s;}
+.step-dot.active{background:var(--primary);width:24px;border-radius:4px;}
+.search-bar{width:100%;padding:11px 16px;border:2px solid var(--line);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;background:var(--off);outline:none;margin-bottom:14px;text-align:right;transition:border-color .2s;}
+.search-bar:focus{border-color:var(--primary);background:#fff;}
+.loading-schools{text-align:center;padding:30px;color:var(--mid);font-weight:700;font-size:13px;}
+.login-footer{text-align:center;padding:0 28px 20px;}
+.login-footer a{font-size:12px;color:var(--mid);text-decoration:none;font-weight:700;}
+.login-footer a:hover{color:var(--primary);}
 
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; }
-
-body {
-    background: var(--primary);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    transition: background .5s;
-    position: relative;
-    overflow-x: hidden;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: -120px; left: -120px;
-    width: 400px; height: 400px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.04);
-    pointer-events: none;
-}
-
-body::after {
-    content: '';
-    position: fixed;
-    bottom: -80px; right: -80px;
-    width: 300px; height: 300px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.03);
-    pointer-events: none;
-}
-
-/* بطاقة الدخول */
-.login-card {
-    background: #fff;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 24px 64px rgba(0,0,0,.3);
-    overflow: hidden;
-    animation: slideUp .4s ease;
-}
-
-@keyframes slideUp {
-    from { opacity:0; transform:translateY(30px); }
-    to   { opacity:1; transform:translateY(0); }
-}
-
-/* هيدر البطاقة */
-.login-header {
-    background: var(--primary);
-    padding: 28px 28px 24px;
-    text-align: center;
-    position: relative;
-    transition: background .5s;
-}
-
-.login-logo {
-    width: 64px; height: 64px;
-    border-radius: 16px;
-    background: rgba(255,255,255,.15);
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 12px;
-    overflow: hidden;
-    border: 2px solid rgba(255,255,255,.2);
-}
-
-.login-logo img { width:100%; height:100%; object-fit:cover; }
-.login-logo i   { font-size:28px; color:#fff; }
-
-.login-title {
-    font-size: 18px;
-    font-weight: 900;
-    color: #fff;
-    margin-bottom: 4px;
-}
-
-.login-sub {
-    font-size: 12px;
-    color: rgba(255,255,255,.65);
-    font-weight: 700;
-}
-
-/* جسم البطاقة */
-.login-body { padding: 28px; }
-
-.login-label {
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--mid);
-    display: block;
-    margin-bottom: 6px;
-}
-
-.login-input, .login-select {
-    width: 100%;
-    padding: 13px 16px;
-    border: 2px solid var(--line);
-    border-radius: 10px;
-    font-family: 'Cairo',sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    color: #111;
-    background: var(--off);
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-    margin-bottom: 14px;
-    text-align: right;
-}
-
-.login-input:focus, .login-select:focus {
-    border-color: var(--primary);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(11,37,69,.08);
-}
-
-.login-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Cairo',sans-serif;
-    font-size: 15px;
-    font-weight: 900;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all .2s;
-    margin-bottom: 8px;
-}
-
-.login-btn:hover   { opacity:.92; transform:translateY(-1px); }
-.login-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
-
-.back-btn {
-    width: 100%;
-    padding: 10px;
-    background: transparent;
-    color: var(--mid);
-    border: 2px solid var(--line);
-    border-radius: 10px;
-    font-family: 'Cairo',sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .2s;
-}
-
-.back-btn:hover { border-color: var(--primary); color: var(--primary); }
-
-.error-msg {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #dc2626;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 14px;
-    display: none;
-    text-align: center;
-}
-.error-msg.show { display: block; }
-
-/* بطاقات المدارس */
-.school-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px;
-    border: 2px solid var(--line);
-    border-radius: 12px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all .2s;
-    background: #fff;
-}
-
-.school-card:hover {
-    border-color: var(--primary);
-    background: #f0f4ff;
-    transform: translateX(-3px);
-}
-
-.school-card-logo {
-    width: 48px; height: 48px;
-    border-radius: 10px;
-    background: var(--off);
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-    flex-shrink: 0;
-    border: 1px solid var(--line);
-}
-
-.school-card-logo img { width:100%; height:100%; object-fit:cover; }
-.school-card-logo i   { font-size:22px; color: var(--mid); }
-
-.school-card-info { flex: 1; text-align: right; }
-.school-card-name { font-weight: 900; font-size: 14px; color: #111; margin-bottom: 2px; }
-.school-card-region { font-size: 12px; color: var(--mid); font-weight: 700; }
-
-.school-card-arrow { color: var(--mid); font-size: 18px; }
-
-/* شارة الاشتراك */
-.school-badge {
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 5px;
-    margin-top: 3px;
-    display: inline-block;
-}
-.badge-active   { background: #f0fdf4; color: #16a34a; }
-.badge-expiring { background: #fffbeb; color: #d97706; }
-.badge-expired  { background: #fef2f2; color: #dc2626; }
-
-/* فاصل خطوات */
-.step-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 0 28px 16px;
-}
-
-.step-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--line);
-    transition: all .3s;
-}
-.step-dot.active { background: var(--primary); width: 24px; border-radius: 4px; }
-
-/* search bar */
-.search-bar {
-    width: 100%;
-    padding: 11px 16px;
-    border: 2px solid var(--line);
-    border-radius: 10px;
-    font-family: 'Cairo',sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    background: var(--off);
-    outline: none;
-    margin-bottom: 14px;
-    text-align: right;
-    transition: border-color .2s;
-}
-.search-bar:focus { border-color: var(--primary); background: #fff; }
-
-/* loading */
-.loading-schools {
-    text-align: center;
-    padding: 30px;
-    color: var(--mid);
-    font-weight: 700;
-    font-size: 13px;
-}
-
-/* footer */
-.login-footer {
-    text-align: center;
-    padding: 0 28px 20px;
-}
-.login-footer a {
-    font-size: 12px;
-    color: var(--mid);
-    text-decoration: none;
-    font-weight: 700;
-}
-.login-footer a:hover { color: var(--primary); }
+/* ===== خطوة اختيار نوع المستخدم ===== */
+.user-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.user-type-card{border:2px solid var(--line);border-radius:14px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;}
+.user-type-card:hover{border-color:var(--primary);background:#f0f4ff;transform:translateY(-2px);box-shadow:0 4px 16px rgba(11,37,69,.1);}
+.user-type-card.selected{border-color:var(--primary);background:#eef2ff;}
+.user-type-icon{font-size:36px;margin-bottom:10px;}
+.user-type-name{font-size:14px;font-weight:900;color:#111;margin-bottom:4px;}
+.user-type-desc{font-size:11px;color:var(--mid);font-weight:700;}
 
 /* lockdown */
-#lockdown-screen {
-    display: none;
-    position: fixed; inset: 0;
-    background: var(--primary);
-    z-index: 999;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-    text-align: center;
-    color: #fff;
-}
-#lockdown-screen.show { display: flex; }
+#lockdown-screen{display:none;position:fixed;inset:0;background:var(--primary);z-index:999;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;color:#fff;}
+#lockdown-screen.show{display:flex;}
 </style>
 </head>
 <body>
 
-<!-- شاشة الإغلاق -->
 <div id="lockdown-screen">
-    <div id="lock-icon" style="font-size:64px; margin-bottom:16px;">⛔</div>
-    <h2 id="lock-title" style="font-size:22px; font-weight:900; margin-bottom:10px;"></h2>
-    <p id="lock-msg" style="font-size:14px; color:rgba(255,255,255,.75); max-width:320px; line-height:1.7;"></p>
+    <div id="lock-icon" style="font-size:64px;margin-bottom:16px;">⛔</div>
+    <h2 id="lock-title" style="font-size:22px;font-weight:900;margin-bottom:10px;"></h2>
+    <p id="lock-msg" style="font-size:14px;color:rgba(255,255,255,.75);max-width:320px;line-height:1.7;"></p>
 </div>
 
-<!-- البطاقة الرئيسية -->
 <div class="login-card" id="main-card">
 
     <!-- هيدر -->
     <div class="login-header" id="login-header">
-        <div class="login-logo" id="school-logo">
-            <i class="bi bi-building-fill-check"></i>
-        </div>
+        <div class="login-logo" id="school-logo"><i class="bi bi-building-fill-check"></i></div>
         <div class="login-title" id="school-name">المنظومة الرقمية</div>
         <div class="login-sub" id="school-sub">نظام إدارة المدارس المتكامل</div>
     </div>
@@ -345,64 +96,101 @@ body::after {
     <div class="step-indicator" id="step-indicator">
         <div class="step-dot active" id="dot-1"></div>
         <div class="step-dot" id="dot-2"></div>
+        <div class="step-dot" id="dot-3"></div>
     </div>
 
     <!-- ===== الخطوة 1: اختيار المدرسة ===== -->
     <div id="step-school" class="login-body" style="padding-top:0;">
-        <p style="font-size:13px; font-weight:700; color:var(--mid); margin-bottom:14px; text-align:center;">
+        <p style="font-size:13px;font-weight:700;color:var(--mid);margin-bottom:14px;text-align:center;">
             <i class="bi bi-search"></i> اختر مدرستك للمتابعة
         </p>
-
         <input type="text" class="search-bar" id="school-search"
             placeholder="🔍 ابحث عن مدرستك..."
             oninput="window.filterSchools(this.value)">
-
         <div id="schools-list">
             <div class="loading-schools">
-                <i class="bi bi-hourglass-split" style="font-size:24px; display:block; margin-bottom:8px;"></i>
+                <i class="bi bi-hourglass-split" style="font-size:24px;display:block;margin-bottom:8px;"></i>
                 جاري تحميل المدارس...
             </div>
         </div>
     </div>
 
-    <!-- ===== الخطوة 2: الدخول ===== -->
-    <div id="step-login" class="login-body" style="display:none; padding-top:0;">
-        <div id="error-msg" class="error-msg"></div>
+    <!-- ===== الخطوة 2: اختيار نوع المستخدم ===== -->
+    <div id="step-usertype" class="login-body" style="display:none;padding-top:0;">
+        <p style="font-size:13px;font-weight:700;color:var(--mid);margin-bottom:16px;text-align:center;">
+            من أنت في <span id="selected-school-name" style="color:var(--primary)"></span>؟
+        </p>
+        <div class="user-type-grid">
+            <div class="user-type-card" onclick="window.selectUserType('staff')">
+                <div class="user-type-icon">👨‍💼</div>
+                <div class="user-type-name">موظف / إداري</div>
+                <div class="user-type-desc">مدير، معلم، إداري</div>
+            </div>
+            <div class="user-type-card" onclick="window.selectUserType('parent')">
+                <div class="user-type-icon">👨‍👩‍👧</div>
+                <div class="user-type-name">ولي الأمر</div>
+                <div class="user-type-desc">متابعة بيانات ابنك</div>
+            </div>
+        </div>
+        <button class="back-btn" onclick="window.goBackToSchool()">
+            <i class="bi bi-arrow-right"></i> العودة لاختيار المدرسة
+        </button>
+    </div>
 
-        <label class="login-label" for="inp-id">
-            <i class="bi bi-person-badge-fill"></i> معرّف المستخدم
-        </label>
-        <input type="text" id="inp-id" class="login-input"
-            placeholder="أدخل رقمك أو اسم المستخدم"
+    <!-- ===== الخطوة 3أ: دخول الموظف ===== -->
+    <div id="step-staff" class="login-body" style="display:none;padding-top:0;">
+        <div id="error-msg-staff" class="error-msg"></div>
+        <label class="login-label"><i class="bi bi-person-badge-fill"></i> معرّف المستخدم</label>
+        <input type="text" id="inp-id" class="login-input" placeholder="أدخل رقمك أو اسم المستخدم"
             autocomplete="username" autocapitalize="off" spellcheck="false">
-
-        <label class="login-label" for="inp-pass">
-            <i class="bi bi-lock-fill"></i> كلمة المرور
-        </label>
-        <div style="position:relative; margin-bottom:14px;">
-            <input type="password" id="inp-pass" class="login-input"
-                placeholder="••••••••"
-                autocomplete="current-password"
-                style="margin-bottom:0; padding-left:46px;"
+        <label class="login-label"><i class="bi bi-lock-fill"></i> كلمة المرور</label>
+        <div style="position:relative;margin-bottom:14px;">
+            <input type="password" id="inp-pass" class="login-input" placeholder="••••••••"
+                autocomplete="current-password" style="margin-bottom:0;padding-left:46px;"
                 onkeydown="if(event.key==='Enter') window.doLogin()">
             <button type="button" onclick="window.togglePass()"
-                style="position:absolute; left:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--mid); font-size:18px;">
+                style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mid);font-size:18px;">
                 <i class="bi bi-eye-fill" id="pass-eye"></i>
             </button>
         </div>
-
         <button class="login-btn" id="login-btn" onclick="window.doLogin()">
             <i class="bi bi-shield-lock-fill"></i> دخول
         </button>
+        <button class="back-btn" onclick="window.goBackToType()">
+            <i class="bi bi-arrow-right"></i> العودة
+        </button>
+    </div>
 
-        <button class="back-btn" onclick="window.goBack()">
-            <i class="bi bi-arrow-right"></i> العودة لاختيار المدرسة
+    <!-- ===== الخطوة 3ب: دخول ولي الأمر ===== -->
+    <div id="step-parent" class="login-body" style="display:none;padding-top:0;">
+        <div id="error-msg-parent" class="error-msg"></div>
+        <label class="login-label"><i class="bi bi-phone-fill"></i> رقم الهاتف</label>
+        <input type="tel" id="inp-parent-phone" class="login-input" placeholder="مثال: 65012345"
+            inputmode="numeric" maxlength="8" dir="ltr">
+        <label class="login-label"><i class="bi bi-lock-fill"></i> كلمة المرور</label>
+        <div style="position:relative;margin-bottom:14px;">
+            <input type="password" id="inp-parent-pass" class="login-input" placeholder="••••••••"
+                autocomplete="current-password" style="margin-bottom:0;padding-left:46px;"
+                onkeydown="if(event.key==='Enter') window.doParentLogin()">
+            <button type="button" onclick="window.toggleParentPass()"
+                style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mid);font-size:18px;">
+                <i class="bi bi-eye-fill" id="parent-pass-eye"></i>
+            </button>
+        </div>
+        <button class="login-btn" id="parent-login-btn" onclick="window.doParentLogin()">
+            <i class="bi bi-shield-lock-fill"></i> دخول
+        </button>
+        <button class="login-btn" style="background:var(--green);margin-bottom:8px"
+            onclick="window.location.href='register-parent.html?school='+(selectedSchool?.id||'')">
+            <i class="bi bi-person-plus-fill"></i> تسجيل لأول مرة
+        </button>
+        <button class="back-btn" onclick="window.goBackToType()">
+            <i class="bi bi-arrow-right"></i> العودة
         </button>
     </div>
 
     <div class="login-footer">
         <a href="privacy.html">سياسة الخصوصية</a>
-        
     </div>
 </div>
 
@@ -415,61 +203,48 @@ import { getFunctions, httpsCallable }
 import { signInWithCustomToken }
     from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
-const functions   = getFunctions(auth.app, 'me-central1');
-const loginUserFn = httpsCallable(functions, 'loginUser');
+const functions    = getFunctions(auth.app, 'me-central1');
+const loginUserFn  = httpsCallable(functions, 'loginUser');
+const loginParentFn = httpsCallable(functions, 'loginParent');
 
-// ===== حالة التطبيق =====
 var selectedSchool = null;
 var allSchools = [];
+var userType = null; // 'staff' | 'parent'
 
-// ===== تحميل المدارس =====
+// ══ تحميل المدارس ══
 async function loadSchools() {
     var listEl = document.getElementById('schools-list');
     try {
-        var snap = await getDocs(query(collection(db, 'schools')));
-        allSchools = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-            .filter(s => s.status !== 'deleted')
-            .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ar'));
-
+        var snap = await getDocs(query(collection(db,'schools')));
+        allSchools = snap.docs.map(d=>({id:d.id,...d.data()}))
+            .filter(s=>s.status!=='deleted')
+            .sort((a,b)=>(a.name||'').localeCompare(b.name||'','ar'));
         renderSchools(allSchools);
     } catch(e) {
-        listEl.innerHTML = `<div style="text-align:center; color:#dc2626; padding:20px; font-weight:700;">❌ تعذر تحميل المدارس</div>`;
+        listEl.innerHTML = '<div style="text-align:center;color:#dc2626;padding:20px;font-weight:700;">❌ تعذر تحميل المدارس</div>';
     }
 }
 
 function renderSchools(schools) {
     var listEl = document.getElementById('schools-list');
-    if (!schools.length) {
-        listEl.innerHTML = '<div class="loading-schools">لا توجد مدارس مطابقة</div>';
-        return;
-    }
-
-    listEl.innerHTML = schools.map(s => {
-        var today = new Date().toISOString().slice(0,10);
-        var expiry = s.subscriptionEnd || '';
-        var daysLeft = expiry ? Math.ceil((new Date(expiry) - new Date()) / 86400000) : 999;
-        var badge = '';
-        if (s.status === 'suspended') {
-            badge = '<span class="school-badge badge-expired">موقوفة</span>';
-        } else if (daysLeft <= 30 && daysLeft > 0) {
-            badge = `<span class="school-badge badge-expiring">تنتهي خلال ${daysLeft} يوم</span>`;
-        } else if (daysLeft <= 0) {
-            badge = '<span class="school-badge badge-expired">انتهى الاشتراك</span>';
-        } else {
-            badge = '<span class="school-badge badge-active">نشطة</span>';
-        }
-
-        return `
-        <div class="school-card" onclick="window.selectSchool('${s.id}')">
+    if(!schools.length){ listEl.innerHTML='<div class="loading-schools">لا توجد مدارس مطابقة</div>'; return; }
+    listEl.innerHTML = schools.map(s=>{
+        var daysLeft = s.subscriptionEnd ? Math.ceil((new Date(s.subscriptionEnd)-new Date())/86400000) : 999;
+        var badge = s.status==='suspended'
+            ? '<span class="school-badge badge-expired">موقوفة</span>'
+            : daysLeft<=30&&daysLeft>0
+                ? `<span class="school-badge badge-expiring">تنتهي خلال ${daysLeft} يوم</span>`
+                : daysLeft<=0
+                    ? '<span class="school-badge badge-expired">انتهى الاشتراك</span>'
+                    : '<span class="school-badge badge-active">نشطة</span>';
+        return `<div class="school-card" onclick="window.selectSchool('${s.id}')">
             <div class="school-card-logo">
-                ${s.logoUrl
-                    ? `<img src="${s.logoUrl}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-                    : ''}
-                <i class="bi bi-building" ${s.logoUrl ? 'style="display:none"' : ''}></i>
+                ${s.logoUrl?`<img src="${s.logoUrl}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:'' }
+                <i class="bi bi-building" ${s.logoUrl?'style="display:none"':''}></i>
             </div>
             <div class="school-card-info">
-                <div class="school-card-name">${s.name || s.id}</div>
-                <div class="school-card-region">${s.region || 'وزارة التربية — الكويت'}</div>
+                <div class="school-card-name">${s.name||s.id}</div>
+                <div class="school-card-region">${s.region||'وزارة التربية — الكويت'}</div>
                 ${badge}
             </div>
             <i class="bi bi-chevron-left school-card-arrow"></i>
@@ -477,201 +252,179 @@ function renderSchools(schools) {
     }).join('');
 }
 
-window.filterSchools = function(query) {
-    var filtered = allSchools.filter(s =>
-        (s.name || '').includes(query) ||
-        (s.region || '').includes(query) ||
-        s.id.includes(query.toLowerCase())
-    );
-    renderSchools(filtered);
+window.filterSchools = function(q) {
+    renderSchools(allSchools.filter(s=>(s.name||'').includes(q)||(s.region||'').includes(q)||s.id.includes(q.toLowerCase())));
 };
 
-// ===== اختيار المدرسة =====
-window.selectSchool = async function(schoolId) {
-    var school = allSchools.find(s => s.id === schoolId);
-    if (!school) return;
-
-    // تحقق من حالة المدرسة
-    if (school.status === 'suspended') {
-        showLockdown('⛔', 'الحساب موقوف', 'تم إيقاف حساب هذه المدرسة. يرجى التواصل مع الدعم الفني لتجديد الاشتراك.');
-        return;
-    }
-
+// ══ اختيار المدرسة ← الخطوة 2 ══
+window.selectSchool = function(schoolId) {
+    var school = allSchools.find(s=>s.id===schoolId);
+    if(!school) return;
+    if(school.status==='suspended'){ showLockdown('⛔','الحساب موقوف','تم إيقاف حساب هذه المدرسة. يرجى التواصل مع الدعم الفني.'); return; }
     var today = new Date().toISOString().slice(0,10);
-    if (school.subscriptionEnd && school.subscriptionEnd < today) {
-        showLockdown('⏰', 'انتهى الاشتراك', 'انتهت مدة اشتراك هذه المدرسة. يرجى التواصل مع الدعم الفني للتجديد.');
-        return;
-    }
+    if(school.subscriptionEnd && school.subscriptionEnd<today){ showLockdown('⏰','انتهى الاشتراك','يرجى التواصل مع الدعم الفني للتجديد.'); return; }
 
     selectedSchool = school;
+    localStorage.setItem('hs_last_school', schoolId);
 
     // تحديث الهيدر
-    document.getElementById('school-name').textContent = school.name || school.id;
-    document.getElementById('school-sub').textContent = school.region || 'وزارة التربية — الكويت';
-    if (school.primaryColor) {
-        document.documentElement.style.setProperty('--primary', school.primaryColor);
+    document.getElementById('school-name').textContent = school.name||school.id;
+    document.getElementById('school-sub').textContent = school.region||'وزارة التربية — الكويت';
+    document.getElementById('selected-school-name').textContent = school.name||school.id;
+    if(school.primaryColor){
+        document.documentElement.style.setProperty('--primary',school.primaryColor);
         document.getElementById('login-header').style.background = school.primaryColor;
     }
-    if (school.logoUrl) {
-        document.getElementById('school-logo').innerHTML = `<img src="${school.logoUrl}" alt="${school.name}">`;
-    }
+    if(school.logoUrl) document.getElementById('school-logo').innerHTML=`<img src="${school.logoUrl}" alt="${school.name}">`;
     document.title = `دخول | ${school.name}`;
 
-    // الانتقال للخطوة 2
-    document.getElementById('step-school').style.display = 'none';
-    document.getElementById('step-login').style.display = 'block';
-    document.getElementById('dot-1').classList.remove('active');
-    document.getElementById('dot-2').classList.add('active');
-    document.getElementById('inp-id').focus();
-
-    // حفظ المدرسة المختارة
-    localStorage.setItem('hs_last_school', schoolId);
+    showStep('step-usertype', 2);
 };
 
-// ===== العودة =====
-window.goBack = function() {
-    selectedSchool = null;
-    document.getElementById('step-school').style.display = 'block';
-    document.getElementById('step-login').style.display = 'none';
-    document.getElementById('dot-1').classList.add('active');
-    document.getElementById('dot-2').classList.remove('active');
-    document.getElementById('error-msg').classList.remove('show');
-    document.getElementById('inp-id').value = '';
-    document.getElementById('inp-pass').value = '';
+// ══ اختيار نوع المستخدم ← الخطوة 3 ══
+window.selectUserType = function(type) {
+    userType = type;
+    if(type==='staff') showStep('step-staff', 3);
+    else showStep('step-parent', 3);
+};
 
-    // إعادة الهيدر للوضع الافتراضي
+// ══ العودة ══
+window.goBackToSchool = function() {
+    selectedSchool = null;
     document.getElementById('school-name').textContent = 'المنظومة الرقمية';
     document.getElementById('school-sub').textContent = 'نظام إدارة المدارس المتكامل';
     document.getElementById('login-header').style.background = '';
-    document.documentElement.style.setProperty('--primary', '#0b2545');
-    document.getElementById('school-logo').innerHTML = '<i class="bi bi-building-fill-check"></i>';
+    document.documentElement.style.setProperty('--primary','#0b2545');
+    document.getElementById('school-logo').innerHTML='<i class="bi bi-building-fill-check"></i>';
     document.title = 'المنظومة الرقمية | تسجيل الدخول';
+    showStep('step-school', 1);
 };
 
-// ===== إظهار/إخفاء كلمة المرور =====
-window.togglePass = function() {
-    var input = document.getElementById('inp-pass');
-    var eye = document.getElementById('pass-eye');
-    if (input.type === 'password') {
-        input.type = 'text';
-        eye.className = 'bi bi-eye-slash-fill';
-    } else {
-        input.type = 'password';
-        eye.className = 'bi bi-eye-fill';
-    }
+window.goBackToType = function() {
+    document.getElementById('inp-id').value = '';
+    document.getElementById('inp-pass').value = '';
+    document.getElementById('inp-parent-phone').value = '';
+    document.getElementById('inp-parent-pass').value = '';
+    document.getElementById('error-msg-staff').classList.remove('show');
+    document.getElementById('error-msg-parent').classList.remove('show');
+    showStep('step-usertype', 2);
 };
 
-// ===== تسجيل الدخول =====
+function showStep(stepId, dotNum) {
+    ['step-school','step-usertype','step-staff','step-parent'].forEach(id=>{
+        var el = document.getElementById(id);
+        if(el) el.style.display = id===stepId ? 'block' : 'none';
+    });
+    [1,2,3].forEach(i=>{
+        var dot = document.getElementById('dot-'+i);
+        if(dot) dot.classList.toggle('active', i<=dotNum);
+    });
+    // Focus
+    if(stepId==='step-staff') setTimeout(()=>document.getElementById('inp-id')?.focus(), 100);
+    if(stepId==='step-parent') setTimeout(()=>document.getElementById('inp-parent-phone')?.focus(), 100);
+}
+
+// ══ إخفاء/إظهار كلمة المرور ══
+window.togglePass = function(){
+    var i=document.getElementById('inp-pass'), e=document.getElementById('pass-eye');
+    i.type=i.type==='password'?'text':'password';
+    e.className=i.type==='password'?'bi bi-eye-fill':'bi bi-eye-slash-fill';
+};
+window.toggleParentPass = function(){
+    var i=document.getElementById('inp-parent-pass'), e=document.getElementById('parent-pass-eye');
+    i.type=i.type==='password'?'text':'password';
+    e.className=i.type==='password'?'bi bi-eye-fill':'bi bi-eye-slash-fill';
+};
+
+// ══ دخول الموظف ══
 window.doLogin = async function() {
     var id   = document.getElementById('inp-id').value.trim();
     var pass = document.getElementById('inp-pass').value.trim();
     var btn  = document.getElementById('login-btn');
-    var err  = document.getElementById('error-msg');
-
+    var err  = document.getElementById('error-msg-staff');
     err.classList.remove('show');
-
-    if (!selectedSchool) {
-        err.textContent = '⚠️ يرجى اختيار المدرسة أولاً';
-        err.classList.add('show'); return;
-    }
-
-    if (!id || !pass) {
-        err.textContent = '⚠️ أدخل رقم المستخدم وكلمة المرور';
-        err.classList.add('show'); return;
-    }
-
-    btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري التحقق...';
-
+    if(!id||!pass){ err.textContent='⚠️ أدخل المعرّف وكلمة المرور'; err.classList.add('show'); return; }
+    btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> جاري التحقق...';
     try {
-        var result   = await loginUserFn({ schoolId: selectedSchool.id, userId: id, password: pass });
+        var result = await loginUserFn({schoolId:selectedSchool.id, userId:id, password:pass});
         var userData = result.data;
-
-        if (userData.schoolId !== selectedSchool.id) {
-            throw { code: 'school-mismatch' };
-        }
-
-        // حفظ بيانات المستخدم
         localStorage.setItem('hs_user', JSON.stringify({
-            uid: userData.userId,
-            name: userData.name,
-            role: userData.role,
-            schoolId: userData.schoolId,
-            schoolName: selectedSchool.name,
-            department: userData.department || ''
+            uid:userData.userId, name:userData.name, role:userData.role,
+            schoolId:userData.schoolId, schoolName:selectedSchool.name, department:userData.department||''
         }));
-
-        // تسجيل الدخول بـ Firebase
         await signInWithCustomToken(auth, userData.token);
-
-        // التوجيه حسب الدور
-        var rolePages = {
-            admin: 'admin.html', assistant_manager: 'admin.html',
-            wing_supervisor: 'admin.html', department_head: 'department_head.html',
-            social_worker: 'social.html', nurse: 'nurse.html',
-            guard: 'guard.html', teacher: 'teacher.html',
-            parent: 'parent.html'
-        };
-
-        var page = rolePages[userData.role] || 'admin.html';
-        window.location.replace(page);
-
+        var pages = {admin:'admin.html',assistant_manager:'admin.html',wing_supervisor:'admin.html',
+            department_head:'department_head.html',social_worker:'social.html',nurse:'nurse.html',
+            guard:'guard.html',teacher:'teacher.html',secretary:'secretary.html'};
+        window.location.replace(pages[userData.role]||'admin.html');
     } catch(e) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-shield-lock-fill"></i> دخول';
-
+        btn.disabled=false; btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> دخول';
         var msg = '❌ حدث خطأ غير متوقع';
-        if (e.code === 'school-mismatch') msg = '❌ هذا المستخدم لا ينتمي لهذه المدرسة';
-        else if (e.message?.includes('unauthenticated') || e.message?.includes('401')) msg = '❌ كلمة المرور أو المعرّف غير صحيح';
-        else if (e.message?.includes('resource-exhausted') || e.message?.includes('429')) msg = '⏳ تم تجاوز عدد المحاولات — انتظر 15 دقيقة';
-        else if (e.message?.includes('locked')) msg = '🔒 الحساب مقفل مؤقتاً — انتظر 15 دقيقة';
-        else if (e.message?.includes('network') || e.message?.includes('fetch')) msg = '📡 تحقق من الاتصال بالإنترنت';
-
-        err.textContent = msg;
-        err.classList.add('show');
+        if(e.message?.includes('unauthenticated')||e.message?.includes('401')) msg='❌ كلمة المرور أو المعرّف غير صحيح';
+        else if(e.message?.includes('resource-exhausted')||e.message?.includes('429')) msg='⏳ تجاوزت عدد المحاولات — انتظر 15 دقيقة';
+        else if(e.message?.includes('locked')) msg='🔒 الحساب مقفل مؤقتاً';
+        else if(e.message?.includes('network')) msg='📡 تحقق من الاتصال بالإنترنت';
+        err.textContent=msg; err.classList.add('show');
     }
 };
 
-// ===== شاشة الإغلاق =====
-function showLockdown(icon, title, msg) {
-    document.getElementById('lock-icon').textContent = icon;
-    document.getElementById('lock-title').textContent = title;
-    document.getElementById('lock-msg').textContent = msg;
+// ══ دخول ولي الأمر ══
+window.doParentLogin = async function() {
+    var phone = document.getElementById('inp-parent-phone').value.trim();
+    var pass  = document.getElementById('inp-parent-pass').value.trim();
+    var btn   = document.getElementById('parent-login-btn');
+    var err   = document.getElementById('error-msg-parent');
+    err.classList.remove('show');
+    if(!phone||!pass){ err.textContent='⚠️ أدخل رقم الهاتف وكلمة المرور'; err.classList.add('show'); return; }
+    if(phone.length<7){ err.textContent='⚠️ رقم الهاتف غير صحيح'; err.classList.add('show'); return; }
+    btn.disabled=true; btn.innerHTML='<i class="bi bi-hourglass-split"></i> جاري التحقق...';
+    try {
+        var result = await loginParentFn({schoolId:selectedSchool.id, phone:'965'+phone, password:pass});
+        var data = result.data;
+        localStorage.setItem('hs_parent', JSON.stringify({
+            ...data, schoolName:selectedSchool.name, schoolId:selectedSchool.id
+        }));
+        if(data.token) await signInWithCustomToken(auth, data.token);
+        window.location.replace('parent.html');
+    } catch(e) {
+        btn.disabled=false; btn.innerHTML='<i class="bi bi-shield-lock-fill"></i> دخول';
+        var msg = '❌ حدث خطأ غير متوقع';
+        if(e.message?.includes('unauthenticated')||e.message?.includes('not-found')) msg='❌ رقم الهاتف أو كلمة المرور غير صحيحة';
+        else if(e.message?.includes('network')) msg='📡 تحقق من الاتصال بالإنترنت';
+        err.textContent=msg; err.classList.add('show');
+    }
+};
+
+// ══ شاشة الإغلاق ══
+function showLockdown(icon,title,msg){
+    document.getElementById('lock-icon').textContent=icon;
+    document.getElementById('lock-title').textContent=title;
+    document.getElementById('lock-msg').textContent=msg;
     document.getElementById('lockdown-screen').classList.add('show');
 }
 
-// ===== تحميل أولي =====
-// إذا عنده مدرسة محفوظة، نبدأ فيها مباشرة
-var lastSchool = localStorage.getItem('hs_last_school');
-
-loadSchools().then(() => {
-    if (lastSchool) {
-        var school = allSchools.find(s => s.id === lastSchool);
-        if (school && school.status !== 'suspended') {
-            // تحديد المدرسة المحفوظة بصرياً
-            setTimeout(() => {
-                var cards = document.querySelectorAll('.school-card');
-                cards.forEach(card => {
-                    if (card.getAttribute('onclick').includes(lastSchool)) {
-                        card.style.borderColor = 'var(--primary)';
-                        card.style.background = '#f0f4ff';
+// ══ تحميل أولي ══
+loadSchools().then(()=>{
+    var lastSchool = localStorage.getItem('hs_last_school');
+    if(lastSchool){
+        var school = allSchools.find(s=>s.id===lastSchool);
+        if(school&&school.status!=='suspended'){
+            setTimeout(()=>{
+                document.querySelectorAll('.school-card').forEach(card=>{
+                    if(card.getAttribute('onclick')?.includes(lastSchool)){
+                        card.style.borderColor='var(--primary)';
+                        card.style.background='#f0f4ff';
                     }
                 });
-            }, 100);
+            },100);
         }
     }
+    var urlParams=new URLSearchParams(window.location.search);
+    var schoolFromUrl=urlParams.get('school')?.trim().toLowerCase();
+    if(schoolFromUrl) window.selectSchool(schoolFromUrl);
 });
 
-// دعم الدخول بـ ?school=xxx من الروابط القديمة
-var urlParams = new URLSearchParams(window.location.search);
-var schoolFromUrl = urlParams.get('school')?.trim().toLowerCase();
-if (schoolFromUrl) {
-    loadSchools().then(() => {
-        window.selectSchool(schoolFromUrl);
-    });
-}
-
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
 </html>
