@@ -284,6 +284,7 @@ exports.createUser = onCall({ cors: CORS, region: REGION }, async (req) => {
       classId: classId || "",
       department: department || "",
       status: "active",
+      tokenVersion: 1,
       createdAt: FieldValue.serverTimestamp()
     });
     const secretRef = db.collection("user_secrets").doc(userRef.id);
