@@ -1,5 +1,5 @@
 import { db, getActiveSchoolId, getTodayISO } from '../firebase-config.js';
-import { collection, addDoc, query, where, serverTimestamp, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { collection, addDoc, getDocs, query, where, serverTimestamp, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
 // ══ onSnapshot cleanup ══
 let _behaviorUnsubs = [];
