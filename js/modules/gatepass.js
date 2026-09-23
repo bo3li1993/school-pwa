@@ -190,18 +190,27 @@ async function loadGatepassLogsLive(filterDate) {
     tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;">لا يوجد استئذان اليوم.</td></tr>';
 }
 // ===== طباعة السجل =====
-window.printGatepassPDF = async function() {
+window.printGatepassPDF = function() {
     var tbody = document.getElementById('gatepass-logs-tbody');
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للتصدير', 'info'); return; }
-    var contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
-    await window.ManzoumaReport.exportPDF(contentHTML, 'سجل_تصاريح_الاستئذان', 'سجل تصاريح الاستئذان');
+    var user = JSON.parse(localStorage.getItem('hs_user')||'{}');
+    var contentHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#0b2545;color:#fff"><th style="padding:8px">الطالب</th><th style="padding:8px">الفصل</th><th style="padding:8px">السبب</th><th style="padding:8px">المستلم</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
+    var html = '<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet"><style>body{font-family:Cairo,sans-serif;direction:rtl;padding:16px;font-size:12px}table{width:100%;border-collapse:collapse}th{background:#0b2545;color:#fff;padding:8px;text-align:right}td{padding:7px;border:1px solid #ddd}@page{size:A4;margin:10mm}</style></head><body>'
+        + '<div style="border-bottom:3px solid #0b2545;margin-bottom:14px;padding-bottom:10px;display:flex;justify-content:space-between"><div style="font-size:11px">دولة الكويت<br>وزارة التربية</div><div style="text-align:center;font-size:15px;font-weight:900;color:#0b2545">سجل تصاريح الاستئذان</div><div style="font-size:11px;text-align:left">' + (user.schoolName||'') + '<br>' + new Date().toLocaleDateString('ar-KW') + '</div></div>'
+        + contentHTML + '<script>setTimeout(()=>window.print(),500)<\/script></body></html>';
+    var b = new Blob([html],{type:'text/html;charset=utf-8'});
+    window.open(URL.createObjectURL(b),'_blank');
 };
 
 window.printGatepassDirect = function() {
     var tbody = document.getElementById('gatepass-logs-tbody');
     if(!tbody || !tbody.innerHTML.trim()) { window.showToast('⚠️ لا توجد بيانات للطباعة', 'info'); return; }
-    var contentHTML = `<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th><th>الحالة</th></tr></thead><tbody>${tbody.innerHTML}</tbody></table>`;
-    window.ManzoumaReport.printDirect(contentHTML, 'سجل تصاريح الاستئذان');
+    if(window.ManzoumaReport) {
+        var contentHTML = '<table><thead><tr><th>الطالب</th><th>الفصل</th><th>السبب</th><th>المستلم</th></tr></thead><tbody>' + tbody.innerHTML + '</tbody></table>';
+        window.ManzoumaReport.printDirect(contentHTML, 'سجل تصاريح الاستئذان');
+    } else {
+        window.printGatepassPDF();
+    }
 };
 
 // ===== واتساب — إبلاغ ولي الأمر بالاستئذان =====
