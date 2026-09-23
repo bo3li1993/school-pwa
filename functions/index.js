@@ -137,7 +137,8 @@ const SH = (process.env.SUPER_ADMIN_HASH || "").trim();    if (!SH) throw new Ht
     const token = await admin.auth().createCustomToken("superadmin", {
       role: "superadmin",
       schoolId: "system",
-      superadmin: true
+      superadmin: true,
+      tokenVersion: 1
     });
     return { token, role: "superadmin", schoolId: "system", name: "Super Admin", userId: "superadmin" };
   }
@@ -733,6 +734,9 @@ exports.updateUserStatus = onCall({ cors: CORS, region: REGION }, async (req) =>
   const userRef = db.collection("users").doc(docId);
   const userDoc = await userRef.get();
   if (!userDoc.exists) throw new HttpsError("not-found", "user not found");
+  const RR={superadmin:99,admin:80,assistant_manager:70,wing_supervisor:60,department_head:50,teacher:40,social_worker:30,nurse:30,guard:20,secretary:25};
+  const tr=userDoc.data().role||"teacher";
+  if(caller.role!=="superadmin"&&(RR[tr]||0)>=(RR[caller.role]||0)){throw new HttpsError("permission-denied","cannot modify user with equal or higher role");}
   const currentVersion = userDoc.data().tokenVersion || 1;
   await userRef.update({
     status,
@@ -845,108 +849,6 @@ exports.promoteStudents = onCall({ cors: CORS, region: REGION }, async (req) => 
   } catch (error) {
     if (error instanceof HttpsError) throw error;
     throw new HttpsError("internal", error.message || "ظپط´ظ„ ظپظٹ طھظ†ظپظٹط° ط§ظ„طھط±ط­ظٹظ„.");
-  }
-});
-
-
-// ===== analyzeAttendance — تحليل الغياب بالذكاء الاصطناعي =====
-// أضف هذا الكود في نهاية functions/index.js قبل scheduledDailyBackup
-// ثم أضف في Firebase Secrets: GROQ_API_KEY
-
-exports.analyzeAttendance = onCall({
-  cors: CORS,
-  region: REGION,
-  secrets: ["GROQ_API_KEY"]
-}, async (req) => {
-  const caller = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
-
-  const { prompt } = req.data;
-  if (!prompt || typeof prompt !== "string" || prompt.length > 5000) {
-    throw new HttpsError("invalid-argument", "prompt غير صالح.");
-  }
-
-  const apiKey = (process.env.GROQ_API_KEY || "").trim();
-  if (!apiKey) {
-    throw new HttpsError("internal", "مفتاح API غير مضبوط.");
-  }
-
-  try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + apiKey,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error("API error: " + response.status);
-    }
-
-    const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "لم يتم الحصول على نتيجة";
-
-    return { text };
-
-  } catch (error) {
-    throw new HttpsError("internal", error.message || "فشل التحليل.");
-  }
-});
-
-
-// ===== analyzeAttendance — تحليل الغياب بالذكاء الاصطناعي =====
-// أضف هذا الكود في نهاية functions/index.js قبل scheduledDailyBackup
-// ثم أضف في Firebase Secrets: GROQ_API_KEY
-
-exports.analyzeAttendance = onCall({
-  cors: CORS,
-  region: REGION,
-  secrets: ["GROQ_API_KEY"]
-}, async (req) => {
-  const caller = await requireAuth(req, ["admin", "assistant_manager", "superadmin"]);
-
-  const { prompt } = req.data;
-  if (!prompt || typeof prompt !== "string" || prompt.length > 5000) {
-    throw new HttpsError("invalid-argument", "prompt غير صالح.");
-  }
-
-  const apiKey = (process.env.GROQ_API_KEY || "").trim();
-  if (!apiKey) {
-    throw new HttpsError("internal", "مفتاح API غير مضبوط.");
-  }
-
-  try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + apiKey,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error("API error: " + response.status);
-    }
-
-    const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "لم يتم الحصول على نتيجة";
-
-    return { text };
-
-  } catch (error) {
-    throw new HttpsError("internal", error.message || "فشل التحليل.");
   }
 });
 
