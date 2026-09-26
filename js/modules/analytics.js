@@ -1,7 +1,7 @@
 import { db, getActiveSchoolId } from "../firebase-config.js";
 import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-export async function initAdvancedAnalytics() {
+export async function initAnalyticsModule() {
     var container = document.getElementById("tab-analytics");
     if (!container) return;
 
