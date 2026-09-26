@@ -101,7 +101,7 @@ export async function initAnalyticsModule() {
 
 window.loadAnalyticsData = async function() {
     var schoolId = getActiveSchoolId();
-    var monthVal = document.getElementById("analytics-month").value;
+    var monthEl = document.getElementById("analytics-month"); if(!monthEl) return; var monthVal = monthEl.value;
     if (!monthVal) return;
 
     var fromDate = monthVal + "-01";
