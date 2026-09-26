@@ -38,7 +38,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
   <div class="menu-divider"></div>
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-people-fill" style="color:var(--sky);margin-left:6px"></i>الطلاب</span><i class="bi bi-chevron-down sec-chev"></i></div>
-  <div class="menu-sec-body">
+  <div class="menu-sec-body closed" style="max-height:0;overflow:hidden">
     <div class="menu-item" data-tab="tab-student" onclick="window.switchTab('tab-student')"><i class="bi bi-person-lines-fill"></i> ملف الطالب</div>
     <div class="menu-item" data-tab="tab-students-manage" onclick="window.switchTab('tab-students-manage')"><i class="bi bi-person-gear"></i> إدارة الطلاب</div>
     <div class="menu-item" data-tab="tab-classes" onclick="window.switchTab('tab-classes')"><i class="bi bi-grid-3x3"></i> الفصول والتوزيع</div>
@@ -48,7 +48,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
   <div class="menu-divider"></div>
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-clipboard-check-fill" style="color:#16a34a;margin-left:6px"></i>الحضور والسلوك</span><i class="bi bi-chevron-down sec-chev"></i></div>
-  <div class="menu-sec-body">
+  <div class="menu-sec-body closed" style="max-height:0;overflow:hidden">
     <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-person-check"></i> تسجيل الغياب</div>
     <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-file-text"></i> التقرير اليومي</div>
     <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-circle"></i> الغياب المتكرر</div>
@@ -61,14 +61,14 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
   <div class="menu-divider"></div>
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-bar-chart-fill" style="color:var(--gold);margin-left:6px"></i>التقارير</span><i class="bi bi-chevron-down sec-chev"></i></div>
-  <div class="menu-sec-body">
+  <div class="menu-sec-body closed" style="max-height:0;overflow:hidden">
     <div class="menu-item" data-tab="tab-reports" onclick="window.switchTab('tab-reports')"><i class="bi bi-graph-up"></i> التقارير الأسبوعية</div>
     <div class="menu-item" data-tab="tab-monthly" onclick="window.switchTab('tab-monthly')"><i class="bi bi-calendar-month"></i> التقارير الشهرية</div>
   </div>
   <div class="menu-divider"></div>
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-person-workspace" style="color:#7c3aed;margin-left:6px"></i>المعلمون</span><i class="bi bi-chevron-down sec-chev"></i></div>
-  <div class="menu-sec-body">
+  <div class="menu-sec-body closed" style="max-height:0;overflow:hidden">
     <div class="menu-item" data-tab="tab-teachers" onclick="window.switchTab('tab-teachers')"><i class="bi bi-person-badge"></i> دليل المعلمين</div>
     <div class="menu-item" data-tab="tab-visits" onclick="window.switchTab('tab-visits')"><i class="bi bi-journal-check"></i> الزيارات الفنية</div>
     <div class="menu-item" data-tab="tab-manager-visits" onclick="window.switchTab('tab-manager-visits')"><i class="bi bi-eye"></i> زيارات المدير</div>
@@ -81,7 +81,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
   <div class="menu-divider"></div>
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-megaphone-fill" style="color:#0891b2;margin-left:6px"></i>التواصل</span><i class="bi bi-chevron-down sec-chev"></i></div>
-  <div class="menu-sec-body">
+  <div class="menu-sec-body closed" style="max-height:0;overflow:hidden">
     <div class="menu-item" data-tab="tab-mailbox" onclick="window.switchTab('tab-mailbox')"><i class="bi bi-envelope"></i> المراسلات</div>
     <div class="menu-item" data-tab="tab-announcements" onclick="window.switchTab('tab-announcements')"><i class="bi bi-megaphone-fill"></i> الإعلانات</div>
     <div class="menu-item" data-tab="tab-honors" onclick="window.switchTab('tab-honors')"><i class="bi bi-trophy"></i> لوحة الشرف</div>
@@ -92,7 +92,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
   <div class="menu-divider"></div>
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-bar-chart-fill" style="color:#d4920a;margin-left:6px"></i>التقارير المتقدمة</span><i class="bi bi-chevron-down sec-chev"></i></div>
-  <div class="menu-sec-body">
+  <div class="menu-sec-body closed" style="max-height:0;overflow:hidden">
     <div class="menu-item" data-tab="tab-class-compare" onclick="window.switchTab('tab-class-compare')"><i class="bi bi-bar-chart-fill"></i> مقارنة الفصول</div>
     <div class="menu-item" data-tab="tab-semester-report" onclick="window.switchTab('tab-semester-report')"><i class="bi bi-file-earmark-text-fill"></i> تقرير نهاية الفصل</div>
     <div class="menu-item" data-tab="tab-schedule" onclick="window.switchTab('tab-schedule')"><i class="bi bi-calendar-week-fill"></i> الجدول المدرسي</div>
@@ -103,7 +103,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
   <div class="menu-divider"></div>
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-gear-fill" style="color:var(--mid);margin-left:6px"></i>الإدارة</span><i class="bi bi-chevron-down sec-chev"></i></div>
-  <div class="menu-sec-body">
+  <div class="menu-sec-body closed" style="max-height:0;overflow:hidden">
     <div class="menu-item" data-tab="tab-users" onclick="window.switchTab('tab-users')"><i class="bi bi-people"></i> المستخدمون</div>
     <div class="menu-item" data-tab="tab-audit" onclick="window.switchTab('tab-audit')"><i class="bi bi-clock-history"></i> سجل العمليات</div>
     <div class="menu-item" data-tab="tab-backup" onclick="window.switchTab('tab-backup')"><i class="bi bi-cloud-arrow-up"></i> النسخ الاحتياطية</div>
