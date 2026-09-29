@@ -34,7 +34,8 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
 <div class="sidebar" id="sidebar">
   <div class="sidebar-head"><h2>المنظومة الرقمية</h2><p id="lbl-school-name">لوحة الإدارة</p></div>
 
-  <div class="menu-item active" data-tab="tab-index" onclick="window.switchTab('tab-index')"><i class="bi bi-speedometer2"></i> الرئيسية</div>
+  <div class="menu-item active" data-tab="tab-index" onclick="window.switchTab('tab-index');
+        initGlobalSearch(db, schoolId);"><i class="bi bi-speedometer2"></i> الرئيسية</div>
   <div class="menu-divider"></div>
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-people-fill" style="color:var(--sky);margin-left:6px"></i>الطلاب</span><i class="bi bi-chevron-down sec-chev"></i></div>
@@ -116,7 +117,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
 <div class="main">
   <div class="topbar">
     <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').style.display=document.getElementById('sidebar').classList.contains('open')?'block':'none'"><i class="bi bi-list"></i></button>
-    <div class="topbar-info"><span id="lbl-admin-name">جاري التحميل...</span></div>
+    <div class="topbar-info"><span id="lbl-admin-name" onclick="openGS()" style="cursor:pointer" title="بحث Ctrl+K">جاري التحميل...</span></div>
     <button class="dark-toggle" onclick="window.toggleDarkMode()"><span id="dark-icon">☀️</span><span id="dark-label" style="font-size:11px;font-weight:800">نهاري</span></button>
     <button class="logout-btn" onclick="window.doLogout()"><i class="bi bi-box-arrow-left"></i> خروج</button>
   </div>
@@ -335,6 +336,7 @@ window.ManzoumaReport={
 };
 
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { initGlobalSearch } from './js/modules/global_search.js';
 import { auth } from './js/firebase-config.js';
 
 onAuthStateChanged(auth, (user) => {
