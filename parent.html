@@ -84,6 +84,19 @@ textarea.inp{resize:vertical;min-height:80px}
 /* Rating item */
 .rating-done{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;margin-bottom:8px}
 
+
+/* Chart */
+.chart-wrap{overflow-x:auto;padding-bottom:8px}
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:32px}
+.bar-fill{width:28px;border-radius:4px 4px 0 0;transition:height .4s;min-height:2px}
+.bar-lbl{font-size:9px;font-weight:700;color:var(--mid);text-align:center}
+.bar-val{font-size:9px;font-weight:900;color:var(--navy)}
+/* Points */
+.points-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#d4920a,#f59e0b);color:#fff;padding:8px 16px;border-radius:20px;font-size:14px;font-weight:900}
+.reward-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.reward-pts{font-weight:900;color:#d4920a;min-width:40px;text-align:center}
+
 /* Toast */
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:11px 22px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;z-index:9999;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.2);white-space:nowrap}
 
@@ -114,6 +127,24 @@ textarea.inp{resize:vertical;min-height:80px}
     <div class="stat-box"><div class="stat-val" id="stat-gate" style="color:var(--sky)">—</div><div class="stat-lbl">استئذان</div></div>
   </div>
   <div id="home-announcements"></div>
+  <!-- رسم بياني الغياب -->
+  <div class="card" id="chart-card" style="display:none">
+    <h2><i class="bi bi-bar-chart-fill" style="color:var(--sky)"></i> غياب آخر 30 يوم</h2>
+    <div class="chart-wrap">
+      <div class="bar-chart" id="absence-chart"></div>
+    </div>
+  </div>
+
+  <!-- نقاط الطالب -->
+  <div class="card" id="points-card" style="display:none">
+    <h2><i class="bi bi-star-fill" style="color:var(--gold)"></i> نقاط ابنك</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <span class="points-badge"><i class="bi bi-trophy-fill"></i> <span id="total-points">0</span> نقطة</span>
+      <span style="font-size:12px;color:var(--mid);font-weight:700" id="points-rank"></span>
+    </div>
+    <div id="rewards-list"><div class="empty">لا توجد نقاط بعد</div></div>
+  </div>
+
   <div class="card">
     <h2><i class="bi bi-calendar-x" style="color:var(--red)"></i> سجل الغياب</h2>
     <div id="absence-list"><div class="empty">⏳</div></div>
@@ -279,6 +310,51 @@ function toast(msg, color='#059669') {
     // غياب
     var attSnap = await getDocs(query(collection(db,'attendance'), where('schoolId','==',schoolId), where('studentName','==',studentName)));
     var records = attSnap.docs.map(d=>d.data()).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+    // رسم بياني الغياب
+    var last30 = records.filter(r=>r.status==='absent').slice(0,30);
+    if(last30.length > 0) {
+      document.getElementById('chart-card').style.display='block';
+      var byMonth = {};
+      last30.forEach(r=>{
+        var m = (r.date||'').slice(0,7);
+        byMonth[m] = (byMonth[m]||0)+1;
+      });
+      var months = Object.keys(byMonth).sort();
+      var maxV = Math.max(...Object.values(byMonth),1);
+      var chartEl = document.getElementById('absence-chart');
+      chartEl.innerHTML = months.map(m=>{
+        var v = byMonth[m];
+        var h = Math.round(v/maxV*100);
+        var color = v>=5?'#dc2626':v>=3?'#f59e0b':'#1a78c2';
+        return '<div class="bar-col"><div class="bar-val">'+v+'</div><div class="bar-fill" style="height:'+h+'px;background:'+color+'"></div><div class="bar-lbl">'+m.slice(5)+'</div></div>';
+      }).join('');
+    }
+
+    // نقاط الطالب
+    try {
+      var rewardsSnap = await getDocs(query(collection(db,'rewards'), where('schoolId','==',schoolId), where('studentName','==',studentName), orderBy('createdAt','desc'), limit(20)));
+      if(!rewardsSnap.empty) {
+        document.getElementById('points-card').style.display='block';
+        var totalPts = 0;
+        var items = [];
+        rewardsSnap.forEach(d=>{
+          var r=d.data();
+          totalPts += (r.points||0);
+          items.push(r);
+        });
+        document.getElementById('total-points').textContent = totalPts;
+        document.getElementById('rewards-list').innerHTML = items.map(r=>`
+          <div class="reward-item">
+            <div class="reward-pts">+${r.points||0}</div>
+            <div style="flex:1">
+              <div style="font-weight:700">${r.reason||r.description||'نقاط'}</div>
+              <div style="font-size:11px;color:var(--mid)">${r.date||''} · ${r.addedBy||''}</div>
+            </div>
+          </div>`).join('');
+      }
+    } catch(e) { console.log('rewards:', e.message); }
+
     var absent = records.filter(r=>r.status==='absent').length;
     var late = records.filter(r=>r.status==='late').length;
 
