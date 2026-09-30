@@ -207,7 +207,7 @@ var _sdClasses = {};
 var _sdSelectedStudent = null;
 var _sdSchoolId = null;
 
-async function sdRefresh() {
+window.sdRefresh = async function sdRefresh() {
     _sdSchoolId = getActiveSchoolId();
     try {
         var snap = await getDocs(query(collection(db,'students'), where('schoolId','==',_sdSchoolId)));
