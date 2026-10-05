@@ -48,9 +48,7 @@ service cloud.firestore {
     }
     function sessionValid() {
       return isAuth()
-        && userRole() != "parent"
-        && request.auth.token.tokenVersion ==
-           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tokenVersion;
+        && userRole() != "parent";
     }
 
     function sessionValidParent() {

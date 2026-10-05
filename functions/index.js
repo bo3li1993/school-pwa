@@ -10,10 +10,7 @@ admin.initializeApp();
 const db = admin.firestore();
 const { FieldValue } = require("firebase-admin/firestore");
 
-const CORS = [
-  /^https:\/\/bo3li1993\.github\.io(\/.*)?$/,
-  /^http:\/\/localhost(?::\d+)?$/
-];
+const CORS = true;
 const REGION = "me-central1";
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MINUTES = 15;
