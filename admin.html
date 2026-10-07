@@ -50,6 +50,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
 
   <div class="menu-sec-title" onclick="toggleSec(this)"><span><i class="bi bi-clipboard-check-fill" style="color:#16a34a;margin-left:6px"></i>الحضور والسلوك</span><i class="bi bi-chevron-down sec-chev"></i></div>
   <div class="menu-sec-body closed" style="max-height:0;overflow:hidden">
+    <div class="menu-item" data-tab="tab-attendance-check" onclick="window.switchTab('tab-attendance-check')"><i class="bi bi-clipboard-x-fill" style="color:#dc2626"></i> فصول لم تسجل</div>
     <div class="menu-item" data-tab="tab-attendance" onclick="window.switchTab('tab-attendance')"><i class="bi bi-person-check"></i> تسجيل الغياب</div>
     <div class="menu-item" data-tab="tab-daily-report" onclick="window.switchTab('tab-daily-report')"><i class="bi bi-file-text"></i> التقرير اليومي</div>
     <div class="menu-item" data-tab="tab-repeat" onclick="window.switchTab('tab-repeat')"><i class="bi bi-exclamation-circle"></i> الغياب المتكرر</div>
@@ -129,6 +130,7 @@ setTimeout(function(){var s=document.getElementById('splash');if(s)s.classList.a
     <div id="tab-classes" class="tab-content"></div>
     <div id="tab-import" class="tab-content"></div>
     <div id="tab-promotion" class="tab-content"></div>
+    <div id="tab-attendance-check" class="tab-content"></div>
     <div id="tab-attendance" class="tab-content"></div>
     <div id="tab-quick-attendance" class="tab-content"></div>
     <div id="tab-daily-report" class="tab-content"></div>
@@ -257,7 +259,8 @@ var moduleMap={
     'tab-students-manage':{file:'./js/modules/students_manage.js',init:'initStudentsManageModule'},
     'tab-classes':{file:'./js/modules/classes.js',init:'initClassesModule'},
     'tab-import':{file:'./js/modules/import_students.js',init:'initImportModule'},
-    'tab-attendance':{file:'./js/modules/attendance.js',init:'initAttendanceModule'},
+    'tab-attendance-check':{file:'./js/modules/attendance_check.js',init:'initAttendanceCheckModule'},
+        'tab-attendance':{file:'./js/modules/attendance.js',init:'initAttendanceModule'},
     'tab-quick-attendance':{file:'./js/modules/quick_attendance.js',init:'initQuickAttendanceModule'},
     'tab-daily-report':{file:'./js/modules/daily_report.js',init:'initDailyReportModule'},
     'tab-repeat':{file:'./js/modules/repeat.js',init:'initRepeatModule'},

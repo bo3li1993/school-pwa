@@ -73,6 +73,9 @@ body{font-family:'Cairo',sans-serif;background:var(--off);color:var(--text);min-
         </select>
         <div id="students-list"></div>
         <div id="save-section" style="display:none;margin-top:12px">
+            <button class="btn btn-green" style="margin-bottom:8px" onclick="saveNoAbsence()">
+                <i class="bi bi-check-circle-fill"></i> لا يوجد غياب في هذه الحصة
+            </button>
             <button class="btn btn-navy" id="save-btn" onclick="saveAttendance()">
                 <i class="bi bi-cloud-upload-fill"></i> حفظ ورفع سجل الحضور
             </button>
