@@ -385,6 +385,13 @@ allow read: if isSuperAdmin() || (sessionValid() && isSchoolStaff(resource.data.
       allow update: if false;
     }
 
+    // Attendance logs
+    match /attendance_logs/{docId} {
+      allow read: if isAdmin() && sameSchool(resource.data.schoolId);
+      allow create: if isAuth() && sameSchool(request.resource.data.schoolId);
+      allow update, delete: if false;
+    }
+
     // Default deny
     match /{document=**} { allow read, write: if false; }
   }
